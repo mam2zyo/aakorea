@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { fetchMeetings } from "../api/meetings";
 import MeetingSearchForm from "../components/meeting/MeetingSearchForm";
 import MeetingCard from "../components/meeting/MeetingCard";
-import { formatDayOfWeek, formatProvince } from "../utils/format";
+import {
+  formatDayOfWeek,
+  formatProvince,
+  getTodayDayOfWeekValue,
+} from "../utils/format";
 
 const initialFilters = {
   province: "SEOUL",
-  dayOfWeek: "MONDAY",
+  dayOfWeek: getTodayDayOfWeekValue(),
 };
 
 export default function MeetingSearchPage() {
@@ -46,6 +50,21 @@ export default function MeetingSearchPage() {
     loadMeetings(filters);
   }
 
+  function handleUseToday() {
+    const nextFilters = {
+      ...filters,
+      dayOfWeek: getTodayDayOfWeekValue(),
+    };
+
+    setFilters(nextFilters);
+    loadMeetings(nextFilters);
+  }
+
+  function handleReset() {
+    setFilters(initialFilters);
+    loadMeetings(initialFilters);
+  }
+
   return (
     <div className="space-y-6">
       <section>
@@ -53,7 +72,8 @@ export default function MeetingSearchPage() {
           모임 검색
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          지역과 요일 기준으로 정기 모임을 조회합니다.
+          오늘 참석할 수 있는 모임을 빠르게 찾을 수 있도록 지역과 요일 기준으로
+          정기 모임을 조회합니다.
         </p>
       </section>
 
@@ -61,6 +81,8 @@ export default function MeetingSearchPage() {
         filters={filters}
         onChange={handleChange}
         onSubmit={handleSubmit}
+        onReset={handleReset}
+        onUseToday={handleUseToday}
         loading={loading}
       />
 

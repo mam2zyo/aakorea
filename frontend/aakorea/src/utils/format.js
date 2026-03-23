@@ -8,6 +8,16 @@ const dayOfWeekMap = Object.fromEntries(
   DAY_OF_WEEKS.map((item) => [item.value, item.label]),
 )
 
+const dayOfWeekValueByIndex = [
+  'SUNDAY',
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+]
+
 const meetingTypeMap = {
   OPEN: '공개',
   CLOSED: '비공개',
@@ -21,6 +31,8 @@ const meetingStatusMap = {
 
 const noticeTypeMap = {
   GENERAL: '일반',
+  TEMP_CHANGE: '임시 변경',
+  CLOSED_INFO: '휴무 안내',
   URGENT: '긴급',
 }
 
@@ -41,7 +53,11 @@ export function formatMeetingStatus(value) {
 }
 
 export function formatNoticeType(value) {
-  return noticeTypeMap[value] || value || value || '-'
+  return noticeTypeMap[value] || value || '-'
+}
+
+export function getTodayDayOfWeekValue(date = new Date()) {
+  return dayOfWeekValueByIndex[date.getDay()] || 'MONDAY'
 }
 
 export function formatTime(value) {
