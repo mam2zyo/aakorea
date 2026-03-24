@@ -3,6 +3,7 @@ package io.step5.aakorea.controller;
 import io.step5.aakorea.service.GroupNotFoundException;
 import io.step5.aakorea.service.admin.DistrictDeleteConflictException;
 import io.step5.aakorea.service.admin.DistrictNameAlreadyExistsException;
+import io.step5.aakorea.service.admin.AdminGroupNotFoundException;
 import io.step5.aakorea.service.admin.DistrictNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,17 @@ public class ApiExceptionHandler {
     @ExceptionHandler(GroupNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleGroupNotFound(GroupNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AdminGroupNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminGroupNotFound(AdminGroupNotFoundException e) {
         return Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", 404,

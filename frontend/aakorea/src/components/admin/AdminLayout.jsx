@@ -10,8 +10,8 @@ const adminMenus = [
   {
     to: '/admin/groups',
     label: '그룹 관리',
-    description: '추가 예정',
-    available: false,
+    description: '그룹 생성, 수정, 삭제',
+    available: true,
   },
   {
     to: '/admin/users',
