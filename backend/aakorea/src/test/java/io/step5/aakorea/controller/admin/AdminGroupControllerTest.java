@@ -61,6 +61,7 @@ class AdminGroupControllerTest {
                 LocalDate.of(2016, 1, 1),
                 Province.SEOUL,
                 savedDistrict.getId(),
+                null,
                 "서울시 중구",
                 "hope@example.org",
                 "010-1234-5678",
@@ -84,6 +85,7 @@ class AdminGroupControllerTest {
                 "새희망 그룹",
                 LocalDate.of(2018, 5, 12),
                 Province.GYEONGGI,
+                null,
                 null,
                 "경기도 고양시",
                 "newhope@example.org",
@@ -126,6 +128,7 @@ class AdminGroupControllerTest {
                 null,
                 null,
                 null,
+                null,
                 "서울 어딘가",
                 "지하 1층",
                 null,
@@ -146,6 +149,7 @@ class AdminGroupControllerTest {
                 "테스트 그룹",
                 null,
                 Province.SEOUL,
+                null,
                 null,
                 null,
                 null,
@@ -180,6 +184,7 @@ class AdminGroupControllerTest {
                 null,
                 null,
                 null,
+                null,
                 "서울 어딘가",
                 "지하 1층",
                 null,
@@ -192,4 +197,41 @@ class AdminGroupControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
+
+
+    @Test
+    void 그룹_모임을_CRUD_할_수_있다() throws Exception {
+        Group group = new Group();
+        group.setName("모임관리 그룹");
+        group.setProvince(Province.SEOUL);
+
+        MeetingPlace place = new MeetingPlace();
+        place.setRoadAddress("서울 중구 1");
+        place.setDetailAddress("3층");
+        place.setLatitude(37.0);
+        place.setLongitude(127.0);
+        group.setMeetingPlace(place);
+
+        Group saved = groupRepository.save(group);
+
+        String createBody = """
+                {
+                  "dayOfWeek": "MONDAY",
+                  "startTime": "19:00",
+                  "meetingType": "OPEN",
+                  "status": "ACTIVE"
+                }
+                """;
+
+        mockMvc.perform(post("/api/admin/groups/{groupId}/meetings", saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dayOfWeek").value("MONDAY"));
+
+        mockMvc.perform(get("/api/admin/groups/{groupId}/meetings", saved.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
 }

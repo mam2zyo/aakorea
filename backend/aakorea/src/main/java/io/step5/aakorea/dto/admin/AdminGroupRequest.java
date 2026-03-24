@@ -21,6 +21,8 @@ public record AdminGroupRequest(
 
         Long districtId,
 
+        Long gsrId,
+
         @Size(max = 255, message = "연락처 주소는 255자 이하로 입력해주세요.")
         String contactAddress,
 

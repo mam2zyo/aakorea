@@ -4,6 +4,10 @@ import io.step5.aakorea.service.GroupNotFoundException;
 import io.step5.aakorea.service.admin.DistrictDeleteConflictException;
 import io.step5.aakorea.service.admin.DistrictNameAlreadyExistsException;
 import io.step5.aakorea.service.admin.AdminGroupNotFoundException;
+import io.step5.aakorea.service.admin.MeetingPlaceValidationException;
+import io.step5.aakorea.service.admin.GsrEmailAlreadyExistsException;
+import io.step5.aakorea.service.admin.AdminMeetingNotFoundException;
+import io.step5.aakorea.service.admin.AdminGsrNotFoundException;
 import io.step5.aakorea.service.admin.DistrictNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +43,28 @@ public class ApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(AdminGsrNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminGsrNotFound(AdminGsrNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AdminMeetingNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminMeetingNotFound(AdminMeetingNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
     @ExceptionHandler(DistrictNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleDistrictNotFound(DistrictNotFoundException e) {
@@ -57,6 +83,28 @@ public class ApiExceptionHandler {
                 "timestamp", LocalDateTime.now(),
                 "status", 409,
                 "error", "CONFLICT",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GsrEmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleGsrEmailAlreadyExists(GsrEmailAlreadyExistsException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", "CONFLICT",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(MeetingPlaceValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleMeetingPlaceValidation(MeetingPlaceValidationException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", "BAD_REQUEST",
                 "message", e.getMessage()
         );
     }

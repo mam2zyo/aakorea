@@ -9,6 +9,8 @@ public record AdminGroupDto(
         String province,
         Long districtId,
         String districtName,
+        Long gsrId,
+        String gsrNickname,
         String contactAddress,
         String contactEmail,
         String contactPhone,

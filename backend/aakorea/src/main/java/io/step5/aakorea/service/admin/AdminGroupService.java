@@ -1,12 +1,14 @@
 package io.step5.aakorea.service.admin;
 
 import io.step5.aakorea.domain.District;
+import io.step5.aakorea.domain.GSR;
 import io.step5.aakorea.domain.Group;
 import io.step5.aakorea.domain.MeetingPlace;
 import io.step5.aakorea.dto.admin.AdminGroupDto;
 import io.step5.aakorea.dto.admin.AdminGroupListResponseDto;
 import io.step5.aakorea.dto.admin.AdminGroupRequest;
 import io.step5.aakorea.repository.DistrictRepository;
+import io.step5.aakorea.repository.GSRRepository;
 import io.step5.aakorea.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class AdminGroupService {
 
     private final GroupRepository groupRepository;
     private final DistrictRepository districtRepository;
+    private final GSRRepository gsrRepository;
 
     public AdminGroupListResponseDto getGroups() {
         List<AdminGroupDto> groups = groupRepository.findAll().stream()
@@ -66,6 +69,7 @@ public class AdminGroupService {
         group.setStartDate(request.startDate());
         group.setProvince(request.province());
         group.setDistrict(resolveDistrict(request.districtId()));
+        group.setGsr(resolveGsr(request.gsrId()));
         group.setContactAddress(normalizeNullableText(request.contactAddress()));
         group.setContactEmail(normalizeNullableText(request.contactEmail()));
         group.setContactPhone(normalizeNullableText(request.contactPhone()));
@@ -84,6 +88,15 @@ public class AdminGroupService {
 
         return districtRepository.findById(districtId)
                 .orElseThrow(() -> new DistrictNotFoundException(districtId));
+    }
+
+    private GSR resolveGsr(Long gsrId) {
+        if (gsrId == null) {
+            return null;
+        }
+
+        return gsrRepository.findById(gsrId)
+                .orElseThrow(() -> new AdminGsrNotFoundException(gsrId));
     }
 
     private String normalizeText(String text) {
@@ -107,6 +120,8 @@ public class AdminGroupService {
                 group.getProvince().name(),
                 group.getDistrict() != null ? group.getDistrict().getId() : null,
                 group.getDistrict() != null ? group.getDistrict().getName() : null,
+                group.getGsr() != null ? group.getGsr().getId() : null,
+                group.getGsr() != null ? group.getGsr().getNickname() : null,
                 group.getContactAddress(),
                 group.getContactEmail(),
                 group.getContactPhone(),
