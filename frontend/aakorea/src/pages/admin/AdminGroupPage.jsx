@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminLayout from '../../components/admin/AdminLayout'
 import { fetchAdminDistricts } from '../../api/districts'
-import { fetchAdminGsrs } from '../../api/gsrs'
+import { createAdminGsr, deleteAdminGsr, fetchAdminGsrs, updateAdminGsr } from '../../api/gsrs'
 import {
   createAdminGroup,
   createAdminGroupMeeting,
@@ -42,7 +42,10 @@ const initialMeetingFormState = {
   meetingLongitude: '',
 }
 
+const initialGsrFormState = { nickname: '', phone: '', email: '' }
+
 export default function AdminGroupPage() {
+  const [tab, setTab] = useState('groups')
   const [groups, setGroups] = useState([])
   const [districts, setDistricts] = useState([])
   const [gsrs, setGsrs] = useState([])
@@ -50,6 +53,7 @@ export default function AdminGroupPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
   const [submitting, setSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [editingId, setEditingId] = useState(null)
@@ -59,6 +63,9 @@ export default function AdminGroupPage() {
   const [meetingEditingId, setMeetingEditingId] = useState(null)
   const [meetingSubmitting, setMeetingSubmitting] = useState(false)
   const [meetingDeletingId, setMeetingDeletingId] = useState(null)
+
+  const [gsrForm, setGsrForm] = useState(initialGsrFormState)
+  const [gsrEditingId, setGsrEditingId] = useState(null)
 
   async function loadData() {
     setLoading(true)
@@ -74,7 +81,7 @@ export default function AdminGroupPage() {
       setDistricts(districtResponse.districts || [])
       setGsrs(gsrResponse.gsrs || [])
     } catch (err) {
-      setError(err.message || '그룹 정보를 불러오는 중 오류가 발생했습니다.')
+      setError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -84,19 +91,8 @@ export default function AdminGroupPage() {
     loadData()
   }, [])
 
-  const sortedGroups = useMemo(
-    () => [...groups].sort((left, right) => left.name.localeCompare(right.name, 'ko-KR')),
-    [groups],
-  )
-
-  async function loadMeetings(groupId) {
-    try {
-      const response = await fetchAdminGroupMeetings(groupId)
-      setMeetings(response || [])
-    } catch (err) {
-      setError(err.message || '모임 정보를 불러오는 중 오류가 발생했습니다.')
-    }
-  }
+  const sortedGroups = useMemo(() => [...groups].sort((a, b) => a.name.localeCompare(b.name, 'ko-KR')), [groups])
+  const sortedGsrs = useMemo(() => [...gsrs].sort((a, b) => a.nickname.localeCompare(b.nickname, 'ko-KR')), [gsrs])
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -108,11 +104,9 @@ export default function AdminGroupPage() {
     setMeetingForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  function resetForm() {
-    setForm(initialFormState)
-    setEditingId(null)
-    setMeetings([])
-    resetMeetingForm()
+  function handleGsrChange(event) {
+    const { name, value } = event.target
+    setGsrForm((prev) => ({ ...prev, [name]: value }))
   }
 
   function resetMeetingForm() {
@@ -120,7 +114,28 @@ export default function AdminGroupPage() {
     setMeetingEditingId(null)
   }
 
-  function toPayload() {
+  function resetForm() {
+    setForm(initialFormState)
+    setEditingId(null)
+    setMeetings([])
+    resetMeetingForm()
+  }
+
+  function resetGsrForm() {
+    setGsrForm(initialGsrFormState)
+    setGsrEditingId(null)
+  }
+
+  async function loadMeetings(groupId) {
+    try {
+      const response = await fetchAdminGroupMeetings(groupId)
+      setMeetings(response || [])
+    } catch (err) {
+      setError(err.message || '모임 정보를 불러오는 중 오류가 발생했습니다.')
+    }
+  }
+
+  function toGroupPayload() {
     return {
       name: form.name,
       startDate: form.startDate || null,
@@ -152,27 +167,45 @@ export default function AdminGroupPage() {
     }
   }
 
-  async function handleSubmit(event) {
+  function findSelectedGsr() {
+    if (!form.gsrId) return null
+    return gsrs.find((gsr) => gsr.id === Number(form.gsrId)) || null
+  }
+
+  function applyGsrContactToGroup() {
+    const gsr = findSelectedGsr()
+    if (!gsr) {
+      setError('먼저 연결할 GSR를 선택해주세요.')
+      return
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      contactEmail: gsr.email || prev.contactEmail,
+      contactPhone: gsr.phone || prev.contactPhone,
+    }))
+    setSuccessMessage('GSR 연락처를 그룹 연락처에 반영했습니다. 우편 주소는 필요 시 직접 입력해주세요.')
+  }
+
+  async function handleGroupSubmit(event) {
     event.preventDefault()
     setSubmitting(true)
     setError('')
     setSuccessMessage('')
 
     try {
-      const payload = toPayload()
+      const payload = toGroupPayload()
       if (editingId) {
         const updated = await updateAdminGroup(editingId, payload)
         setGroups((prev) => prev.map((group) => (group.id === editingId ? updated : group)))
+        await loadMeetings(editingId)
         setSuccessMessage('그룹 정보를 수정했습니다.')
       } else {
         const created = await createAdminGroup(payload)
         setGroups((prev) => [...prev, created])
-        setSuccessMessage('그룹을 등록했습니다. 이제 아래에서 정기 모임을 추가하세요.')
         setEditingId(created.id)
         await loadMeetings(created.id)
-      }
-      if (editingId) {
-        await loadMeetings(editingId)
+        setSuccessMessage('그룹을 등록했습니다.')
       }
     } catch (err) {
       setError(err.message || '그룹 저장 중 오류가 발생했습니다.')
@@ -181,7 +214,7 @@ export default function AdminGroupPage() {
     }
   }
 
-  async function handleEdit(group) {
+  async function handleEditGroup(group) {
     setEditingId(group.id)
     setForm({
       name: group.name || '',
@@ -198,15 +231,14 @@ export default function AdminGroupPage() {
       meetingLatitude: String(group.meetingLatitude ?? ''),
       meetingLongitude: String(group.meetingLongitude ?? ''),
     })
+    resetMeetingForm()
     setError('')
     setSuccessMessage('')
-    resetMeetingForm()
     await loadMeetings(group.id)
   }
 
-  async function handleDelete(group) {
-    const confirmed = window.confirm(`'${group.name}' 그룹을 삭제할까요?`)
-    if (!confirmed) return
+  async function handleDeleteGroup(group) {
+    if (!window.confirm(`'${group.name}' 그룹을 삭제할까요?`)) return
 
     setDeletingId(group.id)
     setError('')
@@ -215,9 +247,7 @@ export default function AdminGroupPage() {
     try {
       await deleteAdminGroup(group.id)
       setGroups((prev) => prev.filter((item) => item.id !== group.id))
-      if (editingId === group.id) {
-        resetForm()
-      }
+      if (editingId === group.id) resetForm()
       setSuccessMessage('그룹을 삭제했습니다.')
     } catch (err) {
       setError(err.message || '그룹 삭제 중 오류가 발생했습니다.')
@@ -241,7 +271,7 @@ export default function AdminGroupPage() {
         setSuccessMessage('모임 정보를 수정했습니다.')
       } else {
         await createAdminGroupMeeting(editingId, payload)
-        setSuccessMessage('모임 정보를 등록했습니다.')
+        setSuccessMessage('모임을 등록했습니다.')
       }
       await loadMeetings(editingId)
       resetMeetingForm()
@@ -269,16 +299,14 @@ export default function AdminGroupPage() {
 
   async function handleMeetingDelete(meeting) {
     if (!editingId) return
-    const confirmed = window.confirm('이 모임을 삭제할까요?')
-    if (!confirmed) return
+    if (!window.confirm('이 모임을 삭제할까요?')) return
 
     setMeetingDeletingId(meeting.id)
-
     try {
       await deleteAdminGroupMeeting(editingId, meeting.id)
-      setSuccessMessage('모임을 삭제했습니다.')
       await loadMeetings(editingId)
       if (meetingEditingId === meeting.id) resetMeetingForm()
+      setSuccessMessage('모임을 삭제했습니다.')
     } catch (err) {
       setError(err.message || '모임 삭제 중 오류가 발생했습니다.')
     } finally {
@@ -286,117 +314,214 @@ export default function AdminGroupPage() {
     }
   }
 
+  async function handleGsrSubmit(event) {
+    event.preventDefault()
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      if (gsrEditingId) {
+        const updated = await updateAdminGsr(gsrEditingId, {
+          nickname: gsrForm.nickname,
+          phone: gsrForm.phone || null,
+          email: gsrForm.email || null,
+        })
+        setGsrs((prev) => prev.map((gsr) => (gsr.id === gsrEditingId ? updated : gsr)))
+        setSuccessMessage('GSR 정보를 수정했습니다.')
+      } else {
+        const created = await createAdminGsr({
+          nickname: gsrForm.nickname,
+          phone: gsrForm.phone || null,
+          email: gsrForm.email || null,
+        })
+        setGsrs((prev) => [...prev, created])
+        setSuccessMessage('GSR을 등록했습니다.')
+      }
+      resetGsrForm()
+    } catch (err) {
+      setError(err.message || 'GSR 저장에 실패했습니다.')
+    }
+  }
+
+  function handleGsrEdit(gsr) {
+    setGsrEditingId(gsr.id)
+    setGsrForm({
+      nickname: gsr.nickname || '',
+      phone: gsr.phone || '',
+      email: gsr.email || '',
+    })
+  }
+
+  async function handleGsrDelete(gsr) {
+    if (!window.confirm(`'${gsr.nickname}' GSR을 삭제할까요?`)) return
+
+    try {
+      await deleteAdminGsr(gsr.id)
+      setGsrs((prev) => prev.filter((item) => item.id !== gsr.id))
+      if (gsrEditingId === gsr.id) resetGsrForm()
+      setSuccessMessage('GSR을 삭제했습니다.')
+    } catch (err) {
+      setError(err.message || 'GSR 삭제에 실패했습니다.')
+    }
+  }
+
   return (
     <AdminLayout
       title="그룹 관리"
-      description="그룹 기본 정보, 우편물/이메일 수신 주소, 전화번호, GSR 연결, 그리고 정기 모임 정보까지 함께 관리합니다."
+      description="그룹 정보, 그룹 연락처, GSR 관리, 그리고 그룹 정기 모임까지 하나의 관리 메뉴 안에서 처리합니다."
     >
       <div className="space-y-6">
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
-          <form onSubmit={handleSubmit} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">{editingId ? '그룹 수정' : '그룹 등록'}</h2>
-            <div className="mt-4 space-y-4">
-              <input name="name" value={form.name} onChange={handleChange} placeholder="그룹명" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <div className="grid gap-4 md:grid-cols-2">
-                <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                <select name="province" value={form.province} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                  {PROVINCES.map((province) => <option key={province.value} value={province.value}>{province.label}</option>)}
-                </select>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <select name="districtId" value={form.districtId} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                  <option value="">지역연합 미지정</option>
-                  {districts.map((district) => <option key={district.id} value={district.id}>{district.name}</option>)}
-                </select>
-                <select name="gsrId" value={form.gsrId} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                  <option value="">GSR 미지정</option>
-                  {gsrs.map((gsr) => <option key={gsr.id} value={gsr.id}>{gsr.nickname}</option>)}
-                </select>
-              </div>
+        <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1">
+          <button type="button" onClick={() => setTab('groups')} className={`rounded-xl px-4 py-2 text-sm ${tab === 'groups' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>그룹 정보/모임</button>
+          <button type="button" onClick={() => setTab('gsrs')} className={`rounded-xl px-4 py-2 text-sm ${tab === 'gsrs' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>GSR 정보</button>
+        </div>
 
-              <input name="contactAddress" value={form.contactAddress} onChange={handleChange} placeholder="그룹 우편물 수신 주소" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <div className="grid gap-4 md:grid-cols-2">
-                <input name="contactEmail" value={form.contactEmail} onChange={handleChange} placeholder="그룹 이메일 수신 주소" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                <input name="contactPhone" value={form.contactPhone} onChange={handleChange} placeholder="그룹 전화번호" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              </div>
+        {tab === 'groups' ? (
+          <>
+            <section className="grid gap-6 xl:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
+              <form onSubmit={handleGroupSubmit} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900">{editingId ? '그룹 수정' : '그룹 등록'}</h2>
+                <div className="mt-4 space-y-4">
+                  <input name="name" value={form.name} onChange={handleChange} placeholder="그룹명" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <input type="date" name="startDate" value={form.startDate} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <select name="province" value={form.province} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      {PROVINCES.map((province) => <option key={province.value} value={province.value}>{province.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <select name="districtId" value={form.districtId} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      <option value="">지역연합 미지정</option>
+                      {districts.map((district) => <option key={district.id} value={district.id}>{district.name}</option>)}
+                    </select>
+                    <select name="gsrId" value={form.gsrId} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      <option value="">GSR 미지정</option>
+                      {sortedGsrs.map((gsr) => <option key={gsr.id} value={gsr.id}>{gsr.nickname}</option>)}
+                    </select>
+                  </div>
 
-              <input name="meetingRoadAddress" value={form.meetingRoadAddress} onChange={handleChange} placeholder="기본 모임 도로명주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <input name="meetingDetailAddress" value={form.meetingDetailAddress} onChange={handleChange} placeholder="기본 모임 상세주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <textarea name="meetingGuide" value={form.meetingGuide} onChange={handleChange} placeholder="기본 모임 장소 안내" rows={2} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <div className="grid gap-4 md:grid-cols-2">
-                <input type="number" step="any" name="meetingLatitude" value={form.meetingLatitude} onChange={handleChange} required placeholder="위도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                <input type="number" step="any" name="meetingLongitude" value={form.meetingLongitude} onChange={handleChange} required placeholder="경도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              </div>
-            </div>
-            <div className="mt-6 flex gap-2">
-              <button type="submit" disabled={submitting} className="rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white disabled:bg-slate-300">{submitting ? '저장 중...' : editingId ? '수정하기' : '등록하기'}</button>
-              {editingId ? <button type="button" onClick={resetForm} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">취소</button> : null}
-            </div>
-          </form>
+                  <div className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs text-blue-700">
+                    그룹 연락처가 GSR 연락처와 동일하면 아래 버튼을 눌러 자동 반영할 수 있습니다.
+                    <button type="button" onClick={applyGsrContactToGroup} className="ml-2 rounded-lg bg-blue-600 px-3 py-1 text-white">GSR 연락처 가져오기</button>
+                  </div>
 
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">그룹 목록</h2>
-            <div className="mt-4 space-y-3">
-              {loading ? <div className="text-sm text-slate-500">불러오는 중...</div> : sortedGroups.map((group) => (
-                <div key={group.id} className="rounded-2xl border border-slate-200 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="font-semibold">{group.name}</div>
-                      <div className="text-xs text-slate-500">{group.contactEmail || group.contactAddress || '연락처 미등록'} / {group.contactPhone || '전화번호 미등록'}</div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button type="button" onClick={() => handleEdit(group)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
-                      <button type="button" onClick={() => handleDelete(group)} disabled={deletingId === group.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{deletingId === group.id ? '삭제 중...' : '삭제'}</button>
-                    </div>
+                  <input name="contactAddress" value={form.contactAddress} onChange={handleChange} placeholder="그룹 우편 수신 주소" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <input name="contactEmail" value={form.contactEmail} onChange={handleChange} placeholder="그룹 이메일 수신 주소" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <input name="contactPhone" value={form.contactPhone} onChange={handleChange} placeholder="그룹 전화번호" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  </div>
+
+                  <input name="meetingRoadAddress" value={form.meetingRoadAddress} onChange={handleChange} placeholder="기본 모임 도로명주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <input name="meetingDetailAddress" value={form.meetingDetailAddress} onChange={handleChange} placeholder="기본 모임 상세주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <textarea name="meetingGuide" value={form.meetingGuide} onChange={handleChange} placeholder="기본 모임 장소 안내" rows={2} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <input type="number" step="any" name="meetingLatitude" value={form.meetingLatitude} onChange={handleChange} required placeholder="위도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <input type="number" step="any" name="meetingLongitude" value={form.meetingLongitude} onChange={handleChange} required placeholder="경도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        </section>
+                <div className="mt-6 flex gap-2">
+                  <button type="submit" disabled={submitting} className="rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white disabled:bg-slate-300">{submitting ? '저장 중...' : editingId ? '수정하기' : '등록하기'}</button>
+                  {editingId ? <button type="button" onClick={resetForm} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">취소</button> : null}
+                </div>
+              </form>
 
-        {editingId ? (
+              <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900">그룹 목록</h2>
+                <div className="mt-4 space-y-3">
+                  {loading ? <div className="text-sm text-slate-500">불러오는 중...</div> : sortedGroups.map((group) => (
+                    <div key={group.id} className="rounded-2xl border border-slate-200 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <div className="font-semibold">{group.name}</div>
+                          <div className="text-xs text-slate-500">{group.contactEmail || group.contactAddress || '연락처 미등록'} / {group.contactPhone || '전화번호 미등록'}</div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => handleEditGroup(group)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
+                          <button type="button" onClick={() => handleDeleteGroup(group)} disabled={deletingId === group.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{deletingId === group.id ? '삭제 중...' : '삭제'}</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </section>
+
+            {editingId ? (
+              <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-900">정기 모임 관리</h2>
+                <p className="mt-2 text-sm text-slate-500">현재 편집 중인 그룹(ID: {editingId})의 모임을 등록/변경/삭제할 수 있습니다.</p>
+                <form onSubmit={handleMeetingSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
+                  <select name="dayOfWeek" value={meetingForm.dayOfWeek} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                    {DAY_OF_WEEKS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  </select>
+                  <input type="time" name="startTime" value={meetingForm.startTime} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <select name="meetingType" value={meetingForm.meetingType} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                    {MEETING_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                  <select name="status" value={meetingForm.status} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                    {MEETING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
+                  <input name="meetingRoadAddress" value={meetingForm.meetingRoadAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 도로명주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                  <input name="meetingDetailAddress" value={meetingForm.meetingDetailAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 상세주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                  <input type="number" step="any" name="meetingLatitude" value={meetingForm.meetingLatitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 위도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <input type="number" step="any" name="meetingLongitude" value={meetingForm.meetingLongitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 경도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <textarea name="meetingGuide" value={meetingForm.meetingGuide} onChange={handleMeetingChange} rows={2} placeholder="(선택) 개별 모임 장소 안내" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                  <div className="md:col-span-2 flex gap-2">
+                    <button type="submit" disabled={meetingSubmitting} className="rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm">{meetingSubmitting ? '저장 중...' : meetingEditingId ? '모임 수정' : '모임 등록'}</button>
+                    {meetingEditingId ? <button type="button" onClick={resetMeetingForm} className="rounded-2xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
+                  </div>
+                </form>
+
+                <div className="mt-6 space-y-2">
+                  {meetings.map((meeting) => (
+                    <div key={meeting.id} className="rounded-2xl border border-slate-200 p-3 flex items-center justify-between gap-2">
+                      <div className="text-sm">
+                        <div className="font-semibold">{DAY_OF_WEEKS.find((d) => d.value === meeting.dayOfWeek)?.label} {meeting.startTime}</div>
+                        <div className="text-slate-500">{meeting.meetingType} / {meeting.status} / {meeting.usesGroupDefaultPlace ? '기본 장소 사용' : '개별 장소 사용'}</div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button type="button" onClick={() => handleMeetingEdit(meeting)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
+                        <button type="button" onClick={() => handleMeetingDelete(meeting)} disabled={meetingDeletingId === meeting.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{meetingDeletingId === meeting.id ? '삭제 중...' : '삭제'}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : (
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">정기 모임 관리</h2>
-            <p className="mt-2 text-sm text-slate-500">현재 편집 중인 그룹(ID: {editingId})의 모임을 등록/변경/삭제할 수 있습니다.</p>
-            <form onSubmit={handleMeetingSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
-              <select name="dayOfWeek" value={meetingForm.dayOfWeek} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                {DAY_OF_WEEKS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
-              </select>
-              <input type="time" name="startTime" value={meetingForm.startTime} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <select name="meetingType" value={meetingForm.meetingType} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                {MEETING_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-              </select>
-              <select name="status" value={meetingForm.status} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                {MEETING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
-              <input name="meetingRoadAddress" value={meetingForm.meetingRoadAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 도로명주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-              <input name="meetingDetailAddress" value={meetingForm.meetingDetailAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 상세주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-              <input type="number" step="any" name="meetingLatitude" value={meetingForm.meetingLatitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 위도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <input type="number" step="any" name="meetingLongitude" value={meetingForm.meetingLongitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 경도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-              <textarea name="meetingGuide" value={meetingForm.meetingGuide} onChange={handleMeetingChange} rows={2} placeholder="(선택) 개별 모임 장소 안내" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-              <div className="md:col-span-2 flex gap-2">
-                <button type="submit" disabled={meetingSubmitting} className="rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm">{meetingSubmitting ? '저장 중...' : meetingEditingId ? '모임 수정' : '모임 등록'}</button>
-                {meetingEditingId ? <button type="button" onClick={resetMeetingForm} className="rounded-2xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
+            <h2 className="text-lg font-semibold">GSR 하위 관리</h2>
+            <p className="mt-2 text-sm text-slate-500">그룹 관리 메뉴 안에서 GSR 정보 CRUD를 처리합니다.</p>
+
+            <form onSubmit={handleGsrSubmit} className="mt-4 space-y-3">
+              <input name="nickname" value={gsrForm.nickname} onChange={handleGsrChange} required placeholder="닉네임" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <input name="phone" value={gsrForm.phone} onChange={handleGsrChange} placeholder="전화번호" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
+                <input type="email" name="email" value={gsrForm.email} onChange={handleGsrChange} placeholder="이메일" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-white text-sm">{gsrEditingId ? '수정' : '등록'}</button>
+                {gsrEditingId ? <button type="button" onClick={resetGsrForm} className="rounded-xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
               </div>
             </form>
 
             <div className="mt-6 space-y-2">
-              {meetings.map((meeting) => (
-                <div key={meeting.id} className="rounded-2xl border border-slate-200 p-3 flex items-center justify-between gap-2">
-                  <div className="text-sm">
-                    <div className="font-semibold">{DAY_OF_WEEKS.find((d) => d.value === meeting.dayOfWeek)?.label} {meeting.startTime}</div>
-                    <div className="text-slate-500">{meeting.meetingType} / {meeting.status} / {meeting.usesGroupDefaultPlace ? '기본 장소 사용' : '개별 장소 사용'}</div>
+              {sortedGsrs.map((gsr) => (
+                <div key={gsr.id} className="rounded-xl border border-slate-200 p-3 flex items-center justify-between gap-2">
+                  <div>
+                    <div className="font-semibold">{gsr.nickname}</div>
+                    <div className="text-xs text-slate-500">{gsr.email || '이메일 없음'} / {gsr.phone || '전화 없음'}</div>
                   </div>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => handleMeetingEdit(meeting)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
-                    <button type="button" onClick={() => handleMeetingDelete(meeting)} disabled={meetingDeletingId === meeting.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{meetingDeletingId === meeting.id ? '삭제 중...' : '삭제'}</button>
+                    <button type="button" onClick={() => handleGsrEdit(gsr)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
+                    <button type="button" onClick={() => handleGsrDelete(gsr)} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">삭제</button>
                   </div>
                 </div>
               ))}
             </div>
           </section>
-        ) : null}
+        )}
 
         {successMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{successMessage}</div> : null}
         {error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div> : null}

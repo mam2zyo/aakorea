@@ -17,13 +17,6 @@ const cards = [
     enabled: true,
   },
   {
-    title: 'GSR 관리',
-    description: '그룹 봉사자(GSR) 연락처를 CRUD로 관리합니다.',
-    actionLabel: '바로 가기',
-    to: '/admin/gsrs',
-    enabled: true,
-  },
-  {
     title: '운영자 관리',
     description: '권한 분리와 감사 로그 기능을 고려한 운영 메뉴를 확장할 수 있습니다.',
     actionLabel: '준비 중',
@@ -36,7 +29,7 @@ export default function AdminOverviewPage() {
   return (
     <AdminLayout
       title="관리자 페이지"
-      description="향후 그룹 관리, 운영자 관리 등 기능이 추가될 수 있도록 관리자 전용 내비게이션과 작업 영역을 분리했습니다. 현재는 지역연합, 그룹, GSR 관리 기능을 제공합니다."
+      description="향후 그룹 관리, 운영자 관리 등 기능이 추가될 수 있도록 관리자 전용 내비게이션과 작업 영역을 분리했습니다. 현재는 지역연합 관리와 그룹 관리(하위 GSR 관리 포함) 기능을 제공합니다."
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (

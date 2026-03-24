@@ -14,12 +14,6 @@ const adminMenus = [
     available: true,
   },
   {
-    to: '/admin/gsrs',
-    label: 'GSR 관리',
-    description: 'GSR 생성, 수정, 삭제',
-    available: true,
-  },
-  {
     to: '/admin/users',
     label: '운영자 관리',
     description: '추가 예정',
