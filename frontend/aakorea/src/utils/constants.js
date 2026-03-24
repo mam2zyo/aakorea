@@ -27,3 +27,14 @@ export const DAY_OF_WEEKS = [
   { value: 'SATURDAY', label: '토요일' },
   { value: 'SUNDAY', label: '일요일' },
 ]
+
+export const MEETING_TYPES = [
+  { value: 'OPEN', label: '공개' },
+  { value: 'CLOSED', label: '비공개' },
+  { value: 'MIX', label: '혼합' },
+]
+
+export const MEETING_STATUSES = [
+  { value: 'ACTIVE', label: '운영 중' },
+  { value: 'SUSPENDED', label: '잠정 중단' },
+]

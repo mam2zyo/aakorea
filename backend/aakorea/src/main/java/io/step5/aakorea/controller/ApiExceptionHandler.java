@@ -1,7 +1,17 @@
 package io.step5.aakorea.controller;
 
 import io.step5.aakorea.service.GroupNotFoundException;
+import io.step5.aakorea.service.admin.DistrictDeleteConflictException;
+import io.step5.aakorea.service.admin.DistrictNameAlreadyExistsException;
+import io.step5.aakorea.service.admin.AdminGroupNotFoundException;
+import io.step5.aakorea.service.admin.MeetingPlaceValidationException;
+import io.step5.aakorea.service.admin.GsrEmailAlreadyExistsException;
+import io.step5.aakorea.service.admin.AdminMeetingNotFoundException;
+import io.step5.aakorea.service.admin.AdminGsrNotFoundException;
+import io.step5.aakorea.service.admin.DistrictNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -19,6 +29,115 @@ public class ApiExceptionHandler {
                 "status", 404,
                 "error", "NOT_FOUND",
                 "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AdminGroupNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminGroupNotFound(AdminGroupNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AdminGsrNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminGsrNotFound(AdminGsrNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AdminMeetingNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleAdminMeetingNotFound(AdminMeetingNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(DistrictNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleDistrictNotFound(DistrictNotFoundException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 404,
+                "error", "NOT_FOUND",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(DistrictNameAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleDistrictNameAlreadyExists(DistrictNameAlreadyExistsException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", "CONFLICT",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GsrEmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleGsrEmailAlreadyExists(GsrEmailAlreadyExistsException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", "CONFLICT",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(MeetingPlaceValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleMeetingPlaceValidation(MeetingPlaceValidationException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", "BAD_REQUEST",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(DistrictDeleteConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleDistrictDeleteConflict(DistrictDeleteConflictException e) {
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 409,
+                "error", "CONFLICT",
+                "message", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleValidationException(Exception e) {
+        String message = "잘못된 요청입니다.";
+
+        if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException
+                && methodArgumentNotValidException.getBindingResult().getFieldError() != null) {
+            message = methodArgumentNotValidException.getBindingResult().getFieldError().getDefaultMessage();
+        } else if (e instanceof ConstraintViolationException constraintViolationException
+                && !constraintViolationException.getConstraintViolations().isEmpty()) {
+            message = constraintViolationException.getConstraintViolations().iterator().next().getMessage();
+        }
+
+        return Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", 400,
+                "error", "BAD_REQUEST",
+                "message", message
         );
     }
 
