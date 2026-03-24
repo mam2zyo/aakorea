@@ -11,10 +11,10 @@ const cards = [
   },
   {
     title: '그룹 관리',
-    description: '그룹 기본 정보, 연락처, 모임 정보 연결 기능이 이어서 추가될 예정입니다.',
-    actionLabel: '준비 중',
+    description: '그룹 기본 정보와 기본 모임 장소를 등록하고 관리합니다.',
+    actionLabel: '바로 가기',
     to: '/admin/groups',
-    enabled: false,
+    enabled: true,
   },
   {
     title: '운영자 관리',
@@ -29,7 +29,7 @@ export default function AdminOverviewPage() {
   return (
     <AdminLayout
       title="관리자 페이지"
-      description="향후 그룹 관리, 운영자 관리 등 기능이 추가될 수 있도록 관리자 전용 내비게이션과 작업 영역을 분리했습니다. 현재는 지역연합 관리 기능을 먼저 제공합니다."
+      description="향후 그룹 관리, 운영자 관리 등 기능이 추가될 수 있도록 관리자 전용 내비게이션과 작업 영역을 분리했습니다. 현재는 지역연합 관리와 그룹 관리(하위 GSR 관리 포함) 기능을 제공합니다."
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (
