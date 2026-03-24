@@ -1,0 +1,75 @@
+package io.step5.aakorea.modules.service.group.domain;
+
+import io.step5.aakorea.modules.service.district.domain.District;
+import io.step5.aakorea.modules.service.gsr.domain.GSR;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * 域밸챶竊?癰궰野?????
+ *
+ * ?λ뜃由?癒?뮉 ??λ떄 ??용뮞??嚥≪뮄?뉑에???뽰삂??롫뮉 野껉퍔???怨몄쟿??롫뼄.
+ * ??
+ * - ?怨뺤뵭筌?癰궰野?
+ * - 筌뤴뫁????볦퍢 癰궰野?
+ * - District 癰궰野?
+ * - ?⑤벊? ?源낆쨯
+ *
+ * ??륁㉦???袁⑹뒄??롢늺 fieldName / oldValue / newValue 揶쏆늿? ?닌듼?遺얜쭆 ?袁⑤굡???곕떽???????덈뼄.
+ */
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "group_change_log")
+public class GroupChangeLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * 癰궰野?????域밸챶竊?
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
+    /**
+     * 癰궰野??遺용튋.
+     * ?怨멸쉭 ??륁뵠筌왖?癒?퐣 筌ㅼ뮄??癰궰野껋럩沅???앮에??紐꾪뀱??????덈뮉 ??????얜㈇??
+     */
+    @Column(nullable = false, length = 200)
+    private String summary;
+
+    /**
+     * ?袁⑹뒄 ?????癒?쉭????살구??????
+     */
+    @Column(columnDefinition = "TEXT")
+    private String detail;
+
+    /**
+     * 癰궰野???묐뻬????뽯뻻???얜챷???
+     * ?λ뜃由?癒?뮉 GSR nickname ?癒?뮉 admin ??명???類ｋ즲嚥?????揶쎛??
+     */
+    @Column(length = 100)
+    private String changedBy;
+
+    /**
+     * ??????怨멸쉭 ??륁뵠筌왖 ?紐꾪뀱 ???.
+     * ??? ??곸겫 嚥≪뮄??? ??????紐꾪뀱 嚥≪뮄?뉒몴??브쑬???????덈뼄.
+     */
+    @Column(nullable = false)
+    private boolean visibleToPublic = true;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+}

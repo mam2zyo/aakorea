@@ -1,0 +1,76 @@
+package io.step5.aakorea.modules.service.meeting.domain;
+
+import io.step5.aakorea.modules.service.group.domain.Group;
+import jakarta.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+public class Meeting {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * ?類?┛ 筌뤴뫁???遺우뵬.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DayOfWeek dayOfWeek;
+
+    /**
+     * 筌뤴뫁????뽰삂 ??볦퍢.
+     */
+    @Column(nullable = false)
+    private LocalTime startTime;
+
+    /**
+     * ?⑤벀而?/ ??쑨?у첎?/ ??노? ???.
+     * ?λ뜃由?野꺜???遺얇늺?癒?퐣???袁り숲嚥??????? ??꾪?
+     * ?怨멸쉭 ??륁뵠筌왖?癒?퐣 ??살구????ｍ뜞 ??덇땀??뺣뼄.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingType meetingType;
+
+    /**
+     * ?類?┛ 筌뤴뫁????곸겫 ?怨밴묶.
+     *
+     * ACTIVE    : ?類ㅺ맒 ??곸겫
+     * SUSPENDED : ?類?┛ 筌뤴뫁?????깅뻻?怨몄몵嚥???? ??낅뮉 ?怨밴묶
+     *
+     * 野꺜??野껉퀗??癒?뮉 ACTIVE, SUSPENDED ??????釉??랁?
+     * ?袁⑥쨴?紐꾨퓠??SUSPENDED??癰귢쑬猷???볦퍟 筌ｌ꼶???뺣뼄.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MeetingStatus status;
+
+    /**
+     * ??筌뤴뫁?????곷립 域밸챶竊?
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
+    /**
+     * ?諭??筌뤴뫁???袁⑹뒠 ?關??
+     *
+     * ???봔?브쑴??野껋럩??null??흭, null????Group??疫꿸퀡??meetingPlace???????뺣뼄.
+     * ??됱뇚?怨몄몵嚥??遺우뵬癰?筌뤴뫁?ヨ퉪??關?쇔첎? ??삘뀲 野껋럩??癒?춸 筌왖?類λ립??
+     *
+     * ??
+     * - ?遺우뒄??筌뤴뫁??? 1筌?
+     * - 筌뤴뫗???筌뤴뫁??? 4筌?
+     */
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "meeting_place_id")
+    private MeetingPlace meetingPlace;
+}
