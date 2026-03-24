@@ -71,6 +71,7 @@ public class AdminGsrService {
         gsr.setNickname(normalizeText(request.nickname()));
         gsr.setPhone(normalizeNullableText(request.phone()));
         gsr.setEmail(normalizeNullableText(request.email()));
+        gsr.setMailingAddress(normalizeNullableText(request.mailingAddress()));
     }
 
     private String normalizeText(String text) {
@@ -89,6 +90,7 @@ public class AdminGsrService {
                 gsr.getId(),
                 gsr.getNickname(),
                 gsr.getPhone(),
+                gsr.getMailingAddress(),
                 gsr.getEmail(),
                 gsr.getGroups().size()
         );

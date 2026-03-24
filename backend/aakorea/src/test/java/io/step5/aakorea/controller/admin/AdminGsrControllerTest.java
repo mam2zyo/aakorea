@@ -43,7 +43,7 @@ class AdminGsrControllerTest {
     void gsr를_CRUD_할_수_있다() throws Exception {
         mockMvc.perform(post("/api/admin/gsrs")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new AdminGsrRequest("봉사자A", "010", "a@example.org"))))
+                        .content(objectMapper.writeValueAsString(new AdminGsrRequest("봉사자A", "010", "서울 중구 1", "a@example.org"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nickname").value("봉사자A"));
 
@@ -51,7 +51,7 @@ class AdminGsrControllerTest {
 
         mockMvc.perform(put("/api/admin/gsrs/{gsrId}", gsrId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new AdminGsrRequest("봉사자B", "011", "b@example.org"))))
+                        .content(objectMapper.writeValueAsString(new AdminGsrRequest("봉사자B", "011", "서울 중구 2", "b@example.org"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("봉사자B"));
 

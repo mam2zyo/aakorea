@@ -42,7 +42,7 @@ const initialMeetingFormState = {
   meetingLongitude: '',
 }
 
-const initialGsrFormState = { nickname: '', phone: '', email: '' }
+const initialGsrFormState = { nickname: '', phone: '', mailingAddress: '', email: '' }
 
 export default function AdminGroupPage() {
   const [tab, setTab] = useState('groups')
@@ -181,10 +181,11 @@ export default function AdminGroupPage() {
 
     setForm((prev) => ({
       ...prev,
+      contactAddress: gsr.mailingAddress || prev.contactAddress,
       contactEmail: gsr.email || prev.contactEmail,
       contactPhone: gsr.phone || prev.contactPhone,
     }))
-    setSuccessMessage('GSR 연락처를 그룹 연락처에 반영했습니다. 우편 주소는 필요 시 직접 입력해주세요.')
+    setSuccessMessage('GSR 우편/이메일/전화 정보를 그룹 연락처에 반영했습니다.')
   }
 
   async function handleGroupSubmit(event) {
@@ -324,6 +325,7 @@ export default function AdminGroupPage() {
         const updated = await updateAdminGsr(gsrEditingId, {
           nickname: gsrForm.nickname,
           phone: gsrForm.phone || null,
+          mailingAddress: gsrForm.mailingAddress || null,
           email: gsrForm.email || null,
         })
         setGsrs((prev) => prev.map((gsr) => (gsr.id === gsrEditingId ? updated : gsr)))
@@ -332,6 +334,7 @@ export default function AdminGroupPage() {
         const created = await createAdminGsr({
           nickname: gsrForm.nickname,
           phone: gsrForm.phone || null,
+          mailingAddress: gsrForm.mailingAddress || null,
           email: gsrForm.email || null,
         })
         setGsrs((prev) => [...prev, created])
@@ -348,6 +351,7 @@ export default function AdminGroupPage() {
     setGsrForm({
       nickname: gsr.nickname || '',
       phone: gsr.phone || '',
+      mailingAddress: gsr.mailingAddress || '',
       email: gsr.email || '',
     })
   }
@@ -500,6 +504,7 @@ export default function AdminGroupPage() {
                 <input name="phone" value={gsrForm.phone} onChange={handleGsrChange} placeholder="전화번호" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
                 <input type="email" name="email" value={gsrForm.email} onChange={handleGsrChange} placeholder="이메일" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
               </div>
+              <input name="mailingAddress" value={gsrForm.mailingAddress} onChange={handleGsrChange} placeholder="우편 수신 주소" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
               <div className="flex gap-2">
                 <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-white text-sm">{gsrEditingId ? '수정' : '등록'}</button>
                 {gsrEditingId ? <button type="button" onClick={resetGsrForm} className="rounded-xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
@@ -511,7 +516,7 @@ export default function AdminGroupPage() {
                 <div key={gsr.id} className="rounded-xl border border-slate-200 p-3 flex items-center justify-between gap-2">
                   <div>
                     <div className="font-semibold">{gsr.nickname}</div>
-                    <div className="text-xs text-slate-500">{gsr.email || '이메일 없음'} / {gsr.phone || '전화 없음'}</div>
+                    <div className="text-xs text-slate-500">{gsr.email || '이메일 없음'} / {gsr.phone || '전화 없음'} / {gsr.mailingAddress || '주소 없음'}</div>
                   </div>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => handleGsrEdit(gsr)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>

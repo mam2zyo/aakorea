@@ -22,6 +22,8 @@ public class GSR {
 
     private String phone;
 
+    private String mailingAddress;
+
     @Column(unique = true)
     private String email;
 
