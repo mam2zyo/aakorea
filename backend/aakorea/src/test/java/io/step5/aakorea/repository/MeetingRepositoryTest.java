@@ -38,7 +38,6 @@ class MeetingRepositoryTest {
         group.setProvince(Province.GYEONGGI);
 
         MeetingPlace meetingPlace = new MeetingPlace();
-        meetingPlace.setName("AA 경기 회관");
         meetingPlace.setRoadAddress("경기도 수원시 팔달구 1");
         meetingPlace.setDetailAddress("3층");
         group.setMeetingPlace(meetingPlace);

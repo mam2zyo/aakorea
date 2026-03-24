@@ -87,7 +87,6 @@ class AdminDistrictControllerTest {
         group.setDistrict(savedDistrict);
 
         MeetingPlace meetingPlace = new MeetingPlace();
-        meetingPlace.setName("AA 인천 회관");
         meetingPlace.setRoadAddress("인천광역시 남동구 예술로 1");
         meetingPlace.setDetailAddress("2층");
         group.setMeetingPlace(meetingPlace);
