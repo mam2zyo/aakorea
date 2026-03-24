@@ -77,8 +77,8 @@ public class AdminGroupService {
         meetingPlace.setRoadAddress(normalizeText(request.meetingRoadAddress()));
         meetingPlace.setDetailAddress(normalizeText(request.meetingDetailAddress()));
         meetingPlace.setGuide(normalizeNullableText(request.meetingGuide()));
-        meetingPlace.setLatitude(request.meetingLatitude());
-        meetingPlace.setLongitude(request.meetingLongitude());
+        meetingPlace.setLatitude(request.meetingLatitude() != null ? request.meetingLatitude() : 0.0);
+        meetingPlace.setLongitude(request.meetingLongitude() != null ? request.meetingLongitude() : 0.0);
     }
 
     private District resolveDistrict(Long districtId) {

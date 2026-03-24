@@ -26,8 +26,6 @@ const initialFormState = {
   meetingRoadAddress: '',
   meetingDetailAddress: '',
   meetingGuide: '',
-  meetingLatitude: '37.5665',
-  meetingLongitude: '126.9780',
 }
 
 const initialMeetingFormState = {
@@ -148,8 +146,8 @@ export default function AdminGroupPage() {
       meetingRoadAddress: form.meetingRoadAddress,
       meetingDetailAddress: form.meetingDetailAddress,
       meetingGuide: form.meetingGuide || null,
-      meetingLatitude: Number(form.meetingLatitude),
-      meetingLongitude: Number(form.meetingLongitude),
+      meetingLatitude: null,
+      meetingLongitude: null,
     }
   }
 
@@ -229,8 +227,6 @@ export default function AdminGroupPage() {
       meetingRoadAddress: group.meetingRoadAddress || '',
       meetingDetailAddress: group.meetingDetailAddress || '',
       meetingGuide: group.meetingGuide || '',
-      meetingLatitude: String(group.meetingLatitude ?? ''),
-      meetingLongitude: String(group.meetingLongitude ?? ''),
     })
     resetMeetingForm()
     setError('')
@@ -417,11 +413,8 @@ export default function AdminGroupPage() {
 
                   <input name="meetingRoadAddress" value={form.meetingRoadAddress} onChange={handleChange} placeholder="기본 모임 도로명주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
                   <input name="meetingDetailAddress" value={form.meetingDetailAddress} onChange={handleChange} placeholder="기본 모임 상세주소" required className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                  <p className="text-xs text-slate-500">위도/경도는 도로명주소 기반 지도 API 반환값으로 추후 자동 입력될 예정입니다.</p>
                   <textarea name="meetingGuide" value={form.meetingGuide} onChange={handleChange} placeholder="기본 모임 장소 안내" rows={2} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <input type="number" step="any" name="meetingLatitude" value={form.meetingLatitude} onChange={handleChange} required placeholder="위도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                    <input type="number" step="any" name="meetingLongitude" value={form.meetingLongitude} onChange={handleChange} required placeholder="경도" className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                  </div>
                 </div>
                 <div className="mt-6 flex gap-2">
                   <button type="submit" disabled={submitting} className="rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white disabled:bg-slate-300">{submitting ? '저장 중...' : editingId ? '수정하기' : '등록하기'}</button>
