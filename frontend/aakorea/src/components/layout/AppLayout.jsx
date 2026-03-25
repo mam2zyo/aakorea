@@ -17,28 +17,7 @@ export default function AppLayout({ children }) {
               <Link to="/" className="text-lg font-semibold tracking-tight">
                 AA Korea
               </Link>
-              <p className="text-sm text-slate-500">
-                공개 안내 콘텐츠와 모임 찾기 흐름을 우선 제공하는 MVP
-              </p>
             </div>
-            <nav className="flex flex-wrap items-center gap-2">
-              {navigationItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-                    }`
-                  }
-                  end={item.to === "/"}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
           </div>
         </header>
 
@@ -64,15 +43,13 @@ export default function AppLayout({ children }) {
                   AA Korea
                 </Link>
                 <p className="aa-eyebrow">Alcoholics Anonymous Korea</p>
-                <p className="max-w-2xl text-sm leading-6 aa-copy">
-                  익명성과 자발성, 회복의 메시지를 해치지 않으면서 처음 찾아온
-                  분이 모임 안내까지 자연스럽게 이어질 수 있도록 구성한 기본
-                  안내 영역입니다.
-                </p>
               </div>
             </div>
 
-            <Link to="/admin" className="aa-button-secondary self-start lg:self-auto">
+            <Link
+              to="/admin"
+              className="aa-button-secondary self-start lg:self-auto"
+            >
               관리자
             </Link>
           </div>
