@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import PublicShell from "../shells/PublicShell";
 import MemberShell from "../shells/MemberShell";
 import StoreShell from "../shells/StoreShell";
 import HeartShell from "../shells/HeartShell";
@@ -16,11 +15,12 @@ import MemberRoutes from "./member-routes";
 import StoreRoutes from "./store-routes";
 import HeartRoutes from "./heart-routes";
 import AdminRoutes from "./admin-routes";
+import BasicPublicShell from "../../domains/basic/layout/BasicPublicShell";
 
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<PublicShell />}>
+      <Route path="/" element={<BasicPublicShell />}>
         {PublicRoutes()}
       </Route>
 
