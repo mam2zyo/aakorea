@@ -3,22 +3,18 @@ import { PUBLIC_PAGE_LIST } from "../data/publicContent";
 
 const meetingTypeCards = [
   {
-    title: "OPEN",
-    description: "A.A.에 관심이 있거나 안내가 필요한 사람도 함께 참석할 수 있는 공개 모임",
+    title: "공개모임",
+    description: "알코올중독자 본인이나 가족, 또는 중독 문제에 관심이 있는 누구나 참석할 수 있는 공개모임",
   },
   {
-    title: "CLOSED",
-    description: "본인에게 술 문제가 있거나 그렇다고 느끼는 사람이 중심이 되는 모임",
-  },
-  {
-    title: "MIX",
-    description: "그룹 운영 방식에 따라 공개 안내와 멤버 중심 순서가 함께 있는 모임",
+    title: "비공개모임",
+    description: "술을 끊기를 바라는 알코올중독자 본인만 참석할 수 있는 비공개모임",
   },
 ];
 
 const quickSteps = [
   "처음 오신 분들께에서 A.A.가 어떤 공동체인지 먼저 살펴봅니다.",
-  "첫 참석 가이드와 FAQ로 부담을 낮춘 뒤 공개 모임(`OPEN`)부터 확인합니다.",
+  "첫 참석 가이드와 FAQ로 부담을 낮춘 뒤 공개모임부터 확인합니다.",
   "모임 검색과 그룹 상세에서 장소, 공지, 정기 일정까지 차분히 다시 확인합니다.",
 ];
 
@@ -68,7 +64,7 @@ export default function PublicHomePage() {
             <h2 className="text-2xl font-semibold">처음이라면 이렇게 살펴보세요.</h2>
             <p className="text-sm leading-6 text-white/80">
               바로 참석을 결정하지 않아도 됩니다. 정보를 먼저 확인하고,
-              공개 모임부터 천천히 살펴보는 흐름을 추천합니다.
+              공개모임부터 천천히 살펴보는 흐름을 추천합니다.
             </p>
           </div>
 

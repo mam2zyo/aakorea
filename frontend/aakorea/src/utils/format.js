@@ -19,9 +19,9 @@ const dayOfWeekValueByIndex = [
 ]
 
 const meetingTypeMap = {
-  OPEN: '공개',
-  CLOSED: '비공개',
-  MIX: '혼합',
+  OPEN: '공개모임',
+  CLOSED: '비공개모임',
+  MIX: '혼합모임',
 }
 
 const meetingStatusMap = {

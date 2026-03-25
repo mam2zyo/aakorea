@@ -1,4 +1,4 @@
-import { DAY_OF_WEEKS, MEETING_TYPES, PROVINCES } from "../../utils/constants";
+import { DAY_OF_WEEKS, PROVINCES } from "../../utils/constants";
 
 export default function MeetingSearchForm({
   filters,
@@ -11,7 +11,7 @@ export default function MeetingSearchForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="aa-card grid gap-4 p-5 md:grid-cols-[1fr_1fr_1fr_auto]"
+      className="aa-card grid gap-4 p-5 md:grid-cols-[1fr_1fr_auto]"
     >
       <div>
         <label className="mb-2 block text-sm font-medium aa-heading">
@@ -44,24 +44,6 @@ export default function MeetingSearchForm({
           {DAY_OF_WEEKS.map((day) => (
             <option key={day.value} value={day.value}>
               {day.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="mb-2 block text-sm font-medium aa-heading">
-          모임 형태
-        </label>
-        <select
-          name="meetingType"
-          value={filters.meetingType}
-          onChange={onChange}
-          className="aa-field"
-        >
-          {MEETING_TYPES.map((meetingType) => (
-            <option key={meetingType.value || "ALL"} value={meetingType.value}>
-              {meetingType.label}
             </option>
           ))}
         </select>

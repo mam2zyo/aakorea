@@ -235,9 +235,9 @@ public class AdminMeetingService {
 
         private String formatMeetingType(MeetingType value) {
             return switch (value) {
-                case OPEN -> "공개";
-                case CLOSED -> "비공개";
-                case MIX -> "혼합";
+                case OPEN -> "공개모임";
+                case CLOSED -> "비공개모임";
+                case MIX -> "혼합모임";
             };
         }
 
