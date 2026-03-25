@@ -1,9 +1,6 @@
 package io.step5.aakorea.modules.service.meeting.infrastructure;
 
-import io.step5.aakorea.modules.service.group.domain.Group;
 import io.step5.aakorea.modules.service.meeting.domain.Meeting;
-import io.step5.aakorea.modules.service.meeting.domain.MeetingPlace;
-import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
 import io.step5.aakorea.modules.shared.region.domain.Province;
 import java.time.DayOfWeek;
 import java.util.List;
@@ -14,14 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     /**
-     * ?諭?????袁⑸퓠???諭???遺우뵬???????筌뤴뫁??鈺곌퀬??
-     *
-     * ?遺얇늺 ??뽯뻻 ????쇱벉 ?類ｋ궖揶쎛 獄쏅뗀以??袁⑹뒄??揶쎛?關苑???誘⑸뼄.
-     * - meeting.meetingPlace (揶쏆뮆???關??override)
-     * - meeting.group
-     * - meeting.group.meetingPlace (疫꿸퀡???關??
-     *
-     * ?怨뺤뵬??EntityGraph嚥???ｍ뜞 嚥≪뮆逾??뺣뼄.
+     * 그룹/모임 장소 정보를 함께 읽어오는 공개 검색용 조회.
      */
     @EntityGraph(attributePaths = {"group", "group.meetingPlace", "meetingPlace"})
     List<Meeting> findByGroup_ProvinceAndDayOfWeekOrderByStartTimeAsc(
@@ -38,18 +28,15 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
         where g.province = :province
           and m.dayOfWeek = :dayOfWeek
           and m.status = io.step5.aakorea.modules.service.meeting.domain.MeetingStatus.ACTIVE
-          and (:meetingType is null or m.meetingType = :meetingType)
         order by m.startTime asc, g.name asc
     """)
     List<Meeting> findPublicSearchResults(
             Province province,
-            DayOfWeek dayOfWeek,
-            MeetingType meetingType
+            DayOfWeek dayOfWeek
     );
 
     /**
-     * ?諭??域밸챶竊???類?┛ 筌뤴뫁??筌뤴뫖以?鈺곌퀬??
-     * 域밸챶竊??怨멸쉭 ?遺얇늺?癒?퐣 ??ｍ뜞 癰귣똻肉т틠?⑤┛ ?ル뿫??
+     * 그룹 상세의 정기 모임 목록 조회.
      */
     @EntityGraph(attributePaths = {"meetingPlace", "group", "group.meetingPlace"})
     List<Meeting> findByGroup_IdOrderByDayOfWeekAscStartTimeAsc(Long groupId);

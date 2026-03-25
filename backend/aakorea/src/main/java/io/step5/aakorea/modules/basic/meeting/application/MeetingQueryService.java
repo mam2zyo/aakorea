@@ -2,9 +2,7 @@ package io.step5.aakorea.modules.basic.meeting.application;
 
 import io.step5.aakorea.modules.basic.meeting.api.MeetingListItemDto;
 import io.step5.aakorea.modules.basic.meeting.api.MeetingSearchResponseDto;
-import io.step5.aakorea.modules.service.group.domain.Group;
 import io.step5.aakorea.modules.service.meeting.domain.Meeting;
-import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
 import io.step5.aakorea.modules.service.meeting.infrastructure.MeetingRepository;
 import io.step5.aakorea.modules.service.notice.domain.GroupNotice;
 import io.step5.aakorea.modules.service.notice.infrastructure.GroupNoticeRepository;
@@ -28,11 +26,10 @@ public class MeetingQueryService {
 
     public MeetingSearchResponseDto searchMeetings(
             Province province,
-            DayOfWeek dayOfWeek,
-            MeetingType meetingType
+            DayOfWeek dayOfWeek
     ) {
         List<Meeting> meetings = meetingRepository
-                .findPublicSearchResults(province, dayOfWeek, meetingType);
+                .findPublicSearchResults(province, dayOfWeek);
 
         Map<Long, GroupNotice> highlightNoticeByGroupId = findHighlightNoticeByGroupId(meetings);
 
@@ -43,7 +40,7 @@ public class MeetingQueryService {
                 ))
                 .toList();
 
-        return MeetingSearchResponseDto.of(province, dayOfWeek, meetingType, meetingDtos);
+        return MeetingSearchResponseDto.of(province, dayOfWeek, meetingDtos);
     }
 
     private Map<Long, GroupNotice> findHighlightNoticeByGroupId(List<Meeting> meetings) {

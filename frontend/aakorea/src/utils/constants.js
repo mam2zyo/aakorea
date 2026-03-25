@@ -30,9 +30,9 @@ export const DAY_OF_WEEKS = [
 
 export const MEETING_TYPES = [
   { value: '', label: '전체 형태' },
-  { value: 'OPEN', label: '공개' },
-  { value: 'CLOSED', label: '비공개' },
-  { value: 'MIX', label: '혼합' },
+  { value: 'OPEN', label: '공개모임' },
+  { value: 'CLOSED', label: '비공개모임' },
+  { value: 'MIX', label: '혼합모임' },
 ]
 
 export const MEETING_STATUSES = [

@@ -51,7 +51,7 @@ class MeetingControllerTest {
     }
 
     @Test
-    void filtersAndSortsPublicMeetingsAndShowsPriorityNotice() throws Exception {
+    void sortsPublicMeetingsAndShowsPriorityNotice() throws Exception {
         Group highlightedGroup = createGroup("중앙 열린모임", Province.SEOUL);
         createMeeting(highlightedGroup, DayOfWeek.MONDAY, LocalTime.of(19, 0), MeetingType.OPEN, MeetingStatus.ACTIVE);
 
@@ -94,17 +94,18 @@ class MeetingControllerTest {
 
         mockMvc.perform(get("/api/meetings/search")
                         .param("province", "SEOUL")
-                        .param("dayOfWeek", "MONDAY")
-                        .param("meetingType", "OPEN"))
+                        .param("dayOfWeek", "MONDAY"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.meetingType").value("OPEN"))
-                .andExpect(jsonPath("$.count").value(2))
-                .andExpect(jsonPath("$.meetings[0].groupName").value("중앙 열린모임"))
-                .andExpect(jsonPath("$.meetings[0].startTime").value("19:00:00"))
-                .andExpect(jsonPath("$.meetings[0].highlightNotice.title").value("장소 변경 안내"))
-                .andExpect(jsonPath("$.meetings[0].highlightNotice.type").value("TEMP_CHANGE"))
-                .andExpect(jsonPath("$.meetings[1].groupName").value("희망 열린모임"))
-                .andExpect(jsonPath("$.meetings[1].highlightNotice").doesNotExist());
+                .andExpect(jsonPath("$.meetingType").doesNotExist())
+                .andExpect(jsonPath("$.count").value(3))
+                .andExpect(jsonPath("$.meetings[0].groupName").value("비공개 모임"))
+                .andExpect(jsonPath("$.meetings[0].startTime").value("18:00:00"))
+                .andExpect(jsonPath("$.meetings[0].highlightNotice").doesNotExist())
+                .andExpect(jsonPath("$.meetings[1].groupName").value("중앙 열린모임"))
+                .andExpect(jsonPath("$.meetings[1].highlightNotice.title").value("장소 변경 안내"))
+                .andExpect(jsonPath("$.meetings[1].highlightNotice.type").value("TEMP_CHANGE"))
+                .andExpect(jsonPath("$.meetings[2].groupName").value("희망 열린모임"))
+                .andExpect(jsonPath("$.meetings[2].highlightNotice").doesNotExist());
     }
 
     private Group createGroup(String name, Province province) {

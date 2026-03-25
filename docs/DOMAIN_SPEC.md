@@ -155,7 +155,8 @@ modules/
 
 - `Province`: 사용자 친화적인 행정구역 검색 기준
 - `District`: A.A. 내부 운영 조직 단위
-- `MeetingType`: `OPEN`, `CLOSED`, `MIXED`
+- `MeetingType`: `OPEN`, `CLOSED`, `MIX`
+- `MIX`는 공개/비공개를 오가며 운영하는 정기 모임을 표현하는 타입이며, 구체적인 운영 방식은 모임 소개나 공지로 보완한다.
 - `OrderChannel`: `ONLINE`, `OFFLINE`
 
 `Province`와 `District`는 반드시 분리한다. 하나는 사용자 검색 편의용 지리 기준이고, 다른 하나는 내부 조직 운영 기준이다.

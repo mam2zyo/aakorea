@@ -5,7 +5,6 @@ import MeetingSearchForm from "../components/meeting/MeetingSearchForm";
 import MeetingCard from "../components/meeting/MeetingCard";
 import {
   formatDayOfWeek,
-  formatMeetingType,
   formatProvince,
   getTodayDayOfWeekValue,
 } from "../utils/format";
@@ -13,7 +12,6 @@ import {
 const initialFilters = {
   province: "SEOUL",
   dayOfWeek: getTodayDayOfWeekValue(),
-  meetingType: "",
 };
 
 export default function MeetingSearchPage() {
@@ -77,7 +75,7 @@ export default function MeetingSearchPage() {
             가까운 A.A. 모임을 찾아보세요.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 aa-copy lg:text-base">
-            지역, 요일, 모임 형태를 조합해 현재 운영 중인 정기 모임을 찾을 수
+            지역과 요일을 기준으로 현재 운영 중인 정기 모임을 찾을 수
             있습니다. 장소 변경이나 휴무처럼 바로 확인이 필요한 공지는 검색
             결과와 그룹 상세에 함께 반영됩니다.
           </p>
@@ -89,8 +87,8 @@ export default function MeetingSearchPage() {
             처음 참석이라면
           </h2>
           <p className="mt-3 text-sm leading-6 aa-copy">
-            공개 모임(`OPEN`)부터 확인하고, 참석 전에는 장소와 공지를 다시
-            확인해 보세요.
+            공개모임부터 확인하고, 참석 전에는 장소와 공지를 다시 확인해
+            보세요.
           </p>
           <div className="mt-4 space-y-3 text-sm">
             <Link to="/welcome" className="aa-link-tile font-medium aa-heading">
@@ -118,25 +116,19 @@ export default function MeetingSearchPage() {
             모임 형태를 이해하면 처음 선택이 훨씬 쉬워집니다.
           </span>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
           <div className="aa-card-soft p-4 text-sm leading-6">
-            <div className="font-semibold aa-heading">OPEN</div>
+            <div className="font-semibold aa-heading">공개모임</div>
             <p className="mt-1 aa-copy">
-              A.A.에 관심이 있거나 안내가 필요한 사람도 함께 참석할 수 있는
-              공개 모임
+              알코올중독자 본인이나 가족, 또는 중독 문제에 관심이 있는 누구나
+              참석할 수 있는 공개모임
             </p>
           </div>
           <div className="aa-card-soft p-4 text-sm leading-6">
-            <div className="font-semibold aa-heading">CLOSED</div>
+            <div className="font-semibold aa-heading">비공개모임</div>
             <p className="mt-1 aa-copy">
-              본인에게 술 문제가 있거나 그렇다고 느끼는 사람이 중심이 되는
-              모임
-            </p>
-          </div>
-          <div className="aa-card-soft p-4 text-sm leading-6">
-            <div className="font-semibold aa-heading">MIX</div>
-            <p className="mt-1 aa-copy">
-              공개 안내와 멤버 중심 순서가 함께 있는 모임
+              술을 끊기를 바라는 알코올중독자 본인만 참석할 수 있는
+              비공개모임
             </p>
           </div>
         </div>
@@ -151,6 +143,13 @@ export default function MeetingSearchPage() {
         loading={loading}
       />
 
+      <div className="aa-note px-4 py-4 text-sm leading-6 aa-copy">
+        시간이나 거리 때문에 비공개모임만 참석이 가능하다면,
+        참석 전에 봉사자에게 연락해 참석 가능 여부를 먼저 문의해 보세요.
+        거절될 수 있지만, 한국에서는 이런 문의를 받으면 일시적으로
+        공개모임으로 전환해 진행하는 경우도 많습니다.
+      </div>
+
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
@@ -163,8 +162,7 @@ export default function MeetingSearchPage() {
             {data ? (
               <>
                 {formatProvince(data.province)} /{" "}
-                {formatDayOfWeek(data.dayOfWeek)} /{" "}
-                {formatMeetingType(data.meetingType)} / 총{" "}
+                {formatDayOfWeek(data.dayOfWeek)} / 총{" "}
                 <span className="font-semibold aa-heading">{data.count}</span>건
               </>
             ) : (
