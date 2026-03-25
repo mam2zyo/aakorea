@@ -1,5 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { PUBLIC_NAV_ITEMS } from "../../data/publicContent";
+import SiteFooter from "./SiteFooter";
 
 export default function AppLayout({ children }) {
   const location = useLocation();
@@ -73,9 +74,8 @@ export default function AppLayout({ children }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
-        {children}
-      </main>
+      <main className="mx-auto max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

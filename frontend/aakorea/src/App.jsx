@@ -5,6 +5,7 @@ import PublicHomePage from "./pages/PublicHomePage";
 import PublicContentPage from "./pages/PublicContentPage";
 import MeetingSearchPage from "./pages/MeetingSearchPage";
 import GroupDetailPage from "./pages/GroupDetailPage";
+import GsoPage from "./pages/GsoPage";
 import AdminDistrictPage from "./pages/admin/AdminDistrictPage";
 import AdminGroupPage from "./pages/admin/AdminGroupPage";
 
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/about" element={<PublicContentPage pageKey="about" />} />
         <Route path="/guide" element={<PublicContentPage pageKey="guide" />} />
         <Route path="/faq" element={<PublicContentPage pageKey="faq" />} />
+        <Route path="/gso" element={<GsoPage />} />
         <Route path="/meetings" element={<MeetingSearchPage />} />
         <Route path="/groups/:groupId" element={<GroupDetailPage />} />
         <Route path="/admin" element={<AdminOverviewPage />} />

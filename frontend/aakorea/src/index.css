@@ -265,3 +265,13 @@ input {
   background: var(--aa-primary);
   color: #ffffff;
 }
+
+.aa-footer-link {
+  transition:
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.aa-footer-link:hover {
+  color: var(--aa-primary);
+}
