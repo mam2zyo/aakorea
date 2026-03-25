@@ -1,6 +1,8 @@
 const statusClassMap = {
-  ACTIVE: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  SUSPENDED: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+  ACTIVE:
+    "bg-[rgba(36,81,106,0.12)] text-[color:var(--aa-primary)] ring-1 ring-[rgba(36,81,106,0.18)]",
+  SUSPENDED:
+    "bg-[rgba(169,109,62,0.14)] text-[color:var(--aa-accent)] ring-1 ring-[rgba(169,109,62,0.24)]",
 };
 
 export default function StatusBadge({ children, status }) {

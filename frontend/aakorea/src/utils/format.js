@@ -33,7 +33,6 @@ const noticeTypeMap = {
   GENERAL: '일반',
   TEMP_CHANGE: '임시 변경',
   CLOSED_INFO: '휴무 안내',
-  URGENT: '긴급',
 }
 
 export function formatProvince(value) {
@@ -45,6 +44,7 @@ export function formatDayOfWeek(value) {
 }
 
 export function formatMeetingType(value) {
+  if (!value) return '전체'
   return meetingTypeMap[value] || value || '-'
 }
 

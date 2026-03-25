@@ -6,6 +6,7 @@ import io.step5.aakorea.modules.service.meeting.domain.Meeting;
 import io.step5.aakorea.modules.service.meeting.domain.MeetingPlace;
 import io.step5.aakorea.modules.service.meeting.domain.MeetingStatus;
 import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
+import io.step5.aakorea.modules.service.notice.domain.GroupNotice;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import lombok.Builder;
@@ -38,7 +39,9 @@ public class MeetingListItemDto {
      */
     private MeetingPlaceDto meetingPlace;
 
-    public static MeetingListItemDto from(Meeting meeting) {
+    private MeetingNoticeSummaryDto highlightNotice;
+
+    public static MeetingListItemDto from(Meeting meeting, GroupNotice highlightNotice) {
         MeetingPlace actualPlace = resolveActualPlace(meeting);
 
         return MeetingListItemDto.builder()
@@ -50,6 +53,7 @@ public class MeetingListItemDto {
                 .meetingType(meeting.getMeetingType())
                 .status(meeting.getStatus())
                 .meetingPlace(MeetingPlaceDto.from(actualPlace))
+                .highlightNotice(MeetingNoticeSummaryDto.from(highlightNotice))
                 .build();
     }
 

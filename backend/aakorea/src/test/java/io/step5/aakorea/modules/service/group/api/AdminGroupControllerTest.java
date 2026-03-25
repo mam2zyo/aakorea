@@ -230,4 +230,47 @@ class AdminGroupControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }
+
+    @Test
+    void createsPublicChangeLogWhenGroupIsUpdated() throws Exception {
+        Group group = new Group();
+        group.setName("Change Log Group");
+        group.setProvince(Province.SEOUL);
+
+        MeetingPlace place = new MeetingPlace();
+        place.setRoadAddress("1 Original-ro, Seoul");
+        place.setDetailAddress("2F");
+        place.setLatitude(37.0);
+        place.setLongitude(127.0);
+        group.setMeetingPlace(place);
+
+        Group saved = groupRepository.save(group);
+
+        AdminGroupRequest updateRequest = new AdminGroupRequest(
+                "Changed Group",
+                LocalDate.of(2024, 1, 1),
+                Province.GYEONGGI,
+                null,
+                null,
+                "Anyang",
+                "changed@example.org",
+                "02-111-1111",
+                "99 New-ro, Anyang",
+                "5F",
+                "후문 출입",
+                37.3943,
+                126.9568
+        );
+
+        mockMvc.perform(put("/api/admin/groups/{groupId}", saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/groups/{groupId}", saved.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recentChangeLogs", hasSize(1)))
+                .andExpect(jsonPath("$.recentChangeLogs[0].summary").value("그룹 기본 정보가 업데이트되었습니다."))
+                .andExpect(jsonPath("$.recentChangeLogs[0].detail").value(org.hamcrest.Matchers.containsString("그룹명")));
+    }
 }

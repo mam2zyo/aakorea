@@ -3,7 +3,9 @@ package io.step5.aakorea.modules.service.notice.infrastructure;
 import io.step5.aakorea.modules.service.notice.domain.GroupNotice;
 import io.step5.aakorea.modules.service.notice.domain.NoticeType;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +17,8 @@ import org.springframework.data.jpa.repository.Query;
  * 鈺곌퀬????뽰젎???袁⑹삺 ??볦퍟(now)??疫꿸퀣???곗쨮 ?紐꾪뀱 ??????癒?뼊??뺣뼄.
  */
 public interface GroupNoticeRepository extends JpaRepository<GroupNotice, Long> {
+
+    Optional<GroupNotice> findByIdAndGroup_Id(Long noticeId, Long groupId);
 
     /**
      * ?諭??域밸챶竊???袁⑹삺 ?紐꾪뀱 揶쎛?館釉??⑤벊? 鈺곌퀬??
@@ -43,6 +47,25 @@ public interface GroupNoticeRepository extends JpaRepository<GroupNotice, Long> 
           n.createdAt desc
     """)
     List<GroupNotice> findActiveNotices(Long groupId, LocalDateTime now, Pageable pageable);
+
+    @Query("""
+        select n
+        from GroupNotice n
+        where n.group.id in :groupIds
+          and n.published = true
+          and (n.displayStartAt is null or n.displayStartAt <= :now)
+          and (n.displayEndAt is null or n.displayEndAt >= :now)
+        order by
+          n.group.id asc,
+          case
+            when n.type = io.step5.aakorea.modules.service.notice.domain.NoticeType.TEMP_CHANGE then 0
+            when n.type = io.step5.aakorea.modules.service.notice.domain.NoticeType.CLOSED_INFO then 1
+            else 2
+          end,
+          n.displayStartAt desc,
+          n.createdAt desc
+    """)
+    List<GroupNotice> findActiveNoticesByGroupIds(Collection<Long> groupIds, LocalDateTime now);
 
     /**
      * ?諭??域밸챶竊???袁⑹삺 ?紐꾪뀱 揶쎛?館釉??⑤벊? 餓? ?諭???醫륁굨筌?鈺곌퀬??

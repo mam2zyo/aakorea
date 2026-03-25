@@ -29,6 +29,7 @@ export const DAY_OF_WEEKS = [
 ]
 
 export const MEETING_TYPES = [
+  { value: '', label: '전체 형태' },
   { value: 'OPEN', label: '공개' },
   { value: 'CLOSED', label: '비공개' },
   { value: 'MIX', label: '혼합' },
@@ -37,4 +38,10 @@ export const MEETING_TYPES = [
 export const MEETING_STATUSES = [
   { value: 'ACTIVE', label: '운영 중' },
   { value: 'SUSPENDED', label: '잠정 중단' },
+]
+
+export const NOTICE_TYPES = [
+  { value: 'GENERAL', label: '일반' },
+  { value: 'TEMP_CHANGE', label: '임시 변경' },
+  { value: 'CLOSED_INFO', label: '휴무 안내' },
 ]

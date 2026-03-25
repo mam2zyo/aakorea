@@ -4,10 +4,16 @@ import io.step5.aakorea.modules.basic.meeting.api.MeetingListItemDto;
 import io.step5.aakorea.modules.basic.meeting.api.MeetingSearchResponseDto;
 import io.step5.aakorea.modules.service.group.domain.Group;
 import io.step5.aakorea.modules.service.meeting.domain.Meeting;
+import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
 import io.step5.aakorea.modules.service.meeting.infrastructure.MeetingRepository;
+import io.step5.aakorea.modules.service.notice.domain.GroupNotice;
+import io.step5.aakorea.modules.service.notice.infrastructure.GroupNoticeRepository;
 import io.step5.aakorea.modules.shared.region.domain.Province;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +24,48 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeetingQueryService {
 
     private final MeetingRepository meetingRepository;
+    private final GroupNoticeRepository groupNoticeRepository;
 
-    public MeetingSearchResponseDto searchMeetings(Province province, DayOfWeek dayOfWeek) {
+    public MeetingSearchResponseDto searchMeetings(
+            Province province,
+            DayOfWeek dayOfWeek,
+            MeetingType meetingType
+    ) {
         List<Meeting> meetings = meetingRepository
-                .findByGroup_ProvinceAndDayOfWeekOrderByStartTimeAsc(province, dayOfWeek);
+                .findPublicSearchResults(province, dayOfWeek, meetingType);
+
+        Map<Long, GroupNotice> highlightNoticeByGroupId = findHighlightNoticeByGroupId(meetings);
 
         List<MeetingListItemDto> meetingDtos = meetings.stream()
-                .map(MeetingListItemDto::from)
+                .map(meeting -> MeetingListItemDto.from(
+                        meeting,
+                        highlightNoticeByGroupId.get(meeting.getGroup().getId())
+                ))
                 .toList();
 
-        return MeetingSearchResponseDto.of(province, dayOfWeek, meetingDtos);
+        return MeetingSearchResponseDto.of(province, dayOfWeek, meetingType, meetingDtos);
+    }
+
+    private Map<Long, GroupNotice> findHighlightNoticeByGroupId(List<Meeting> meetings) {
+        List<Long> groupIds = meetings.stream()
+                .map(meeting -> meeting.getGroup().getId())
+                .distinct()
+                .toList();
+
+        if (groupIds.isEmpty()) {
+            return Map.of();
+        }
+
+        List<GroupNotice> notices = groupNoticeRepository.findActiveNoticesByGroupIds(
+                groupIds,
+                LocalDateTime.now()
+        );
+
+        Map<Long, GroupNotice> noticeByGroupId = new LinkedHashMap<>();
+        for (GroupNotice notice : notices) {
+            noticeByGroupId.putIfAbsent(notice.getGroup().getId(), notice);
+        }
+
+        return noticeByGroupId;
     }
 }

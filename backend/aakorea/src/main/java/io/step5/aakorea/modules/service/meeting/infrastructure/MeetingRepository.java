@@ -3,11 +3,13 @@ package io.step5.aakorea.modules.service.meeting.infrastructure;
 import io.step5.aakorea.modules.service.group.domain.Group;
 import io.step5.aakorea.modules.service.meeting.domain.Meeting;
 import io.step5.aakorea.modules.service.meeting.domain.MeetingPlace;
+import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
 import io.step5.aakorea.modules.shared.region.domain.Province;
 import java.time.DayOfWeek;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
@@ -25,6 +27,24 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     List<Meeting> findByGroup_ProvinceAndDayOfWeekOrderByStartTimeAsc(
             Province province,
             DayOfWeek dayOfWeek
+    );
+
+    @Query("""
+        select m
+        from Meeting m
+        join fetch m.group g
+        left join fetch g.meetingPlace
+        left join fetch m.meetingPlace
+        where g.province = :province
+          and m.dayOfWeek = :dayOfWeek
+          and m.status = io.step5.aakorea.modules.service.meeting.domain.MeetingStatus.ACTIVE
+          and (:meetingType is null or m.meetingType = :meetingType)
+        order by m.startTime asc, g.name asc
+    """)
+    List<Meeting> findPublicSearchResults(
+            Province province,
+            DayOfWeek dayOfWeek,
+            MeetingType meetingType
     );
 
     /**

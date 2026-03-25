@@ -2,6 +2,7 @@ package io.step5.aakorea.modules.basic.meeting.api;
 
 import io.step5.aakorea.modules.basic.meeting.application.MeetingQueryService;
 import io.step5.aakorea.modules.service.meeting.domain.Meeting;
+import io.step5.aakorea.modules.service.meeting.domain.MeetingType;
 import io.step5.aakorea.modules.shared.region.domain.Province;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,12 +31,13 @@ public class MeetingController {
     @GetMapping("/search")
     public MeetingSearchResponseDto searchMeetings(
             @RequestParam(defaultValue = "SEOUL") Province province,
-            @RequestParam(required = false) DayOfWeek dayOfWeek
+            @RequestParam(required = false) DayOfWeek dayOfWeek,
+            @RequestParam(required = false) MeetingType meetingType
     ) {
         DayOfWeek resolvedDayOfWeek = (dayOfWeek != null)
                 ? dayOfWeek
                 : LocalDate.now(KOREA_ZONE_ID).getDayOfWeek();
 
-        return meetingQueryService.searchMeetings(province, resolvedDayOfWeek);
+        return meetingQueryService.searchMeetings(province, resolvedDayOfWeek, meetingType);
     }
 }
