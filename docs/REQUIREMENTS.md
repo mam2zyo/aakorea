@@ -3,12 +3,16 @@
 ## 1. 문서 목적
 
 이 문서는 A.A. KOREA 웹앱이 어떤 사용자 그룹에게 어떤 서비스를 제공해야 하는지를 정리한 요구사항 명세서다.
-`README.md`의 프로젝트 목표와 `docs/DOMAIN_SPEC.md`의 아키텍처 원칙을 바탕으로, 실제 제품이 만족해야 할 사용자 관점의 요구를 정리한다.
+`README.md`의 프로젝트 목표와 `docs/DOMAIN_SPEC.md` 및 분리된 개별 도메인 명세서를 바탕으로, 실제 제품이 만족해야 할 사용자 관점의 요구를 정리한다.
 
 문서 역할은 다음과 같이 구분한다.
 
 - `README.md`: 프로젝트 개요와 문서 진입점
-- `docs/DOMAIN_SPEC.md`: 아키텍처, 모듈 경계, 데이터/도메인 규칙
+- `docs/DOMAIN_SPEC.md`: 공통 아키텍처 원칙, 모듈 경계, 데이터 소유권, 문서 인덱스
+- `docs/DOMAIN_SPEC_BASIC_SERVICE.md`: 공개 조회와 운영 쓰기, 그룹, 모임, 공지, 공개 콘텐츠 운영
+- `docs/DOMAIN_SPEC_MEMBER.md`: 공통 로그인, 계정 상태, 최소 프로필, 주소록 마스터
+- `docs/DOMAIN_SPEC_STORE.md`: 도서 판매, 주문, 재고, 배송 스냅샷 규칙
+- `docs/DOMAIN_SPEC_HEART.md`: 월간지 구독, 발송 이력, 만료 관리, 디지털 아카이브
 - `docs/REQUIREMENTS.md`: 사용자 그룹별 서비스 요구사항, 주요 시나리오, 우선 요구 기능
 
 ---

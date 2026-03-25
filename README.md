@@ -38,8 +38,13 @@
 
 상세 설계와 요구사항은 아래 문서로 분리해 관리합니다.
 
-- [도메인 명세서](./docs/DOMAIN_SPEC.md): 아키텍처 원칙, 모듈 경계, 데이터 소유권, 핵심 엔티티와 도메인 규칙
+- [문서 허브](./docs/README.md): 권장 읽기 순서, 활성 문서 목록, 장기 문서 구조
 - [요구사항 명세서](./docs/REQUIREMENTS.md): 사용자 그룹별 목표, 서비스 요구사항, 주요 이용 시나리오
+- [도메인 명세서 인덱스](./docs/DOMAIN_SPEC.md): 공통 아키텍처 원칙, 모듈 경계, 데이터 소유권
+- [인증 및 접근 제어 모델](./docs/AUTH_ACCESS_MODEL.md): 로그인, 계정 상태, 역할/권한 판정 기준
+- [API 경계와 네임스페이스 기준](./docs/API_BOUNDARIES.md): 도메인별 API 경계, DTO 분리 원칙, 운영 API 기준
+- [개발 로드맵](./docs/ROADMAP.md): 단계별 우선순위, 릴리스 권장 묶음
+- [퍼블릭 디자인 참고](./docs/AA_ORG_DESIGN_ANALYSIS.md): aa.org 기반 퍼블릭 UI 패턴 참고
 
 ## 저장소 구성
 
