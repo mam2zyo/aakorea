@@ -19,9 +19,9 @@ const dayOfWeekValueByIndex = [
 ]
 
 const meetingTypeMap = {
-  OPEN: '공개',
-  CLOSED: '비공개',
-  MIX: '혼합',
+  OPEN: '공개모임',
+  CLOSED: '비공개모임',
+  MIX: '혼합모임',
 }
 
 const meetingStatusMap = {
@@ -33,7 +33,6 @@ const noticeTypeMap = {
   GENERAL: '일반',
   TEMP_CHANGE: '임시 변경',
   CLOSED_INFO: '휴무 안내',
-  URGENT: '긴급',
 }
 
 export function formatProvince(value) {
@@ -45,6 +44,7 @@ export function formatDayOfWeek(value) {
 }
 
 export function formatMeetingType(value) {
+  if (!value) return '전체'
   return meetingTypeMap[value] || value || '-'
 }
 

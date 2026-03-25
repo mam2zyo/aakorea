@@ -1,6 +1,4 @@
 package io.step5.aakorea.modules.basic.meeting.api;
-
-import io.step5.aakorea.modules.service.meeting.domain.Meeting;
 import io.step5.aakorea.modules.shared.region.domain.Province;
 import java.time.DayOfWeek;
 import java.util.List;
@@ -8,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 筌뤴뫁??野꺜??野껉퀗???臾먮뼗 DTO.
+ * 공개용 모임 검색 결과 DTO.
  */
 @Getter
 @Builder

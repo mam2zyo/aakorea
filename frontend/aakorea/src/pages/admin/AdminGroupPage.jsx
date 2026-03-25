@@ -3,6 +3,12 @@ import AdminLayout from '../../components/admin/AdminLayout'
 import { fetchAdminDistricts } from '../../api/districts'
 import { createAdminGsr, deleteAdminGsr, fetchAdminGsrs, updateAdminGsr } from '../../api/gsrs'
 import {
+  createAdminGroupNotice,
+  deleteAdminGroupNotice,
+  fetchAdminGroupNotices,
+  updateAdminGroupNotice,
+} from '../../api/notices'
+import {
   createAdminGroup,
   createAdminGroupMeeting,
   deleteAdminGroup,
@@ -12,7 +18,7 @@ import {
   updateAdminGroup,
   updateAdminGroupMeeting,
 } from '../../api/groups'
-import { DAY_OF_WEEKS, MEETING_STATUSES, MEETING_TYPES, PROVINCES } from '../../utils/constants'
+import { DAY_OF_WEEKS, MEETING_STATUSES, MEETING_TYPES, NOTICE_TYPES, PROVINCES } from '../../utils/constants'
 
 const initialFormState = {
   name: '',
@@ -40,7 +46,21 @@ const initialMeetingFormState = {
   meetingLongitude: '',
 }
 
+const initialNoticeFormState = {
+  title: '',
+  content: '',
+  type: 'GENERAL',
+  published: true,
+  displayStartAt: '',
+  displayEndAt: '',
+}
+
 const initialGsrFormState = { nickname: '', phone: '', mailingAddress: '', email: '' }
+
+function toDateTimeLocalValue(value) {
+  if (!value) return ''
+  return String(value).slice(0, 16)
+}
 
 export default function AdminGroupPage() {
   const [tab, setTab] = useState('groups')
@@ -48,6 +68,7 @@ export default function AdminGroupPage() {
   const [districts, setDistricts] = useState([])
   const [gsrs, setGsrs] = useState([])
   const [meetings, setMeetings] = useState([])
+  const [notices, setNotices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -61,6 +82,11 @@ export default function AdminGroupPage() {
   const [meetingEditingId, setMeetingEditingId] = useState(null)
   const [meetingSubmitting, setMeetingSubmitting] = useState(false)
   const [meetingDeletingId, setMeetingDeletingId] = useState(null)
+
+  const [noticeForm, setNoticeForm] = useState(initialNoticeFormState)
+  const [noticeEditingId, setNoticeEditingId] = useState(null)
+  const [noticeSubmitting, setNoticeSubmitting] = useState(false)
+  const [noticeDeletingId, setNoticeDeletingId] = useState(null)
 
   const [gsrForm, setGsrForm] = useState(initialGsrFormState)
   const [gsrEditingId, setGsrEditingId] = useState(null)
@@ -107,16 +133,31 @@ export default function AdminGroupPage() {
     setGsrForm((prev) => ({ ...prev, [name]: value }))
   }
 
+  function handleNoticeChange(event) {
+    const { name, value, type, checked } = event.target
+    setNoticeForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
+
   function resetMeetingForm() {
     setMeetingForm(initialMeetingFormState)
     setMeetingEditingId(null)
+  }
+
+  function resetNoticeForm() {
+    setNoticeForm(initialNoticeFormState)
+    setNoticeEditingId(null)
   }
 
   function resetForm() {
     setForm(initialFormState)
     setEditingId(null)
     setMeetings([])
+    setNotices([])
     resetMeetingForm()
+    resetNoticeForm()
   }
 
   function resetGsrForm() {
@@ -130,6 +171,15 @@ export default function AdminGroupPage() {
       setMeetings(response || [])
     } catch (err) {
       setError(err.message || '모임 정보를 불러오는 중 오류가 발생했습니다.')
+    }
+  }
+
+  async function loadNotices(groupId) {
+    try {
+      const response = await fetchAdminGroupNotices(groupId)
+      setNotices(response || [])
+    } catch (err) {
+      setError(err.message || '공지 정보를 불러오는 중 오류가 발생했습니다.')
     }
   }
 
@@ -165,6 +215,17 @@ export default function AdminGroupPage() {
     }
   }
 
+  function toNoticePayload() {
+    return {
+      title: noticeForm.title,
+      content: noticeForm.content,
+      type: noticeForm.type,
+      published: Boolean(noticeForm.published),
+      displayStartAt: noticeForm.displayStartAt || null,
+      displayEndAt: noticeForm.displayEndAt || null,
+    }
+  }
+
   function findSelectedGsr() {
     if (!form.gsrId) return null
     return gsrs.find((gsr) => gsr.id === Number(form.gsrId)) || null
@@ -197,13 +258,13 @@ export default function AdminGroupPage() {
       if (editingId) {
         const updated = await updateAdminGroup(editingId, payload)
         setGroups((prev) => prev.map((group) => (group.id === editingId ? updated : group)))
-        await loadMeetings(editingId)
+        await Promise.all([loadMeetings(editingId), loadNotices(editingId)])
         setSuccessMessage('그룹 정보를 수정했습니다.')
       } else {
         const created = await createAdminGroup(payload)
         setGroups((prev) => [...prev, created])
         setEditingId(created.id)
-        await loadMeetings(created.id)
+        await Promise.all([loadMeetings(created.id), loadNotices(created.id)])
         setSuccessMessage('그룹을 등록했습니다.')
       }
     } catch (err) {
@@ -229,9 +290,10 @@ export default function AdminGroupPage() {
       meetingGuide: group.meetingGuide || '',
     })
     resetMeetingForm()
+    resetNoticeForm()
     setError('')
     setSuccessMessage('')
-    await loadMeetings(group.id)
+    await Promise.all([loadMeetings(group.id), loadNotices(group.id)])
   }
 
   async function handleDeleteGroup(group) {
@@ -308,6 +370,61 @@ export default function AdminGroupPage() {
       setError(err.message || '모임 삭제 중 오류가 발생했습니다.')
     } finally {
       setMeetingDeletingId(null)
+    }
+  }
+
+  async function handleNoticeSubmit(event) {
+    event.preventDefault()
+    if (!editingId) return
+
+    setNoticeSubmitting(true)
+    setError('')
+    setSuccessMessage('')
+
+    try {
+      const payload = toNoticePayload()
+      if (noticeEditingId) {
+        await updateAdminGroupNotice(editingId, noticeEditingId, payload)
+        setSuccessMessage('공지를 수정했습니다.')
+      } else {
+        await createAdminGroupNotice(editingId, payload)
+        setSuccessMessage('공지를 등록했습니다.')
+      }
+      await loadNotices(editingId)
+      resetNoticeForm()
+    } catch (err) {
+      setError(err.message || '공지 저장 중 오류가 발생했습니다.')
+    } finally {
+      setNoticeSubmitting(false)
+    }
+  }
+
+  function handleNoticeEdit(notice) {
+    setNoticeEditingId(notice.id)
+    setNoticeForm({
+      title: notice.title || '',
+      content: notice.content || '',
+      type: notice.type || 'GENERAL',
+      published: Boolean(notice.published),
+      displayStartAt: toDateTimeLocalValue(notice.displayStartAt),
+      displayEndAt: toDateTimeLocalValue(notice.displayEndAt),
+    })
+  }
+
+  async function handleNoticeDelete(notice) {
+    if (!editingId) return
+    if (!window.confirm(`'${notice.title}' 공지를 삭제할까요?`)) return
+
+    setNoticeDeletingId(notice.id)
+    try {
+      await deleteAdminGroupNotice(editingId, notice.id)
+      await loadNotices(editingId)
+      if (noticeEditingId === notice.id) resetNoticeForm()
+      setSuccessMessage('공지를 삭제했습니다.')
+    } catch (err) {
+      setError(err.message || '공지 삭제 중 오류가 발생했습니다.')
+    } finally {
+      setNoticeDeletingId(null)
     }
   }
 
@@ -444,46 +561,96 @@ export default function AdminGroupPage() {
             </section>
 
             {editingId ? (
-              <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold text-slate-900">정기 모임 관리</h2>
-                <p className="mt-2 text-sm text-slate-500">현재 편집 중인 그룹(ID: {editingId})의 모임을 등록/변경/삭제할 수 있습니다.</p>
-                <form onSubmit={handleMeetingSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
-                  <select name="dayOfWeek" value={meetingForm.dayOfWeek} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                    {DAY_OF_WEEKS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
-                  </select>
-                  <input type="time" name="startTime" value={meetingForm.startTime} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                  <select name="meetingType" value={meetingForm.meetingType} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                    {MEETING_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                  <select name="status" value={meetingForm.status} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
-                    {MEETING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                  </select>
-                  <input name="meetingRoadAddress" value={meetingForm.meetingRoadAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 도로명주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-                  <input name="meetingDetailAddress" value={meetingForm.meetingDetailAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 상세주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-                  <input type="number" step="any" name="meetingLatitude" value={meetingForm.meetingLatitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 위도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                  <input type="number" step="any" name="meetingLongitude" value={meetingForm.meetingLongitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 경도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
-                  <textarea name="meetingGuide" value={meetingForm.meetingGuide} onChange={handleMeetingChange} rows={2} placeholder="(선택) 개별 모임 장소 안내" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
-                  <div className="md:col-span-2 flex gap-2">
-                    <button type="submit" disabled={meetingSubmitting} className="rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm">{meetingSubmitting ? '저장 중...' : meetingEditingId ? '모임 수정' : '모임 등록'}</button>
-                    {meetingEditingId ? <button type="button" onClick={resetMeetingForm} className="rounded-2xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
-                  </div>
-                </form>
-
-                <div className="mt-6 space-y-2">
-                  {meetings.map((meeting) => (
-                    <div key={meeting.id} className="rounded-2xl border border-slate-200 p-3 flex items-center justify-between gap-2">
-                      <div className="text-sm">
-                        <div className="font-semibold">{DAY_OF_WEEKS.find((d) => d.value === meeting.dayOfWeek)?.label} {meeting.startTime}</div>
-                        <div className="text-slate-500">{meeting.meetingType} / {meeting.status} / {meeting.usesGroupDefaultPlace ? '기본 장소 사용' : '개별 장소 사용'}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button type="button" onClick={() => handleMeetingEdit(meeting)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
-                        <button type="button" onClick={() => handleMeetingDelete(meeting)} disabled={meetingDeletingId === meeting.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{meetingDeletingId === meeting.id ? '삭제 중...' : '삭제'}</button>
-                      </div>
+              <div className="space-y-6">
+                <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-slate-900">정기 모임 관리</h2>
+                  <p className="mt-2 text-sm text-slate-500">현재 편집 중인 그룹(ID: {editingId})의 모임을 등록/변경/삭제할 수 있습니다.</p>
+                  <form onSubmit={handleMeetingSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
+                    <select name="dayOfWeek" value={meetingForm.dayOfWeek} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      {DAY_OF_WEEKS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                    </select>
+                    <input type="time" name="startTime" value={meetingForm.startTime} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <select name="meetingType" value={meetingForm.meetingType} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      {MEETING_TYPES.filter((t) => t.value).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                    <select name="status" value={meetingForm.status} onChange={handleMeetingChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      {MEETING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                    <input name="meetingRoadAddress" value={meetingForm.meetingRoadAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 도로명주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                    <input name="meetingDetailAddress" value={meetingForm.meetingDetailAddress} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 상세주소" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                    <input type="number" step="any" name="meetingLatitude" value={meetingForm.meetingLatitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 위도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <input type="number" step="any" name="meetingLongitude" value={meetingForm.meetingLongitude} onChange={handleMeetingChange} placeholder="(선택) 개별 모임 경도" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <textarea name="meetingGuide" value={meetingForm.meetingGuide} onChange={handleMeetingChange} rows={2} placeholder="(선택) 개별 모임 장소 안내" className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                    <div className="md:col-span-2 flex gap-2">
+                      <button type="submit" disabled={meetingSubmitting} className="rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm">{meetingSubmitting ? '저장 중...' : meetingEditingId ? '모임 수정' : '모임 등록'}</button>
+                      {meetingEditingId ? <button type="button" onClick={resetMeetingForm} className="rounded-2xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
                     </div>
-                  ))}
-                </div>
-              </section>
+                  </form>
+
+                  <div className="mt-6 space-y-2">
+                    {meetings.map((meeting) => (
+                      <div key={meeting.id} className="rounded-2xl border border-slate-200 p-3 flex items-center justify-between gap-2">
+                        <div className="text-sm">
+                          <div className="font-semibold">{DAY_OF_WEEKS.find((d) => d.value === meeting.dayOfWeek)?.label} {meeting.startTime}</div>
+                          <div className="text-slate-500">{meeting.meetingType} / {meeting.status} / {meeting.usesGroupDefaultPlace ? '기본 장소 사용' : '개별 장소 사용'}</div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => handleMeetingEdit(meeting)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
+                          <button type="button" onClick={() => handleMeetingDelete(meeting)} disabled={meetingDeletingId === meeting.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{meetingDeletingId === meeting.id ? '삭제 중...' : '삭제'}</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <h2 className="text-lg font-semibold text-slate-900">그룹 공지 관리</h2>
+                  <p className="mt-2 text-sm text-slate-500">검색 결과와 그룹 상세에 노출될 공지를 등록하고 공개 상태를 조절할 수 있습니다.</p>
+                  <form onSubmit={handleNoticeSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
+                    <input name="title" value={noticeForm.title} onChange={handleNoticeChange} placeholder="공지 제목" required className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                    <select name="type" value={noticeForm.type} onChange={handleNoticeChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                      {NOTICE_TYPES.map((noticeType) => <option key={noticeType.value} value={noticeType.value}>{noticeType.label}</option>)}
+                    </select>
+                    <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700">
+                      <input type="checkbox" name="published" checked={noticeForm.published} onChange={handleNoticeChange} />
+                      공개 상태로 노출
+                    </label>
+                    <input type="datetime-local" name="displayStartAt" value={noticeForm.displayStartAt} onChange={handleNoticeChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <input type="datetime-local" name="displayEndAt" value={noticeForm.displayEndAt} onChange={handleNoticeChange} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm" />
+                    <textarea name="content" value={noticeForm.content} onChange={handleNoticeChange} rows={4} placeholder="공지 내용" required className="rounded-2xl border border-slate-200 px-4 py-3 text-sm md:col-span-2" />
+                    <div className="md:col-span-2 flex gap-2">
+                      <button type="submit" disabled={noticeSubmitting} className="rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm">{noticeSubmitting ? '저장 중...' : noticeEditingId ? '공지 수정' : '공지 등록'}</button>
+                      {noticeEditingId ? <button type="button" onClick={resetNoticeForm} className="rounded-2xl border border-slate-200 px-4 py-2 text-sm">취소</button> : null}
+                    </div>
+                  </form>
+
+                  <div className="mt-6 space-y-2">
+                    {notices.map((notice) => (
+                      <div key={notice.id} className="rounded-2xl border border-slate-200 p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold">{notice.title}</span>
+                              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-600">{NOTICE_TYPES.find((item) => item.value === notice.type)?.label || notice.type}</span>
+                              <span className={`rounded-full px-2 py-1 text-xs ${notice.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{notice.published ? '공개' : '비공개'}</span>
+                              {notice.activeNow ? <span className="rounded-full bg-amber-50 px-2 py-1 text-xs text-amber-700">현재 노출 중</span> : null}
+                            </div>
+                            <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{notice.content}</p>
+                            <div className="mt-2 text-xs text-slate-500">
+                              시작 {notice.displayStartAt || '-'} / 종료 {notice.displayEndAt || '-'}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button type="button" onClick={() => handleNoticeEdit(notice)} className="rounded-xl border border-slate-200 px-3 py-1 text-sm">수정</button>
+                            <button type="button" onClick={() => handleNoticeDelete(notice)} disabled={noticeDeletingId === notice.id} className="rounded-xl border border-red-200 px-3 py-1 text-sm text-red-600">{noticeDeletingId === notice.id ? '삭제 중...' : '삭제'}</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {!notices.length ? <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">아직 등록된 공지가 없습니다.</div> : null}
+                  </div>
+                </section>
+              </div>
             ) : null}
           </>
         ) : (

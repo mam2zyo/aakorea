@@ -11,17 +11,17 @@ export default function MeetingSearchForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_1fr_auto]"
+      className="aa-card grid gap-4 p-5 md:grid-cols-[1fr_1fr_auto]"
     >
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
+        <label className="mb-2 block text-sm font-medium aa-heading">
           지역
         </label>
         <select
           name="province"
           value={filters.province}
           onChange={onChange}
-          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-0 focus:border-slate-400"
+          className="aa-field"
         >
           {PROVINCES.map((province) => (
             <option key={province.value} value={province.value}>
@@ -32,14 +32,14 @@ export default function MeetingSearchForm({
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
+        <label className="mb-2 block text-sm font-medium aa-heading">
           요일
         </label>
         <select
           name="dayOfWeek"
           value={filters.dayOfWeek}
           onChange={onChange}
-          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-0 focus:border-slate-400"
+          className="aa-field"
         >
           {DAY_OF_WEEKS.map((day) => (
             <option key={day.value} value={day.value}>
@@ -55,7 +55,7 @@ export default function MeetingSearchForm({
             type="button"
             onClick={onUseToday}
             disabled={loading}
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 md:w-auto"
+            className="aa-button-secondary w-full disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
           >
             오늘 요일
           </button>
@@ -63,14 +63,14 @@ export default function MeetingSearchForm({
             type="button"
             onClick={onReset}
             disabled={loading}
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:text-slate-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 md:w-auto"
+            className="aa-button-secondary w-full disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
           >
             초기화
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400 md:w-auto"
+            className="aa-button-primary w-full disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
           >
             {loading ? "조회 중..." : "조회"}
           </button>
