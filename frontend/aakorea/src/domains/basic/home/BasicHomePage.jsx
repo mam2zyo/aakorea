@@ -11,9 +11,9 @@ const audiencePanels = {
     primaryAction: { label: "가까운 모임 찾기", to: "/meetings" },
     secondaryAction: { label: "처음 오신 분께", to: "/welcome" },
     resources: [
-      { label: "첫 모임 가이드", to: "/guide" },
-      { label: "자주 묻는 질문", to: "/faq" },
-      { label: "A.A. 소개", to: "/about" },
+      { label: "자기 점검", to: "/about/is-aa-for-you" },
+      { label: "새로 나온 사람 FAQ", to: "/about/newcomer-questions" },
+      { label: "처음 방문 안내", to: "/about/first-visit" },
     ],
   },
   family: {
@@ -25,9 +25,9 @@ const audiencePanels = {
     primaryAction: { label: "A.A. 소개 보기", to: "/about" },
     secondaryAction: { label: "공개 모임 찾기", to: "/meetings" },
     resources: [
-      { label: "처음 오신 분께", to: "/welcome" },
-      { label: "첫 모임 가이드", to: "/guide" },
-      { label: "GSO 안내", to: "/gso" },
+      { label: "44가지 질문들", to: "/about/44-questions" },
+      { label: "자료실", to: "/resources" },
+      { label: "소식·행사", to: "/events" },
     ],
   },
   professional: {
@@ -36,12 +36,12 @@ const audiencePanels = {
     title: "전문가에게는 정확하고 간결한 소개, 그리고 연결 경로가 중요합니다.",
     description:
       "A.A.가 어떤 역할을 하고 무엇을 대신하지 않는지, 공개 안내 자료와 지역 연결 창구를 중심으로 빠르게 확인할 수 있게 구성했습니다.",
-    primaryAction: { label: "GSO 안내 보기", to: "/gso" },
-    secondaryAction: { label: "A.A. 소개 보기", to: "/about" },
+    primaryAction: { label: "전문가 안내 보기", to: "/about/professionals" },
+    secondaryAction: { label: "GSO 안내 보기", to: "/gso" },
     resources: [
-      { label: "공개 모임 찾기", to: "/meetings" },
-      { label: "FAQ 확인", to: "/faq" },
-      { label: "첫 모임 가이드", to: "/guide" },
+      { label: "A.A.에 관한 사실들", to: "/resources/fact-file" },
+      { label: "자료실", to: "/resources" },
+      { label: "익명성 원칙", to: "/about/anonymity" },
     ],
   },
 };
@@ -54,15 +54,16 @@ const firstMeetingSteps = [
 
 const learnMoreLinks = [
   { label: "A.A. 소개", to: "/about" },
-  { label: "처음 오신 분께", to: "/welcome" },
-  { label: "첫 모임 가이드", to: "/guide" },
-  { label: "GSO 안내", to: "/gso" },
+  { label: "A.A.에 관한 사실들", to: "/resources/fact-file" },
+  { label: "자료실", to: "/resources" },
+  { label: "도서·문헌 소개", to: "/library" },
 ];
 
 const recommendedLinks = [
   { label: "가까운 모임 찾기", to: "/meetings" },
-  { label: "자주 묻는 질문", to: "/faq" },
-  { label: "사이트 운영 정책", to: "/gso#site-policy" },
+  { label: "소식·행사", to: "/events" },
+  { label: "자료실", to: "/resources" },
+  { label: "스토어", to: "/store" },
   { label: "연락처와 문의 안내", to: "/gso#contact-info" },
 ];
 

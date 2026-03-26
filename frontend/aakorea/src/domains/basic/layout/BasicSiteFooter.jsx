@@ -2,18 +2,30 @@ import { Link } from "react-router-dom";
 
 const resourcePills = [
   { to: "/welcome", label: "처음 오신 분께" },
-  { to: "/guide", label: "첫 모임 가이드" },
   { to: "/meetings", label: "모임 찾기" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/gso", label: "GSO 안내" },
+  { to: "/events", label: "소식·행사" },
+  { to: "/resources", label: "자료실" },
+  { to: "/library", label: "도서·문헌 소개" },
 ];
 
 const footerLinks = [
   { to: "/about", label: "A.A. 소개" },
-  { to: "/meetings", label: "가까운 모임 찾기" },
-  { to: "/faq", label: "자주 묻는 질문" },
+  { to: "/events", label: "소식·행사" },
+  { to: "/resources", label: "자료실" },
+  { to: "/library", label: "도서·문헌 소개" },
+  { to: "/store", label: "스토어" },
   { to: "/gso#contact-info", label: "연락처" },
-  { to: "/gso#site-policy", label: "사이트 운영 정책" },
+];
+
+const officialChannels = [
+  {
+    href: "https://blog.naver.com/aakorea_official",
+    label: "네이버 블로그",
+  },
+  {
+    href: "https://www.youtube.com/@aakorea1935",
+    label: "YouTube",
+  },
 ];
 
 export default function BasicSiteFooter() {
@@ -71,6 +83,22 @@ export default function BasicSiteFooter() {
                 <div>
                   운영 시간과 방문 가능 여부는 공지 및 사무국 안내를 먼저
                   확인해 주세요.
+                </div>
+              </div>
+              <div>
+                <div className="font-semibold text-white">공식 채널</div>
+                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-2">
+                  {officialChannels.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="aa-footer-link"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
                 </div>
               </div>
             </div>

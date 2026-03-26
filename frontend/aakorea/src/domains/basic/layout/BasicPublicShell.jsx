@@ -3,10 +3,37 @@ import { BASIC_PUBLIC_NAV_ITEMS } from "../content/basic-public-content";
 import BasicSiteFooter from "./BasicSiteFooter";
 
 const utilityLinks = [
-  { to: "/meetings", label: "가까운 모임 찾기" },
-  { to: "/welcome", label: "처음 오신 분께" },
-  { to: "/gso", label: "GSO 안내" },
+  { to: "/gso#contact-info", label: "사무국 안내" },
+  {
+    href: "https://blog.naver.com/aakorea_official",
+    label: "공식 블로그",
+  },
+  {
+    href: "https://www.youtube.com/@aakorea1935",
+    label: "YouTube",
+  },
 ];
+
+function UtilityLink({ item }) {
+  if (item.href) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noreferrer"
+        className="aa-utility-link aa-focusable"
+      >
+        {item.label}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={item.to} className="aa-utility-link aa-focusable">
+      {item.label}
+    </Link>
+  );
+}
 
 export default function BasicPublicShell() {
   return (
@@ -19,13 +46,7 @@ export default function BasicPublicShell() {
             </div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               {utilityLinks.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="aa-utility-link aa-focusable"
-                >
-                  {item.label}
-                </Link>
+                <UtilityLink key={item.to ?? item.href} item={item} />
               ))}
             </div>
           </div>
@@ -68,8 +89,8 @@ export default function BasicPublicShell() {
               <Link to="/meetings" className="aa-button-accent">
                 지금 모임 찾기
               </Link>
-              <Link to="/admin" className="aa-button-ghost-light">
-                관리자
+              <Link to="/store" className="aa-button-ghost-light">
+                스토어
               </Link>
             </div>
           </div>
