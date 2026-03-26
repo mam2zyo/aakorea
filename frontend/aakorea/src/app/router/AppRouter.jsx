@@ -1,21 +1,21 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import MemberShell from "../shells/MemberShell";
-import StoreShell from "../shells/StoreShell";
-import HeartShell from "../shells/HeartShell";
+import UserShell from "../../domains/user/layout/UserShell";
+import StoreShell from "../../domains/store/public/layout/StoreShell";
+import HeartShell from "../../domains/heart/public/layout/HeartShell";
 import AdminPortalShell from "../admin/AdminPortalShell";
-import ServiceAdminShell from "../../domains/service/layout/ServiceAdminShell";
-import StoreAdminShell from "../../domains/store/layout/StoreAdminShell";
-import HeartAdminShell from "../../domains/heart/layout/HeartAdminShell";
-import DistrictAdminPage from "../../domains/service/districts/DistrictAdminPage";
-import GroupAdminPage from "../../domains/service/groups/GroupAdminPage";
-import StoreAdminOverviewPage from "../../domains/store/admin/StoreAdminOverviewPage";
-import HeartAdminOverviewPage from "../../domains/heart/admin/HeartAdminOverviewPage";
+import ServiceAdminShell from "../../domains/general/admin/layout/ServiceAdminShell";
+import StoreAdminShell from "../../domains/store/admin/layout/StoreAdminShell";
+import HeartAdminShell from "../../domains/heart/admin/layout/HeartAdminShell";
+import DistrictAdminPage from "../../domains/general/admin/districts/DistrictAdminPage";
+import GroupAdminPage from "../../domains/general/admin/groups/GroupAdminPage";
+import StoreAdminOverviewPage from "../../domains/store/admin/overview/StoreAdminOverviewPage";
+import HeartAdminOverviewPage from "../../domains/heart/admin/overview/HeartAdminOverviewPage";
 import PublicRoutes from "./public-routes";
-import MemberRoutes from "./member-routes";
+import UserRoutes from "./user-routes";
 import StoreRoutes from "./store-routes";
 import HeartRoutes from "./heart-routes";
 import AdminRoutes from "./admin-routes";
-import BasicPublicShell from "../../domains/basic/layout/BasicPublicShell";
+import BasicPublicShell from "../../domains/general/public/layout/BasicPublicShell";
 
 export default function AppRouter() {
   return (
@@ -24,9 +24,10 @@ export default function AppRouter() {
         {PublicRoutes()}
       </Route>
 
-      <Route path="/me" element={<MemberShell />}>
-        {MemberRoutes()}
+      <Route path="/me" element={<UserShell />}>
+        {UserRoutes()}
       </Route>
+      <Route path="/user" element={<Navigate to="/me" replace />} />
       <Route path="/member" element={<Navigate to="/me" replace />} />
 
       <Route path="/store" element={<StoreShell />}>

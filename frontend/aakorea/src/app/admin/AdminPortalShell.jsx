@@ -48,7 +48,7 @@ export default function AdminPortalShell() {
                 to="/me"
                 className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
               >
-                멤버 공간
+                내 공간
               </Link>
             </div>
           </div>

@@ -1,4 +1,4 @@
-# A.A. KOREA 웹앱 도메인 명세서 인덱스
+﻿# A.A. KOREA 웹앱 도메인 명세서 인덱스
 
 ## 1. 문서 목적
 
@@ -6,20 +6,20 @@
 프로젝트 개요는 `README.md`, 사용자 그룹별 서비스 요구사항은 `docs/REQUIREMENTS.md`에서 다루며, 본 문서는 다음 내용을 개발 기준으로 고정한다.
 
 - 모듈러 모놀리스 기반의 시스템 경계
-- 각 도메인 모듈의 책임과 데이터 소유권
+- 앱 도메인과 서브도메인의 책임과 데이터 소유권
 - CQRS-Lite 관점의 읽기/쓰기 분리 원칙
 - 스냅샷 패턴을 포함한 데이터 보존 규칙
-- 향후 MSA 분리를 고려한 결합도 관리 규칙
+- 향후 앱 분리를 고려한 결합도 관리 규칙
 
 이 문서는 화면 요구사항 문서가 아니라, 도메인 모델과 애플리케이션 구조를 정의하는 문서다.
 개별 도메인 상세 명세는 아래 4개 문서로 분리해 관리한다.
 
 ## 분할 문서 안내
 
-- [`docs/DOMAIN_SPEC_BASIC_SERVICE.md`](./DOMAIN_SPEC_BASIC_SERVICE.md): `basic` + `service` 공개 조회와 운영 쓰기 경계, 그룹, 모임, 공지, 공개 콘텐츠 운영
-- [`docs/DOMAIN_SPEC_MEMBER.md`](./DOMAIN_SPEC_MEMBER.md): 공통 로그인, 계정 상태, 최소 프로필, 주소록 마스터
-- [`docs/DOMAIN_SPEC_STORE.md`](./DOMAIN_SPEC_STORE.md): 도서 판매, 주문, 재고, 배송 스냅샷 규칙
-- [`docs/DOMAIN_SPEC_HEART.md`](./DOMAIN_SPEC_HEART.md): 월간지 구독, 발송 이력, 만료 관리, 디지털 아카이브
+- [`docs/DOMAIN_SPEC_GENERAL.md`](./DOMAIN_SPEC_GENERAL.md): `general.public(basic)`과 `general.admin(service)`의 공개 조회와 운영 쓰기 경계
+- [`docs/DOMAIN_SPEC_USER.md`](./DOMAIN_SPEC_USER.md): 공통 로그인, 계정 상태, 최소 프로필, 주소록 마스터
+- [`docs/DOMAIN_SPEC_STORE.md`](./DOMAIN_SPEC_STORE.md): `store.public`, `store.admin`의 도서 판매, 주문, 재고, 배송 스냅샷 규칙
+- [`docs/DOMAIN_SPEC_HEART.md`](./DOMAIN_SPEC_HEART.md): `heart.public`, `heart.admin`의 월간지 구독, 발송 이력, 만료 관리, 디지털 아카이브
 
 이 파일은 공통 아키텍처 원칙과 통합 관점을 유지하는 인덱스 역할을 하며, 도메인별 구현 기준은 위 개별 문서를 우선 참조한다.
 
@@ -29,11 +29,11 @@
 
 본 문서는 다음 질문에 답하기 위한 문서다.
 
-- 시스템을 어떤 모듈로 나눌 것인가
-- 각 모듈은 어떤 데이터를 소유하는가
+- 시스템을 어떤 앱 도메인으로 나눌 것인가
+- 각 앱 도메인과 서브도메인은 어떤 데이터를 소유하는가
 - 읽기와 쓰기 책임은 어떻게 분리되는가
 - 주문, 구독, 변경 이력 같은 과거 사실은 어떻게 보존하는가
-- 향후 서비스 분리를 고려할 때 지금 어떤 제약을 지켜야 하는가
+- 향후 앱 분리를 고려할 때 지금 어떤 제약을 지켜야 하는가
 
 반면 다음 내용은 본 문서의 주범위가 아니다.
 
@@ -49,50 +49,60 @@
 
 ### 3.1. 모듈러 모놀리스
 
-시스템은 단일 애플리케이션으로 시작하지만, 내부는 비즈니스 도메인별로 강하게 분리된 모듈러 모놀리스 구조를 채택한다.
+시스템은 단일 애플리케이션으로 시작하지만, 내부는 앱 도메인별로 강하게 분리된 모듈러 모놀리스 구조를 채택한다.
 
 - 하나의 배포 단위 안에서 개발/운영 복잡도를 낮춘다.
-- 도메인별 패키지 경계를 엄격히 유지해 변경 영향을 국소화한다.
-- 향후 `basic`, `service`, `store`, `heart`를 별도 서비스로 분리할 수 있도록 설계한다.
+- 앱 도메인별 패키지 경계를 엄격히 유지해 변경 영향을 국소화한다.
+- 향후 `general`, `store`, `heart`를 독립 앱으로 분리할 수 있도록 설계한다.
 
-권장 최상위 모듈은 다음과 같다.
+권장 최상위 앱 도메인 모듈은 다음과 같다.
 
-- `modules/basic`
-- `modules/service`
-- `modules/member`
+- `modules/general`
+- `modules/user`
 - `modules/store`
 - `modules/heart`
+
+`general`, `store`, `heart`는 각 앱 도메인 내부에서 다시 `public`과 `admin` 서브도메인으로 나눈다. `general.public`의 화면 명칭은 `basic`, `general.admin`의 화면 명칭은 `service`를 유지한다.
 
 공통 기술 요소는 도메인 하위가 아니라 별도 공통 영역에서 제공하되, 공통 영역이 도메인 규칙을 침범하지 않도록 제한한다.
 
 ### 3.2. 도메인 중심 패키징
 
-패키지는 `controller / service / repository` 같은 기술 계층 중심이 아니라, 모듈과 하위 서브도메인 중심으로 구성한다.
+패키지는 `controller / service / repository` 같은 기술 계층 중심이 아니라, 앱 도메인과 하위 서브도메인 중심으로 구성한다.
 
 예시:
 
 ```text
 modules/
-  basic/
-    group/
-    meeting/
-    notice/
-  service/
-    district/
-    groupadmin/
-    gsr/
-  member/
+  general/
+    public/
+      group/
+      meeting/
+      notice/
+    admin/
+      district/
+      groupadmin/
+      gsr/
+  user/
     auth/
     profile/
     address/
   store/
-    item/
-    cart/
-    order/
+    public/
+      catalog/
+      orderquery/
+    admin/
+      item/
+      orderadmin/
+      inventory/
   heart/
-    subscription/
-    delivery/
-    issue/
+    public/
+      subscription-entry/
+      archive/
+    admin/
+      subscription/
+      delivery/
+      issue/
 ```
 
 기술 계층은 각 도메인 내부로 캡슐화한다.
@@ -101,28 +111,29 @@ modules/
 
 본 프로젝트는 전면적인 이벤트 소싱/별도 읽기 저장소 기반 CQRS가 아니라, 실용적인 CQRS-Lite를 지향한다.
 
-- 일반 사용자 대상 조회 기능은 `basic` 모듈에서 읽기 최적화 관점으로 제공한다.
-- 관리자/봉사자 대상 생성·수정·삭제 기능은 `service` 모듈에서 명령 중심으로 제공한다.
+- 일반 사용자 대상 조회 기능은 `general.public(basic)`에서 읽기 최적화 관점으로 제공한다.
+- 관리자/봉사자 대상 생성·수정·삭제 기능은 `general.admin(service)`에서 명령 중심으로 제공한다.
+- `store`와 `heart`도 각각 `public`과 `admin` 서브도메인을 나눠 읽기와 운영 표면을 분리한다.
 - 동일한 개념이라도 읽기 모델과 쓰기 모델은 분리된 API/DTO/유스케이스를 가질 수 있다.
 - 필요한 경우 동일 테이블을 읽더라도, 조회 전용 projection이나 집계 DTO를 분리한다.
 
 예시:
 
-- `basic`은 그룹 상세 화면에서 그룹 기본 정보, 모임 일정, 활성 공지를 한 번에 조합해 반환한다.
-- `service`는 그룹 수정, 모임 생성/수정/삭제, 공지 등록, 승인 상태 변경 같은 명령을 처리한다.
+- `general.public(basic)`은 그룹 상세 화면에서 그룹 기본 정보, 모임 일정, 활성 공지를 한 번에 조합해 반환한다.
+- `general.admin(service)`는 그룹 수정, 모임 생성/수정/삭제, 공지 등록, 승인 상태 변경 같은 명령을 처리한다.
 
 ### 3.4. 느슨한 결합과 직접 참조 금지
 
-모듈 간 엔티티 참조는 최소화한다. 특히 `store`와 `heart`는 `member` 모듈의 JPA 엔티티를 직접 연관관계로 참조하지 않는다.
+앱 도메인 간 엔티티 참조는 최소화한다. 특히 `store`와 `heart`는 `user` 모듈의 JPA 엔티티를 직접 연관관계로 참조하지 않는다.
 
-- 허용: `memberId`, `createdByMemberId`, `buyerMemberId` 같은 식별자 값 참조
-- 금지: `@ManyToOne Member member` 형태의 직접 연관
+- 허용: `userId`, `createdByUserId`, `buyerUserId` 같은 식별자 값 참조
+- 금지: `@ManyToOne User user` 형태의 직접 연관
 
 이 원칙은 다음 이점을 가진다.
 
-- 모듈 간 런타임 결합도 감소
-- 서비스 분리 시 데이터베이스 경계 이동이 쉬움
-- 주문/구독과 회원 마스터 간 생명주기 분리 가능
+- 앱 도메인 간 런타임 결합도 감소
+- 앱 분리 시 데이터베이스 경계 이동이 쉬움
+- 주문/구독과 사용자 계정 마스터 간 생명주기 분리 가능
 
 ### 3.5. 스냅샷 패턴
 
@@ -131,7 +142,7 @@ modules/
 - 주문 시점의 배송지 정보는 `Order`에 복사 저장한다.
 - 주문 시점의 판매 가격은 `OrderItem`에 복사 저장한다.
 - 구독 시점의 수령인 정보는 `Subscription`에 복사 저장한다.
-- 이후 회원 주소록이 바뀌더라도 과거 주문/결제 기록은 변경되지 않는다.
+- 이후 사용자 주소록이 바뀌더라도 과거 주문/결제 기록은 변경되지 않는다.
 
 이는 감사 추적, CS 대응, 세무/운영 기록 보존에 필수다.
 
@@ -149,19 +160,19 @@ modules/
 
 ### 4.1. 주요 역할(Role)
 
-- `USER`: 일반 회원
+- `USER`: 일반 사용자
 - `GSR`: 그룹 대표 봉사자
 - `ADMIN`: 전체 운영 관리자
 
-역할은 인증/인가의 기준일 뿐, 모든 비즈니스 책임을 역할 자체에 밀어 넣지 않는다. 실제 권한은 모듈별 유스케이스 단위로 정의한다.
-외부 IdP가 `OIDC`/`OAuth2`를 통해 사용자를 인증하더라도, 그룹 수정 가능 여부나 주문/발송 관리 권한은 로그인 이후 `memberId`와 각 모듈 정책으로 다시 판정한다.
-`STORE_ADMIN`, `HEART_ADMIN` 같은 도메인별 운영 자격은 공통 역할 열거형을 끝없이 늘리기보다, 각 모듈의 정책/할당/관리 화면에서 관리하는 것을 기본 원칙으로 한다.
+역할은 인증과 인가의 기준일 뿐, 모든 비즈니스 책임을 역할 자체에 밀어 넣지 않는다. 실제 권한은 앱 도메인별 유스케이스 단위로 정의한다.
+외부 IdP가 `OIDC` 또는 `OAuth2`를 통해 사용자를 인증하더라도, 그룹 수정 가능 여부나 주문, 발송 관리 권한은 로그인 이후 `userId`와 각 앱 도메인의 정책으로 다시 판정한다.
+`STORE_ADMIN`, `HEART_ADMIN` 같은 도메인별 운영 자격은 공통 역할 열거형을 끝없이 늘리기보다, 각 앱 도메인의 정책과 할당, 관리 화면에서 관리하는 것을 기본 원칙으로 한다.
 
 ### 4.2. 핵심 식별자
 
 - 모든 영속 엔티티는 기본적으로 Long 기반 식별자를 사용한다.
 - 외부 노출용 식별자는 필요 시 별도 공개용 키를 둘 수 있으나, 내부 연관은 Long 기준으로 통일한다.
-- 모듈 간 참조는 식별자 값만 사용한다.
+- 앱 도메인 간 참조는 식별자 값만 사용한다.
 
 ### 4.3. 주요 공통 개념
 
@@ -175,15 +186,15 @@ modules/
 
 ---
 
-## 5. 모듈 개요
+## 5. 앱 도메인 개요
 
-| 모듈 | 핵심 책임 | 주요 사용자 | 성격 | 상세 문서 |
-| ---- | --------- | ----------- | ---- | --------- |
-| `basic` | 비로그인, 일반 사용자 대상 조회 서비스 | 방문자, 초심자, 멤버 | Read 중심 | `docs/DOMAIN_SPEC_BASIC_SERVICE.md` |
-| `service` | 조직, 그룹, 모임, 공지, 공개 콘텐츠 운영 | ADMIN, GSR | Command 중심 | `docs/DOMAIN_SPEC_BASIC_SERVICE.md` |
-| `member` | 공통 인증, 계정 상태, 최소 프로필, 주소록 마스터 | USER, GSR, ADMIN | 공통 기반 | `docs/DOMAIN_SPEC_MEMBER.md` |
-| `store` | 도서 판매, 주문, 재고 관리 | USER, ADMIN | 거래 도메인 | `docs/DOMAIN_SPEC_STORE.md` |
-| `heart` | 월간지 구독, 발송, 만료 관리 | USER, ADMIN | 정기 구독 도메인 | `docs/DOMAIN_SPEC_HEART.md` |
+| 앱 도메인 | 서브도메인 | 핵심 책임 | 주요 사용자 | 성격 | 상세 문서 |
+| --------- | ---------- | --------- | ----------- | ---- | --------- |
+| `general` | `public` (`basic`) | 비로그인, 일반 사용자 대상 공개 조회 서비스 | 방문자, 초심자, 멤버 | Read 중심 | `docs/DOMAIN_SPEC_GENERAL.md` |
+| `general` | `admin` (`service`) | 조직, 그룹, 모임, 공지, 공개 콘텐츠 운영 | ADMIN, GSR | Command 중심 | `docs/DOMAIN_SPEC_GENERAL.md` |
+| `user` | 단일 도메인 | 공통 인증, 계정 상태, 최소 프로필, 주소록 마스터 | USER, GSR, ADMIN | 공통 기반 | `docs/DOMAIN_SPEC_USER.md` |
+| `store` | `public`, `admin` | 도서 판매, 주문, 재고, 배송 운영 | USER, ADMIN | 거래 도메인 | `docs/DOMAIN_SPEC_STORE.md` |
+| `heart` | `public`, `admin` | 월간지 구독, 발송, 만료, 아카이브 운영 | USER, ADMIN | 정기 구독 도메인 | `docs/DOMAIN_SPEC_HEART.md` |
 
 ---
 
@@ -191,22 +202,22 @@ modules/
 
 ### 6.1. 소유권 원칙
 
-- 회원 식별, 공통 로그인, 계정 상태, 주소록 마스터는 `member`가 소유한다.
-- 그룹, 모임, 공지와 공개 콘텐츠의 쓰기 책임은 `service`가 소유한다.
-- 공개 조회 조합은 `basic`이 소유한다.
+- 사용자 식별, 공통 로그인, 계정 상태, 주소록 마스터는 `user`가 소유한다.
+- 그룹, 모임, 공지와 공개 콘텐츠의 쓰기 책임은 `general.admin(service)`가 소유한다.
+- 공개 조회 조합은 `general.public(basic)`이 소유한다.
 - 주문과 재고는 `store`가 소유한다.
 - 구독과 발송 이력은 `heart`가 소유한다.
 
 ### 6.2. 참조 방식
 
-- `basic`은 `service`가 관리하는 공개 가능한 그룹, 모임, 공지, 콘텐츠를 읽기 모델로 소비한다.
-- `store`와 `heart`는 `memberId`만 저장하고, 거래 시점 데이터는 자체 스냅샷으로 보존한다.
-- 마이페이지나 관리자 포털이 여러 도메인 데이터를 집계해 보여줄 수는 있지만, 조회 통합이 곧 쓰기 책임 통합을 의미하지는 않는다.
+- `general.public(basic)`은 `general.admin(service)`가 관리하는 공개 가능한 그룹, 모임, 공지, 콘텐츠를 읽기 모델로 소비한다.
+- `store`와 `heart`는 `userId`만 저장하고, 거래 시점 데이터는 자체 스냅샷으로 보존한다.
+- 여러 앱 도메인의 데이터를 집계해 보여줄 수는 있지만, 조회 통합이 곧 쓰기 책임 통합을 의미하지는 않는다.
 
 ### 6.3. 금지 규칙
 
-- 한 모듈의 영속 엔티티를 다른 모듈에서 임의 수정하지 않는다.
-- 외부 모듈 테이블에 직접 접근하는 쿼리를 무분별하게 작성하지 않는다.
+- 한 앱 도메인의 영속 엔티티를 다른 앱 도메인에서 임의 수정하지 않는다.
+- 외부 앱 도메인 테이블에 직접 접근하는 쿼리를 무분별하게 작성하지 않는다.
 - 조회 편의를 이유로 강한 양방향 연관관계를 만들지 않는다.
 
 ---
@@ -229,15 +240,15 @@ modules/
 
 ### 7.2. 패키지와 API 구조
 
-- 모듈 루트 아래에 API, application, domain, infrastructure를 둘 수 있다.
+- 앱 도메인 루트 아래에 API, application, domain, infrastructure를 둘 수 있다.
 - 기술 계층보다 도메인 경계가 상위 개념이어야 한다.
 - 조회 API와 명령 API를 역할에 맞게 분리한다.
 - 공개 API는 캐시 친화적이고 조합된 응답을 우선한다.
 
 ### 7.3. DB와 테스트
 
-- 트랜잭션 경계는 가능한 한 모듈 내부에서 닫는다.
-- 모듈 간 FK는 최소화하고, 필요한 경우에도 물리 FK보다 애플리케이션 규칙 우선을 검토한다.
+- 트랜잭션 경계는 가능한 한 앱 도메인 내부에서 닫는다.
+- 앱 도메인 간 FK는 최소화하고, 필요한 경우에도 물리 FK보다 애플리케이션 규칙 우선을 검토한다.
 - 우선 보호할 테스트는 모임 검색 정렬, 그룹 변경 이력, 주문 스냅샷, 구독 만료 전환, 권한별 접근 제어다.
 
 ---
@@ -255,8 +266,10 @@ modules/
 
 ## 9. 최종 설계 원칙 요약
 
-1. 도메인별로 경계를 나눈 모듈러 모놀리스로 시작한다.
-2. 공개 조회는 `basic`, 운영 쓰기는 `service`로 분리하는 CQRS-Lite를 적용한다.
-3. `member`는 공통 마스터이지만, 거래 도메인은 식별자 참조와 스냅샷으로 결합도를 낮춘다.
-4. 주문, 구독, 변경 이력은 과거 사실을 보존하는 스냅샷 패턴을 따른다.
-5. 현재 상태와 과거 기록을 분리해 운영, 감사, 서비스 분리에 모두 대비한다.
+1. `user`, `general`, `store`, `heart` 네 개의 앱 도메인을 기준으로 모듈러 모놀리스로 시작한다.
+2. `general`, `store`, `heart`는 내부적으로 `public`과 `admin` 서브도메인으로 나눈다.
+3. `general.public`은 `basic`, `general.admin`은 `service`라는 기존 화면 명칭을 유지한다.
+4. `user`는 공통 마스터이지만, 거래 도메인은 식별자 참조와 스냅샷으로 결합도를 낮춘다.
+5. 주문, 구독, 변경 이력은 과거 사실을 보존하는 스냅샷 패턴을 따른다.
+
+

@@ -1,4 +1,4 @@
-# A.A. KOREA 문서 허브
+﻿# A.A. KOREA 문서 허브
 
 이 문서는 현재 저장소에서 어떤 문서를 언제 읽고, 어떤 문서를 업데이트해야 하는지 안내하는 문서 허브다.
 문서가 늘어나도 루트 `README.md`가 과도하게 길어지지 않도록, 상세 문서 진입점은 이 파일에서 관리한다.
@@ -23,8 +23,8 @@
 | 프로젝트 진입 | `README.md` | 프로젝트 개요, 실행 방법, 주요 문서 링크 | 실행 방법, 저장소 구성, 핵심 문서 구조가 바뀔 때 |
 | 제품 요구 | `REQUIREMENTS.md` | 사용자 그룹, 요구사항, 시나리오, MVP 범위 | 사용자 요구나 우선순위가 바뀔 때 |
 | 도메인 공통 | `DOMAIN_SPEC.md` | 공통 아키텍처 원칙, 데이터 소유권, 문서 인덱스 | 도메인 경계나 공통 규칙이 바뀔 때 |
-| 도메인 상세 | `DOMAIN_SPEC_BASIC_SERVICE.md` | 공개 조회와 운영 쓰기 경계 | `basic`, `service` 책임이 바뀔 때 |
-| 도메인 상세 | `DOMAIN_SPEC_MEMBER.md` | 인증, 계정 마스터, 주소록 계약 | `member` 책임이나 권한 모델이 바뀔 때 |
+| 도메인 상세 | `DOMAIN_SPEC_GENERAL.md` | `general.public(basic)`과 `general.admin(service)` 경계 | `general` 책임이나 내부 public/admin 구성이 바뀔 때 |
+| 도메인 상세 | `DOMAIN_SPEC_USER.md` | 인증, 계정 마스터, 주소록 계약 | `user` 책임이나 권한 모델이 바뀔 때 |
 | 도메인 상세 | `DOMAIN_SPEC_STORE.md` | 주문, 재고, 배송 스냅샷 규칙 | `store` 거래 규칙이 바뀔 때 |
 | 도메인 상세 | `DOMAIN_SPEC_HEART.md` | 구독, 발송, 만료, 아카이브 규칙 | `heart` 구독 규칙이 바뀔 때 |
 | 구현 기준 | `AUTH_ACCESS_MODEL.md` | 인증, 계정 상태, 도메인별 권한 모델 | 로그인/권한 구현 전후 |
@@ -61,8 +61,8 @@ docs/
     ROADMAP.md
   domain/
     DOMAIN_SPEC.md
-    DOMAIN_SPEC_BASIC_SERVICE.md
-    DOMAIN_SPEC_MEMBER.md
+    DOMAIN_SPEC_GENERAL.md
+    DOMAIN_SPEC_USER.md
     DOMAIN_SPEC_STORE.md
     DOMAIN_SPEC_HEART.md
   architecture/
@@ -86,3 +86,4 @@ docs/
 - 인증/권한이나 API 규칙이 바뀌면 구현 전에 기준 문서를 먼저 바꾼다.
 - 일회성 검토 메모를 새로 만들기보다, 장기적으로 유지할 판단이면 `adr/`에 남긴다.
 - 구현이 끝난 후 문서를 맞추는 방식보다, 구현 전에 문서 기준을 먼저 고정하는 방식을 기본으로 삼는다.
+

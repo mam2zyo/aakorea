@@ -1,17 +1,17 @@
-# ADR-002: 프런트엔드는 도메인 우선 구조를 유지한다
+﻿# ADR-002: 프런트엔드는 도메인 우선 구조를 유지한다
 
 상태: Accepted  
 작성일: 2026-03-26
 
 ## 맥락
 
-초기 프런트엔드는 `pages`, `components`, `api` 같은 기술 분류 중심 구조를 가정했지만, 현재 프로젝트 범위는 `basic`, `member`, `service`, `store`, `heart`로 빠르게 확장되고 있다.
+초기 프런트엔드는 `pages`, `components`, `api` 같은 기술 분류 중심 구조를 가정했지만, 현재 프로젝트 범위는 `user`, `general`, `store`, `heart` 앱 도메인으로 빠르게 확장되고 있다.
 
 기술 분류 중심 구조를 유지하면 다음 문제가 생긴다.
 
 - 한 기능을 수정하기 위해 여러 폴더를 계속 오가야 한다.
 - 도메인 경계와 코드 경계가 어긋난다.
-- `store`, `heart`가 추가될수록 레이아웃과 API 모듈이 뒤섞인다.
+- `general.public/basic`, `general.admin/service`, `store`, `heart`가 추가될수록 레이아웃과 API 모듈이 뒤섞인다.
 
 ## 결정
 
@@ -28,10 +28,12 @@ src/
 - `shared/`: 여러 도메인에서 검증된 공용 UI와 라이브러리
 - `domains/`: 비즈니스 도메인별 코드
 
+`domains/` 아래에서는 `general`, `store`, `heart`를 다시 `public`과 `admin`으로 나눌 수 있고, `general.public`의 화면 명칭은 `basic`, `general.admin`의 화면 명칭은 `service`를 유지한다.
+
 라우트와 shell도 도메인 경계를 따른다.
 
 - `public-routes`
-- `member-routes`
+- `user-routes`
 - `store-routes`
 - `heart-routes`
 - `admin-routes`
@@ -41,7 +43,7 @@ src/
 좋은 점:
 
 - 도메인별 기능 탐색과 변경 범위 파악이 쉬워진다.
-- 공개 화면과 운영 화면을 각 도메인 안에서 자연스럽게 분리할 수 있다.
+- 공개 화면과 운영 화면을 각 앱 도메인 안에서 자연스럽게 분리할 수 있다.
 - `store`, `heart` 확장 시 기존 구조를 억지로 비틀 필요가 없다.
 
 감수할 점:
@@ -54,3 +56,5 @@ src/
 - 새 기능 추가 시 `shared/`보다 해당 도메인 아래 배치를 먼저 검토한다.
 - 레거시 파일은 실제 라우팅과 사용 여부를 기준으로 점진 정리한다.
 - `docs/README.md`의 권장 구조는 이 결정을 기준으로 유지한다.
+
+

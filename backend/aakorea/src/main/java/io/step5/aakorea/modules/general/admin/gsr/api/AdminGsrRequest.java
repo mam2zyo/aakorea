@@ -1,0 +1,24 @@
+package io.step5.aakorea.modules.general.admin.gsr.api;
+
+import io.step5.aakorea.modules.general.admin.gsr.domain.GSR;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record AdminGsrRequest(
+        @NotBlank(message = "GSR ??곌퐬?袁? ?袁⑸땾??낅빍??")
+        @Size(max = 100, message = "GSR ??곌퐬?袁? 100????꾨릭嚥???낆젾??곻폒?紐꾩뒄.")
+        String nickname,
+
+        @Size(max = 50, message = "?袁れ넅甕곕뜇???50????꾨릭嚥???낆젾??곻폒?紐꾩뒄.")
+        String phone,
+
+        @Size(max = 255, message = "?怨좊젶 ??뤿뻿 雅뚯눘???255????꾨릭嚥???낆젾??곻폒?紐꾩뒄.")
+        String mailingAddress,
+
+        @Email(message = "??李???類ㅻ뻼????而?몴?? ??녿뮸??덈뼄.")
+        @Size(max = 255, message = "??李??? 255????꾨릭嚥???낆젾??곻폒?紐꾩뒄.")
+        String email
+) {
+}
+

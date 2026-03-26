@@ -1,4 +1,4 @@
-# API 경계와 네임스페이스 기준
+﻿# API 경계와 네임스페이스 기준
 
 작성일: 2026-03-26
 
@@ -13,13 +13,18 @@
 
 ### 2.1. 도메인 우선
 
-API는 기술 계층이 아니라 도메인 기준으로 나눈다.
+API는 기술 계층이 아니라 앱 도메인 기준으로 나눈다.
 
-- `basic`
-- `member`
-- `service`
+- `user`
+- `general`
+  - `public` = `basic`
+  - `admin` = `service`
 - `store`
+  - `public`
+  - `admin`
 - `heart`
+  - `public`
+  - `admin`
 
 ### 2.2. 공개 조회와 운영 명령 분리
 
@@ -32,7 +37,7 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 ### 2.3. `admin`은 표면이고 소유권이 아니다
 
 `/admin/service/*`, `/admin/store/*`, `/admin/heart/*`는 운영자 접근 표면을 뜻한다.
-도메인 소유권은 여전히 `service`, `store`, `heart` 각각이 가진다.
+도메인 소유권은 각각 `general.admin(service)`, `store.admin`, `heart.admin`이 가진다.
 
 ---
 
@@ -46,14 +51,14 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 /api/basic/content/{slug}
 ```
 
-### 3.2. 멤버 API
+### 3.2. 사용자 계정 API
 
 ```text
-/api/member/me
-/api/member/addresses
+/api/user/me
+/api/user/addresses
 ```
 
-### 3.3. 서비스 운영 API
+### 3.3. `general.admin` (`service`) 운영 API
 
 ```text
 /api/admin/service/districts
@@ -64,7 +69,7 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 /api/admin/service/gsrs
 ```
 
-### 3.4. 스토어 사용자/운영 API
+### 3.4. `store.public`, `store.admin` API
 
 ```text
 /api/store/items
@@ -76,7 +81,7 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 /api/admin/store/inventory
 ```
 
-### 3.5. 하트 사용자/운영 API
+### 3.5. `heart.public`, `heart.admin` API
 
 ```text
 /api/heart/plans
@@ -106,7 +111,7 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 ### 4.3. 금지 규칙
 
 - 공개 조회 DTO와 관리자 명령 DTO를 같은 파일이나 같은 응답 모델로 섞지 않는다.
-- 프런트 편의를 이유로 여러 도메인의 쓰기 모델을 하나의 API에 섞지 않는다.
+- 프런트 편의를 이유로 여러 앱 도메인의 쓰기 모델을 하나의 API에 섞지 않는다.
 
 ---
 
@@ -137,13 +142,13 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 프런트엔드에서는 다음 기준을 유지한다.
 
 - 공통 fetch client는 `shared/api/client.js`
-- 도메인별 API 모듈은 `domains/<domain>/<feature>/api.js`
+- 도메인별 API 모듈은 `domains/<app-domain>/<feature>/api.js` 또는 `domains/<app-domain>/<sub-domain>/<feature>/api.js`
 - 공개 조회 클라이언트와 관리자 명령 클라이언트를 같은 파일에 무분별하게 섞지 않는다
 
 예시:
 
-- `domains/basic/meeting-search/api.js`
-- `domains/service/groups/api.js`
+- `domains/general/public/meeting-search/api.js`
+- `domains/general/admin/groups/api.js`
 - `domains/store/admin/items/api.js`
 
 ---
@@ -152,7 +157,7 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 
 새 API를 추가할 때는 아래를 확인한다.
 
-1. 이 API는 어느 도메인이 소유하는가
+1. 이 API는 어느 앱 도메인 또는 서브도메인이 소유하는가
 2. 공개 조회인가, 사용자 보호 API인가, 관리자 명령 API인가
 3. 인증과 권한은 어디서 판정하는가
 4. 현재 상태와 과거 스냅샷 중 무엇을 반환해야 하는가
@@ -162,8 +167,10 @@ API는 기술 계층이 아니라 도메인 기준으로 나눈다.
 
 ## 8. 구현 우선순위
 
-1. `basic`, `service`의 공개 조회와 운영 API 네임스페이스 확정
-2. `member`의 `me`, `addresses` 경계 확정
+1. `general.public(basic)`과 `general.admin(service)`의 공개 조회와 운영 API 네임스페이스 확정
+2. `user`의 `me`, `addresses` 경계 확정
 3. `store`, `heart` 사용자 API와 운영 API 분리
 4. 공통 오류 응답 포맷 정리
 5. 프런트 API 모듈과 백엔드 컨트롤러 네이밍 일치
+
+

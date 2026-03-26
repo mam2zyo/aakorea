@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { PUBLIC_NAV_ITEMS } from "../../domains/basic/content/public-content";
+import { PUBLIC_NAV_ITEMS } from "../../domains/general/public/content/public-content";
 import SiteFooter from "../../shared/layout/SiteFooter";
 
 export default function PublicShell() {
@@ -25,7 +25,7 @@ export default function PublicShell() {
 
             <div className="flex flex-wrap gap-2">
               <Link to="/me" className="aa-button-secondary">
-                멤버 공간
+                내 공간
               </Link>
               <Link to="/admin" className="aa-button-secondary">
                 관리자
