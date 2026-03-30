@@ -93,7 +93,7 @@
 
 ### 참고 문서
 
-- API 규약: `API_DRAFT.md`
+- API 규약: `api/COMMON.md`
 - 최소 필드: `MVP_FIELDS.md`
 
 ---
@@ -131,7 +131,7 @@
 ### 참고 문서
 
 - 범위 기준: `PRODUCT_SCOPE.md`
-- API 계약: `API_DRAFT.md`
+- API 계약: `api/AUTH.md`
 
 ---
 
@@ -170,7 +170,7 @@
 
 - 도메인 경계: `DOMAIN_MODEL.md`
 - 최소 필드: `MVP_FIELDS.md`
-- API 계약: `API_DRAFT.md`
+- API 계약: `api/ADMIN_ORG.md`
 
 ---
 
@@ -215,7 +215,7 @@
 - 공개 핵심 흐름: `ACTORS_AND_USE_CASES.md`
 - 도메인 경계: `DOMAIN_MODEL.md`
 - 최소 필드: `MVP_FIELDS.md`
-- API 계약: `API_DRAFT.md`
+- API 계약: `api/PUBLIC_MEETINGS.md`, `api/ADMIN_MEETINGS.md`
 
 ---
 
@@ -254,7 +254,7 @@
 
 - 콘텐츠 구분 기준: `CONTENT_MODEL.md`
 - 최소 필드: `MVP_FIELDS.md`
-- API 계약: `API_DRAFT.md`
+- API 계약: `api/PUBLIC_CONTENT.md`, `api/ADMIN_CONTENT.md`
 
 ---
 
@@ -337,7 +337,7 @@
 ### 참고 문서
 
 - 사용자 행동: `ACTORS_AND_USE_CASES.md`
-- API 계약: `API_DRAFT.md`
+- API 계약: `api/README.md`
 
 ---
 
@@ -448,4 +448,4 @@
 - 도메인 경계를 확인할 때: `DOMAIN_MODEL.md`
 - 콘텐츠 구분을 확인할 때: `CONTENT_MODEL.md`
 - 필드를 확인할 때: `MVP_FIELDS.md`
-- API를 확인할 때: `API_DRAFT.md`
+- API를 확인할 때: `api/README.md`

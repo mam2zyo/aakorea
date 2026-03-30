@@ -79,6 +79,18 @@
 - `Meeting`의 기본 일정 표현에 필요한 선택값이다
 - 현재는 단순 반복 요일 수준으로만 다룬다
 
+### MeetingType
+
+- `Meeting`의 공개/비공개 성격을 표현하는 enum 값이다
+- 허용값은 `OPEN`, `CLOSED`, `NOTFIXED`다
+- 현재 MVP에서는 상세 예외 일정 대신 대표 상태를 표현하는 데 사용한다
+
+### MeetingLocation
+
+- `Meeting`의 위치 정보를 표현하는 값 객체다
+- 현재는 `Meeting` 내부에 포함되며 별도 식별자를 갖지 않는다
+- 최소 구성은 `name`, `address`다
+
 ---
 
 ## 1. District
@@ -215,7 +227,7 @@
 - `dayOfWeek`
 - `startTime`
 - `type`
-- `meetingPlace`
+- `location`
 - `active`
 
 ### 필드 설명
@@ -235,20 +247,34 @@
 - `startTime`  
   기본 시작 시간
 
-- `type`
-  공개 모임 / 비공개 모임 여부
+- `type`  
+  `MeetingType` enum 값  
+  허용값: `OPEN`, `CLOSED`, `NOTFIXED`
 
-- `meetingPlace`
-  모임 주소 및 상세 위치 정보
+- `location`  
+  모임 위치를 표현하는 `MeetingLocation` 값 객체
 
 - `active`  
   현재 공개/운영 대상 여부
+
+#### MeetingLocation 최소 구성
+
+- `name`  
+  운영/공개에서 빠르게 식별 가능한 장소명 또는 위치 요약
+
+- `address`  
+  실제 이동을 위한 기본 주소
 
 ### 중요한 제약
 
 - 현재 공개 탐색의 핵심 기준은 `Meeting.province`다
 - 복잡한 일정 구조 대신, 반복 모임의 기본 표현만 우선한다
 - 사용자는 `Meeting`을 통해 공개 정보에 접근한다
+- `type`은 `MeetingType` enum으로 관리한다
+- `NOTFIXED`는 공개/비공개 성격이 회차별로 고정되지 않는 경우에 사용한다
+- 예: 기본적으로 `CLOSED`이지만 마지막 주만 `OPEN`인 모임
+- `location`은 `Meeting`에 포함되는 값 객체다
+- 장소 정보는 별도 장소 엔티티나 범용 `Place`로 일반화하지 않는다
 
 ### 현재 제외하는 필드
 
@@ -263,8 +289,10 @@
 
 ### 확장 후보
 
+- `meetingTypeNotes`
+- `location.detail`
+- `location.mapUrl`
 - `notes`
-- `mapUrl`
 - `isOnline`
 
 ---
@@ -380,7 +408,8 @@
 - `Meeting.province`
 - `Meeting.dayOfWeek`
 - `Meeting.startTime`
-- `Meeting.placeName`
+- `Meeting.location.name`
+- `Meeting.location.address`
 - `GroupContact.phone`
 
 ### 운영 기준 유지에 직접 필요한 필드
@@ -449,7 +478,7 @@
 - API 직렬화 형식
 - 화면 표시 포맷
 
-이 내용은 구현 코드와 `API_DRAFT.md`에서 구체화한다.
+이 내용은 구현 코드와 `api/COMMON.md`, `api/README.md` 아래 세부 API 문서에서 구체화한다.
 
 ---
 
@@ -459,5 +488,5 @@
 - 사용자 행동과 유스케이스: `ACTORS_AND_USE_CASES.md`
 - 도메인 구조와 개체 의미: `DOMAIN_MODEL.md`
 - 콘텐츠 구분 기준: `CONTENT_MODEL.md`
-- API 계약 초안: `API_DRAFT.md`
+- API 계약: `api/README.md`
 - 구현 순서와 완료 기준: `IMPLEMENTATION_PLAN.md`

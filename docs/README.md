@@ -34,7 +34,7 @@
 3. `current/DOMAIN_MODEL.md`
 4. `current/CONTENT_MODEL.md`
 5. `current/MVP_FIELDS.md`
-6. `current/API_DRAFT.md`
+6. `current/api/README.md`
 7. `current/IMPLEMENTATION_PLAN.md`
 
 이 순서는 다음 흐름을 따른다.
@@ -74,7 +74,10 @@
 
 다른 문서에서 필드 목록을 완전히 다시 적지 않는다.
 
-### 6. API 계약은 `API_DRAFT.md`를 기준으로 한다
+### 6. API 계약은 `current/api/`를 기준으로 한다
+
+공통 규약은 `current/api/COMMON.md`에 두고,  
+상세 엔드포인트 계약은 `current/api/` 아래 책임별 문서로 나눈다.
 
 다른 문서에서는 필요한 경우 API 이름만 언급하고, 상세 형식은 반복하지 않는다.
 
@@ -113,7 +116,7 @@
 
 - 자세한 범위 판단은 `PRODUCT_SCOPE.md`를 따른다
 - 필드 정의는 `MVP_FIELDS.md`를 따른다
-- API 계약은 `API_DRAFT.md`를 따른다
+- API 계약은 `current/api/README.md`와 해당 세부 문서를 따른다
 
 즉, **반복해서 다시 쓰기보다 기준 문서를 가리키는 방식**을 우선한다.
 
@@ -130,8 +133,16 @@ docs/
 │  ├─ DOMAIN_MODEL.md
 │  ├─ CONTENT_MODEL.md
 │  ├─ MVP_FIELDS.md
-│  ├─ API_DRAFT.md
-│  └─ IMPLEMENTATION_PLAN.md
+│  ├─ IMPLEMENTATION_PLAN.md
+│  └─ api/
+│     ├─ README.md
+│     ├─ COMMON.md
+│     ├─ AUTH.md
+│     ├─ PUBLIC_CONTENT.md
+│     ├─ PUBLIC_MEETINGS.md
+│     ├─ ADMIN_ORG.md
+│     ├─ ADMIN_MEETINGS.md
+│     └─ ADMIN_CONTENT.md
 └─ reference/
    └─ AA_ORG_DESIGN_ANALYSIS.md
 ```
@@ -139,7 +150,6 @@ docs/
 필요 시 이후에 다음과 같은 구조를 추가할 수 있다.
 
 - `deferred/`
-- `current/api/`
 - `adr/`
 
 다만 현재 단계에서는 문서 수를 늘리기보다,

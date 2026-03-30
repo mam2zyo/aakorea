@@ -1,4 +1,4 @@
-package org.aakorea.aakorea_main;
+package org.aakorea.main;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class AakoreaMainApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {
+    }
 }

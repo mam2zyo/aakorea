@@ -32,7 +32,6 @@
 - `Group`
 - `GroupContact`
 - `Meeting`
-- `MeetingPlace`
 - `ContentPage`
 - `Notice`
 
@@ -111,25 +110,57 @@
 `Meeting`은 `Group`에 속한다.  
 사용자는 `Meeting`을 통해 기본 정보와 연락 가능한 지점에 접근한다.
 
+`Meeting`은 `MeetingLocation` 값을 포함한다.  
+현재 MVP에서 `MeetingLocation`은 `Meeting`에 종속된 value object로 보며,  
+별도 식별자나 독립 관리 흐름을 갖지 않는다.
+
+`Meeting`은 `MeetingType` 값을 가진다.  
+현재 MVP에서 `MeetingType`은 모임의 공개/비공개 성격을 표현하는 enum이며,  
+복잡한 예외 일정까지 세밀하게 모델링하지 않는 현재 단계의 제약을 함께 반영한다.
+
 현재 MVP에서는 `Meeting`을 매우 복잡한 일정 모델로 다루지 않는다.  
 반복 규칙, 예외 일정, 특별 이벤트 분기 같은 확장은 도입하지 않는다.
 
 ---
 
-### 5. MeetingPlace
+### MeetingType (enum)
 
-`MeetingPlace`는 `Meeting`과 관련된 장소 정보를 제공해주는 개체이다.
+`MeetingType`은 `Meeting`의 공개 가능성 성격을 표현하는 enum 값이다.
 
-현재 MVP에서 `MeetingPlace`는 다음 의미를 가진다.
+현재 MVP에서 허용하는 값은 다음과 같다.
 
-- 사용자가 모임 검색 후 이동해야 할 장소에 대한 실질적인 정보 제공자
+- `OPEN`
+- `CLOSED`
+- `NOTFIXED`
 
-`MeetingPlace`는 `Meeting`에 속한다.  
-사용자는 `MeetingPlace`을 통해 모임장소의 주소와 상제 모임 위치 정보를 얻는다.
+각 값의 의미는 아래와 같다.
+
+- `OPEN`: 일관되게 공개 모임으로 이해할 수 있는 경우
+- `CLOSED`: 일관되게 비공개 모임으로 이해할 수 있는 경우
+- `NOTFIXED`: 단일한 `OPEN` 또는 `CLOSED`로 표현하기 어려운 경우
+
+`NOTFIXED`는 현재 MVP가 복잡한 예외 일정 모델을 갖지 않기 때문에 필요한 값이다.  
+예를 들어 목요일 모임이 기본적으로는 비공개지만 마지막 주만 공개 모임인 경우,  
+현재 단계에서는 이를 상세 규칙으로 분해하지 않고 `NOTFIXED`로 표현한다.
 
 ---
 
-### 6. ContentPage
+### MeetingLocation (value object)
+
+`MeetingLocation`은 `Meeting`에 포함되는 위치 정보 값 객체다.
+
+현재 MVP에서 `MeetingLocation`은 다음 의미를 가진다.
+
+- 사용자가 모임 장소를 식별하고 이동하는 데 필요한 최소 위치 정보
+- `Meeting`과 함께 입력·수정·조회되는 내부 구성 요소
+- 별도 식별자 없이 공개 정보 일부를 구성하는 값
+
+현재는 `MeetingLocation`을 독립 엔티티나 범용 `Place`로 일반화하지 않는다.  
+즉, 장소 재사용, 독립 장소 카탈로그, 지도 중심 확장은 이후 단계 검토 대상으로 둔다.
+
+---
+
+### 5. ContentPage
 
 `ContentPage`는 비교적 안정적인 정적/안내성 콘텐츠를 표현하는 개체다.
 
@@ -146,7 +177,7 @@
 
 ---
 
-### 7. Notice
+### 6. Notice
 
 `Notice`는 공지성, 시의성, 업데이트성 정보를 표현하는 개체다.
 
@@ -182,9 +213,9 @@
 - 하나의 `Group`은 하나 이상의 `Meeting`을 가질 수 있다
 - `Meeting`은 공개 탐색의 직접 대상이다
 
-### Meeting → MeetingPlace
+### Meeting → MeetingLocation (value object)
 
-- 하나의 `Meeting`은 하나의 `MeetingPlace`만 가질 수 있다.
+- 하나의 `Meeting`은 하나의 `MeetingLocation` 값을 포함한다
 
 ### ContentPage, Notice
 
@@ -223,7 +254,16 @@
 
 ---
 
-### 4. 안내성 콘텐츠와 공지성 콘텐츠를 구분한다
+### 4. 장소 정보는 `Meeting` 내부의 값 객체로 둔다
+
+현재 MVP에서 장소 정보는 독립 식별자와 수명주기를 가진 개체보다,  
+`Meeting`과 함께 관리되는 값이 더 적합하다.
+
+따라서 `MeetingLocation`을 별도 핵심 개체가 아니라 `Meeting` 내부 value object로 둔다.
+
+---
+
+### 5. 안내성 콘텐츠와 공지성 콘텐츠를 구분한다
 
 공개 사이트의 정보는 모두 같은 성격이 아니다.
 
@@ -250,7 +290,18 @@
 
 ---
 
-### 2. Board / Post
+### 2. 별도 장소 엔티티 / Place
+
+현재 MVP에서는 장소 정보를 별도 핵심 개체로 채택하지 않는다.
+
+현재 단계에서 장소 정보는 `Meeting`에 포함되는 `MeetingLocation` value object로 이해한다.  
+즉, 별도 장소 엔티티나 범용 `Place` 같은 독립 엔티티는 현재 모델에 포함하지 않는다.
+
+장소 재사용, 독립 장소 카탈로그, 지도 중심 일반화는 이후 단계에서 검토할 수 있다.
+
+---
+
+### 3. Board / Post
 
 범용 게시판 구조는 현재 MVP에서 채택하지 않는다.
 
@@ -323,7 +374,7 @@
 - 실질 운영 단위는 `Group`
 - 연락 가능 지점은 `GroupContact`
 - 공개 탐색 중심은 `Meeting`
-- 모임 장소 정보는 `MeetingPlace`
+- 모임 위치 정보는 `MeetingLocation` value object
 - 정적 안내 콘텐츠는 `ContentPage`
 - 시의성 공지는 `Notice`
 

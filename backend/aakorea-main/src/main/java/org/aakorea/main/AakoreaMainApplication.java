@@ -1,4 +1,4 @@
-package org.aakorea.aakorea_main;
+package org.aakorea.main;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AakoreaMainApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AakoreaMainApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(AakoreaMainApplication.class, args);
+    }
 }
