@@ -310,21 +310,21 @@
 
 ---
 
-### 3. Committee
+### 4. Committee
 
 위원회성 조직 모델은 현재 MVP 핵심 흐름에 직접 필요하지 않다.  
 따라서 별도 핵심 개체로 채택하지 않는다.
 
 ---
 
-### 4. Conference / Event
+### 5. Conference / Event
 
 행사/컨퍼런스 중심 모델은 현재 모임 탐색 MVP의 직접 범위가 아니다.  
 따라서 현재는 별도 핵심 개체로 두지 않는다.
 
 ---
 
-### 5. MeetingAnnouncement
+### 6. MeetingAnnouncement
 
 모임별 개별 공지 모델은 현재 별도 핵심 개체로 두지 않는다.
 
@@ -333,7 +333,7 @@
 
 ---
 
-### 6. 범용 ContactPoint
+### 7. 범용 ContactPoint
 
 현재는 `GroupContact`가 핵심 요구를 충족한다.  
 조직 전체에 걸친 범용 연락 포인트 모델로 일반화하지 않는다.

@@ -35,6 +35,9 @@
 - React
 - Vite
 
+현재 저장소에는 프론트엔드 앱 스캐폴드가 아직 추가되지 않았으며,  
+추후 `frontend/` 아래에 React + Vite 앱을 두는 것을 기준으로 한다.
+
 ---
 
 ## 저장소 구성
@@ -43,12 +46,11 @@
 backend/
   aakorea-main/
 frontend/
-  aakorea-main/
 docs/
 ```
 
 - `backend/aakorea-main`: Spring Boot 기반 백엔드 애플리케이션
-- `frontend/aakorea-main`: React + Vite 기반 프론트엔드 애플리케이션
+- `frontend/`: 프론트엔드 작업 영역
 - `docs/`: 프로젝트 문서
 
 ---
@@ -89,29 +91,10 @@ cd backend\aakorea-main
 
 ## 2. 프론트엔드 실행
 
-작업 디렉터리:
+현재 저장소에는 실행 가능한 프론트엔드 앱이 아직 없다.
 
-```powershell
-cd frontend\aakorea-main
-```
-
-의존성 설치:
-
-```powershell
-npm install
-```
-
-개발 서버 실행:
-
-```powershell
-npm run dev
-```
-
-프로덕션 빌드:
-
-```powershell
-npm run build
-```
+프론트엔드 앱을 추가할 때는 `frontend/` 아래에 React + Vite 프로젝트를 생성하고,  
+그 시점의 실제 경로와 명령을 이 문서에 반영한다.
 
 ---
 
@@ -141,10 +124,10 @@ npm run build
 
 ## 개발 메모
 
-- 프론트엔드 API 호출은 상대 경로 기반으로 구성합니다
-- 로컬 개발 시 Vite proxy를 사용하여 `/api` 요청을 백엔드로 전달하도록 구성합니다
+- 프론트엔드 앱이 추가되면 API 호출은 상대 경로 기반으로 구성합니다
+- 프론트엔드 앱이 추가되면 로컬 개발 시 Vite proxy로 `/api` 요청을 백엔드로 전달하도록 구성합니다
 - 현재는 최소 필드 기준으로 빠르게 CRUD와 조회 흐름을 검증하는 것이 우선입니다
-- Postman과 프론트엔드에서 빨리 확인 가능한 작은 단위부터 구현합니다
+- 현재는 Postman과 백엔드 단위 검증부터 진행하고, 이후 프론트엔드 흐름을 연결합니다
 
 현재 가장 먼저 검증할 핵심 흐름:
 

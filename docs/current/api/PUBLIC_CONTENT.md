@@ -66,10 +66,7 @@
 
 ### Query Params
 
-- `page` (optional)
-- `size` (optional)
-
-현재 MVP에서는 페이지네이션 없이 단순 목록으로 시작할 수 있다.
+- 현재 MVP에서는 별도 Query Params 없이 단순 목록을 조회한다.
 
 ### Response 200
 
