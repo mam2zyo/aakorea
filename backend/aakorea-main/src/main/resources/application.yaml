@@ -1,6 +1,10 @@
 spring:
   application:
     name: aakorea-main
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aakorea_main
+    username: aakorea_admin
+    password: aa1935
   jpa:
     open-in-view: false
 
