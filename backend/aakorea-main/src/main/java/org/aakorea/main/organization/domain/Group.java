@@ -38,4 +38,10 @@ public class Group {
         this.name = name;
         this.active = active;
     }
+
+    public void update(District district, String name, boolean active) {
+        this.district = district;
+        this.name = name;
+        this.active = active;
+    }
 }

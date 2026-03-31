@@ -70,4 +70,22 @@ public class Meeting {
         this.location = location;
         this.active = active;
     }
+
+    public void update(
+            Group group,
+            String province,
+            DayOfWeek dayOfWeek,
+            LocalTime startTime,
+            MeetingType type,
+            MeetingLocation location,
+            boolean active
+    ) {
+        this.group = group;
+        this.province = province;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.type = type;
+        this.location = location;
+        this.active = active;
+    }
 }

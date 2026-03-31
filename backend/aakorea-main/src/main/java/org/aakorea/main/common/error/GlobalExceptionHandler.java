@@ -5,7 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +35,18 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ApiErrorCode.VALIDATION_ERROR, "invalid request", fields));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(ApiErrorCode.VALIDATION_ERROR, "invalid request"));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(ApiErrorCode.VALIDATION_ERROR, exception.getName() + " is invalid"));
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatus(ResponseStatusException exception) {
         return ResponseEntity.status(exception.getStatusCode())
@@ -58,6 +72,9 @@ public class GlobalExceptionHandler {
     private ApiErrorCode resolveCode(int statusCode) {
         if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
             return ApiErrorCode.UNAUTHORIZED;
+        }
+        if (statusCode == HttpStatus.BAD_REQUEST.value()) {
+            return ApiErrorCode.VALIDATION_ERROR;
         }
         if (statusCode == HttpStatus.FORBIDDEN.value()) {
             return ApiErrorCode.FORBIDDEN;

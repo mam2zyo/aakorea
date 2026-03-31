@@ -38,4 +38,9 @@ public class GroupContact {
         this.phone = phone;
         this.active = active;
     }
+
+    public void update(String phone, boolean active) {
+        this.phone = phone;
+        this.active = active;
+    }
 }

@@ -3,3 +3,9 @@ spring:
     name: aakorea-main
   jpa:
     open-in-view: false
+
+app:
+  auth:
+    admin:
+      username: ${AAKOREA_ADMIN_USERNAME:admin}
+      password: ${AAKOREA_ADMIN_PASSWORD:password}

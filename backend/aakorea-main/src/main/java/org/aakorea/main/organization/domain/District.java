@@ -30,4 +30,9 @@ public class District {
         this.name = name;
         this.active = active;
     }
+
+    public void update(String name, boolean active) {
+        this.name = name;
+        this.active = active;
+    }
 }

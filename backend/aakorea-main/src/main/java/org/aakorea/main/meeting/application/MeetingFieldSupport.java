@@ -1,0 +1,122 @@
+package org.aakorea.main.meeting.application;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.Set;
+import org.aakorea.main.meeting.domain.MeetingType;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+final class MeetingFieldSupport {
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    private static final Set<String> SUPPORTED_PROVINCES = Set.of(
+            "seoul",
+            "busan",
+            "daegu",
+            "incheon",
+            "gwangju",
+            "daejeon",
+            "ulsan",
+            "sejong",
+            "gyeonggi",
+            "gangwon",
+            "chungbuk",
+            "chungnam",
+            "jeonbuk",
+            "jeonnam",
+            "gyeongbuk",
+            "gyeongnam",
+            "jeju");
+
+    private MeetingFieldSupport() {
+    }
+
+    static String requireProvince(String province) {
+        if (province == null || province.isBlank()) {
+            throw badRequest("province is required");
+        }
+
+        return normalizeProvince(province);
+    }
+
+    static String optionalProvince(String province) {
+        if (province == null) {
+            return null;
+        }
+
+        return normalizeProvince(province);
+    }
+
+    static DayOfWeek requireDayOfWeek(String dayOfWeek) {
+        if (dayOfWeek == null || dayOfWeek.isBlank()) {
+            throw badRequest("dayOfWeek is required");
+        }
+
+        try {
+            return DayOfWeek.valueOf(dayOfWeek.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            throw badRequest("dayOfWeek is invalid");
+        }
+    }
+
+    static DayOfWeek optionalDayOfWeek(String dayOfWeek) {
+        if (dayOfWeek == null) {
+            return null;
+        }
+
+        return requireDayOfWeek(dayOfWeek);
+    }
+
+    static LocalTime requireStartTime(String startTime) {
+        if (startTime == null || startTime.isBlank()) {
+            throw badRequest("startTime is required");
+        }
+
+        try {
+            return LocalTime.parse(startTime.trim(), TIME_FORMATTER);
+        } catch (DateTimeParseException exception) {
+            throw badRequest("startTime is invalid");
+        }
+    }
+
+    static MeetingType requireMeetingType(String type) {
+        if (type == null || type.isBlank()) {
+            throw badRequest("type is required");
+        }
+
+        try {
+            return MeetingType.valueOf(type.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            throw badRequest("type is invalid");
+        }
+    }
+
+    static String requireText(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw badRequest(fieldName + " is required");
+        }
+
+        return value.trim();
+    }
+
+    static String formatTime(LocalTime startTime) {
+        return TIME_FORMATTER.format(startTime);
+    }
+
+    private static String normalizeProvince(String province) {
+        String normalized = province.trim().toLowerCase(Locale.ROOT);
+        if (!SUPPORTED_PROVINCES.contains(normalized)) {
+            throw badRequest("province is invalid");
+        }
+        return normalized;
+    }
+
+    private static ResponseStatusException badRequest(String reason) {
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
+    }
+}
