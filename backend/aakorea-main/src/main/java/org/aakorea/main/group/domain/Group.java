@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.aakorea.main.organization.domain.District;
+import org.aakorea.main.generalservice.domain.District;
 
 @Getter
 @Entity

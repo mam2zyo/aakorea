@@ -8,13 +8,13 @@ import static org.mockito.Mockito.verify;
 
 import java.time.DayOfWeek;
 import java.util.Optional;
+import org.aakorea.main.generalservice.domain.District;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingLocation;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
-import org.aakorea.main.organization.domain.District;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

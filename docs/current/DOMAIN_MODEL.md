@@ -235,11 +235,11 @@
 운영 측면에서는 조직 관리 기준이 필요하므로 `District`와 `Group`을 둔다.
 
 다만 구현 경계는 동일하지 않다.  
-현재 구조에서는 `District`를 조직 컨텍스트의 기준 개체로 두고,  
+현재 구조에서는 `District`를 `generalservice` 컨텍스트의 기준 개체로 두고,  
 `Group`, `GroupContact`, `Meeting`은 실제 수정 책임이 함께 움직이는 개체로 보아  
 보다 강하게 결합된 `group` 컨텍스트로 묶는다.
 
-이 구분은 이후 총회 구조나 서비스 조직 관련 도메인을 `organization` 쪽에 확장할 여지를 남기기 위한 판단이기도 하다.
+이 구분은 이후 총회, trustee, committee 같은 AA general service 구조 도메인을 `generalservice` 쪽에 확장할 여지를 남기기 위한 판단이기도 하다.
 
 다만 현재는 이를 복잡한 조직도나 계층 구조로 확장하지 않는다.
 

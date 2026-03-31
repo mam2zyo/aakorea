@@ -1,4 +1,4 @@
-package org.aakorea.main.organization.domain;
+package org.aakorea.main.generalservice.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

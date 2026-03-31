@@ -2,12 +2,12 @@ package org.aakorea.main.group.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.aakorea.main.generalservice.domain.District;
+import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
-import org.aakorea.main.organization.domain.District;
-import org.aakorea.main.organization.infrastructure.DistrictRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

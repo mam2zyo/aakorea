@@ -1,4 +1,4 @@
-package org.aakorea.main.organization.application;
+package org.aakorea.main.generalservice.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
-import org.aakorea.main.organization.domain.District;
-import org.aakorea.main.organization.infrastructure.DistrictRepository;
+import org.aakorea.main.generalservice.domain.District;
+import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

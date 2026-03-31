@@ -1,9 +1,9 @@
-package org.aakorea.main.organization.application;
+package org.aakorea.main.generalservice.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.aakorea.main.organization.domain.District;
-import org.aakorea.main.organization.infrastructure.DistrictRepository;
+import org.aakorea.main.generalservice.domain.District;
+import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

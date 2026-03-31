@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
+import org.aakorea.main.generalservice.domain.District;
+import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
-import org.aakorea.main.organization.domain.District;
-import org.aakorea.main.organization.infrastructure.DistrictRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,11 +1,11 @@
-package org.aakorea.main.organization.api.admin;
+package org.aakorea.main.generalservice.api.admin;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
-import org.aakorea.main.organization.application.DistrictAdminService;
+import org.aakorea.main.generalservice.application.DistrictAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
