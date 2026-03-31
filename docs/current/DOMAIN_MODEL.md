@@ -221,27 +221,24 @@
 
 현재 MVP에서는 아래 판단을 유지한다.
 
-### 1. 공개 탐색의 중심은 Group이 아니라 Meeting이다
+### 1. 공개 탐색의 중심은 Group이 아니라 Meeting이고, 관리 핵심은 Group 이다.
 
-사용자가 찾는 것은 “어떤 그룹이 존재하는가”보다  
-“내가 참여 가능한 모임이 어디 있는가”에 가깝다.
+처음 방문하는 사람은 AA 그룹이라는 개념에 익숙하지 않고, “내가 참여 가능한 모임이 어디 있는가” 가 중요하다.
+따라서 방문자 탐색의 중심 개체는 `Meeting`이다.
 
-따라서 현재 공개 흐름의 중심 개체는 `Meeting`이다.
+하지만, `Meeting` 은 `Group`에 속하므로, `Meeting`을 단독 관리 대상으로 보기는 어렵고, `Group`도메인 관리를 통해서 `Meeting`이 관리될 수 있도록 관리자 인터페이스를 구축할 필요가 있다.
 
 ---
 
-### 2. 운영 조직의 중심은 District와 Group이다
+### 2. General Service Structure 관련
 
-운영 측면에서는 조직 관리 기준이 필요하므로 `District`와 `Group`을 둔다.
+A.A. General Service 에는
 
-다만 구현 경계는 동일하지 않다.  
-현재 구조에서는 `District`를 `generalservice` 컨텍스트의 기준 개체로 두고,  
-`Group`, `GroupContact`, `Meeting`은 실제 수정 책임이 함께 움직이는 개체로 보아  
-보다 강하게 결합된 `group` 컨텍스트로 묶는다.
+`Group`, `District`, `Delegate`, `Trustee`, `Commitee` 와 같은 도메인이 사용될 가능성이 높다.
 
-이 구분은 이후 총회, trustee, committee 같은 AA general service 구조 도메인을 `generalservice` 쪽에 확장할 여지를 남기기 위한 판단이기도 하다.
+`District` 이후 도메인들은 `org.aakorea.main.generalservice` 패키지에서 통합 관리하다 추후 패키지의 복잡성이 증가하면 분리하는 것을 고려한다.
 
-다만 현재는 이를 복잡한 조직도나 계층 구조로 확장하지 않는다.
+다만, `Delegate`, `Trustee`, `Commitee` 는 관리 후보로 두고 현재 Mvp 구현에서는 제외한다.
 
 ---
 
