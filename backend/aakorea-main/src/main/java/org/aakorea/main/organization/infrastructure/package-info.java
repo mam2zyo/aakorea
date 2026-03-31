@@ -1,4 +1,4 @@
 /**
- * Persistence and external adapters for organization management.
+ * Persistence adapters for district and future organization-level domains.
  */
 package org.aakorea.main.organization.infrastructure;

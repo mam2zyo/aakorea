@@ -138,7 +138,7 @@ application/json
 - `409 Conflict`: 중복 또는 충돌
 - `500 Internal Server Error`: 서버 오류
 
-현재 MVP에서는 삭제보다 `active` / `published` 전환을 우선한다.  
+현재 MVP에서는 삭제보다 `Meeting.active` / `published` 전환을 우선한다.  
 따라서 물리 삭제 API는 필수로 두지 않는다.
 
 ---
@@ -220,7 +220,7 @@ application/json
 
 ### 1. 삭제보다 상태 전환을 우선한다
 
-현재 MVP에서는 `DELETE` API보다 `active` / `published` 갱신을 우선할 수 있다.
+현재 MVP에서는 `DELETE` API보다 `Meeting.active` 또는 `published` 갱신을 우선할 수 있다.
 
 ### 2. 공개 응답은 최소 정보만 노출한다
 

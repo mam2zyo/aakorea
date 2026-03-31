@@ -1,17 +1,21 @@
 package org.aakorea.main;
 
+import org.aakorea.main.group.application.GroupAdminService;
+import org.aakorea.main.group.application.MeetingAdminService;
+import org.aakorea.main.group.application.PublicMeetingQueryService;
+import org.aakorea.main.organization.application.DistrictAdminService;
 import org.junit.jupiter.api.Test;
-import org.aakorea.main.meeting.application.MeetingAdminService;
-import org.aakorea.main.meeting.application.PublicMeetingQueryService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.aakorea.main.organization.application.OrganizationAdminService;
 
 @SpringBootTest
 class AakoreaMainApplicationTests {
 
     @MockitoBean
-    private OrganizationAdminService organizationAdminService;
+    private DistrictAdminService districtAdminService;
+
+    @MockitoBean
+    private GroupAdminService groupAdminService;
 
     @MockitoBean
     private MeetingAdminService meetingAdminService;

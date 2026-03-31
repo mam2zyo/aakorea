@@ -40,8 +40,7 @@ District 목록을 조회한다.
   "data": [
     {
       "id": 1,
-      "name": "서울",
-      "active": true
+      "name": "서울"
     }
   ]
 }
@@ -59,8 +58,7 @@ District를 생성한다.
 
 ```json
 {
-  "name": "서울",
-  "active": true
+  "name": "서울"
 }
 ```
 
@@ -70,8 +68,7 @@ District를 생성한다.
 {
   "data": {
     "id": 1,
-    "name": "서울",
-    "active": true
+    "name": "서울"
   }
 }
 ```
@@ -93,8 +90,7 @@ District를 수정한다.
 
 ```json
 {
-  "name": "서울동부",
-  "active": true
+  "name": "서울동부"
 }
 ```
 
@@ -104,8 +100,7 @@ District를 수정한다.
 {
   "data": {
     "id": 1,
-    "name": "서울동부",
-    "active": true
+    "name": "서울동부"
   }
 }
 ```
@@ -121,7 +116,6 @@ Group 목록을 조회한다.
 ### Query Params
 
 - `districtId` (optional)
-- `active` (optional)
 
 ### Response 200
 
@@ -131,8 +125,7 @@ Group 목록을 조회한다.
     {
       "id": 20,
       "districtId": 1,
-      "name": "강남그룹",
-      "active": true
+      "name": "강남그룹"
     }
   ]
 }
@@ -151,8 +144,7 @@ Group을 생성한다.
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹",
-  "active": true
+  "name": "강남그룹"
 }
 ```
 
@@ -163,8 +155,7 @@ Group을 생성한다.
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹",
-    "active": true
+    "name": "강남그룹"
   }
 }
 ```
@@ -188,8 +179,7 @@ Group을 수정한다.
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹",
-  "active": false
+  "name": "강남그룹"
 }
 ```
 
@@ -200,8 +190,7 @@ Group을 수정한다.
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹",
-    "active": false
+    "name": "강남그룹"
   }
 }
 ```
@@ -217,7 +206,6 @@ GroupContact 목록을 조회한다.
 ### Query Params
 
 - `groupId` (optional)
-- `active` (optional)
 
 ### Response 200
 
@@ -227,8 +215,7 @@ GroupContact 목록을 조회한다.
     {
       "id": 30,
       "groupId": 20,
-      "phone": "02-1234-5678",
-      "active": true
+      "phone": "02-1234-5678"
     }
   ]
 }
@@ -247,8 +234,7 @@ GroupContact를 생성한다.
 ```json
 {
   "groupId": 20,
-  "phone": "02-1234-5678",
-  "active": true
+  "phone": "02-1234-5678"
 }
 ```
 
@@ -259,8 +245,7 @@ GroupContact를 생성한다.
   "data": {
     "id": 30,
     "groupId": 20,
-    "phone": "02-1234-5678",
-    "active": true
+    "phone": "02-1234-5678"
   }
 }
 ```
@@ -284,8 +269,7 @@ GroupContact를 수정한다.
 
 ```json
 {
-  "phone": "02-9876-5432",
-  "active": true
+  "phone": "02-9876-5432"
 }
 ```
 
@@ -296,8 +280,7 @@ GroupContact를 수정한다.
   "data": {
     "id": 30,
     "groupId": 20,
-    "phone": "02-9876-5432",
-    "active": true
+    "phone": "02-9876-5432"
   }
 }
 ```

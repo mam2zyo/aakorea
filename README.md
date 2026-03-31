@@ -35,8 +35,8 @@
 - React
 - Vite
 
-현재 저장소에는 프론트엔드 앱 스캐폴드가 아직 추가되지 않았으며,  
-추후 `frontend/` 아래에 React + Vite 앱을 두는 것을 기준으로 한다.
+프론트엔드 앱은 `frontend/aakorea-main` 아래에 있으며,  
+공개 홈/모임 조회와 운영 `District`/`Group` 관리 화면을 React + Vite로 구성한다.
 
 ---
 
@@ -46,6 +46,7 @@
 backend/
   aakorea-main/
 frontend/
+  aakorea-main/
 docs/
 ```
 
@@ -91,10 +92,26 @@ cd backend\aakorea-main
 
 ## 2. 프론트엔드 실행
 
-현재 저장소에는 실행 가능한 프론트엔드 앱이 아직 없다.
+작업 디렉터리:
 
-프론트엔드 앱을 추가할 때는 `frontend/` 아래에 React + Vite 프로젝트를 생성하고,  
-그 시점의 실제 경로와 명령을 이 문서에 반영한다.
+```bash
+cd frontend/aakorea-main
+```
+
+개발 서버 실행:
+
+```bash
+npm run dev
+```
+
+빌드:
+
+```bash
+npm run build
+```
+
+프론트엔드는 기본적으로 `/api` 상대 경로를 사용하고,  
+로컬 개발에서는 Vite proxy가 `http://localhost:8080` 백엔드로 요청을 전달한다.
 
 ---
 
@@ -124,10 +141,10 @@ cd backend\aakorea-main
 
 ## 개발 메모
 
-- 프론트엔드 앱이 추가되면 API 호출은 상대 경로 기반으로 구성합니다
-- 프론트엔드 앱이 추가되면 로컬 개발 시 Vite proxy로 `/api` 요청을 백엔드로 전달하도록 구성합니다
+- 프론트엔드는 API 호출을 상대 경로 기반으로 구성합니다
+- 로컬 개발 시 프론트엔드는 Vite proxy로 `/api` 요청을 백엔드로 전달합니다
 - 현재는 최소 필드 기준으로 빠르게 CRUD와 조회 흐름을 검증하는 것이 우선입니다
-- 현재는 Postman과 백엔드 단위 검증부터 진행하고, 이후 프론트엔드 흐름을 연결합니다
+- 현재 프론트엔드는 공개 홈과 모임 찾기, 운영 로그인, `District` 관리, `Group` 중심 작업공간을 제공합니다
 
 현재 가장 먼저 검증할 핵심 흐름:
 

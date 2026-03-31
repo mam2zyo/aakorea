@@ -50,16 +50,15 @@
 아래 필드는 여러 개체에서 공통적으로 필요할 수 있다.
 
 - `id`
-- `active` 또는 `published`
 - `createdAt`
 - `updatedAt`
 
 다만 현재 문서에서는 **개체별 최소 필드**를 우선 정의한다.  
 공통 감사 필드(`createdAt`, `updatedAt`)는 구현체에서 공통 처리하더라도 무방하다.
 
-상태 필드는 성격에 따라 구분한다.
+상태 필드는 필요한 개체에서만 둔다.
 
-- 운영 데이터 활성/비활성: `active`
+- 운영 데이터 활성/비활성: `Meeting.active`
 - 공개 콘텐츠 게시 여부: `published`
 
 ---
@@ -99,7 +98,6 @@
 
 - `id`
 - `name`
-- `active`
 
 ### 필드 설명
 
@@ -108,9 +106,6 @@
 
 - `name`  
   운영자가 구분할 수 있는 District 이름
-
-- `active`  
-  현재 운영 대상 여부
 
 ### 현재 제외하는 필드
 
@@ -136,7 +131,6 @@
 - `id`
 - `districtId`
 - `name`
-- `active`
 
 ### 필드 설명
 
@@ -148,9 +142,6 @@
 
 - `name`  
   운영 및 공개에서 식별 가능한 그룹명
-
-- `active`  
-  현재 운영/노출 대상 여부
 
 ### 중요한 제약
 
@@ -180,7 +171,6 @@
 - `id`
 - `groupId`
 - `phone`
-- `active`
 
 ### 필드 설명
 
@@ -193,9 +183,6 @@
 - `phone`  
   공개 연락에 사용하는 전화번호  
   현재 MVP에서 가장 중요한 필드 중 하나다
-
-- `active`  
-  현재 사용 가능한 연락처 여부
 
 ### 중요한 제약
 
@@ -417,7 +404,9 @@
 - `District.name`
 - `Group.name`
 - `Group.districtId`
-- 각 개체의 `active` 또는 `published`
+- `Meeting.active`
+- `ContentPage.published`
+- `Notice.published`
 
 ### 안내/공지 제공에 직접 필요한 필드
 

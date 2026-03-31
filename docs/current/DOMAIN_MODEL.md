@@ -37,9 +37,13 @@
 
 이 개체들은 현재 MVP의 공개 탐색 흐름과 최소 운영 흐름을 성립시키는 데 직접 필요하다.
 
+이 문서에서는 `MeetingLocation`, `MeetingType`처럼 특정 도메인에 종속되는 값은  
+별도 핵심 도메인 객체와 같은 수준으로 나열하지 않고,  
+해당 도메인 객체의 하위 구성으로 설명한다.
+
 ---
 
-## 개체별 정의
+## 도메인 객체별 정의
 
 ### 1. District
 
@@ -110,22 +114,12 @@
 `Meeting`은 `Group`에 속한다.  
 사용자는 `Meeting`을 통해 기본 정보와 연락 가능한 지점에 접근한다.
 
-`Meeting`은 `MeetingLocation` 값을 포함한다.  
-현재 MVP에서 `MeetingLocation`은 `Meeting`에 종속된 value object로 보며,  
-별도 식별자나 독립 관리 흐름을 갖지 않는다.
-
-`Meeting`은 `MeetingType` 값을 가진다.  
-현재 MVP에서 `MeetingType`은 모임의 공개/비공개 성격을 표현하는 enum이며,  
-복잡한 예외 일정까지 세밀하게 모델링하지 않는 현재 단계의 제약을 함께 반영한다.
-
 현재 MVP에서는 `Meeting`을 매우 복잡한 일정 모델로 다루지 않는다.  
 반복 규칙, 예외 일정, 특별 이벤트 분기 같은 확장은 도입하지 않는다.
 
----
+#### 4-1. MeetingType (enum)
 
-### MeetingType (enum)
-
-`MeetingType`은 `Meeting`의 공개 가능성 성격을 표현하는 enum 값이다.
+`MeetingType`은 `Meeting`의 공개 가능성 성격을 표현하는 내부 enum 값이다.
 
 현재 MVP에서 허용하는 값은 다음과 같다.
 
@@ -143,11 +137,9 @@
 예를 들어 목요일 모임이 기본적으로는 비공개지만 마지막 주만 공개 모임인 경우,  
 현재 단계에서는 이를 상세 규칙으로 분해하지 않고 `NOTFIXED`로 표현한다.
 
----
+#### 4-2. MeetingLocation (value object)
 
-### MeetingLocation (value object)
-
-`MeetingLocation`은 `Meeting`에 포함되는 위치 정보 값 객체다.
+`MeetingLocation`은 `Meeting`에 포함되는 위치 정보 value object다.
 
 현재 MVP에서 `MeetingLocation`은 다음 의미를 가진다.
 
@@ -213,9 +205,10 @@
 - 하나의 `Group`은 하나 이상의 `Meeting`을 가질 수 있다
 - `Meeting`은 공개 탐색의 직접 대상이다
 
-### Meeting → MeetingLocation (value object)
+### Meeting의 내부 구성
 
 - 하나의 `Meeting`은 하나의 `MeetingLocation` 값을 포함한다
+- 하나의 `Meeting`은 하나의 `MeetingType` 값을 가진다
 
 ### ContentPage, Notice
 
@@ -241,6 +234,13 @@
 
 운영 측면에서는 조직 관리 기준이 필요하므로 `District`와 `Group`을 둔다.
 
+다만 구현 경계는 동일하지 않다.  
+현재 구조에서는 `District`를 조직 컨텍스트의 기준 개체로 두고,  
+`Group`, `GroupContact`, `Meeting`은 실제 수정 책임이 함께 움직이는 개체로 보아  
+보다 강하게 결합된 `group` 컨텍스트로 묶는다.
+
+이 구분은 이후 총회 구조나 서비스 조직 관련 도메인을 `organization` 쪽에 확장할 여지를 남기기 위한 판단이기도 하다.
+
 다만 현재는 이를 복잡한 조직도나 계층 구조로 확장하지 않는다.
 
 ---
@@ -254,12 +254,13 @@
 
 ---
 
-### 4. 장소 정보는 `Meeting` 내부의 값 객체로 둔다
+### 4. `Meeting`의 세부 값은 내부 구성으로 둔다
 
-현재 MVP에서 장소 정보는 독립 식별자와 수명주기를 가진 개체보다,  
-`Meeting`과 함께 관리되는 값이 더 적합하다.
+현재 MVP에서 장소 정보와 공개 성격 값은  
+독립 식별자와 수명주기를 가진 개체보다 `Meeting`과 함께 관리되는 값이 더 적합하다.
 
-따라서 `MeetingLocation`을 별도 핵심 개체가 아니라 `Meeting` 내부 value object로 둔다.
+따라서 `MeetingLocation`과 `MeetingType`은  
+별도 핵심 개체가 아니라 `Meeting` 내부 구성으로 둔다.
 
 ---
 
@@ -374,7 +375,7 @@
 - 실질 운영 단위는 `Group`
 - 연락 가능 지점은 `GroupContact`
 - 공개 탐색 중심은 `Meeting`
-- 모임 위치 정보는 `MeetingLocation` value object
+- `Meeting`은 `MeetingLocation`과 `MeetingType`을 내부 구성으로 가진다
 - 정적 안내 콘텐츠는 `ContentPage`
 - 시의성 공지는 `Notice`
 

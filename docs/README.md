@@ -36,6 +36,7 @@
 5. `current/MVP_FIELDS.md`
 6. `current/api/README.md`
 7. `current/IMPLEMENTATION_PLAN.md`
+8. `current/FRONTEND_STRUCTURE.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -134,6 +135,7 @@ docs/
 │  ├─ CONTENT_MODEL.md
 │  ├─ MVP_FIELDS.md
 │  ├─ IMPLEMENTATION_PLAN.md
+│  ├─ FRONTEND_STRUCTURE.md
 │  └─ api/
 │     ├─ README.md
 │     ├─ COMMON.md
@@ -144,7 +146,8 @@ docs/
 │     ├─ ADMIN_MEETINGS.md
 │     └─ ADMIN_CONTENT.md
 └─ reference/
-   └─ AA_ORG_DESIGN_ANALYSIS.md
+   ├─ AA_ORG_DESIGN_ANALYSIS.md
+   └─ FRONTEND_SCREEN_SPLIT_PROPOSAL.md
 ```
 
 필요 시 이후에 다음과 같은 구조를 추가할 수 있다.

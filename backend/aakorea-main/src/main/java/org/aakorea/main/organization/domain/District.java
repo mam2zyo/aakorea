@@ -23,16 +23,11 @@ public class District {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean active;
-
-    public District(String name, boolean active) {
+    public District(String name) {
         this.name = name;
-        this.active = active;
     }
 
-    public void update(String name, boolean active) {
+    public void update(String name) {
         this.name = name;
-        this.active = active;
     }
 }
