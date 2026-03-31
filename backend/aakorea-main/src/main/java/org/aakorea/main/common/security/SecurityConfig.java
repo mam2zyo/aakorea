@@ -64,8 +64,10 @@ public class SecurityConfig {
 
         // 허용할 프론트엔드 도메인 (Cloudflare Pages 주소 및 로컬 개발용 주소)
         configuration.setAllowedOrigins(Arrays.asList(
+                "https://maumtalk.win",                            // 현재 접속 주소
                 "https://c3dffaf8.aakorea-frontend.pages.dev",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "http://172.30.1.16:8080"
         ));
 
         // 허용할 HTTP 메서드 (OPTIONS는 Preflight 요청에 필수)
