@@ -86,6 +86,7 @@
 
 - `published=true`인 데이터만 반환
 - 기본 정렬은 `publishedAt desc`
+- 최신 공지가 먼저 보이도록 `id desc`를 보조 정렬로 사용한다
 
 ---
 

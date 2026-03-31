@@ -11,6 +11,7 @@ import {
   EmptyState,
 } from '../../components/ui'
 import { adminMeetingApi, adminOrgApi } from '../../lib/api'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
@@ -40,6 +41,9 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
   const [groupForm, setGroupForm] = useState(EMPTY_GROUP_FORM)
   const [contactForm, setContactForm] = useState(EMPTY_CONTACT_FORM)
   const [meetingForm, setMeetingForm] = useState(EMPTY_MEETING_FORM)
+  const [groupErrors, setGroupErrors] = useState({})
+  const [contactErrors, setContactErrors] = useState({})
+  const [meetingErrors, setMeetingErrors] = useState({})
 
   const [loading, setLoading] = useState(false)
   const [missingGroup, setMissingGroup] = useState(false)
@@ -70,6 +74,9 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
 
       setMissingGroup(false)
       setGroupData(currentGroup)
+      setGroupErrors({})
+      setContactErrors({})
+      setMeetingErrors({})
       setGroupForm({
         districtId: String(currentGroup.districtId),
         name: currentGroup.name,
@@ -165,15 +172,21 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 void saveGroup()
               }}
             >
-              <Field label="District">
+              <Field
+                label="District"
+                error={readFieldError(groupErrors, 'districtId')}
+              >
                 <select
                   value={groupForm.districtId}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setGroupForm((previous) => ({
                       ...previous,
                       districtId: event.target.value,
                     }))
-                  }
+                    setGroupErrors((previous) =>
+                      omitFieldErrors(previous, 'districtId'),
+                    )
+                  }}
                 >
                   {districts.map((district) => (
                     <option key={district.id} value={district.id}>
@@ -183,15 +196,16 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 </select>
               </Field>
 
-              <Field label="Group 이름">
+              <Field label="Group 이름" error={readFieldError(groupErrors, 'name')}>
                 <input
                   value={groupForm.name}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setGroupForm((previous) => ({
                       ...previous,
                       name: event.target.value,
                     }))
-                  }
+                    setGroupErrors((previous) => omitFieldErrors(previous, 'name'))
+                  }}
                 />
               </Field>
 
@@ -207,7 +221,10 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
             <SectionHeader
               title="GroupContact"
               actionLabel="새 연락처"
-              onAction={() => setContactForm(EMPTY_CONTACT_FORM)}
+              onAction={() => {
+                setContactForm(EMPTY_CONTACT_FORM)
+                setContactErrors({})
+              }}
             />
 
             <form
@@ -217,16 +234,17 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 void saveContact()
               }}
             >
-              <Field label="전화번호">
+              <Field label="전화번호" error={readFieldError(contactErrors, 'phone')}>
                 <input
                   placeholder="02-1234-5678"
                   value={contactForm.phone}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setContactForm((previous) => ({
                       ...previous,
                       phone: event.target.value,
                     }))
-                  }
+                    setContactErrors((previous) => omitFieldErrors(previous, 'phone'))
+                  }}
                 />
               </Field>
 
@@ -242,10 +260,13 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
               emptyDescription="공개 상세에서 전화번호가 보이려면 GroupContact가 필요합니다."
               items={groupContacts}
               onAction={(contact) =>
-                setContactForm({
-                  id: contact.id,
-                  phone: contact.phone,
-                })
+                {
+                  setContactForm({
+                    id: contact.id,
+                    phone: contact.phone,
+                  })
+                  setContactErrors({})
+                }
               }
               renderItem={(contact) => (
                 <div className="entity-item__body">
@@ -260,7 +281,10 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
             <SectionHeader
               title="Meeting"
               actionLabel="새 모임"
-              onAction={() => setMeetingForm(EMPTY_MEETING_FORM)}
+              onAction={() => {
+                setMeetingForm(EMPTY_MEETING_FORM)
+                setMeetingErrors({})
+              }}
             />
 
             <form
@@ -270,15 +294,21 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 void saveMeeting()
               }}
             >
-              <Field label="Province">
+              <Field
+                label="Province"
+                error={readFieldError(meetingErrors, 'province')}
+              >
                 <select
                   value={meetingForm.province}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       province: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) =>
+                      omitFieldErrors(previous, 'province'),
+                    )
+                  }}
                 >
                   {PROVINCE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -288,15 +318,21 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 </select>
               </Field>
 
-              <Field label="요일">
+              <Field
+                label="요일"
+                error={readFieldError(meetingErrors, 'dayOfWeek')}
+              >
                 <select
                   value={meetingForm.dayOfWeek}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       dayOfWeek: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) =>
+                      omitFieldErrors(previous, 'dayOfWeek'),
+                    )
+                  }}
                 >
                   {DAY_OF_WEEK_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -306,28 +342,38 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 </select>
               </Field>
 
-              <Field label="시작 시각">
+              <Field
+                label="시작 시각"
+                error={readFieldError(meetingErrors, 'startTime')}
+              >
                 <input
                   placeholder="19:30"
                   value={meetingForm.startTime}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       startTime: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) =>
+                      omitFieldErrors(previous, 'startTime'),
+                    )
+                  }}
                 />
               </Field>
 
-              <Field label="공개 유형">
+              <Field
+                label="공개 유형"
+                error={readFieldError(meetingErrors, 'type')}
+              >
                 <select
                   value={meetingForm.type}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       type: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) => omitFieldErrors(previous, 'type'))
+                  }}
                 >
                   {MEETING_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -337,27 +383,39 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
                 </select>
               </Field>
 
-              <Field label="장소명">
+              <Field
+                label="장소명"
+                error={readFieldError(meetingErrors, 'location.name')}
+              >
                 <input
                   value={meetingForm.locationName}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       locationName: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) =>
+                      omitFieldErrors(previous, 'location.name'),
+                    )
+                  }}
                 />
               </Field>
 
-              <Field label="주소">
+              <Field
+                label="주소"
+                error={readFieldError(meetingErrors, 'location.address')}
+              >
                 <input
                   value={meetingForm.locationAddress}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setMeetingForm((previous) => ({
                       ...previous,
                       locationAddress: event.target.value,
                     }))
-                  }
+                    setMeetingErrors((previous) =>
+                      omitFieldErrors(previous, 'location.address'),
+                    )
+                  }}
                 />
               </Field>
 
@@ -384,16 +442,19 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
               emptyDescription="공개 모임 조회에 노출할 모임을 현재 Group에 연결해 주세요."
               items={meetings}
               onAction={(meeting) =>
-                setMeetingForm({
-                  id: meeting.id,
-                  province: meeting.province,
-                  dayOfWeek: meeting.dayOfWeek,
-                  startTime: meeting.startTime,
-                  type: meeting.type,
-                  locationName: meeting.location.name,
-                  locationAddress: meeting.location.address,
-                  active: meeting.active,
-                })
+                {
+                  setMeetingForm({
+                    id: meeting.id,
+                    province: meeting.province,
+                    dayOfWeek: meeting.dayOfWeek,
+                    startTime: meeting.startTime,
+                    type: meeting.type,
+                    locationName: meeting.location.name,
+                    locationAddress: meeting.location.address,
+                    active: meeting.active,
+                  })
+                  setMeetingErrors({})
+                }
               }
               renderItem={(meeting) => (
                 <div className="entity-item__body">
@@ -421,9 +482,17 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
       })
+      setGroupErrors({})
       onSuccess('Group 기본 정보를 저장했습니다.')
       await loadGroupWorkspace()
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error)
+      if (fieldErrors) {
+        setGroupErrors(fieldErrors)
+        return
+      }
+
+      setGroupErrors({})
       onError(error, 'Group 저장에 실패했습니다.')
     }
   }
@@ -443,9 +512,17 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
         onSuccess('GroupContact를 생성했습니다.')
       }
 
+      setContactErrors({})
       setContactForm(EMPTY_CONTACT_FORM)
       await loadGroupWorkspace()
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error)
+      if (fieldErrors) {
+        setContactErrors(fieldErrors)
+        return
+      }
+
+      setContactErrors({})
       onError(error, 'GroupContact 저장에 실패했습니다.')
     }
   }
@@ -473,9 +550,17 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
         onSuccess('Meeting을 생성했습니다.')
       }
 
+      setMeetingErrors({})
       setMeetingForm(EMPTY_MEETING_FORM)
       await loadGroupWorkspace()
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error)
+      if (fieldErrors) {
+        setMeetingErrors(fieldErrors)
+        return
+      }
+
+      setMeetingErrors({})
       onError(error, 'Meeting 저장에 실패했습니다.')
     }
   }

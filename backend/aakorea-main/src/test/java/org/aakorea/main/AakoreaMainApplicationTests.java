@@ -1,5 +1,7 @@
 package org.aakorea.main;
 
+import org.aakorea.main.content.application.ContentAdminService;
+import org.aakorea.main.content.application.PublicContentQueryService;
 import org.aakorea.main.group.application.GroupAdminService;
 import org.aakorea.main.group.application.MeetingAdminService;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
@@ -22,6 +24,12 @@ class AakoreaMainApplicationTests {
 
     @MockitoBean
     private PublicMeetingQueryService publicMeetingQueryService;
+
+    @MockitoBean
+    private ContentAdminService contentAdminService;
+
+    @MockitoBean
+    private PublicContentQueryService publicContentQueryService;
 
     @Test
     void contextLoads() {

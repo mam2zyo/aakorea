@@ -90,7 +90,29 @@ ContentPage를 생성한다.
 
 ---
 
-### 3. ContentPage 수정
+### 3. ContentPage 상세 조회
+
+## GET `/api/admin/content-pages/{id}`
+
+편집용 ContentPage 단건 상세를 조회한다.
+
+### Response 200
+
+```json
+{
+  "data": {
+    "id": 1,
+    "key": "first-visitor-guide",
+    "title": "처음 오신 분 안내",
+    "body": "페이지 본문",
+    "published": true
+  }
+}
+```
+
+---
+
+### 4. ContentPage 수정
 
 ## PUT `/api/admin/content-pages/{id}`
 
@@ -123,7 +145,7 @@ ContentPage를 수정한다.
 
 ---
 
-### 4. Notice 목록 조회
+### 5. Notice 목록 조회
 
 ## GET `/api/admin/notices`
 
@@ -146,7 +168,29 @@ Notice 목록을 조회한다.
 
 ---
 
-### 5. Notice 생성
+### 6. Notice 상세 조회
+
+## GET `/api/admin/notices/{id}`
+
+편집용 Notice 단건 상세를 조회한다.
+
+### Response 200
+
+```json
+{
+  "data": {
+    "id": 10,
+    "title": "공지 제목",
+    "body": "공지 본문",
+    "published": true,
+    "publishedAt": "2026-03-30T09:00:00"
+  }
+}
+```
+
+---
+
+### 7. Notice 생성
 
 ## POST `/api/admin/notices`
 
@@ -182,11 +226,11 @@ Notice를 생성한다.
 - `title` 필수
 - `body` 필수
 - `publishedAt`는 게시 시점 정렬에 필요한 값
-- 게시 상태가 `true`인 경우 `publishedAt` 필수로 강제할 수 있다
+- 게시 상태가 `true`인 경우 `publishedAt` 필수
 
 ---
 
-### 6. Notice 수정
+### 8. Notice 수정
 
 ## PUT `/api/admin/notices/{id}`
 

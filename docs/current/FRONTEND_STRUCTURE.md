@@ -31,9 +31,11 @@
 ### 1. 공개 영역
 
 - 공개 홈 화면
+- `ContentPage` 공개 조회
+- `Notice` 목록/상세 조회
 - `Province` 기준 `Meeting` 검색
 - 선택 시 `Meeting` 상세 확인
-- `GroupContact.phone` 확인
+- `GroupContact.phone` 확인 및 전화 연결
 
 ### 2. 운영 인증 영역
 
@@ -46,6 +48,8 @@
 - `District` 목록/생성/수정
 - `Group` 목록 조회 및 생성
 - `Group` 편집 화면에서 `GroupContact`, `Meeting` 동시 관리
+- `ContentPage` 목록/상세/생성/수정
+- `Notice` 목록/상세/생성/수정
 
 즉, 현재 프론트엔드는 운영 화면을 엔티티 개수대로 기계적으로 나누기보다,  
 **실제 편집 책임이 모이는 단위인 `Group`을 중심으로 구성**한다.
@@ -61,6 +65,9 @@
 #### 공개 라우트
 
 - `/`
+- `/content-pages/:key`
+- `/notices`
+- `/notices/:id`
 - `/meetings`
 
 #### 운영 라우트
@@ -69,16 +76,8 @@
 - `/admin/districts`
 - `/admin/groups`
 - `/admin/groups/:id`
-
-### 아직 구현하지 않은 화면
-
-아래 화면은 제품/문서상 필요하지만,  
-현재는 백엔드 콘텐츠 API가 준비되지 않아 아직 프론트에 연결하지 않았다.
-
-- `ContentPage` 공개 화면
-- `Notice` 공개 화면
-- `ContentPage` 운영 관리 화면
-- `Notice` 운영 관리 화면
+- `/admin/content-pages`
+- `/admin/notices`
 
 ### 현재 파일 기준 구조
 
@@ -92,16 +91,16 @@
   공개 셸과 운영 셸 레이아웃을 분리한다
 
 - `src/pages/public/`
-  공개 홈과 모임 조회 화면을 둔다
+  공개 홈, 안내 페이지, 공지, 모임 조회 화면을 둔다
 
 - `src/pages/admin/`
-  로그인, District 관리, Group 목록, Group 작업공간 화면을 둔다
+  로그인, District 관리, Group 목록, Group 작업공간, 콘텐츠 관리 화면을 둔다
 
 - `src/components/ui.jsx`
   페이지 섹션, 필드, 리스트, 상태 배지 등 공통 UI를 제공한다
 
 - `src/lib/api.js`
-  인증, 운영 조직, 운영 모임, 공개 모임 API 호출을 담당한다
+  인증, 운영 조직, 운영 모임, 운영 콘텐츠, 공개 콘텐츠 API 호출을 담당한다
 
 - `src/lib/options.js`
   `province`, `dayOfWeek`, `meetingType` 선택값을 프론트 기준으로 관리한다
@@ -123,3 +122,5 @@
 - 운영 인증은 세션 기반이므로 요청 시 credential을 함께 보낸다
 - 미인증 상태에서 `/admin/*` 진입 시 `/admin/login`으로 이동한다
 - `GroupContact`, `Meeting`은 `Group` 작업공간 안에서 그룹 단위로 조회/편집한다
+- `ContentPage`, `Notice`는 각각 독립 운영 화면에서 목록과 편집을 함께 관리한다
+- 공개 공지 화면은 `/notices`를 중심으로 목록과 상세를 함께 연결한다

@@ -22,6 +22,8 @@ export function AdminLayout({
   session,
 }) {
   const isGroupsRoute = currentPath === '/admin/groups' || currentPath.startsWith('/admin/groups/')
+  const isContentPagesRoute = currentPath === '/admin/content-pages'
+  const isNoticesRoute = currentPath === '/admin/notices'
 
   return (
     <div className="app-shell">
@@ -53,6 +55,20 @@ export function AdminLayout({
             onNavigate={onNavigate}
           >
             Group 관리
+          </AdminNavLink>
+          <AdminNavLink
+            active={isContentPagesRoute}
+            href="/admin/content-pages"
+            onNavigate={onNavigate}
+          >
+            안내 페이지
+          </AdminNavLink>
+          <AdminNavLink
+            active={isNoticesRoute}
+            href="/admin/notices"
+            onNavigate={onNavigate}
+          >
+            공지 관리
           </AdminNavLink>
         </nav>
 

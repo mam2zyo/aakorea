@@ -46,7 +46,9 @@ export function requiresAdminSession(kind) {
   return (
     kind === 'admin-districts' ||
     kind === 'admin-groups' ||
-    kind === 'admin-group-editor'
+    kind === 'admin-group-editor' ||
+    kind === 'admin-content-pages' ||
+    kind === 'admin-notices'
   )
 }
 
@@ -86,6 +88,13 @@ function parseRoute(pathname, search) {
     }
   }
 
+  if (normalizedPath === '/notices') {
+    return {
+      kind: 'notices',
+      pathname: normalizedPath,
+    }
+  }
+
   if (normalizedPath === '/admin') {
     return {
       kind: 'admin-root',
@@ -112,6 +121,40 @@ function parseRoute(pathname, search) {
     return {
       kind: 'admin-groups',
       pathname: normalizedPath,
+    }
+  }
+
+  if (normalizedPath === '/admin/content-pages') {
+    return {
+      kind: 'admin-content-pages',
+      pathname: normalizedPath,
+    }
+  }
+
+  if (normalizedPath === '/admin/notices') {
+    return {
+      kind: 'admin-notices',
+      pathname: normalizedPath,
+    }
+  }
+
+  if (segments.length === 2 && segments[0] === 'content-pages') {
+    return {
+      kind: 'content-page',
+      pathname: normalizedPath,
+      pageKey: decodeURIComponent(segments[1]),
+    }
+  }
+
+  if (segments.length === 2 && segments[0] === 'notices') {
+    const noticeId = Number(segments[1])
+
+    if (Number.isInteger(noticeId) && noticeId > 0) {
+      return {
+        kind: 'notice-detail',
+        pathname: normalizedPath,
+        noticeId,
+      }
     }
   }
 

@@ -9,6 +9,7 @@ import {
   StatCard,
 } from '../../components/ui'
 import { adminOrgApi } from '../../lib/api'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 import { ensureSelectValue } from '../../lib/view'
 
 const EMPTY_GROUP_FORM = { districtId: '', name: '' }
@@ -17,6 +18,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   const [districts, setDistricts] = useState([])
   const [groups, setGroups] = useState([])
   const [groupForm, setGroupForm] = useState(EMPTY_GROUP_FORM)
+  const [groupErrors, setGroupErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
   async function loadGroupIndex() {
@@ -84,15 +86,21 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                   void createGroup()
                 }}
               >
-                <Field label="District">
+                <Field
+                  label="District"
+                  error={readFieldError(groupErrors, 'districtId')}
+                >
                   <select
                     value={groupForm.districtId}
-                    onChange={(event) =>
+                    onChange={(event) => {
                       setGroupForm((previous) => ({
                         ...previous,
                         districtId: event.target.value,
                       }))
-                    }
+                      setGroupErrors((previous) =>
+                        omitFieldErrors(previous, 'districtId'),
+                      )
+                    }}
                   >
                     {districts.map((district) => (
                       <option key={district.id} value={district.id}>
@@ -102,15 +110,16 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                   </select>
                 </Field>
 
-                <Field label="Group 이름">
+                <Field label="Group 이름" error={readFieldError(groupErrors, 'name')}>
                   <input
                     value={groupForm.name}
-                    onChange={(event) =>
+                    onChange={(event) => {
                       setGroupForm((previous) => ({
                         ...previous,
                         name: event.target.value,
                       }))
-                    }
+                      setGroupErrors((previous) => omitFieldErrors(previous, 'name'))
+                    }}
                 />
               </Field>
 
@@ -161,12 +170,20 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
       })
 
       onSuccess('Group을 생성했습니다. 작업공간으로 이동합니다.')
+      setGroupErrors({})
       setGroupForm((previous) => ({
         ...EMPTY_GROUP_FORM,
         districtId: previous.districtId,
       }))
       navigateToGroupEditor(createdGroup.id)
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error)
+      if (fieldErrors) {
+        setGroupErrors(fieldErrors)
+        return
+      }
+
+      setGroupErrors({})
       onError(error, 'Group 생성에 실패했습니다.')
     }
   }

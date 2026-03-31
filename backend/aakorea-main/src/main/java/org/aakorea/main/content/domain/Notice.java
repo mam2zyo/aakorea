@@ -40,4 +40,11 @@ public class Notice {
         this.published = published;
         this.publishedAt = publishedAt;
     }
+
+    public void update(String title, String body, boolean published, LocalDateTime publishedAt) {
+        this.title = title;
+        this.body = body;
+        this.published = published;
+        this.publishedAt = publishedAt;
+    }
 }

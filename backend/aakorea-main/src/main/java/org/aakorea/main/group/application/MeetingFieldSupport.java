@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Set;
+import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.group.domain.MeetingType;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 final class MeetingFieldSupport {
@@ -38,7 +38,7 @@ final class MeetingFieldSupport {
 
     static String requireProvince(String province) {
         if (province == null || province.isBlank()) {
-            throw badRequest("province is required");
+            throw badRequest("province", "province is required");
         }
 
         return normalizeProvince(province);
@@ -54,13 +54,13 @@ final class MeetingFieldSupport {
 
     static DayOfWeek requireDayOfWeek(String dayOfWeek) {
         if (dayOfWeek == null || dayOfWeek.isBlank()) {
-            throw badRequest("dayOfWeek is required");
+            throw badRequest("dayOfWeek", "dayOfWeek is required");
         }
 
         try {
             return DayOfWeek.valueOf(dayOfWeek.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
-            throw badRequest("dayOfWeek is invalid");
+            throw badRequest("dayOfWeek", "dayOfWeek is invalid");
         }
     }
 
@@ -74,31 +74,31 @@ final class MeetingFieldSupport {
 
     static LocalTime requireStartTime(String startTime) {
         if (startTime == null || startTime.isBlank()) {
-            throw badRequest("startTime is required");
+            throw badRequest("startTime", "startTime is required");
         }
 
         try {
             return LocalTime.parse(startTime.trim(), TIME_FORMATTER);
         } catch (DateTimeParseException exception) {
-            throw badRequest("startTime is invalid");
+            throw badRequest("startTime", "startTime is invalid");
         }
     }
 
     static MeetingType requireMeetingType(String type) {
         if (type == null || type.isBlank()) {
-            throw badRequest("type is required");
+            throw badRequest("type", "type is required");
         }
 
         try {
             return MeetingType.valueOf(type.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException exception) {
-            throw badRequest("type is invalid");
+            throw badRequest("type", "type is invalid");
         }
     }
 
     static String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw badRequest(fieldName + " is required");
+            throw badRequest(fieldName, fieldName + " is required");
         }
 
         return value.trim();
@@ -111,12 +111,12 @@ final class MeetingFieldSupport {
     private static String normalizeProvince(String province) {
         String normalized = province.trim().toLowerCase(Locale.ROOT);
         if (!SUPPORTED_PROVINCES.contains(normalized)) {
-            throw badRequest("province is invalid");
+            throw badRequest("province", "province is invalid");
         }
         return normalized;
     }
 
-    private static ResponseStatusException badRequest(String reason) {
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, reason);
+    private static ResponseStatusException badRequest(String fieldName, String reason) {
+        return FieldValidationException.badRequest(fieldName, reason);
     }
 }

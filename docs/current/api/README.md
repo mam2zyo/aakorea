@@ -106,9 +106,11 @@
 - `POST /api/admin/meetings`
 - `PUT /api/admin/meetings/{id}`
 - `GET /api/admin/content-pages`
+- `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`
 - `PUT /api/admin/content-pages/{id}`
 - `GET /api/admin/notices`
+- `GET /api/admin/notices/{id}`
 - `POST /api/admin/notices`
 - `PUT /api/admin/notices/{id}`
 

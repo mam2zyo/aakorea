@@ -19,6 +19,12 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties(AdminAuthProperties.class)
@@ -30,7 +36,9 @@ public class SecurityConfig {
             RestAuthenticationEntryPoint authenticationEntryPoint,
             RestAccessDeniedHandler accessDeniedHandler
     ) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        // 1. CORS 설정 활성화 추가
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
@@ -47,6 +55,31 @@ public class SecurityConfig {
                 .anonymous(Customizer.withDefaults());
 
         return http.build();
+    }
+
+    // 2. CORS 정책을 정의하는 Bean 추가
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 허용할 프론트엔드 도메인 (Cloudflare Pages 주소 및 로컬 개발용 주소)
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://배포된-프로젝트명.pages.dev",
+                "http://localhost:5173"
+        ));
+
+        // 허용할 HTTP 메서드 (OPTIONS는 Preflight 요청에 필수)
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // 허용할 헤더
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // 세션(쿠키)을 사용한 인증을 위해 true로 설정 (현재 SessionCreationPolicy.IF_REQUIRED 사용 중)
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean

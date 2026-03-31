@@ -8,6 +8,7 @@ import {
   Field,
 } from '../../components/ui'
 import { adminOrgApi } from '../../lib/api'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const EMPTY_DISTRICT_FORM = { id: null, name: '' }
 
@@ -15,6 +16,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
   const [districts, setDistricts] = useState([])
   const [groups, setGroups] = useState([])
   const [districtForm, setDistrictForm] = useState(EMPTY_DISTRICT_FORM)
+  const [districtErrors, setDistrictErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
   async function loadDistrictWorkspace() {
@@ -75,7 +77,10 @@ export function DistrictAdminPage({ onError, onSuccess }) {
             <SectionHeader
               title="District 입력"
               actionLabel="새 District"
-              onAction={() => setDistrictForm(EMPTY_DISTRICT_FORM)}
+              onAction={() => {
+                setDistrictForm(EMPTY_DISTRICT_FORM)
+                setDistrictErrors({})
+              }}
             />
 
             <form
@@ -85,15 +90,16 @@ export function DistrictAdminPage({ onError, onSuccess }) {
                 void saveDistrict()
               }}
             >
-              <Field label="이름">
+              <Field label="이름" error={readFieldError(districtErrors, 'name')}>
                 <input
                   value={districtForm.name}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setDistrictForm((previous) => ({
                       ...previous,
                       name: event.target.value,
                     }))
-                  }
+                    setDistrictErrors((previous) => omitFieldErrors(previous, 'name'))
+                  }}
                 />
               </Field>
 
@@ -113,10 +119,13 @@ export function DistrictAdminPage({ onError, onSuccess }) {
               emptyDescription="운영 조직 기준 단위를 먼저 등록해 주세요."
               items={districts}
               onAction={(district) =>
-                setDistrictForm({
-                  id: district.id,
-                  name: district.name,
-                })
+                {
+                  setDistrictForm({
+                    id: district.id,
+                    name: district.name,
+                  })
+                  setDistrictErrors({})
+                }
               }
               renderItem={(district) => (
                 <div className="entity-item__body">
@@ -147,9 +156,17 @@ export function DistrictAdminPage({ onError, onSuccess }) {
         onSuccess('District를 생성했습니다.')
       }
 
+      setDistrictErrors({})
       setDistrictForm(EMPTY_DISTRICT_FORM)
       await loadDistrictWorkspace()
     } catch (error) {
+      const fieldErrors = getApiFieldErrors(error)
+      if (fieldErrors) {
+        setDistrictErrors(fieldErrors)
+        return
+      }
+
+      setDistrictErrors({})
       onError(error, 'District 저장에 실패했습니다.')
     }
   }

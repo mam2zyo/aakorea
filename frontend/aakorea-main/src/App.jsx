@@ -14,8 +14,12 @@ import { AdminLoginPage } from './pages/admin/AdminLoginPage'
 import { DistrictAdminPage } from './pages/admin/DistrictAdminPage'
 import { GroupEditorPage } from './pages/admin/GroupEditorPage'
 import { GroupListPage } from './pages/admin/GroupListPage'
+import { ContentPageAdminPage } from './pages/admin/ContentPageAdminPage'
+import { NoticeAdminPage } from './pages/admin/NoticeAdminPage'
+import { ContentPageViewPage } from './pages/public/ContentPageViewPage'
 import { HomePage } from './pages/public/HomePage'
 import { MeetingSearchPage } from './pages/public/MeetingSearchPage'
+import { NoticePage } from './pages/public/NoticePage'
 import { ApiError, authApi } from './lib/api'
 import { EmptyState, PageSection } from './components/ui'
 
@@ -157,7 +161,41 @@ function App() {
         session={session}
         onNavigate={navigate}
       >
-        <MeetingSearchPage onError={showError} />
+        <MeetingSearchPage onError={showError} onNavigate={navigate} />
+      </PublicLayout>
+    )
+  }
+
+  if (route.kind === 'content-page') {
+    return (
+      <PublicLayout
+        currentPath={route.pathname}
+        flash={flash}
+        session={session}
+        onNavigate={navigate}
+      >
+        <ContentPageViewPage
+          onError={showError}
+          onNavigate={navigate}
+          pageKey={route.pageKey}
+        />
+      </PublicLayout>
+    )
+  }
+
+  if (route.kind === 'notices' || route.kind === 'notice-detail') {
+    return (
+      <PublicLayout
+        currentPath={route.pathname}
+        flash={flash}
+        session={session}
+        onNavigate={navigate}
+      >
+        <NoticePage
+          noticeId={route.kind === 'notice-detail' ? route.noticeId : null}
+          onError={showError}
+          onNavigate={navigate}
+        />
       </PublicLayout>
     )
   }
@@ -256,6 +294,42 @@ function App() {
     )
   }
 
+  if (route.kind === 'admin-content-pages') {
+    return (
+      <AdminLayout
+        currentPath={route.pathname}
+        flash={flash}
+        session={session}
+        onNavigate={navigate}
+        onLogout={handleLogout}
+      >
+        <ContentPageAdminPage
+          onError={showError}
+          onNavigate={navigate}
+          onSuccess={showSuccess}
+        />
+      </AdminLayout>
+    )
+  }
+
+  if (route.kind === 'admin-notices') {
+    return (
+      <AdminLayout
+        currentPath={route.pathname}
+        flash={flash}
+        session={session}
+        onNavigate={navigate}
+        onLogout={handleLogout}
+      >
+        <NoticeAdminPage
+          onError={showError}
+          onNavigate={navigate}
+          onSuccess={showSuccess}
+        />
+      </AdminLayout>
+    )
+  }
+
   return (
     <PublicLayout
       currentPath={route.pathname}
@@ -266,7 +340,7 @@ function App() {
       <PageSection
         label="Not Found"
         title="요청한 화면을 찾지 못했습니다."
-        description="현재 프론트엔드는 공개 홈, 모임 찾기, 운영 District/Group 관리 화면만 연결되어 있습니다."
+        description="현재 프론트엔드는 공개 홈, 안내 페이지, 공지, 모임 찾기와 운영 관리 화면을 연결하고 있습니다."
       >
         <EmptyState
           title="경로가 아직 준비되지 않았습니다."

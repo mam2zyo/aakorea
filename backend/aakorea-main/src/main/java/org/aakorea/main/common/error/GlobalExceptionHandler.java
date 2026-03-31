@@ -47,6 +47,15 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ApiErrorCode.VALIDATION_ERROR, exception.getName() + " is invalid"));
     }
 
+    @ExceptionHandler(FieldValidationException.class)
+    public ResponseEntity<ErrorResponse> handleFieldValidation(FieldValidationException exception) {
+        return ResponseEntity.status(exception.getStatusCode())
+                .body(ErrorResponse.of(
+                        exception.getErrorCode(),
+                        exception.getReason(),
+                        exception.getFields()));
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatus(ResponseStatusException exception) {
         return ResponseEntity.status(exception.getStatusCode())

@@ -30,11 +30,25 @@ export function PublicLayout({ children, currentPath, flash, onNavigate, session
             홈
           </NavLink>
           <NavLink
+            active={currentPath === '/content-pages/first-visitor-guide'}
+            href="/content-pages/first-visitor-guide"
+            onNavigate={onNavigate}
+          >
+            처음 안내
+          </NavLink>
+          <NavLink
             active={currentPath === '/meetings'}
             href="/meetings"
             onNavigate={onNavigate}
           >
             모임 찾기
+          </NavLink>
+          <NavLink
+            active={currentPath === '/notices' || currentPath.startsWith('/notices/')}
+            href="/notices"
+            onNavigate={onNavigate}
+          >
+            공지
           </NavLink>
         </nav>
 

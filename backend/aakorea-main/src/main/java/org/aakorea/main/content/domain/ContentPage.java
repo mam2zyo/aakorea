@@ -40,4 +40,11 @@ public class ContentPage {
         this.body = body;
         this.published = published;
     }
+
+    public void update(String key, String title, String body, boolean published) {
+        this.key = key;
+        this.title = title;
+        this.body = body;
+        this.published = published;
+    }
 }

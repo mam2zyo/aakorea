@@ -31,11 +31,12 @@ export function PageIntro({
   )
 }
 
-export function Field({ label, className = '', children }) {
+export function Field({ label, className = '', error, children }) {
   return (
-    <label className={`field ${className}`.trim()}>
+    <label className={`field${error ? ' field--invalid' : ''} ${className}`.trim()}>
       <span className="field__label">{label}</span>
       {children}
+      {error ? <span className="field__error">{error}</span> : null}
     </label>
   )
 }

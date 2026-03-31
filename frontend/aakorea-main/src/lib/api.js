@@ -124,11 +124,56 @@ export const adminMeetingApi = {
   },
 }
 
+export const adminContentApi = {
+  getContentPages() {
+    return request('/api/admin/content-pages')
+  },
+  getContentPage(id) {
+    return request(`/api/admin/content-pages/${id}`)
+  },
+  createContentPage(payload) {
+    return request('/api/admin/content-pages', { method: 'POST', body: payload })
+  },
+  updateContentPage(id, payload) {
+    return request(`/api/admin/content-pages/${id}`, {
+      method: 'PUT',
+      body: payload,
+    })
+  },
+  getNotices() {
+    return request('/api/admin/notices')
+  },
+  getNotice(id) {
+    return request(`/api/admin/notices/${id}`)
+  },
+  createNotice(payload) {
+    return request('/api/admin/notices', { method: 'POST', body: payload })
+  },
+  updateNotice(id, payload) {
+    return request(`/api/admin/notices/${id}`, {
+      method: 'PUT',
+      body: payload,
+    })
+  },
+}
+
 export const publicMeetingApi = {
   getMeetings(filters) {
     return request(`/api/public/meetings${queryString(filters)}`)
   },
   getMeeting(id) {
     return request(`/api/public/meetings/${id}`)
+  },
+}
+
+export const publicContentApi = {
+  getContentPage(key) {
+    return request(`/api/public/content-pages/${encodeURIComponent(key)}`)
+  },
+  getNotices() {
+    return request('/api/public/notices')
+  },
+  getNotice(id) {
+    return request(`/api/public/notices/${id}`)
   },
 }
