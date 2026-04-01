@@ -32,6 +32,8 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(
                     UsernamePasswordAuthenticationToken.unauthenticated(username, password));
 
+            // 인증 성공 후 SecurityContext를 만들고,
+            // SecurityConfig.requireExplicitSave(true) 설정에 맞춰 세션 저장소에 직접 저장한다.
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
@@ -49,6 +51,7 @@ public class AuthService {
             HttpServletResponse response,
             Authentication authentication
     ) {
+        // 세션에 저장된 SecurityContext까지 함께 비워서 완전히 로그아웃한다.
         new SecurityContextLogoutHandler().logout(request, response, authentication);
         return new LogoutStatus(true);
     }
