@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import {
+  AdminPageHeader,
   EntityList,
   Field,
-  PageIntro,
   PageSection,
   SectionHeader,
   StatCard,
@@ -11,6 +11,7 @@ import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const EMPTY_NOTICE_FORM = createEmptyNoticeForm()
+const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
   const [notices, setNotices] = useState([])
@@ -61,14 +62,23 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   const publishedCount = notices.filter((notice) => notice.published).length
+  const sortedNotices = [...notices].sort((left, right) => {
+    const leftPublishedAt = left.publishedAt ?? ''
+    const rightPublishedAt = right.publishedAt ?? ''
+    if (leftPublishedAt !== rightPublishedAt) {
+      return rightPublishedAt.localeCompare(leftPublishedAt)
+    }
+
+    return textCollator.compare(left.title, right.title)
+  })
 
   return (
     <>
-      <PageIntro
-        eyebrow="Admin Notices"
-        title="시의성 있는 공지를 최신순 흐름으로 관리합니다."
-        description="`Notice`는 목록과 상세에서 함께 노출되므로, 게시 여부와 `publishedAt`을 같이 관리합니다."
-        aside={
+      <AdminPageHeader
+        eyebrow="Notice Directory"
+        title="공지를 최신순 흐름으로 관리합니다."
+        description="게시 시각이 있는 공지는 최신순으로 정렬되고, 편집 패널에서 즉시 수정할 수 있습니다."
+        meta={
           <div className="stats-grid stats-grid--compact">
             <StatCard label="전체 공지" value={notices.length} />
             <StatCard label="게시 중" value={publishedCount} />
@@ -79,8 +89,8 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
 
       <PageSection
         label="Notice Workspace"
-        title="최신 공지 순서를 유지하며 등록합니다."
-        description="게시 상태일 때는 `publishedAt`이 필요하며, 공개 목록은 이 값을 기준으로 정렬됩니다."
+        title="목록과 편집 패널을 같은 흐름에서 다룹니다."
+        description="게시 상태일 때는 `publishedAt`이 필요하며, 목록은 기본적으로 최신 공지 순서로 정렬됩니다."
       >
         {loading ? <div className="section-note">공지 목록을 불러오는 중입니다...</div> : null}
         {detailLoading ? <div className="section-note">선택한 공지를 불러오는 중입니다...</div> : null}
@@ -190,7 +200,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
               actionLabel="불러오기"
               emptyTitle="공지 데이터가 없습니다."
               emptyDescription="최신 공지 흐름을 시작할 첫 공지를 등록해 주세요."
-              items={notices}
+              items={sortedNotices}
               onAction={(notice) => void selectNotice(notice.id)}
               renderItem={(notice) => (
                 <div className="entity-item__body">

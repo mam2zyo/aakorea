@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import {
+  AdminPageHeader,
   EntityList,
-  PageIntro,
   PageSection,
   SectionHeader,
   StatCard,
@@ -12,6 +12,7 @@ import { adminGroupApi } from '../../features/groups/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const EMPTY_DISTRICT_FORM = { id: null, name: '' }
+const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export function DistrictAdminPage({ onError, onSuccess }) {
   const [districts, setDistricts] = useState([])
@@ -51,14 +52,17 @@ export function DistrictAdminPage({ onError, onSuccess }) {
     accumulator[group.districtId] = currentCount + 1
     return accumulator
   }, {})
+  const sortedDistricts = [...districts].sort((left, right) =>
+    textCollator.compare(left.name, right.name),
+  )
 
   return (
     <>
-      <PageIntro
-        eyebrow="Admin Districts"
-        title="District는 독립 화면에서 관리합니다."
-        description="지금은 비교적 단순해 보여도, District는 이후 조직 구조 확장을 고려해 별도 화면으로 유지합니다."
-        aside={
+      <AdminPageHeader
+        eyebrow="District Directory"
+        title="District 기준 정보를 이름순으로 정리합니다."
+        description="Group 생성과 연결되는 운영 기준 단위를 별도 화면에서 유지합니다."
+        meta={
           <div className="stats-grid stats-grid--compact">
             <StatCard label="District" value={districts.length} />
             <StatCard label="연결 Group" value={groups.length} />
@@ -68,8 +72,8 @@ export function DistrictAdminPage({ onError, onSuccess }) {
 
       <PageSection
         label="District Workspace"
-        title="조직 기준 단위를 먼저 정리합니다."
-        description="Group 편집은 별도 화면에서 진행하고, 여기서는 District 자체의 목록과 기준 정보를 관리합니다."
+        title="목록과 입력을 같은 흐름에서 다룹니다."
+        description="목록은 이름순으로 정렬되며, 편집은 오른쪽 입력 패널에서 이어집니다."
       >
         {loading ? <div className="section-note">District 데이터를 불러오는 중입니다...</div> : null}
 
@@ -118,7 +122,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
             <EntityList
               emptyTitle="District가 없습니다."
               emptyDescription="운영 조직 기준 단위를 먼저 등록해 주세요."
-              items={districts}
+              items={sortedDistricts}
               onAction={(district) =>
                 {
                   setDistrictForm({

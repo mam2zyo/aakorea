@@ -1,9 +1,8 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import {
+  AdminPageHeader,
   EmptyState,
-  EntityList,
   Field,
-  PageIntro,
   PageSection,
   SectionHeader,
   StatCard,
@@ -14,6 +13,7 @@ import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/fo
 import { ensureSelectValue } from '../../lib/view'
 
 const EMPTY_GROUP_FORM = { districtId: '', name: '' }
+const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export function GroupListPage({ onError, onNavigate, onSuccess }) {
   const [districts, setDistricts] = useState([])
@@ -21,6 +21,26 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   const [groupForm, setGroupForm] = useState(EMPTY_GROUP_FORM)
   const [groupErrors, setGroupErrors] = useState({})
   const [loading, setLoading] = useState(false)
+
+  const sortedDistricts = [...districts].sort((left, right) =>
+    textCollator.compare(left.name, right.name),
+  )
+  const sortedGroups = [...groups].sort((left, right) => {
+    const districtCompare = textCollator.compare(
+      districtNameFor(left.districtId, districts),
+      districtNameFor(right.districtId, districts),
+    )
+    if (districtCompare !== 0) {
+      return districtCompare
+    }
+
+    const nameCompare = textCollator.compare(left.name, right.name)
+    if (nameCompare !== 0) {
+      return nameCompare
+    }
+
+    return left.id - right.id
+  })
 
   async function loadGroupIndex() {
     setLoading(true)
@@ -49,33 +69,94 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   useEffect(() => {
-    setGroupForm((previous) => ensureSelectValue(previous, 'districtId', districts))
+    const nextDistrictOptions = [...districts].sort((left, right) =>
+      textCollator.compare(left.name, right.name),
+    )
+    setGroupForm((previous) => ensureSelectValue(previous, 'districtId', nextDistrictOptions))
   }, [districts])
 
-  const hasDistrictOptions = districts.length > 0
+  const hasDistrictOptions = sortedDistricts.length > 0
 
   return (
     <>
-      <PageIntro
-        eyebrow="Admin Groups"
-        title="Group이 운영 관리의 중심입니다."
-        description="Group 목록에서 관리 대상을 선택하고, 상세 작업공간에서 연락처와 모임을 함께 수정합니다."
-        aside={
+      <AdminPageHeader
+        eyebrow="Group Directory"
+        title="로그인 직후 정렬된 Group 목록이 먼저 보입니다."
+        description="기본 정렬은 District와 Group 이름 순서이며, 운영자는 목록에서 바로 작업공간으로 진입할 수 있습니다."
+        meta={
           <div className="stats-grid stats-grid--compact">
-            <StatCard label="District" value={districts.length} />
-            <StatCard label="Group" value={groups.length} />
+            <StatCard label="District" value={sortedDistricts.length} />
+            <StatCard label="Group" value={sortedGroups.length} />
+            <StatCard label="기본 정렬" value="District / 이름" />
           </div>
         }
       />
 
       <PageSection
         label="Group Index"
-        title="새 Group을 만들고 작업공간으로 이어집니다."
-        description="최소한의 Group 정보를 먼저 저장한 뒤, 편집 화면에서 연락처와 모임 정보를 이어서 입력합니다."
+        title="목록 중심 콘솔"
+        description="목록에는 핵심 식별 정보만 노출하고, 생성은 별도 패널에서 이어서 처리합니다."
       >
         {loading ? <div className="section-note">Group 목록을 불러오는 중입니다...</div> : null}
 
-        <div className="editor-grid">
+        <div className="admin-index-grid">
+          <section className="editor-card">
+            <SectionHeader title="Group 목록" />
+
+            <div className="admin-directory-toolbar">
+              <p className="section-note">
+                정렬 기준: District 이름 오름차순, Group 이름 오름차순
+              </p>
+              <span className="admin-directory-toolbar__count">
+                전체 {sortedGroups.length}개
+              </span>
+            </div>
+
+            {sortedGroups.length === 0 ? (
+              <EmptyState
+                title="Group이 없습니다."
+                description="District를 만든 뒤 첫 Group을 등록해 주세요."
+              />
+            ) : (
+              <div className="admin-table" role="table" aria-label="Group 목록">
+                <div className="admin-table__header" role="row">
+                  <span className="admin-table__heading" role="columnheader">District</span>
+                  <span className="admin-table__heading" role="columnheader">Group</span>
+                  <span className="admin-table__heading" role="columnheader">기본 장소명</span>
+                  <span className="admin-table__heading" role="columnheader">열기</span>
+                </div>
+
+                {sortedGroups.map((group) => (
+                  <button
+                    key={group.id}
+                    className="admin-table__row"
+                    type="button"
+                    onClick={() => navigateToGroupEditor(group.id)}
+                  >
+                    <span className="admin-table__cell" data-label="District">
+                      {districtNameFor(group.districtId, districts)}
+                    </span>
+                    <span
+                      className="admin-table__cell admin-table__cell--primary"
+                      data-label="Group"
+                    >
+                      <strong>{group.name}</strong>
+                    </span>
+                    <span className="admin-table__cell" data-label="기본 장소명">
+                      {group.locationName || '기본 장소 미입력'}
+                    </span>
+                    <span
+                      className="admin-table__cell admin-table__cell--action"
+                      data-label="열기"
+                    >
+                      작업공간
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+
           <section className="editor-card">
             <SectionHeader title="새 Group 만들기" />
 
@@ -103,7 +184,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                       )
                     }}
                   >
-                    {districts.map((district) => (
+                    {sortedDistricts.map((district) => (
                       <option key={district.id} value={district.id}>
                         {district.name}
                       </option>
@@ -121,8 +202,12 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                       }))
                       setGroupErrors((previous) => omitFieldErrors(previous, 'name'))
                     }}
-                />
-              </Field>
+                  />
+                </Field>
+
+                <div className="admin-form-note">
+                  생성 후에는 바로 작업공간으로 이동해 연락처와 모임 정보를 이어서 입력합니다.
+                </div>
 
                 <div className="button-row button-row--compact">
                   <button className="primary-button" type="submit">
@@ -133,30 +218,9 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
             ) : (
               <EmptyState
                 title="District가 먼저 필요합니다."
-                description="Group을 만들기 전에 District 관리 화면에서 조직 기준 단위를 등록해 주세요."
+                description="현재 모델에서는 Group 생성 전에 District를 하나 이상 등록해야 합니다."
               />
             )}
-          </section>
-
-          <section className="editor-card">
-            <SectionHeader title="Group 목록" />
-
-            <EntityList
-              actionLabel="작업공간 열기"
-              emptyDescription="District를 만든 뒤 첫 Group을 등록해 주세요."
-              emptyTitle="Group이 없습니다."
-              items={groups}
-              onAction={(group) => onNavigate(`/admin/groups/${group.id}`)}
-              renderItem={(group) => (
-                <div className="entity-item__body">
-                  <strong>{group.name}</strong>
-                  <span className="entity-item__meta">
-                    {districts.find((district) => district.id === group.districtId)?.name ??
-                      `District #${group.districtId}`}
-                  </span>
-                </div>
-              )}
-            />
           </section>
         </div>
       </PageSection>
@@ -192,4 +256,8 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   function navigateToGroupEditor(groupId) {
     onNavigate(`/admin/groups/${groupId}`)
   }
+}
+
+function districtNameFor(districtId, districts) {
+  return districts.find((district) => district.id === districtId)?.name ?? `District #${districtId}`
 }

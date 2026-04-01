@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import {
+  AdminPageHeader,
   EntityList,
   Field,
-  PageIntro,
   PageSection,
   SectionHeader,
   StatCard,
@@ -17,6 +17,7 @@ const EMPTY_CONTENT_PAGE_FORM = {
   body: '',
   published: false,
 }
+const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
   const [contentPages, setContentPages] = useState([])
@@ -67,14 +68,22 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   const publishedCount = contentPages.filter((contentPage) => contentPage.published).length
+  const sortedContentPages = [...contentPages].sort((left, right) => {
+    const keyCompare = textCollator.compare(left.key, right.key)
+    if (keyCompare !== 0) {
+      return keyCompare
+    }
+
+    return textCollator.compare(left.title, right.title)
+  })
 
   return (
     <>
-      <PageIntro
-        eyebrow="Admin Content Pages"
-        title="안내성 콘텐츠를 페이지 단위로 관리합니다."
-        description="소개, 처음 오신 분 안내, 일반 설명성 콘텐츠를 `ContentPage`로 관리하고 공개 화면에 게시합니다."
-        aside={
+      <AdminPageHeader
+        eyebrow="Content Directory"
+        title="안내성 콘텐츠를 정렬된 목록으로 관리합니다."
+        description="페이지 key를 기준으로 목록을 정리하고, 선택한 문서를 바로 편집 패널로 불러옵니다."
+        meta={
           <div className="stats-grid stats-grid--compact">
             <StatCard label="전체 페이지" value={contentPages.length} />
             <StatCard label="게시 중" value={publishedCount} />
@@ -85,8 +94,8 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
 
       <PageSection
         label="Content Page Workspace"
-        title="페이지 목록과 편집 폼을 같은 흐름에서 다룹니다."
-        description="게시 전 draft로 저장한 뒤, 공개 노출이 준비되면 `published`를 켜서 반영할 수 있습니다."
+        title="목록과 편집 패널을 같은 흐름으로 유지합니다."
+        description="목록은 key 순서로 정렬되며, 게시 전 초안 저장과 공개 미리 보기를 한 화면에서 이어갑니다."
       >
         {loading ? <div className="section-note">안내 페이지 목록을 불러오는 중입니다...</div> : null}
         {detailLoading ? <div className="section-note">선택한 안내 페이지를 불러오는 중입니다...</div> : null}
@@ -197,7 +206,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
               actionLabel="불러오기"
               emptyTitle="안내 페이지가 없습니다."
               emptyDescription="공개 안내 흐름을 위해 첫 페이지를 등록해 주세요."
-              items={contentPages}
+              items={sortedContentPages}
               onAction={(contentPage) => void selectContentPage(contentPage.id)}
               renderItem={(contentPage) => (
                 <div className="entity-item__body">

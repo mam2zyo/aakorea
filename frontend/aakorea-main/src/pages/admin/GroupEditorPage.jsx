@@ -1,6 +1,6 @@
 import {
+  AdminPageHeader,
   EmptyState,
-  PageIntro,
   PageSection,
   StatCard,
 } from '../../components/ui'
@@ -64,10 +64,10 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
 
   return (
     <>
-      <PageIntro
+      <AdminPageHeader
         eyebrow="Group Workspace"
         title={groupData ? `${groupData.name} 작업공간` : 'Group 작업공간'}
-        description="Group 기본 장소, 소개/공지, 연락처, 모임 일정을 한 화면에서 이어서 수정합니다. 공개 상세도 이 Group 정보를 중심으로 조립됩니다."
+        description="Group 기본 정보, 연락처, 모임 일정을 같은 화면에서 이어서 수정합니다."
         actions={
           <button
             className="ghost-button"
@@ -77,7 +77,7 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
             Group 목록으로 돌아가기
           </button>
         }
-        aside={
+        meta={
           <div className="stats-grid stats-grid--compact">
             <StatCard
               label="소속 District"

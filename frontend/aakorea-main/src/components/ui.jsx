@@ -31,6 +31,32 @@ export function PageIntro({
   )
 }
 
+export function AdminPageHeader({
+  eyebrow,
+  title,
+  description,
+  actions,
+  meta,
+}) {
+  return (
+    <section className="admin-page-header">
+      <div className="admin-page-header__copy">
+        <p className="eyebrow">{eyebrow}</p>
+        <h1 className="admin-page-header__title">{title}</h1>
+        {description ? (
+          <p className="admin-page-header__description">{description}</p>
+        ) : null}
+      </div>
+      {actions || meta ? (
+        <div className="admin-page-header__side">
+          {actions ? <div className="admin-page-header__actions">{actions}</div> : null}
+          {meta ? <div className="admin-page-header__meta">{meta}</div> : null}
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
 export function Field({ label, className = '', error, children }) {
   return (
     <label className={`field${error ? ' field--invalid' : ''} ${className}`.trim()}>
