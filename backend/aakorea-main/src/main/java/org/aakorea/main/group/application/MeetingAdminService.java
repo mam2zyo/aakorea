@@ -6,7 +6,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
-import org.aakorea.main.group.domain.MeetingLocation;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
@@ -55,7 +54,7 @@ public class MeetingAdminService {
             String dayOfWeek,
             String startTime,
             String type,
-            LocationInput location,
+            String meetingPlaceNote,
             boolean active
     ) {
         Group group = getGroup(groupId);
@@ -65,7 +64,7 @@ public class MeetingAdminService {
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
-                toMeetingLocation(location),
+                MeetingFieldSupport.optionalText(meetingPlaceNote),
                 active);
 
         return toMeetingData(meetingRepository.save(meeting));
@@ -79,7 +78,7 @@ public class MeetingAdminService {
             String dayOfWeek,
             String startTime,
             String type,
-            LocationInput location,
+            String meetingPlaceNote,
             boolean active
     ) {
         Meeting meeting = getMeeting(id);
@@ -90,7 +89,7 @@ public class MeetingAdminService {
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
-                toMeetingLocation(location),
+                MeetingFieldSupport.optionalText(meetingPlaceNote),
                 active);
 
         return toMeetingData(meeting);
@@ -106,12 +105,6 @@ public class MeetingAdminService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found"));
     }
 
-    private MeetingLocation toMeetingLocation(LocationInput location) {
-        return new MeetingLocation(
-                MeetingFieldSupport.requireText(location.name(), "location.name"),
-                MeetingFieldSupport.requireText(location.address(), "location.address"));
-    }
-
     private MeetingData toMeetingData(Meeting meeting) {
         return new MeetingData(
                 meeting.getId(),
@@ -120,9 +113,7 @@ public class MeetingAdminService {
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                new LocationData(
-                        meeting.getLocation().getName(),
-                        meeting.getLocation().getAddress()),
+                meeting.getMeetingPlaceNote(),
                 meeting.isActive());
     }
 
@@ -133,14 +124,8 @@ public class MeetingAdminService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            LocationData location,
+            String meetingPlaceNote,
             boolean active
     ) {
-    }
-
-    public record LocationData(String name, String address) {
-    }
-
-    public record LocationInput(String name, String address) {
     }
 }

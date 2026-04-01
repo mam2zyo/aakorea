@@ -104,6 +104,15 @@ final class MeetingFieldSupport {
         return value.trim();
     }
 
+    static String optionalText(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String normalized = value.trim();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
     static String formatTime(LocalTime startTime) {
         return TIME_FORMATTER.format(startTime);
     }

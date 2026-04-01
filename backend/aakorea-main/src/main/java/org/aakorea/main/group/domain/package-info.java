@@ -1,4 +1,4 @@
 /**
- * Group-centered domain model including Group, GroupContact, Meeting, and MeetingLocation.
+ * Group-centered domain model including Group, GroupContact, and Meeting schedules.
  */
 package org.aakorea.main.group.domain;

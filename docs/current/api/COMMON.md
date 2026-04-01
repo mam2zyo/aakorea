@@ -193,20 +193,23 @@ application/json
 "startTime": "19:30"
 ```
 
-### MeetingLocation
+### Group Base Location
 
-- 객체
-- 현재 MVP에서는 `name`, `address`를 가진다
-- `Meeting` 요청/응답에 중첩 객체로 포함한다
+- `Group`에 속한 기본 장소 정보
+- 현재 MVP에서는 `locationName`, `locationAddress`를 사용한다
 
 예:
 
 ```json
-"location": {
-  "name": "강남역 인근",
-  "address": "서울특별시 강남구 테헤란로 123"
-}
+"locationName": "강남역 인근",
+"locationAddress": "서울특별시 강남구 테헤란로 123"
 ```
+
+### MeetingPlaceNote
+
+- 문자열
+- 특정 요일/회차에만 다른 방, 홀, 세부 장소 안내가 필요할 때 사용한다
+- 값이 없으면 Group 기본 장소를 그대로 사용한다
 
 ### Phone
 

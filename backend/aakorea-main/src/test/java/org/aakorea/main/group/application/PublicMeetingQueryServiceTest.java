@@ -13,7 +13,6 @@ import org.aakorea.main.generalservice.domain.District;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.domain.Meeting;
-import org.aakorea.main.group.domain.MeetingLocation;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
@@ -52,14 +51,21 @@ class PublicMeetingQueryServiceTest {
     @Test
     void getMeetingsMapsPublicSummaryResponse() {
         District district = new District("서울");
-        Group group = new Group(district, "강남그룹");
+        Group group = new Group(
+                district,
+                "강남그룹",
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                "반갑습니다",
+                "이번 주 공지 없음",
+                "최근 변경 없음");
         Meeting meeting = new Meeting(
                 group,
                 "seoul",
                 DayOfWeek.MONDAY,
                 LocalTime.of(19, 30),
                 MeetingType.OPEN,
-                new MeetingLocation("강남역 인근", "서울특별시 강남구 테헤란로 123"),
+                "지하 강당",
                 true);
 
         ReflectionTestUtils.setField(group, "id", 20L);
@@ -77,19 +83,28 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.getFirst().groupName()).isEqualTo("강남그룹");
         assertThat(result.getFirst().startTime()).isEqualTo("19:30");
         assertThat(result.getFirst().type()).isEqualTo(MeetingType.OPEN);
+        assertThat(result.getFirst().groupLocation().name()).isEqualTo("강남역 인근");
+        assertThat(result.getFirst().meetingPlaceNote()).isEqualTo("지하 강당");
     }
 
     @Test
     void getMeetingReturnsRepresentativeContact() {
         District district = new District("서울");
-        Group group = new Group(district, "강남그룹");
+        Group group = new Group(
+                district,
+                "강남그룹",
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                "반갑습니다",
+                "이번 주 공지 없음",
+                "최근 변경 없음");
         Meeting meeting = new Meeting(
                 group,
                 "seoul",
                 DayOfWeek.MONDAY,
                 LocalTime.of(19, 30),
                 MeetingType.OPEN,
-                new MeetingLocation("강남역 인근", "서울특별시 강남구 테헤란로 123"),
+                "지하 강당",
                 true);
         GroupContact groupContact = new GroupContact(group, "02-1234-5678");
 
@@ -97,6 +112,8 @@ class PublicMeetingQueryServiceTest {
         ReflectionTestUtils.setField(meeting, "id", 100L);
 
         given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
+        given(meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(20L))
+                .willReturn(List.of(meeting));
         given(groupContactRepository.findFirstByGroup_IdOrderByIdAsc(20L))
                 .willReturn(Optional.of(groupContact));
 
@@ -104,5 +121,7 @@ class PublicMeetingQueryServiceTest {
 
         assertThat(result.groupName()).isEqualTo("강남그룹");
         assertThat(result.contactPhone()).isEqualTo("02-1234-5678");
+        assertThat(result.group().locationName()).isEqualTo("강남역 인근");
+        assertThat(result.groupMeetings()).hasSize(1);
     }
 }

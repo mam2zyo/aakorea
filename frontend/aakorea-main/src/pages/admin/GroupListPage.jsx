@@ -8,7 +8,8 @@ import {
   SectionHeader,
   StatCard,
 } from '../../components/ui'
-import { adminOrgApi } from '../../lib/api'
+import { adminDistrictApi } from '../../features/districts/api/admin'
+import { adminGroupApi } from '../../features/groups/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 import { ensureSelectValue } from '../../lib/view'
 
@@ -26,8 +27,8 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
 
     try {
       const [districtData, groupData] = await Promise.all([
-        adminOrgApi.getDistricts(),
-        adminOrgApi.getGroups(),
+        adminDistrictApi.getDistricts(),
+        adminGroupApi.getGroups(),
       ])
 
       setDistricts(districtData)
@@ -164,7 +165,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
 
   async function createGroup() {
     try {
-      const createdGroup = await adminOrgApi.createGroup({
+      const createdGroup = await adminGroupApi.createGroup({
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
       })

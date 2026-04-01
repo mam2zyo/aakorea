@@ -7,7 +7,8 @@ import {
   StatCard,
   Field,
 } from '../../components/ui'
-import { adminOrgApi } from '../../lib/api'
+import { adminDistrictApi } from '../../features/districts/api/admin'
+import { adminGroupApi } from '../../features/groups/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const EMPTY_DISTRICT_FORM = { id: null, name: '' }
@@ -24,8 +25,8 @@ export function DistrictAdminPage({ onError, onSuccess }) {
 
     try {
       const [districtData, groupData] = await Promise.all([
-        adminOrgApi.getDistricts(),
-        adminOrgApi.getGroups(),
+        adminDistrictApi.getDistricts(),
+        adminGroupApi.getGroups(),
       ])
 
       setDistricts(districtData)
@@ -145,12 +146,12 @@ export function DistrictAdminPage({ onError, onSuccess }) {
   async function saveDistrict() {
     try {
       if (districtForm.id) {
-        await adminOrgApi.updateDistrict(districtForm.id, {
+        await adminDistrictApi.updateDistrict(districtForm.id, {
           name: districtForm.name,
         })
         onSuccess('District를 수정했습니다.')
       } else {
-        await adminOrgApi.createDistrict({
+        await adminDistrictApi.createDistrict({
           name: districtForm.name,
         })
         onSuccess('District를 생성했습니다.')

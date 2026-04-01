@@ -44,7 +44,7 @@ public class MeetingAdminController {
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
-                new MeetingAdminService.LocationInput(request.location().name(), request.location().address()),
+                request.meetingPlaceNote(),
                 request.active())));
     }
 
@@ -60,7 +60,7 @@ public class MeetingAdminController {
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
-                new MeetingAdminService.LocationInput(request.location().name(), request.location().address()),
+                request.meetingPlaceNote(),
                 request.active()));
     }
 
@@ -70,14 +70,8 @@ public class MeetingAdminController {
             @NotBlank(message = "dayOfWeek is required") String dayOfWeek,
             @NotBlank(message = "startTime is required") String startTime,
             @NotBlank(message = "type is required") String type,
-            @NotNull(message = "location is required") @Valid LocationRequest location,
+            String meetingPlaceNote,
             @NotNull(message = "active is required") Boolean active
-    ) {
-    }
-
-    public record LocationRequest(
-            @NotBlank(message = "location.name is required") String name,
-            @NotBlank(message = "location.address is required") String address
     ) {
     }
 }

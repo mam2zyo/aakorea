@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { EmptyState, PageIntro, PageSection } from '../../components/ui'
-import { publicContentApi } from '../../lib/api'
+import { publicContentApi } from '../../features/content/api/public'
 
 const GUIDE_PAGE_KEY = 'first-visitor-guide'
 

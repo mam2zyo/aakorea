@@ -1,7 +1,6 @@
 package org.aakorea.main.group.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,8 +45,8 @@ public class Meeting {
     @Column(nullable = false)
     private MeetingType type;
 
-    @Embedded
-    private MeetingLocation location;
+    @Column(name = "meeting_place_note", length = 500)
+    private String meetingPlaceNote;
 
     @Column(nullable = false)
     private boolean active;
@@ -58,7 +57,7 @@ public class Meeting {
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
-            MeetingLocation location,
+            String meetingPlaceNote,
             boolean active
     ) {
         this.group = group;
@@ -66,7 +65,7 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.location = location;
+        this.meetingPlaceNote = meetingPlaceNote;
         this.active = active;
     }
 
@@ -76,7 +75,7 @@ public class Meeting {
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
-            MeetingLocation location,
+            String meetingPlaceNote,
             boolean active
     ) {
         this.group = group;
@@ -84,7 +83,7 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.location = location;
+        this.meetingPlaceNote = meetingPlaceNote;
         this.active = active;
     }
 }

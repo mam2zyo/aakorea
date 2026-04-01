@@ -59,7 +59,7 @@ class MeetingApiTest {
                 "MONDAY",
                 "19:30",
                 "OPEN",
-                new MeetingAdminService.LocationInput("강남역 인근", "서울특별시 강남구 테헤란로 123"),
+                "지하 강당",
                 true))
                 .willReturn(new MeetingAdminService.MeetingData(
                         100L,
@@ -68,7 +68,7 @@ class MeetingApiTest {
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        new MeetingAdminService.LocationData("강남역 인근", "서울특별시 강남구 테헤란로 123"),
+                        "지하 강당",
                         true));
 
         mockMvc.perform(post("/api/admin/meetings")
@@ -81,10 +81,7 @@ class MeetingApiTest {
                                   "dayOfWeek": "MONDAY",
                                   "startTime": "19:30",
                                   "type": "OPEN",
-                                  "location": {
-                                    "name": "강남역 인근",
-                                    "address": "서울특별시 강남구 테헤란로 123"
-                                  },
+                                  "meetingPlaceNote": "지하 강당",
                                   "active": true
                                 }
                                 """))
@@ -95,8 +92,7 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.dayOfWeek").value("MONDAY"))
                 .andExpect(jsonPath("$.data.startTime").value("19:30"))
                 .andExpect(jsonPath("$.data.type").value("OPEN"))
-                .andExpect(jsonPath("$.data.location.name").value("강남역 인근"))
-                .andExpect(jsonPath("$.data.location.address").value("서울특별시 강남구 테헤란로 123"))
+                .andExpect(jsonPath("$.data.meetingPlaceNote").value("지하 강당"))
                 .andExpect(jsonPath("$.data.active").value(true));
     }
 
@@ -111,7 +107,8 @@ class MeetingApiTest {
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        new PublicMeetingQueryService.LocationData("강남역 인근", "서울특별시 강남구 테헤란로 123"))));
+                        "지하 강당",
+                        new PublicMeetingQueryService.GroupLocationData("강남역 인근", "서울특별시 강남구 테헤란로 123"))));
 
         mockMvc.perform(get("/api/public/meetings")
                         .param("province", "seoul")
@@ -123,7 +120,8 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data[0].province").value("seoul"))
                 .andExpect(jsonPath("$.data[0].dayOfWeek").value("MONDAY"))
                 .andExpect(jsonPath("$.data[0].startTime").value("19:30"))
-                .andExpect(jsonPath("$.data[0].type").value("OPEN"));
+                .andExpect(jsonPath("$.data[0].type").value("OPEN"))
+                .andExpect(jsonPath("$.data[0].groupLocation.name").value("강남역 인근"));
     }
 
     @Test
@@ -137,13 +135,30 @@ class MeetingApiTest {
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        new PublicMeetingQueryService.LocationData("강남역 인근", "서울특별시 강남구 테헤란로 123"),
-                        "02-1234-5678"));
+                        "지하 강당",
+                        "02-1234-5678",
+                        new PublicMeetingQueryService.GroupProfileData(
+                                20L,
+                                "강남그룹",
+                                "강남역 인근",
+                                "서울특별시 강남구 테헤란로 123",
+                                "반갑습니다",
+                                "이번 주 공지 없음",
+                                "최근 변경 없음"),
+                        List.of(new PublicMeetingQueryService.MeetingScheduleData(
+                                100L,
+                                "seoul",
+                                DayOfWeek.MONDAY,
+                                "19:30",
+                                MeetingType.OPEN,
+                                "지하 강당"))));
 
         mockMvc.perform(get("/api/public/meetings/100"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(100))
                 .andExpect(jsonPath("$.data.groupName").value("강남그룹"))
-                .andExpect(jsonPath("$.data.contactPhone").value("02-1234-5678"));
+                .andExpect(jsonPath("$.data.contactPhone").value("02-1234-5678"))
+                .andExpect(jsonPath("$.data.group.locationName").value("강남역 인근"))
+                .andExpect(jsonPath("$.data.groupMeetings[0].id").value(100));
     }
 }

@@ -5,7 +5,8 @@ import {
   PageIntro,
   PageSection,
 } from '../../components/ui'
-import { ApiError, publicContentApi } from '../../lib/api'
+import { publicContentApi } from '../../features/content/api/public'
+import { ApiError } from '../../shared/lib/request'
 
 export function NoticePage({ noticeId, onError, onNavigate }) {
   const [notices, setNotices] = useState([])

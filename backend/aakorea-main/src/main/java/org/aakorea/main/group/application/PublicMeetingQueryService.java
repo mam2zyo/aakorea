@@ -1,8 +1,10 @@
 package org.aakorea.main.group.application;
 
 import java.time.DayOfWeek;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
@@ -60,8 +62,15 @@ public class PublicMeetingQueryService {
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                new LocationData(meeting.getLocation().getName(), meeting.getLocation().getAddress()),
-                contactPhone);
+                meeting.getMeetingPlaceNote(),
+                contactPhone,
+                toGroupProfile(meeting.getGroup()),
+                meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(meeting.getGroup().getId()).stream()
+                        .sorted(Comparator
+                                .comparingInt((Meeting item) -> item.getDayOfWeek().getValue())
+                                .thenComparing(Meeting::getStartTime))
+                        .map(this::toScheduleData)
+                        .toList());
     }
 
     private PublicMeetingSummary toSummary(Meeting meeting) {
@@ -73,7 +82,33 @@ public class PublicMeetingQueryService {
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                new LocationData(meeting.getLocation().getName(), meeting.getLocation().getAddress()));
+                meeting.getMeetingPlaceNote(),
+                toGroupLocation(meeting.getGroup()));
+    }
+
+    private GroupLocationData toGroupLocation(Group group) {
+        return new GroupLocationData(group.getLocationName(), group.getLocationAddress());
+    }
+
+    private GroupProfileData toGroupProfile(Group group) {
+        return new GroupProfileData(
+                group.getId(),
+                group.getName(),
+                group.getLocationName(),
+                group.getLocationAddress(),
+                group.getIntroduction(),
+                group.getNotice(),
+                group.getChangeSummary());
+    }
+
+    private MeetingScheduleData toScheduleData(Meeting meeting) {
+        return new MeetingScheduleData(
+                meeting.getId(),
+                meeting.getProvince(),
+                meeting.getDayOfWeek(),
+                MeetingFieldSupport.formatTime(meeting.getStartTime()),
+                meeting.getType(),
+                meeting.getMeetingPlaceNote());
     }
 
     public record PublicMeetingSummary(
@@ -84,7 +119,8 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            LocationData location
+            String meetingPlaceNote,
+            GroupLocationData groupLocation
     ) {
     }
 
@@ -96,11 +132,34 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            LocationData location,
-            String contactPhone
+            String meetingPlaceNote,
+            String contactPhone,
+            GroupProfileData group,
+            List<MeetingScheduleData> groupMeetings
     ) {
     }
 
-    public record LocationData(String name, String address) {
+    public record GroupLocationData(String name, String address) {
+    }
+
+    public record GroupProfileData(
+            Long id,
+            String name,
+            String locationName,
+            String locationAddress,
+            String introduction,
+            String notice,
+            String changeSummary
+    ) {
+    }
+
+    public record MeetingScheduleData(
+            Long id,
+            String province,
+            DayOfWeek dayOfWeek,
+            String startTime,
+            MeetingType type,
+            String meetingPlaceNote
+    ) {
     }
 }

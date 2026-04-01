@@ -125,7 +125,12 @@ Group 목록을 조회한다.
     {
       "id": 20,
       "districtId": 1,
-      "name": "강남그룹"
+      "name": "강남그룹",
+      "locationName": "번동3단지 종합사회복지관 지하강당",
+      "locationAddress": "서울 강북구 오현로 208",
+      "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+      "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+      "changeSummary": "최근 장소 변경 없음"
     }
   ]
 }
@@ -144,7 +149,12 @@ Group을 생성한다.
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹"
+  "name": "강남그룹",
+  "locationName": "번동3단지 종합사회복지관 지하강당",
+  "locationAddress": "서울 강북구 오현로 208",
+  "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+  "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+  "changeSummary": "최근 장소 변경 없음"
 }
 ```
 
@@ -155,7 +165,12 @@ Group을 생성한다.
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹"
+    "name": "강남그룹",
+    "locationName": "번동3단지 종합사회복지관 지하강당",
+    "locationAddress": "서울 강북구 오현로 208",
+    "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+    "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+    "changeSummary": "최근 장소 변경 없음"
   }
 }
 ```
@@ -164,6 +179,7 @@ Group을 생성한다.
 
 - `districtId` 필수
 - `name` 필수
+- `locationName`, `locationAddress`는 함께 입력하거나 함께 비워 둔다
 - 참조 대상 District가 존재해야 한다
 
 ---
@@ -179,7 +195,12 @@ Group을 수정한다.
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹"
+  "name": "강남그룹",
+  "locationName": "번동3단지 종합사회복지관 지하강당",
+  "locationAddress": "서울 강북구 오현로 208",
+  "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+  "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+  "changeSummary": "최근 장소 변경 없음"
 }
 ```
 
@@ -190,7 +211,12 @@ Group을 수정한다.
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹"
+    "name": "강남그룹",
+    "locationName": "번동3단지 종합사회복지관 지하강당",
+    "locationAddress": "서울 강북구 오현로 208",
+    "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+    "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+    "changeSummary": "최근 장소 변경 없음"
   }
 }
 ```

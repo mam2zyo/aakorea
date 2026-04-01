@@ -43,6 +43,14 @@
 현재 꼭 필요하지 않으면 본문 필드 목록에 넣지 않고,  
 각 개체의 “확장 후보”에 둔다.
 
+### 5. 현재 구현과 다음 구조 조정 방향을 함께 기록한다
+
+이 문서는 코드에 이미 반영된 현재 필드와,  
+다음 리팩터링에서 우선 검토할 필드 방향을 함께 기록한다.
+
+따라서 일부 항목은 “현재 구현 기준”, 일부 항목은 “다음 조정 방향”일 수 있다.  
+현재 API 계약은 `api/` 문서를 우선 기준으로 본다.
+
 ---
 
 ## 공통 필드 기준
@@ -84,11 +92,11 @@
 - 허용값은 `OPEN`, `CLOSED`, `NOTFIXED`다
 - 현재 MVP에서는 상세 예외 일정 대신 대표 상태를 표현하는 데 사용한다
 
-### MeetingLocation
+### MeetingPlaceNote
 
-- `Meeting`의 위치 정보를 표현하는 값 객체다
+- `Meeting`의 예외 장소 안내를 표현하는 문자열 필드다
 - 현재는 `Meeting` 내부에 포함되며 별도 식별자를 갖지 않는다
-- 최소 구성은 `name`, `address`다
+- 값이 없으면 `Group` 기본 장소를 그대로 사용한다
 
 ---
 
@@ -131,6 +139,11 @@
 - `id`
 - `districtId`
 - `name`
+- `locationName`
+- `locationAddress`
+- `introduction`
+- `notice`
+- `changeSummary`
 
 ### 필드 설명
 
@@ -142,6 +155,21 @@
 
 - `name`  
   운영 및 공개에서 식별 가능한 그룹명
+
+- `locationName`  
+  Group 기본 장소명
+
+- `locationAddress`  
+  Group 기본 주소
+
+- `introduction`  
+  방문자에게 보여줄 간단 소개 또는 인사말
+
+- `notice`  
+  Group 단위 공지 또는 방문 전 안내
+
+- `changeSummary`  
+  최근 변경 사항 요약
 
 ### 중요한 제약
 
@@ -161,6 +189,8 @@
 
 - `slug`
 - `description`
+- `mapUrl`
+- `heroImage`
 
 ---
 
@@ -208,13 +238,15 @@
 
 ### 최소 필드
 
+현재 구현 기준 최소 필드는 아래와 같다.
+
 - `id`
 - `groupId`
 - `province`
 - `dayOfWeek`
 - `startTime`
 - `type`
-- `location`
+- `meetingPlaceNote`
 - `active`
 
 ### 필드 설명
@@ -238,19 +270,11 @@
   `MeetingType` enum 값  
   허용값: `OPEN`, `CLOSED`, `NOTFIXED`
 
-- `location`  
-  모임 위치를 표현하는 `MeetingLocation` 값 객체
+- `meetingPlaceNote`  
+  Group 기본 장소와 다른 방/홀/세부 안내가 있을 때 사용하는 예외 메모
 
 - `active`  
   현재 공개/운영 대상 여부
-
-#### MeetingLocation 최소 구성
-
-- `name`  
-  운영/공개에서 빠르게 식별 가능한 장소명 또는 위치 요약
-
-- `address`  
-  실제 이동을 위한 기본 주소
 
 ### 중요한 제약
 
@@ -260,8 +284,20 @@
 - `type`은 `MeetingType` enum으로 관리한다
 - `NOTFIXED`는 공개/비공개 성격이 회차별로 고정되지 않는 경우에 사용한다
 - 예: 기본적으로 `CLOSED`이지만 마지막 주만 `OPEN`인 모임
-- `location`은 `Meeting`에 포함되는 값 객체다
-- 장소 정보는 별도 장소 엔티티나 범용 `Place`로 일반화하지 않는다
+- 기본 위치 정보는 `Group`이 가진다
+- `meetingPlaceNote`는 예외가 있을 때만 사용한다
+
+### 현재 구조 판단
+
+최근 운영 데이터 기준으로는 대부분의 `Group`이 하나의 기본 주소와 기본 장소를 공유하고,  
+`Meeting`은 요일과 시간만 달라지는 경우가 압도적으로 많다.
+
+따라서 현재 구현은 아래 방향을 따른다.
+
+- `Meeting`은 `Group`의 하위 일정 단위로 본다
+- 기본 위치 정보는 `Meeting`보다 `Group`에 둔다
+- `Meeting`에는 `dayOfWeek`, `startTime`, `active`, 필요 시 `type` 정도를 남긴다
+- 장소 예외는 `meetingPlaceNote` 같은 얇은 override 필드로 처리한다
 
 ### 현재 제외하는 필드
 
@@ -277,8 +313,7 @@
 ### 확장 후보
 
 - `meetingTypeNotes`
-- `location.detail`
-- `location.mapUrl`
+- `meetingPlaceNote`
 - `notes`
 - `isOnline`
 
@@ -395,8 +430,11 @@
 - `Meeting.province`
 - `Meeting.dayOfWeek`
 - `Meeting.startTime`
-- `Meeting.location.name`
-- `Meeting.location.address`
+
+- `Group.locationName`
+- `Group.locationAddress`
+- `Meeting.meetingPlaceNote`
+
 - `GroupContact.phone`
 
 ### 운영 기준 유지에 직접 필요한 필드

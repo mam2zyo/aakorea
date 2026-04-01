@@ -23,6 +23,18 @@
 
 ---
 
+## 현재 계약과 다음 조정 방향
+
+이 문서는 **현재 구현된 공개 API 계약**을 설명한다.
+
+현재 구현은 아래 기준을 따른다.
+
+- 공개 검색 시작점은 계속 `Meeting` 목록으로 유지
+- 목록 응답에는 Group 기본 위치 요약과 `meetingPlaceNote`를 함께 포함한다
+- 상세 응답은 선택된 일정 정보와 `Group` 기본 장소/안내/다른 공개 일정까지 함께 반환한다
+
+---
+
 ## 공개 API
 
 공개 API는 방문자의 정보 탐색을 위한 조회 전용 API다.
@@ -51,7 +63,8 @@
       "dayOfWeek": "MONDAY",
       "startTime": "19:30",
       "type": "OPEN",
-      "location": {
+      "meetingPlaceNote": "지하 강당",
+      "groupLocation": {
         "name": "강남역 인근",
         "address": "서울특별시 강남구 테헤란로 123"
       }
@@ -70,6 +83,7 @@
 ### 비고
 
 현재 MVP에서 공개 탐색의 중심은 `Meeting`이다.  
+상세 정보의 중심은 실제 구현에서도 `Group` 쪽으로 옮겨 두었다.  
 모델 배경은 `../DOMAIN_MODEL.md`를 따른다.
 
 ---
@@ -96,11 +110,27 @@
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
     "type": "OPEN",
-    "location": {
-      "name": "강남역 인근",
-      "address": "서울특별시 강남구 테헤란로 123"
+    "meetingPlaceNote": "지하 강당",
+    "contactPhone": "02-1234-5678",
+    "group": {
+      "id": 20,
+      "name": "강남그룹",
+      "locationName": "강남역 인근",
+      "locationAddress": "서울특별시 강남구 테헤란로 123",
+      "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
+      "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
+      "changeSummary": "최근 장소 변경 없음"
     },
-    "contactPhone": "02-1234-5678"
+    "groupMeetings": [
+      {
+        "id": 100,
+        "province": "seoul",
+        "dayOfWeek": "MONDAY",
+        "startTime": "19:30",
+        "type": "OPEN",
+        "meetingPlaceNote": "지하 강당"
+      }
+    ]
   }
 }
 ```
@@ -109,6 +139,7 @@
 
 - 공개 조회에서는 `active=true`인 Meeting만 반환
 - 연락 가능한 번호는 현재 등록된 GroupContact를 기준으로 반환
+- 상세 응답은 선택된 일정이 속한 Group의 기본 장소와 다른 공개 일정을 함께 반환한다
 - 사용할 대표 연락처 선택 방식은 구현에서 결정한다
 
 ### 기본 검증

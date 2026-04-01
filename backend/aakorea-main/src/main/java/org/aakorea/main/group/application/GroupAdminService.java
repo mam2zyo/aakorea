@@ -2,6 +2,7 @@ package org.aakorea.main.group.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.generalservice.domain.District;
 import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.aakorea.main.group.domain.Group;
@@ -33,17 +34,56 @@ public class GroupAdminService {
     }
 
     @Transactional
-    public GroupData createGroup(Long districtId, String name) {
+    public GroupData createGroup(
+            Long districtId,
+            String name,
+            String locationName,
+            String locationAddress,
+            String introduction,
+            String notice,
+            String changeSummary
+    ) {
         District district = getDistrict(districtId);
-        Group group = groupRepository.save(new Group(district, normalize(name)));
+        String normalizedLocationName = GroupFieldSupport.optionalText(locationName);
+        String normalizedLocationAddress = GroupFieldSupport.optionalText(locationAddress);
+        GroupFieldSupport.validateBaseLocation(normalizedLocationName, normalizedLocationAddress);
+
+        Group group = groupRepository.save(new Group(
+                district,
+                GroupFieldSupport.requireName(name),
+                normalizedLocationName,
+                normalizedLocationAddress,
+                GroupFieldSupport.optionalText(introduction),
+                GroupFieldSupport.optionalText(notice),
+                GroupFieldSupport.optionalText(changeSummary)));
         return toGroupData(group);
     }
 
     @Transactional
-    public GroupData updateGroup(Long id, Long districtId, String name) {
+    public GroupData updateGroup(
+            Long id,
+            Long districtId,
+            String name,
+            String locationName,
+            String locationAddress,
+            String introduction,
+            String notice,
+            String changeSummary
+    ) {
         Group group = getGroup(id);
         District district = getDistrict(districtId);
-        group.update(district, normalize(name));
+        String normalizedLocationName = GroupFieldSupport.optionalText(locationName);
+        String normalizedLocationAddress = GroupFieldSupport.optionalText(locationAddress);
+        GroupFieldSupport.validateBaseLocation(normalizedLocationName, normalizedLocationAddress);
+
+        group.update(
+                district,
+                GroupFieldSupport.requireName(name),
+                normalizedLocationName,
+                normalizedLocationAddress,
+                GroupFieldSupport.optionalText(introduction),
+                GroupFieldSupport.optionalText(notice),
+                GroupFieldSupport.optionalText(changeSummary));
         return toGroupData(group);
     }
 
@@ -60,14 +100,14 @@ public class GroupAdminService {
     @Transactional
     public GroupContactData createGroupContact(Long groupId, String phone) {
         Group group = getGroup(groupId);
-        GroupContact groupContact = groupContactRepository.save(new GroupContact(group, normalize(phone)));
+        GroupContact groupContact = groupContactRepository.save(new GroupContact(group, requirePhone(phone)));
         return toGroupContactData(groupContact);
     }
 
     @Transactional
     public GroupContactData updateGroupContact(Long id, String phone) {
         GroupContact groupContact = getGroupContact(id);
-        groupContact.update(normalize(phone));
+        groupContact.update(requirePhone(phone));
         return toGroupContactData(groupContact);
     }
 
@@ -87,7 +127,15 @@ public class GroupAdminService {
     }
 
     private GroupData toGroupData(Group group) {
-        return new GroupData(group.getId(), group.getDistrict().getId(), group.getName());
+        return new GroupData(
+                group.getId(),
+                group.getDistrict().getId(),
+                group.getName(),
+                group.getLocationName(),
+                group.getLocationAddress(),
+                group.getIntroduction(),
+                group.getNotice(),
+                group.getChangeSummary());
     }
 
     private GroupContactData toGroupContactData(GroupContact groupContact) {
@@ -97,11 +145,24 @@ public class GroupAdminService {
                 groupContact.getPhone());
     }
 
-    private String normalize(String value) {
+    private String requirePhone(String value) {
+        if (value == null || value.isBlank()) {
+            throw FieldValidationException.badRequest("phone", "phone is required");
+        }
+
         return value.trim();
     }
 
-    public record GroupData(Long id, Long districtId, String name) {
+    public record GroupData(
+            Long id,
+            Long districtId,
+            String name,
+            String locationName,
+            String locationAddress,
+            String introduction,
+            String notice,
+            String changeSummary
+    ) {
     }
 
     public record GroupContactData(Long id, Long groupId, String phone) {

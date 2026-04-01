@@ -9,7 +9,7 @@
 이 문서가 답하는 질문:
 
 - 운영자는 `Meeting`을 어떻게 조회, 생성, 수정하는가?
-- `MeetingType`, `MeetingLocation`은 어떤 형식으로 전달되는가?
+- `MeetingType`과 `meetingPlaceNote`는 어떤 형식으로 전달되는가?
 - 어떤 검증이 필요한가?
 
 이 문서에 포함하지 않는 내용:
@@ -20,6 +20,18 @@
 - 도메인 채택 이유
 
 공통 규약은 `COMMON.md`를 따른다.
+
+---
+
+## 현재 계약과 다음 조정 방향
+
+이 문서는 **현재 구현된 운영 `Meeting` API 계약**을 설명한다.
+
+현재 구현은 `Meeting`을 `Group`의 하위 일정 단위로 다룬다.
+
+- 기본 위치 정보는 `Group`이 보유한다
+- `Meeting`은 요일, 시간, 진행 여부, 공개 형식, 예외 장소 메모를 가진다
+- 운영자는 `Group` 편집 화면에서 기본 장소와 일정 정보를 함께 관리한다
 
 ---
 
@@ -51,10 +63,7 @@ Meeting 목록을 조회한다.
       "dayOfWeek": "MONDAY",
       "startTime": "19:30",
       "type": "OPEN",
-      "location": {
-        "name": "강남역 인근",
-        "address": "서울특별시 강남구 테헤란로 123"
-      },
+      "meetingPlaceNote": "지하 강당",
       "active": true
     }
   ]
@@ -78,10 +87,7 @@ Meeting을 생성한다.
   "dayOfWeek": "MONDAY",
   "startTime": "19:30",
   "type": "OPEN",
-  "location": {
-    "name": "강남역 인근",
-    "address": "서울특별시 강남구 테헤란로 123"
-  },
+  "meetingPlaceNote": "지하 강당",
   "active": true
 }
 ```
@@ -97,10 +103,7 @@ Meeting을 생성한다.
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
     "type": "OPEN",
-    "location": {
-      "name": "강남역 인근",
-      "address": "서울특별시 강남구 테헤란로 123"
-    },
+    "meetingPlaceNote": "지하 강당",
     "active": true
   }
 }
@@ -113,13 +116,11 @@ Meeting을 생성한다.
 - `dayOfWeek` 필수
 - `startTime` 필수
 - `type` 필수
-- `location` 필수
-- `location.name` 필수
-- `location.address` 필수
 - `province` 허용값 검증
 - `dayOfWeek` 허용값 검증
 - `type` 허용값 검증
 - `startTime` 형식 검증
+- `meetingPlaceNote`는 optional
 - 참조 대상 Group이 존재해야 한다
 
 ---
@@ -139,10 +140,7 @@ Meeting을 수정한다.
   "dayOfWeek": "TUESDAY",
   "startTime": "20:00",
   "type": "NOTFIXED",
-  "location": {
-    "name": "역삼역 인근",
-    "address": "서울특별시 강남구 테헤란로 456"
-  },
+  "meetingPlaceNote": "1층 마음홀",
   "active": true
 }
 ```
@@ -158,10 +156,7 @@ Meeting을 수정한다.
     "dayOfWeek": "TUESDAY",
     "startTime": "20:00",
     "type": "NOTFIXED",
-    "location": {
-      "name": "역삼역 인근",
-      "address": "서울특별시 강남구 테헤란로 456"
-    },
+    "meetingPlaceNote": "1층 마음홀",
     "active": true
   }
 }

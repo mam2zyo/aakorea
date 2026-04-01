@@ -7,7 +7,7 @@ import {
   SectionHeader,
   StatCard,
 } from '../../components/ui'
-import { adminContentApi } from '../../lib/api'
+import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const EMPTY_CONTENT_PAGE_FORM = {
