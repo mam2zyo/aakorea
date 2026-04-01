@@ -22,6 +22,8 @@
 
 - `deploy/nginx/aakorea-local.conf`
 - `deploy/nginx/aakorea-termux.conf`
+- `deploy/env/local-dev.env.example`
+- `deploy/env/nginx.env.example`
 - `backend/aakorea-main/src/main/resources/application-nginx.yml`
 
 백엔드는 기존 하드코딩 CORS 목록 대신 `app.cors.allowed-origins` 설정을 읽도록 바꿨다.  
@@ -57,11 +59,29 @@ sudo systemctl reload nginx
 
 ### 3. 백엔드 실행
 
+먼저 예시 env 파일을 복사해 값을 채운다.
+
+```bash
+cp /home/mam2z/apps/aakorea-main/deploy/env/nginx.env.example ~/aakorea-nginx.env
+nano ~/aakorea-nginx.env
+```
+
+최소한 아래 값은 실제 값으로 바꾼다.
+
+- `AAKOREA_DB_PASSWORD`
+- `AAKOREA_ADMIN_PASSWORD`
+- 필요 시 `AAKOREA_ADMIN_USERNAME`
+
+초기 스키마를 처음 만들 때만 `AAKOREA_JPA_DDL_AUTO=update` 로 한 번 실행하고, 이후에는 `validate` 로 다시 돌리는 쪽이 안전하다.
+
+실행은 아래처럼 환경변수를 현재 셸에 로드한 뒤 진행한다.
+
 ```bash
 cd /home/mam2z/apps/aakorea-main/backend/aakorea-main
+set -a
+source ~/aakorea-nginx.env
+set +a
 SPRING_PROFILES_ACTIVE=nginx \
-AAKOREA_ADMIN_USERNAME=admin \
-AAKOREA_ADMIN_PASSWORD='change-me' \
 ./gradlew bootRun
 ```
 
@@ -85,6 +105,15 @@ AAKOREA_ADMIN_PASSWORD='change-me' \
 개발 중에는 아래처럼 `vite` 프록시만 백엔드 `8081`로 맞춰 두면 된다.
 
 ```bash
+cp /home/mam2z/apps/aakorea-main/deploy/env/local-dev.env.example ~/aakorea-local.env
+nano ~/aakorea-local.env
+
+cd /home/mam2z/apps/aakorea-main/backend/aakorea-main
+set -a
+source ~/aakorea-local.env
+set +a
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+
 cd /home/mam2z/apps/aakorea-main/frontend/aakorea-main
 VITE_PROXY_TARGET=http://localhost:8081 npm run dev
 ```
@@ -117,10 +146,14 @@ Termux에서는 설치된 `nginx`의 실제 메인 설정 파일 안 `http {}` �
 ### 3. 백엔드 실행
 
 ```bash
+cp ~/apps/aakorea-main/deploy/env/nginx.env.example ~/aakorea-nginx.env
+nano ~/aakorea-nginx.env
+
 cd ~/apps/aakorea-main/backend/aakorea-main
+set -a
+source ~/aakorea-nginx.env
+set +a
 SPRING_PROFILES_ACTIVE=nginx \
-AAKOREA_ADMIN_USERNAME=admin \
-AAKOREA_ADMIN_PASSWORD='change-me' \
 ./gradlew bootRun
 ```
 
@@ -132,4 +165,4 @@ AAKOREA_ADMIN_PASSWORD='change-me' \
 
 - 프론트는 이미 `/api` 상대 경로를 사용하므로 Nginx 구조로 바꿔도 프론트 코드 수정은 거의 필요 없다.
 - 관리자 계정과 DB 비밀번호는 설정 파일 기본값 대신 환경변수로 넘기는 쪽이 안전하다.
-- 현재 저장소는 프론트/백엔드 모두 별도 빌드 오류가 있어서, 실제 배포 전에 빌드 정상화가 먼저 필요하다.
+- 현재 저장소 기준 검증은 `npm run lint`, `npm run build`, `./gradlew test` 까지 통과했다.

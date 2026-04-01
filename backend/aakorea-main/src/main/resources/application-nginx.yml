@@ -2,6 +2,11 @@ server:
   port: ${AAKOREA_SERVER_PORT:8081}
   forward-headers-strategy: framework
 
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: ${AAKOREA_JPA_DDL_AUTO:validate}
+
 app:
   cors:
     allowed-origins:

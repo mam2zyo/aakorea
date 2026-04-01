@@ -1,8 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/aakorea_main
-    username: aakorea_admin
-    password: aa1935
   jpa:
     hibernate:
       ddl-auto: update

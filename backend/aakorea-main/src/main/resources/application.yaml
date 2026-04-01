@@ -2,14 +2,14 @@ spring:
   application:
     name: aakorea-main
   datasource:
-    url: jdbc:postgresql://localhost:5432/aakorea_main
-    username: aakorea_admin
-    password: aa1935
+    url: ${AAKOREA_DB_URL:jdbc:postgresql://localhost:5432/aakorea_main}
+    username: ${AAKOREA_DB_USERNAME:aakorea_admin}
+    password: ${AAKOREA_DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 app:
   auth:
     admin:
-      username: ${AAKOREA_ADMIN_USERNAME:admin}
-      password: ${AAKOREA_ADMIN_PASSWORD:password}
+      username: ${AAKOREA_ADMIN_USERNAME}
+      password: ${AAKOREA_ADMIN_PASSWORD}

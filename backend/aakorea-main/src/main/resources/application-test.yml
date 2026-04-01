@@ -9,3 +9,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+app:
+  auth:
+    admin:
+      username: admin-test
+      password: password-test

@@ -78,8 +78,15 @@ cd backend\aakorea-main
 
 애플리케이션 실행:
 
-```powershell
-.\gradlew bootRun
+```bash
+cp /home/mam2z/apps/aakorea-main/deploy/env/local-dev.env.example ~/aakorea-local.env
+nano ~/aakorea-local.env
+
+cd /home/mam2z/apps/aakorea-main/backend/aakorea-main
+set -a
+source ~/aakorea-local.env
+set +a
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
 테스트 실행:
@@ -111,7 +118,9 @@ npm run build
 ```
 
 프론트엔드는 기본적으로 `/api` 상대 경로를 사용하고,  
-로컬 개발에서는 Vite proxy가 `http://localhost:8080` 백엔드로 요청을 전달한다.
+로컬 개발에서는 Vite proxy가 백엔드로 `/api` 요청을 전달한다.
+백엔드를 `local` 프로필로 `8080`에 직접 띄우면 기본값 그대로 동작하고,
+`nginx` 프로필로 `8081`에 띄우면 `VITE_PROXY_TARGET=http://localhost:8081 npm run dev` 로 맞춘다.
 
 ---
 
