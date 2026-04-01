@@ -1,0 +1,89 @@
+.home-hero-stack,
+.home-notice-list,
+.home-journey,
+.home-reassurance-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home-hero-card,
+.home-notice-card,
+.home-reassurance-card,
+.home-choice-card {
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid rgba(216, 203, 184, 0.8);
+  padding: var(--space-5);
+}
+
+.home-hero-card--accent {
+  background: linear-gradient(180deg, #f1ece0 0%, #fff 100%);
+}
+
+.home-chip,
+.home-choice-card__eyebrow,
+.home-hero-card__eyebrow {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.home-choice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  text-align: left;
+}
+
+.home-choice-card__action,
+.home-notice-card__action {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.home-notice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.home-notice-card__meta {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+}
+
+.home-journey__step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.home-journey__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.feature-grid,
+.home-reassurance-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}

@@ -38,6 +38,7 @@
 7. `current/IMPLEMENTATION_PLAN.md`
 8. `current/FRONTEND_STRUCTURE.md`
 9. `current/FRONTEND_REFACTOR_BACKLOG.md`
+10. `current/NGINX_DEPLOYMENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -139,6 +140,7 @@ docs/
 │  ├─ IMPLEMENTATION_PLAN.md
 │  ├─ FRONTEND_STRUCTURE.md
 │  ├─ FRONTEND_REFACTOR_BACKLOG.md
+│  ├─ NGINX_DEPLOYMENT.md
 │  └─ api/
 │     ├─ README.md
 │     ├─ COMMON.md

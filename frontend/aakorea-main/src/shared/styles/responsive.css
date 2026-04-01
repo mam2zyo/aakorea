@@ -1,0 +1,36 @@
+@media (max-width: 920px) {
+  .page-intro,
+  .feature-grid,
+  .editor-grid,
+  .public-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .shell-bar {
+    padding-inline: var(--space-4);
+  }
+
+  .page-stack {
+    padding-inline: var(--space-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .panel,
+  .page-intro,
+  .resource-panel,
+  .editor-card {
+    padding: var(--space-5);
+  }
+
+  .entity-item,
+  .shell-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .button-row,
+  .shell-nav {
+    width: 100%;
+  }
+}
