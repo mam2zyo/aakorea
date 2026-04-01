@@ -1,13 +1,23 @@
-server:
-  port: ${AAKOREA_SERVER_PORT:8081}
-  forward-headers-strategy: framework
-
 spring:
+  application:
+    name: aakorea-main
+  datasource:
+    url: ${AAKOREA_DB_URL:jdbc:postgresql://localhost:5432/aakorea_main}
+    username: ${AAKOREA_DB_USERNAME:aakorea_admin}
+    password: ${AAKOREA_DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: ${AAKOREA_JPA_DDL_AUTO:validate}
+      ddl-auto: update
+
+server:
+  port: 8081
+  forward-headers-strategy: framework
 
 app:
+  auth:
+    admin:
+      username: ${AAKOREA_ADMIN_USERNAME}
+      password: ${AAKOREA_ADMIN_PASSWORD}
   cors:
     allowed-origins:
       - https://maumtalk.win
