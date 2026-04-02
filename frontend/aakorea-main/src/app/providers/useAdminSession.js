@@ -33,8 +33,14 @@ export function useAdminSession(route, { onError }) {
   })
 
   useEffect(() => {
+    if (route.section !== 'admin') {
+      setSessionChecked(false)
+      return
+    }
+
+    // public 화면은 SEO/분리 배포를 염두에 두고 관리자 세션 확인과 분리한다.
     checkSessionEffect()
-  }, [])
+  }, [route.section])
 
   async function handleLogin(credentials, redirectPath) {
     setAuthPending(true)
@@ -65,12 +71,6 @@ export function useAdminSession(route, { onError }) {
       setAuthPending(false)
     }
   }
-
-  useEffect(() => {
-    if (route.section === 'admin' && !sessionChecked) {
-      checkSessionEffect()
-    }
-  }, [route.section, sessionChecked])
 
   return {
     authPending,
