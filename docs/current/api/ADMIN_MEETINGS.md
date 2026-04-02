@@ -16,7 +16,7 @@
 
 - 공통 응답 형식과 상태 코드의 전체 규약
 - 공개 `Meeting` 조회 API
-- 운영 조직 API
+- 운영 `generalservice`, `Group`, `GroupContact` API
 - 도메인 채택 이유
 
 공통 규약은 `COMMON.md`를 따른다.

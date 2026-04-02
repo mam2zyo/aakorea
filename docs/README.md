@@ -37,8 +37,7 @@
 6. `current/api/README.md`
 7. `current/IMPLEMENTATION_PLAN.md`
 8. `current/FRONTEND_STRUCTURE.md`
-9. `current/FRONTEND_REFACTOR_BACKLOG.md`
-10. `current/NGINX_DEPLOYMENT.md`
+9. `current/NGINX_DEPLOYMENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -49,7 +48,7 @@
 - 최소 필드를 확정하고
 - API 계약을 정리하고
 - 구현 순서를 정한다
-- 프론트 구조 조정의 실제 작업 단위를 확인한다
+- 프론트 구조와 남은 정리 포인트를 확인한다
 
 ---
 
@@ -139,7 +138,6 @@ docs/
 │  ├─ MVP_FIELDS.md
 │  ├─ IMPLEMENTATION_PLAN.md
 │  ├─ FRONTEND_STRUCTURE.md
-│  ├─ FRONTEND_REFACTOR_BACKLOG.md
 │  ├─ NGINX_DEPLOYMENT.md
 │  └─ api/
 │     ├─ README.md
@@ -147,7 +145,8 @@ docs/
 │     ├─ AUTH.md
 │     ├─ PUBLIC_CONTENT.md
 │     ├─ PUBLIC_MEETINGS.md
-│     ├─ ADMIN_ORG.md
+│     ├─ ADMIN_GENERAL_SERVICES.md
+│     ├─ ADMIN_GROUPS.md
 │     ├─ ADMIN_MEETINGS.md
 │     └─ ADMIN_CONTENT.md
 └─ reference/

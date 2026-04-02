@@ -143,8 +143,8 @@
 
 ### 구현 대상
 
-- District 목록/생성/수정
-- Group 목록/생성/수정
+- District 목록/생성/수정/삭제
+- Group 목록/생성/수정/삭제
 - GroupContact 목록/생성/수정
 - 운영 화면에서 각 데이터의 기본 관리 UI
 
@@ -154,8 +154,8 @@
 
 ### 완료 기준
 
-- 운영자가 District를 생성하고 수정할 수 있다
-- 운영자가 Group을 District에 연결하여 생성하고 수정할 수 있다
+- 운영자가 District를 생성, 수정하고 연결된 Group이 없을 때 삭제할 수 있다
+- 운영자가 Group을 District에 연결하여 생성, 수정하고 연결된 연락처/모임이 없을 때 삭제할 수 있다
 - 운영자가 GroupContact를 Group에 연결하여 생성하고 수정할 수 있다
 - 비활성 상태를 포함한 최소 상태 관리가 가능하다
 - 이후 Meeting과 공개 조회에 필요한 참조 기반이 준비된다
@@ -170,7 +170,7 @@
 
 - 도메인 경계: `DOMAIN_MODEL.md`
 - 최소 필드: `MVP_FIELDS.md`
-- API 계약: `api/ADMIN_ORG.md`
+- API 계약: `api/ADMIN_GENERAL_SERVICES.md`, `api/ADMIN_GROUPS.md`
 
 ---
 
@@ -227,8 +227,8 @@
 
 ### 구현 대상
 
-- ContentPage 목록/생성/수정
-- Notice 목록/생성/수정
+- ContentPage 목록/상세/생성/수정/삭제
+- Notice 목록/상세/생성/수정/삭제
 - 공개용 ContentPage 조회
 - 공개용 Notice 목록/상세 조회
 
@@ -239,8 +239,8 @@
 
 ### 완료 기준
 
-- 운영자가 안내성 페이지를 생성하고 수정할 수 있다
-- 운영자가 공지를 생성하고 수정할 수 있다
+- 운영자가 안내성 페이지를 생성, 수정, 삭제할 수 있다
+- 운영자가 공지를 생성, 수정, 삭제할 수 있다
 - 공개 사용자가 key 기반으로 ContentPage를 조회할 수 있다
 - 공개 사용자가 Notice 목록과 상세를 조회할 수 있다
 - 게시되지 않은 데이터는 공개 화면에 노출되지 않는다

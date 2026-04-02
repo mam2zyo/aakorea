@@ -5,11 +5,15 @@
 현재 프론트엔드는 아래 흐름을 포함한다.
 
 - 공개 홈 화면
+- 공개 `ContentPage` 조회
+- 공개 `Notice` 목록/상세 조회
 - 공개 `Meeting` 조회와 상세 확인
 - 운영 로그인 / 로그아웃 / 세션 확인
 - 운영 `District` 관리
 - 운영 `Group` 목록 및 생성
 - 운영 `Group` 편집 화면에서 `GroupContact`, `Meeting` 동시 관리
+- 운영 `ContentPage`, `Notice` 관리
+- 운영 셸의 `운영 현황`, `계정 설정` 라우트 확보
 
 ---
 
@@ -53,34 +57,46 @@ npm run lint
 ## 현재 구조
 
 - `src/App.jsx`
-  세션 상태, 플래시 메시지, 최소 라우팅 분기
+  스타일 import와 세션/플래시 상태 조립을 담당하고 `AppScreen`에 전달
+
+- `src/app/AppScreen.jsx`
+  현재 라우트와 세션 상태를 받아 공개/운영 레이아웃, 로그인 가드, 화면 렌더링을 조립
+
+- `src/app/routeDefinitions.js`
+  경로 파싱, query 기반 상태, 관리자 기본 경로와 redirect 보정을 담당
 
 - `src/app/router.js`
-  브라우저 히스토리 기반 최소 라우터
+  브라우저 히스토리 기반 최소 라우터와 `navigate`를 제공
+
+- `src/app/providers/`
+  `useAdminSession`, `useFlashState`로 인증/플래시 상태를 분리
 
 - `src/layouts/`
-  공개 셸과 운영 셸 레이아웃
+  공개 셸과 운영 셸 레이아웃, 관리자 사이드바 메뉴를 담당
 
 - `src/pages/public/`
-  홈 화면, 모임 찾기 화면
+  홈, 안내 페이지, 공지, 모임 찾기 화면 entrypoint를 둠
 
 - `src/pages/admin/`
-  로그인, District 관리, Group 목록, Group 작업공간
+  로그인, District 관리, Group 목록, Group 작업공간, 콘텐츠 관리 화면을 둠
+
+- `src/features/`
+  `auth`, `districts`, `groups`, `content`, `home` 기준으로 API/하위 컴포넌트/스타일을 분리
 
 - `src/components/ui.jsx`
   공통 패널, 폼, 리스트 UI
 
+- `src/shared/lib/request.js`
+  공통 `request`, `ApiError` 유틸
+
 - `src/lib/api.js`
-  백엔드 API 호출 래퍼
+  기존 import 호환을 위한 compatibility export
 
-- `src/lib/options.js`
-  `province`, `dayOfWeek`, `meetingType` 선택값
+- `src/lib/`
+  `formErrors`, `options`, `view` 같은 화면 보조 유틸
 
-- `src/lib/view.js`
-  선택값/표시 보조 헬퍼
-
-- `src/App.css`, `src/index.css`
-  앱 스타일과 공통 토큰
+- `src/index.css`, `src/App.css`
+  공통 토큰/base와 shared/feature 스타일 import를 나눔
 
 ---
 
@@ -89,14 +105,21 @@ npm run lint
 ### 공개
 
 - `/`
+- `/content-pages/:key`
+- `/notices`
+- `/notices/:id`
 - `/meetings`
 
 ### 운영
 
 - `/admin/login`
+- `/admin/overview`
+- `/admin/account`
 - `/admin/districts`
 - `/admin/groups`
 - `/admin/groups/:id`
+- `/admin/content-pages`
+- `/admin/notices`
 
-`ContentPage` / `Notice` 화면은 제품상 필요하지만,  
-현재는 관련 백엔드 API가 아직 구현되지 않아 프론트에서는 후속 범위로 둔다.
+`/admin/overview`, `/admin/account`는 관리자 사이드바 구조를 먼저 고정하기 위해 라우트와 메뉴는 연결되어 있지만,
+현재 페이지 본문은 placeholder 상태다.

@@ -36,6 +36,7 @@
 - 조회
 - 생성
 - 수정
+- 일부 엔티티 삭제
 - 활성/게시 상태 변경
 - 로그인/로그아웃/세션 확인
 
@@ -138,8 +139,13 @@ application/json
 - `409 Conflict`: 중복 또는 충돌
 - `500 Internal Server Error`: 서버 오류
 
-현재 MVP에서는 삭제보다 `Meeting.active` / `published` 전환을 우선한다.  
-따라서 물리 삭제 API는 필수로 두지 않는다.
+현재 MVP에서는 여전히 `Meeting.active` / `published` 전환을 우선한다.  
+다만 현재 구현에는 아래와 같은 제한적 삭제 API가 포함되어 있다.
+
+- `District`, `Group`
+- `ContentPage`, `Notice`
+
+반면 `Meeting`, `GroupContact`는 현재 수정/상태 관리 중심으로 유지한다.
 
 ---
 
@@ -223,7 +229,8 @@ application/json
 
 ### 1. 삭제보다 상태 전환을 우선한다
 
-현재 MVP에서는 `DELETE` API보다 `Meeting.active` 또는 `published` 갱신을 우선할 수 있다.
+현재 MVP에서는 `Meeting.active` 또는 `published` 갱신을 우선한다.  
+다만 현재 운영 화면에서 실제로 쓰는 범위에 한해 제한적 `DELETE` API도 함께 유지한다.
 
 ### 2. 공개 응답은 최소 정보만 노출한다
 

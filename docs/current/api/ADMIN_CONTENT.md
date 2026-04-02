@@ -9,7 +9,7 @@
 이 문서가 답하는 질문:
 
 - 운영자는 `ContentPage`, `Notice`를 어떻게 관리하는가?
-- 각 생성/수정 API는 어떤 요청과 응답을 갖는가?
+- 각 조회/생성/수정/삭제 API는 어떤 요청과 응답을 갖는가?
 - 기본 검증은 무엇인가?
 
 이 문서에 포함하지 않는 내용:
@@ -145,7 +145,23 @@ ContentPage를 수정한다.
 
 ---
 
-### 5. Notice 목록 조회
+### 5. ContentPage 삭제
+
+## DELETE `/api/admin/content-pages/{id}`
+
+ContentPage를 삭제한다.
+
+### Response 204
+
+응답 본문 없이 종료한다.
+
+### 기본 규칙
+
+- 대상이 없으면 404를 반환한다
+
+---
+
+### 6. Notice 목록 조회
 
 ## GET `/api/admin/notices`
 
@@ -168,7 +184,7 @@ Notice 목록을 조회한다.
 
 ---
 
-### 6. Notice 상세 조회
+### 7. Notice 상세 조회
 
 ## GET `/api/admin/notices/{id}`
 
@@ -190,7 +206,7 @@ Notice 목록을 조회한다.
 
 ---
 
-### 7. Notice 생성
+### 8. Notice 생성
 
 ## POST `/api/admin/notices`
 
@@ -230,7 +246,7 @@ Notice를 생성한다.
 
 ---
 
-### 8. Notice 수정
+### 9. Notice 수정
 
 ## PUT `/api/admin/notices/{id}`
 
@@ -260,3 +276,19 @@ Notice를 수정한다.
   }
 }
 ```
+
+---
+
+### 10. Notice 삭제
+
+## DELETE `/api/admin/notices/{id}`
+
+Notice를 삭제한다.
+
+### Response 204
+
+응답 본문 없이 종료한다.
+
+### 기본 규칙
+
+- 대상이 없으면 404를 반환한다

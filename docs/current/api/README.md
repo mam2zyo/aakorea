@@ -38,8 +38,11 @@
 - `PUBLIC_MEETINGS.md`
   공개 `Meeting` 조회 API 계약
 
-- `ADMIN_ORG.md`
-  운영 `District`, `Group`, `GroupContact` API 계약
+- `ADMIN_GENERAL_SERVICES.md`
+  운영 `generalservice` 계열 API 계약. 현재는 `District` API를 포함한다
+
+- `ADMIN_GROUPS.md`
+  운영 `Group`, `GroupContact` API 계약
 
 - `ADMIN_MEETINGS.md`
   운영 `Meeting` API 계약
@@ -60,9 +63,10 @@
 2. `AUTH.md`
 3. `PUBLIC_CONTENT.md`
 4. `PUBLIC_MEETINGS.md`
-5. `ADMIN_ORG.md`
-6. `ADMIN_MEETINGS.md`
-7. `ADMIN_CONTENT.md`
+5. `ADMIN_GENERAL_SERVICES.md`
+6. `ADMIN_GROUPS.md`
+7. `ADMIN_MEETINGS.md`
+8. `ADMIN_CONTENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -76,6 +80,8 @@
 ## 최소 운영 화면 기준으로 필요한 API 요약
 
 현재 MVP에서 우선 필요한 API를 요약하면 아래와 같다.
+
+현재 운영 화면은 일부 엔티티에 대해 생성/수정뿐 아니라 삭제까지 사용한다.
 
 ### 공개
 
@@ -96,9 +102,11 @@
 - `GET /api/admin/districts`
 - `POST /api/admin/districts`
 - `PUT /api/admin/districts/{id}`
+- `DELETE /api/admin/districts/{id}`
 - `GET /api/admin/groups`
 - `POST /api/admin/groups`
 - `PUT /api/admin/groups/{id}`
+- `DELETE /api/admin/groups/{id}`
 - `GET /api/admin/group-contacts`
 - `POST /api/admin/group-contacts`
 - `PUT /api/admin/group-contacts/{id}`
@@ -109,10 +117,12 @@
 - `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`
 - `PUT /api/admin/content-pages/{id}`
+- `DELETE /api/admin/content-pages/{id}`
 - `GET /api/admin/notices`
 - `GET /api/admin/notices/{id}`
 - `POST /api/admin/notices`
 - `PUT /api/admin/notices/{id}`
+- `DELETE /api/admin/notices/{id}`
 
 ---
 
@@ -124,7 +134,8 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 인증 API를 확인할 때: `AUTH.md`
 - 공개 콘텐츠 API를 확인할 때: `PUBLIC_CONTENT.md`
 - 공개 모임 API를 확인할 때: `PUBLIC_MEETINGS.md`
-- 운영 조직 API를 확인할 때: `ADMIN_ORG.md`
+- 운영 `District` API를 확인할 때: `ADMIN_GENERAL_SERVICES.md`
+- 운영 `Group`, `GroupContact` API를 확인할 때: `ADMIN_GROUPS.md`
 - 운영 모임 API를 확인할 때: `ADMIN_MEETINGS.md`
 - 운영 콘텐츠 API를 확인할 때: `ADMIN_CONTENT.md`
 

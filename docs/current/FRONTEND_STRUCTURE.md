@@ -4,14 +4,14 @@
 
 ## 이 문서의 역할
 
-이 문서는 AAKorea Main 웹앱의 현재 프론트엔드 구조를 설명하고,  
-어떤 부분을 정리한 뒤 백엔드 API와 연결할지의 기준을 정의한다.
+이 문서는 AAKorea Main 웹앱의 현재 프론트엔드 구조와 실제 API 연결 상태를 설명하고,  
+앞으로 어떤 부분을 더 정리할지의 기준을 정의한다.
 
 이 문서가 답하는 질문:
 
 - 현재 프론트엔드는 어떤 상태인가?
-- 어떤 파일과 코드가 실제 MVP와 무관한가?
-- 프론트엔드는 어떤 흐름부터 백엔드와 연결하는가?
+- 현재 구조에서 어떤 정리 포인트가 남아 있는가?
+- 프론트엔드의 어떤 흐름이 이미 백엔드와 연결되어 있는가?
 
 이 문서에 포함하지 않는 내용:
 
@@ -45,11 +45,12 @@
 
 ### 3. 운영 관리 영역
 
-- `District` 목록/생성/수정
-- `Group` 목록 조회 및 생성
+- `District` 목록/생성/수정/삭제
+- `Group` 목록 조회 및 생성/수정/삭제
 - `Group` 편집 화면에서 `GroupContact`, `Meeting` 동시 관리
-- `ContentPage` 목록/상세/생성/수정
-- `Notice` 목록/상세/생성/수정
+- `ContentPage` 목록/상세/생성/수정/삭제
+- `Notice` 목록/상세/생성/수정/삭제
+- 운영 셸용 `운영 현황`, `계정 설정` 라우트 확보
 
 즉, 현재 프론트엔드는 운영 화면을 엔티티 개수대로 기계적으로 나누기보다,  
 **실제 편집 책임이 모이는 단위인 `Group`을 중심으로 구성**한다.
@@ -80,11 +81,16 @@
 #### 운영 라우트
 
 - `/admin/login`
+- `/admin/overview`
+- `/admin/account`
 - `/admin/districts`
 - `/admin/groups`
 - `/admin/groups/:id`
 - `/admin/content-pages`
 - `/admin/notices`
+
+`/admin/overview`, `/admin/account`는 현재 사이드바 구조와 이동 규칙을 먼저 고정하기 위해 추가된 경로다.  
+현재 페이지 본문은 placeholder 상태이며, 실제 운영 데이터 화면은 아직 연결하지 않았다.
 
 ### 향후 운영 메뉴 확장 예정
 
@@ -133,37 +139,34 @@
 ### 현재 파일 기준 구조
 
 - `src/App.jsx`
-  App 셸 조립과 스타일 import만 담당한다
+  스타일 import와 세션/플래시 상태 조립을 담당하고 `AppScreen`에 전달한다
 
 - `src/app/AppScreen.jsx`
-  라우트 kind에 따라 공개/운영 레이아웃과 feature page를 조립한다
+  현재 라우트와 세션 상태를 받아 공개/운영 레이아웃, 로그인 가드, 화면 렌더링을 조립한다
 
 - `src/app/router.js`
-  브라우저 히스토리 구독과 `navigate`만 담당한다
+  브라우저 히스토리 구독, `navigate`, route helper re-export를 담당한다
 
 - `src/app/routeDefinitions.js`
-  route configuration, path parsing, admin redirect 규칙을 담당한다
-
-- `src/app/viewState.js`
-  route와 세션 상태를 받아 public/admin screen 결정을 담당한다
+  path parsing, query 반영, admin redirect 규칙, 기본 관리자 경로를 담당한다
 
 - `src/app/providers/`
-  운영 세션과 플래시 메시지 상태를 분리한다
+  `useAdminSession`, `useFlashState`로 운영 세션과 플래시 메시지 상태를 분리한다
 
 - `src/layouts/`
-  공개 셸과 운영 셸 레이아웃을 분리한다
+  공개 셸과 운영 셸 레이아웃, 관리자 사이드바 메뉴를 분리한다
 
 - `src/features/`
-  `groups`, `content`, `districts`, `auth` 기준으로 feature entrypoint와 하위 hook / component / api를 둔다
+  `groups`, `content`, `districts`, `auth`, `home` 기준으로 feature 단위 API / hook / component / style을 둔다
 
 - `src/pages/public/`, `src/pages/admin/`
-  기존 경로 호환과 점진 이동을 위한 page wrapper 또는 잔여 화면을 둔다
+  실제 라우트에서 사용하는 page entrypoint를 두고, 일부 화면은 feature 컴포넌트를 재-export한다
 
 - `src/components/ui.jsx`
   페이지 섹션, 필드, 리스트, 상태 배지 등 공통 UI를 제공한다
 
 - `src/shared/lib/request.js`
-  공통 `request`, `ApiError`, `queryString` 유틸을 담당한다
+  공통 `request`, `ApiError` 유틸을 담당한다
 
 - `src/features/*/api/*.js`
   인증, 운영 조직, 운영 모임, 운영 콘텐츠, 공개 콘텐츠 API 호출을 도메인별로 분리한다
@@ -171,11 +174,17 @@
 - `src/lib/api.js`
   기존 import 호환을 위한 얇은 compatibility export로만 유지한다
 
+- `src/lib/formErrors.js`
+  API field error를 화면 폼 상태와 연결하는 헬퍼를 담당한다
+
 - `src/lib/options.js`
   `province`, `dayOfWeek`, `meetingType` 선택값을 프론트 기준으로 관리한다
 
 - `src/lib/view.js`
   선택값 보정과 표시용 헬퍼를 관리한다
+
+- `src/index.css`, `src/App.css`
+  공통 토큰/base와 shared/feature 스타일 import를 나눠서 관리한다
 
 - `src/shared/styles/`
   디자인 토큰, base reset, shell/forms/responsive 스타일을 관리한다
@@ -183,8 +192,8 @@
 - `src/features/*/styles.css`
   home, groups/public, groups/admin 등 feature 스타일을 관리한다
 
-- `test/`
-  라우팅, admin guard, 공개 fallback 상태 같은 순수 프론트 회귀 테스트를 둔다
+- 현재 전용 프론트 테스트 디렉터리는 없다
+  현재 프론트 회귀 검증은 수동 확인과 백엔드/API 테스트에 크게 의존한다
 
 ---
 
@@ -203,7 +212,8 @@
 
 - 일부 admin/public page는 아직 `pages/` 래퍼를 통해 유지되고 있어 완전한 feature 이동이 끝난 상태는 아니다
 - `src/lib/api.js`는 호환 레이어로 축소됐지만 아직 완전히 제거되지는 않았다
-- 현재 프론트 테스트는 순수 로직 회귀 중심이어서, 실제 렌더링까지 보는 컴포넌트 테스트는 아직 없다
+- `/admin/overview`, `/admin/account`는 라우트와 메뉴만 연결된 placeholder 상태다
+- 현재 전용 프론트 테스트 파일이 없어, 실제 렌더링까지 보는 회귀 테스트는 아직 없다
 
 즉, 현재 구조는 “동작하는 MVP”로는 충분하지만,  
 이후 `Group` 공개 상세, GSR 편집 진입, 그룹 단위 공지/소개/변경 이력 등의 기능이 늘어나면  
@@ -229,30 +239,38 @@
 ```text
 src/
   app/
-    layouts/
     providers/
+    AppScreen.jsx
+    routeDefinitions.js
+    router.js
+  layouts/
   pages/
     public/
     admin/
   features/
     auth/
+      api/
     districts/
-      admin/
+      api/
+        admin/
     groups/
-      admin/
-      public/
       api/
-      hooks/
-      components/
+        admin/
+        public/
+      admin/
+        hooks/
+        components/
+      public/
     content/
-      admin/
-      public/
       api/
-      hooks/
-      components/
+        admin/
+        public/
+    home/
   shared/
     lib/
     styles/
+  components/
+  lib/
 ```
 
 ### `Group` 도메인 기준 프론트 배치 원칙
@@ -270,29 +288,25 @@ src/
 ```text
 features/groups/
   api/
-    admin.js
-    public.js
+    admin/
+      index.js
+    public/
+      index.js
   admin/
-    GroupListPage.jsx
-    GroupEditorPage.jsx
+    components/
+      GroupBasicsCard.jsx
+      GroupContactsCard.jsx
+      GroupMeetingsCard.jsx
     hooks/
       useGroupWorkspace.js
-    components/
-      GroupForm.jsx
-      GroupContactPanel.jsx
-      MeetingSchedulePanel.jsx
+    styles.css
   public/
     MeetingSearchPage.jsx
-    hooks/
-      usePublicMeetingSearch.js
-    components/
-      MeetingSearchForm.jsx
-      MeetingResultList.jsx
-      MeetingAccessPanel.jsx
+    styles.css
 ```
 
-여기서 `MeetingAccessPanel`은 순수 `MeetingDetail`이 아니라,  
-선택한 모임 일정과 그 모임이 속한 `Group`의 연락/안내 정보를 함께 보여주는 패널을 뜻한다.
+현재 공개 `MeetingSearchPage`는 목록과 상세 패널을 같은 화면에서 함께 관리한다.  
+상세 패널은 순수 `MeetingDetail`이 아니라, 선택한 모임 일정과 그 모임이 속한 `Group`의 연락/안내 정보를 함께 보여주는 패널 역할을 맡는다.
 
 ### 바꾸지 않는 것
 
@@ -302,20 +316,18 @@ features/groups/
 
 ---
 
-## 권장 리팩터링 순서
+## 현재 남은 정리 포인트
 
-구조 조정은 전면 재작성이 아니라 아래 순서의 점진 리팩터링이 적합하다.
+현재 구조 조정은 전면 재작성이 아니라 아래 순서의 점진 정리가 적합하다.
 
-1. `src/App.jsx`의 세션/플래시/레이아웃 선택 책임을 분리한다
-2. `src/app/router.js`의 수동 라우팅을 라우터 구성 단위로 정리한다
-3. `src/lib/api.js`를 `groups`, `content`, `auth` 기준으로 분리한다
-4. `GroupEditorPage`와 공개 `MeetingSearchPage`를 hook + 하위 컴포넌트로 분리한다
-5. `src/App.css` 중심 전역 스타일을 `shared/styles`와 feature 스타일로 나눈다
+1. `pages/`에 남아 있는 thin wrapper와 직접 구현 화면의 경계를 더 분명히 정리한다
+2. `/admin/overview`, `/admin/account`를 실제 운영 화면으로 채우거나, placeholder라면 메뉴 노출 수준을 다시 판단한다
+3. 공개 `Notice`, `ContentPage`, `MeetingSearch` 화면의 공통 패턴을 hook / 하위 컴포넌트 단위로 더 분리한다
+4. 전용 프론트 테스트 환경을 추가해 라우팅, 인증 가드, 주요 렌더링 흐름 회귀를 자동화한다
+5. import migration이 끝나는 시점에 `src/lib/api.js` compatibility export를 더 축소하거나 제거한다
 
-현재 구현에서 이미 1, 2, 3, 4, 5 단계는 반영되었다.  
-다음 집중 항목은 `pages/` wrapper 축소와 렌더링 기반 프론트 테스트 확장이다.
-
-실제 작업 단위와 우선순위는 `FRONTEND_REFACTOR_BACKLOG.md`를 따른다.
+즉, 현재 프론트는 1차 구조 분리는 끝났고,  
+다음 단계는 placeholder 정리, wrapper 축소, 렌더링 테스트 보강이다.
 
 ---
 
