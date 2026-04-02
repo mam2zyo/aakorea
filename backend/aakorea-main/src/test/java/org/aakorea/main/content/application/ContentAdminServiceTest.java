@@ -107,4 +107,24 @@ class ContentAdminServiceTest {
         assertThat(notice.getPublishedAt()).isEqualTo(LocalDateTime.of(2026, 3, 31, 9, 0, 5));
         assertThat(result.publishedAt()).isEqualTo(LocalDateTime.of(2026, 3, 31, 9, 0, 5));
     }
+
+    @Test
+    void deleteContentPageRemovesExistingPage() {
+        ContentPage contentPage = new ContentPage("first-visitor-guide", "처음 오신 분 안내", "본문", true);
+        given(contentPageRepository.findById(3L)).willReturn(Optional.of(contentPage));
+
+        contentAdminService.deleteContentPage(3L);
+
+        verify(contentPageRepository).delete(contentPage);
+    }
+
+    @Test
+    void deleteNoticeRemovesExistingNotice() {
+        Notice notice = new Notice("공지", "본문", true, LocalDateTime.of(2026, 4, 2, 9, 0));
+        given(noticeRepository.findById(4L)).willReturn(Optional.of(notice));
+
+        contentAdminService.deleteNotice(4L);
+
+        verify(noticeRepository).delete(notice);
+    }
 }

@@ -2,7 +2,6 @@ import {
   AdminPageHeader,
   EmptyState,
   PageSection,
-  StatCard,
 } from '../../components/ui'
 import { GroupBasicsCard } from '../../features/groups/admin/components/GroupBasicsCard'
 import { GroupContactsCard } from '../../features/groups/admin/components/GroupContactsCard'
@@ -35,7 +34,6 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
     updateContactField,
     updateMeetingField,
     updateMeetingActive,
-    districtLabel,
   } = workspace
 
   if (missingGroup) {
@@ -76,19 +74,6 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
           >
             Group 목록으로 돌아가기
           </button>
-        }
-        meta={
-          <div className="stats-grid stats-grid--compact">
-            <StatCard
-              label="소속 District"
-              value={
-                districtLabel(groupData?.districtId) ??
-                (groupData ? `#${groupData.districtId}` : '-')
-              }
-            />
-            <StatCard label="연락처" value={groupContacts.length} />
-            <StatCard label="모임" value={meetings.length} />
-          </div>
         }
       />
 

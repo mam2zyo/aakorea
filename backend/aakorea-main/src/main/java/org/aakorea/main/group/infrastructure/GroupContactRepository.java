@@ -11,5 +11,7 @@ public interface GroupContactRepository extends JpaRepository<GroupContact, Long
 
     List<GroupContact> findAllByGroup_IdOrderByIdAsc(Long groupId);
 
+    boolean existsByGroup_Id(Long groupId);
+
     Optional<GroupContact> findFirstByGroup_IdOrderByIdAsc(Long groupId);
 }

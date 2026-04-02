@@ -44,8 +44,20 @@ export function parseRoute(pathname, search = '') {
     })
   }
 
+  if (normalizedPath === '/admin') {
+    return createRoute('admin-root', normalizedPath, { section: 'admin' })
+  }
+
   if (normalizedPath === '/admin/districts') {
     return createRoute('admin-districts', normalizedPath, { section: 'admin' })
+  }
+
+  if (normalizedPath === '/admin/overview') {
+    return createRoute('admin-overview', normalizedPath, { section: 'admin' })
+  }
+
+  if (normalizedPath === '/admin/account') {
+    return createRoute('admin-account', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/groups') {
@@ -68,6 +80,10 @@ export function parseRoute(pathname, search = '') {
     return createRoute('admin-notices', normalizedPath, { section: 'admin' })
   }
 
+  if (normalizedPath.startsWith('/admin')) {
+    return createRoute('not-found', normalizedPath, { section: 'admin' })
+  }
+
   return createRoute('not-found', normalizedPath, { section: 'public' })
 }
 
@@ -76,6 +92,10 @@ export function requiresAdminSession(route) {
 }
 
 export function sanitizeAdminRedirect(value) {
+  if (value === '/admin') {
+    return DEFAULT_ADMIN_PATH
+  }
+
   if (!value || !value.startsWith('/admin') || value.startsWith('/admin/login')) {
     return DEFAULT_ADMIN_PATH
   }

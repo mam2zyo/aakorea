@@ -2,7 +2,9 @@ import { useEffect, useEffectEvent } from 'react'
 import { EmptyState, PageSection } from '../components/ui'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
+import { AdminAccountPage } from '../pages/admin/AdminAccountPage'
 import { AdminLoginPage } from '../pages/admin/AdminLoginPage'
+import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage'
 import { ContentPageAdminPage } from '../pages/admin/ContentPageAdminPage'
 import { DistrictAdminPage } from '../pages/admin/DistrictAdminPage'
 import { GroupEditorPage } from '../pages/admin/GroupEditorPage'
@@ -36,6 +38,11 @@ export function AppScreen({
       return
     }
 
+    if (route.name === 'admin-root') {
+      navigate(DEFAULT_ADMIN_PATH, { replace: true })
+      return
+    }
+
     if (requiresAdminSession(route) && !session.authenticated) {
       navigate(buildAdminLoginPath(route.currentPath), { replace: true })
       return
@@ -62,8 +69,24 @@ export function AppScreen({
   })
 
   const isProtectedAdminRoute = requiresAdminSession(route)
+  const isLoginScreen = route.name === 'admin-login'
+  const inlineFlash = isLoginScreen ? flash : null
+  const floatingFlash = !isLoginScreen && flash
+    ? renderFlash(flash, { floating: true })
+    : null
 
-  if (route.section === 'admin' && route.name !== 'admin-login') {
+  if (isLoginScreen) {
+    return (
+      <div className="admin-auth-shell">
+        <main className="admin-auth-main">
+          {inlineFlash ? renderFlash(inlineFlash) : null}
+          {page}
+        </main>
+      </div>
+    )
+  }
+
+  if (route.section === 'admin') {
     const content = isProtectedAdminRoute && (!sessionChecked || !session.authenticated)
       ? (
         <PageSection
@@ -84,27 +107,46 @@ export function AppScreen({
       : page
 
     return (
-      <AdminLayout
-        currentPath={route.currentPath}
-        flash={flash}
-        onLogout={onLogout}
-        onNavigate={onNavigate}
-        session={session}
-      >
-        {content}
-      </AdminLayout>
+      <>
+        {floatingFlash}
+        <AdminLayout
+          currentPath={route.currentPath}
+          flash={inlineFlash}
+          onLogout={onLogout}
+          onNavigate={onNavigate}
+          session={session}
+        >
+          {content}
+        </AdminLayout>
+      </>
     )
   }
 
   return (
-    <PublicLayout
-      currentPath={route.currentPath}
-      flash={flash}
-      onNavigate={onNavigate}
-      session={session}
+    <>
+      {floatingFlash}
+      <PublicLayout
+        currentPath={route.currentPath}
+        flash={inlineFlash}
+        onNavigate={onNavigate}
+      >
+        {page}
+      </PublicLayout>
+    </>
+  )
+}
+
+function renderFlash(flash, { floating = false } = {}) {
+  return (
+    <div
+      aria-live={flash.tone === 'error' ? 'assertive' : 'polite'}
+      className={`status-banner status-banner--${flash.tone}${
+        floating ? ' status-banner--floating' : ''
+      }`}
+      role={flash.tone === 'error' ? 'alert' : 'status'}
     >
-      {page}
-    </PublicLayout>
+      {flash.message}
+    </div>
   )
 }
 
@@ -157,8 +199,30 @@ function renderPage({
           sessionChecked={sessionChecked}
         />
       )
+    case 'admin-root':
+      return (
+        <PageSection
+          label="Admin Console"
+          title="운영 기본 화면으로 이동하는 중입니다."
+          description="운영 콘솔 기본 경로로 정리해 이동합니다."
+        >
+          <EmptyState
+            title="기본 관리자 화면을 여는 중입니다."
+            description="잠시 후 Group 관리 화면으로 이어집니다."
+          />
+        </PageSection>
+      )
+    case 'admin-overview':
+      return <AdminOverviewPage />
+    case 'admin-account':
+      return <AdminAccountPage />
     case 'admin-districts':
-      return <DistrictAdminPage onError={onError} onSuccess={onSuccess} />
+      return (
+        <DistrictAdminPage
+          onError={onError}
+          onSuccess={onSuccess}
+        />
+      )
     case 'admin-groups':
       return (
         <GroupListPage
@@ -192,27 +256,39 @@ function renderPage({
           onSuccess={onSuccess}
         />
       )
-    default:
+    default: {
+      const isAdminRoute = route.section === 'admin'
+      const fallbackPath = isAdminRoute ? DEFAULT_ADMIN_PATH : '/'
+
       return (
         <PageSection
           label="Not Found"
           title="요청한 화면을 찾지 못했습니다."
-          description="입력한 주소를 다시 확인해 주세요."
+          description={
+            isAdminRoute
+              ? '운영 콘솔 안에서 사용할 수 없는 경로입니다.'
+              : '입력한 주소를 다시 확인해 주세요.'
+          }
         >
           <EmptyState
             title="존재하지 않는 경로입니다."
-            description="홈 또는 운영 기본 화면으로 다시 이동해 주세요."
+            description={
+              isAdminRoute
+                ? '운영 기본 화면으로 돌아가 계속 작업해 주세요.'
+                : '홈 또는 운영 기본 화면으로 다시 이동해 주세요.'
+            }
           />
           <div className="button-row">
             <button
               className="ghost-button"
               type="button"
-              onClick={() => onNavigate('/')}
+              onClick={() => onNavigate(fallbackPath)}
             >
-              공개 홈으로 이동
+              {isAdminRoute ? '운영 기본 화면으로 이동' : '공개 홈으로 이동'}
             </button>
           </div>
         </PageSection>
       )
+    }
   }
 }

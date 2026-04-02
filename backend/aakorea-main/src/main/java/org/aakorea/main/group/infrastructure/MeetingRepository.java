@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface MeetingRepository extends JpaRepository<Meeting, Long>, JpaSpecificationExecutor<Meeting> {
 
     List<Meeting> findAllByGroup_IdAndActiveTrueOrderByIdAsc(Long groupId);
+
+    boolean existsByGroup_Id(Long groupId);
 }

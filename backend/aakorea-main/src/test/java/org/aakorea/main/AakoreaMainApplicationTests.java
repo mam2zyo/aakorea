@@ -8,9 +8,11 @@ import org.aakorea.main.group.application.PublicMeetingQueryService;
 import org.aakorea.main.generalservice.application.DistrictAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class AakoreaMainApplicationTests {
 
     @MockitoBean

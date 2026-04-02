@@ -13,7 +13,7 @@ function NavLink({ active, children, href, onNavigate }) {
   )
 }
 
-export function PublicLayout({ children, currentPath, flash, onNavigate, session }) {
+export function PublicLayout({ children, currentPath, flash, onNavigate }) {
   return (
     <div className="app-shell">
       <header className="shell-bar">
@@ -51,26 +51,6 @@ export function PublicLayout({ children, currentPath, flash, onNavigate, session
             공지
           </NavLink>
         </nav>
-
-        <div className="shell-bar__actions">
-          {session.authenticated ? (
-            <button
-              className="ghost-button ghost-button--small"
-              type="button"
-              onClick={() => onNavigate('/admin/groups')}
-            >
-              운영 이동
-            </button>
-          ) : (
-            <button
-              className="ghost-button ghost-button--small"
-              type="button"
-              onClick={() => onNavigate('/admin/login')}
-            >
-              운영 로그인
-            </button>
-          )}
-        </div>
       </header>
 
       {flash ? (

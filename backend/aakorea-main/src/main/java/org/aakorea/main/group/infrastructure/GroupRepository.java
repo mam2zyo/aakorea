@@ -9,4 +9,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findAllByOrderByIdAsc();
 
     List<Group> findAllByDistrict_IdOrderByIdAsc(Long districtId);
+
+    boolean existsByDistrict_Id(Long districtId);
 }

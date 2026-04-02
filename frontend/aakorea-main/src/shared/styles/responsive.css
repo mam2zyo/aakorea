@@ -28,7 +28,8 @@
   }
 
   .admin-main__bar,
-  .admin-directory-toolbar {
+  .admin-directory-toolbar,
+  .admin-list-toolbar {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -48,11 +49,19 @@
   .page-stack--admin {
     padding-inline: 0;
   }
+
+  .admin-list-toolbar__cluster {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 640px) {
+  .admin-auth-shell,
   .admin-main__content,
   .admin-sidebar,
+  .admin-workspace-panel,
   .panel,
   .page-intro,
   .resource-panel,
@@ -67,6 +76,17 @@
   .admin-table__row {
     grid-template-columns: 1fr;
     gap: var(--space-2);
+  }
+
+  .admin-table--three-column .admin-table__row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table--district .admin-table__row,
+  .admin-table--group .admin-table__row,
+  .admin-table--notice .admin-table__row,
+  .admin-table--content .admin-table__row {
+    grid-template-columns: 1fr;
   }
 
   .admin-table__cell {
@@ -97,5 +117,25 @@
   .button-row,
   .shell-nav {
     width: 100%;
+  }
+
+  .admin-overlay {
+    padding: var(--space-4);
+  }
+
+  .admin-overlay__dialog {
+    width: 100%;
+    padding: var(--space-5);
+  }
+
+  .admin-overlay__header {
+    flex-direction: column;
+  }
+
+  .status-banner--floating {
+    right: var(--space-4);
+    bottom: var(--space-4);
+    left: var(--space-4);
+    max-width: none;
   }
 }

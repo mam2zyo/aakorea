@@ -16,4 +16,9 @@ export const adminDistrictApi = {
       body: payload,
     })
   },
+  deleteDistrict(id) {
+    return request(`/api/admin/districts/${id}`, {
+      method: 'DELETE',
+    })
+  },
 }

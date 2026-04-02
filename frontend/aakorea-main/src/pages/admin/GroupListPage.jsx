@@ -3,16 +3,17 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
-  PageSection,
-  SectionHeader,
-  StatCard,
 } from '../../components/ui'
 import { adminDistrictApi } from '../../features/districts/api/admin'
 import { adminGroupApi } from '../../features/groups/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 import { ensureSelectValue } from '../../lib/view'
 
-const EMPTY_GROUP_FORM = { districtId: '', name: '' }
+const GROUP_SORT_MODES = {
+  district: '지역연합/이름순',
+  location: '기본 장소순',
+}
+const EMPTY_GROUP_FORM = createEmptyGroupForm()
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export function GroupListPage({ onError, onNavigate, onSuccess }) {
@@ -20,27 +21,12 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   const [groups, setGroups] = useState([])
   const [groupForm, setGroupForm] = useState(EMPTY_GROUP_FORM)
   const [groupErrors, setGroupErrors] = useState({})
+  const [editorOpen, setEditorOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  const sortedDistricts = [...districts].sort((left, right) =>
-    textCollator.compare(left.name, right.name),
-  )
-  const sortedGroups = [...groups].sort((left, right) => {
-    const districtCompare = textCollator.compare(
-      districtNameFor(left.districtId, districts),
-      districtNameFor(right.districtId, districts),
-    )
-    if (districtCompare !== 0) {
-      return districtCompare
-    }
-
-    const nameCompare = textCollator.compare(left.name, right.name)
-    if (nameCompare !== 0) {
-      return nameCompare
-    }
-
-    return left.id - right.id
-  })
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortMode, setSortMode] = useState('district')
 
   async function loadGroupIndex() {
     setLoading(true)
@@ -69,178 +55,343 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   useEffect(() => {
-    const nextDistrictOptions = [...districts].sort((left, right) =>
-      textCollator.compare(left.name, right.name),
-    )
-    setGroupForm((previous) => ensureSelectValue(previous, 'districtId', nextDistrictOptions))
+    setGroupForm((previous) => ensureSelectValue(previous, 'districtId', districts))
   }, [districts])
 
+  const sortedDistricts = [...districts].sort((left, right) =>
+    textCollator.compare(left.name, right.name),
+  )
   const hasDistrictOptions = sortedDistricts.length > 0
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko')
+  const filteredGroups = sortGroups(
+    groups.filter((group) => {
+      const districtName = districtNameFor(group.districtId, districts)
+      return [group.name, districtName, group.locationName ?? ''].some((value) =>
+        value.toLocaleLowerCase('ko').includes(normalizedQuery),
+      )
+    }),
+    districts,
+    sortMode,
+  )
 
   return (
-    <>
-      <AdminPageHeader
-        eyebrow="Group Directory"
-        title="로그인 직후 정렬된 Group 목록이 먼저 보입니다."
-        description="기본 정렬은 District와 Group 이름 순서이며, 운영자는 목록에서 바로 작업공간으로 진입할 수 있습니다."
-        meta={
-          <div className="stats-grid stats-grid--compact">
-            <StatCard label="District" value={sortedDistricts.length} />
-            <StatCard label="Group" value={sortedGroups.length} />
-            <StatCard label="기본 정렬" value="District / 이름" />
+    <div className="admin-flat-page">
+      <AdminPageHeader title="Group 관리" />
+
+      {loading ? <div className="section-note">Group 목록을 불러오는 중입니다...</div> : null}
+
+      <div className="admin-list-toolbar">
+        <div className="admin-list-toolbar__cluster admin-list-toolbar__cluster--start">
+          <div className="admin-list-toolbar__search">
+            <input
+              aria-label="Group 검색"
+              placeholder="Group 이름 또는 지역연합으로 검색"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
           </div>
-        }
-      />
 
-      <PageSection
-        label="Group Index"
-        title="목록 중심 콘솔"
-        description="목록에는 핵심 식별 정보만 노출하고, 생성은 별도 패널에서 이어서 처리합니다."
-      >
-        {loading ? <div className="section-note">Group 목록을 불러오는 중입니다...</div> : null}
+          <button
+            className="ghost-button ghost-button--small"
+            type="button"
+            onClick={toggleSortMode}
+          >
+            정렬: {GROUP_SORT_MODES[sortMode]}
+          </button>
+        </div>
 
-        <div className="admin-index-grid">
-          <section className="editor-card">
-            <SectionHeader title="Group 목록" />
+        <div className="admin-list-toolbar__cluster admin-list-toolbar__cluster--end">
+          <span className="admin-directory-toolbar__count">
+            총 {filteredGroups.length}개
+          </span>
 
-            <div className="admin-directory-toolbar">
-              <p className="section-note">
-                정렬 기준: District 이름 오름차순, Group 이름 오름차순
-              </p>
-              <span className="admin-directory-toolbar__count">
-                전체 {sortedGroups.length}개
-              </span>
+          <div className="admin-list-toolbar__divider" aria-hidden="true" />
+
+          <button
+            className={`primary-button primary-button--small${
+              hasDistrictOptions ? '' : ' primary-button--placeholder'
+            }`}
+            type="button"
+            onClick={startCreatingGroup}
+            disabled={!hasDistrictOptions}
+          >
+            새 Group
+          </button>
+        </div>
+      </div>
+
+      <div className="admin-flat-page__workspace">
+        {groups.length === 0 ? (
+          <EmptyState
+            title={hasDistrictOptions ? '등록된 Group이 없습니다.' : '지역연합이 먼저 필요합니다.'}
+            description={
+              hasDistrictOptions
+                ? '새 Group을 만들어 공개 모임 정보를 연결할 첫 작업공간을 준비해 주세요.'
+                : 'Group은 지역연합을 기준으로 등록하므로, 먼저 지역연합을 만들어 주세요.'
+            }
+          />
+        ) : filteredGroups.length === 0 ? (
+          <EmptyState
+            title="검색 결과가 없습니다."
+            description="다른 이름이나 지역연합으로 다시 검색해 주세요."
+          />
+        ) : (
+          <div className="admin-table admin-table--group" role="table" aria-label="Group 목록">
+            <div className="admin-table__header" role="row">
+              <span className="admin-table__heading" role="columnheader">번호</span>
+              <span className="admin-table__heading" role="columnheader">지역연합</span>
+              <span className="admin-table__heading" role="columnheader">Group</span>
+              <span className="admin-table__heading" role="columnheader">기본 장소</span>
+              <span className="admin-table__heading" role="columnheader">관리</span>
             </div>
 
-            {sortedGroups.length === 0 ? (
-              <EmptyState
-                title="Group이 없습니다."
-                description="District를 만든 뒤 첫 Group을 등록해 주세요."
-              />
-            ) : (
-              <div className="admin-table" role="table" aria-label="Group 목록">
-                <div className="admin-table__header" role="row">
-                  <span className="admin-table__heading" role="columnheader">District</span>
-                  <span className="admin-table__heading" role="columnheader">Group</span>
-                  <span className="admin-table__heading" role="columnheader">기본 장소명</span>
-                  <span className="admin-table__heading" role="columnheader">열기</span>
-                </div>
-
-                {sortedGroups.map((group) => (
+            {filteredGroups.map((group, index) => (
+              <div
+                key={group.id}
+                className={`admin-table__row admin-table__row--static${
+                  editorOpen && groupForm.id === group.id ? ' admin-table__row--selected' : ''
+                }`}
+                role="row"
+              >
+                <span className="admin-table__cell admin-table__cell--index" data-label="번호">
+                  {index + 1}
+                </span>
+                <span className="admin-table__cell" data-label="지역연합">
+                  {districtNameFor(group.districtId, districts)}
+                </span>
+                <span
+                  className="admin-table__cell admin-table__cell--primary"
+                  data-label="Group"
+                >
+                  <strong>{group.name}</strong>
+                </span>
+                <span className="admin-table__cell" data-label="기본 장소">
+                  {group.locationName || '기본 장소 미입력'}
+                </span>
+                <span className="admin-table__cell admin-table__cell--actions" data-label="관리">
                   <button
-                    key={group.id}
-                    className="admin-table__row"
+                    className="ghost-button ghost-button--small"
+                    type="button"
+                    onClick={() => startEditingGroup(group)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="ghost-button ghost-button--small"
                     type="button"
                     onClick={() => navigateToGroupEditor(group.id)}
                   >
-                    <span className="admin-table__cell" data-label="District">
-                      {districtNameFor(group.districtId, districts)}
-                    </span>
-                    <span
-                      className="admin-table__cell admin-table__cell--primary"
-                      data-label="Group"
-                    >
-                      <strong>{group.name}</strong>
-                    </span>
-                    <span className="admin-table__cell" data-label="기본 장소명">
-                      {group.locationName || '기본 장소 미입력'}
-                    </span>
-                    <span
-                      className="admin-table__cell admin-table__cell--action"
-                      data-label="열기"
-                    >
-                      작업공간
-                    </span>
+                    작업공간
                   </button>
-                ))}
+                </span>
               </div>
-            )}
-          </section>
+            ))}
+          </div>
+        )}
+      </div>
 
-          <section className="editor-card">
-            <SectionHeader title="새 Group 만들기" />
+      {editorOpen ? (
+        <div className="admin-overlay" role="presentation" onClick={closeEditor}>
+          <div
+            aria-labelledby="group-editor-title"
+            aria-modal="true"
+            className="admin-overlay__dialog"
+            role="dialog"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="admin-overlay__header">
+              <div className="admin-overlay__heading">
+                <h2 id="group-editor-title">{groupForm.id ? 'Group 수정' : '새 Group'}</h2>
+                <p className="admin-form-note">
+                  기본 분류와 대표 장소만 여기서 정리하고, 연락처와 모임 시간표는 작업공간에서 이어서 관리합니다.
+                </p>
+              </div>
 
-            {hasDistrictOptions ? (
-              <form
-                className="field-grid"
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  void createGroup()
-                }}
+              <button
+                className="ghost-button ghost-button--small"
+                type="button"
+                onClick={closeEditor}
+                disabled={saving || deleting}
               >
-                <Field
-                  label="District"
-                  error={readFieldError(groupErrors, 'districtId')}
+                닫기
+              </button>
+            </div>
+
+            <form
+              className="field-grid"
+              onSubmit={(event) => {
+                event.preventDefault()
+                void saveGroup()
+              }}
+            >
+              <Field label="지역연합" error={readFieldError(groupErrors, 'districtId')}>
+                <select
+                  value={groupForm.districtId}
+                  onChange={(event) => {
+                    setGroupForm((previous) => ({
+                      ...previous,
+                      districtId: event.target.value,
+                    }))
+                    setGroupErrors((previous) => omitFieldErrors(previous, 'districtId'))
+                  }}
                 >
-                  <select
-                    value={groupForm.districtId}
-                    onChange={(event) => {
-                      setGroupForm((previous) => ({
-                        ...previous,
-                        districtId: event.target.value,
-                      }))
-                      setGroupErrors((previous) =>
-                        omitFieldErrors(previous, 'districtId'),
-                      )
-                    }}
+                  {sortedDistricts.map((district) => (
+                    <option key={district.id} value={district.id}>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="Group 이름" error={readFieldError(groupErrors, 'name')}>
+                <input
+                  value={groupForm.name}
+                  onChange={(event) => {
+                    setGroupForm((previous) => ({
+                      ...previous,
+                      name: event.target.value,
+                    }))
+                    setGroupErrors((previous) => omitFieldErrors(previous, 'name'))
+                  }}
+                />
+              </Field>
+
+              <Field label="기본 장소명" error={readFieldError(groupErrors, 'locationName')}>
+                <input
+                  placeholder="예: AA 강남 모임실"
+                  value={groupForm.locationName}
+                  onChange={(event) => {
+                    setGroupForm((previous) => ({
+                      ...previous,
+                      locationName: event.target.value,
+                    }))
+                    setGroupErrors((previous) => omitFieldErrors(previous, 'locationName'))
+                  }}
+                />
+              </Field>
+
+              <Field
+                label="기본 장소 주소"
+                error={readFieldError(groupErrors, 'locationAddress')}
+              >
+                <input
+                  placeholder="예: 서울시 강남구 ..."
+                  value={groupForm.locationAddress}
+                  onChange={(event) => {
+                    setGroupForm((previous) => ({
+                      ...previous,
+                      locationAddress: event.target.value,
+                    }))
+                    setGroupErrors((previous) => omitFieldErrors(previous, 'locationAddress'))
+                  }}
+                />
+              </Field>
+
+              <div className="button-row button-row--compact">
+                <button className="primary-button" type="submit" disabled={saving || deleting}>
+                  {saving ? '저장 중...' : groupForm.id ? 'Group 저장' : 'Group 생성'}
+                </button>
+
+                {groupForm.id ? (
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={() => navigateToGroupEditor(groupForm.id)}
+                    disabled={saving || deleting}
                   >
-                    {sortedDistricts.map((district) => (
-                      <option key={district.id} value={district.id}>
-                        {district.name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Group 이름" error={readFieldError(groupErrors, 'name')}>
-                  <input
-                    value={groupForm.name}
-                    onChange={(event) => {
-                      setGroupForm((previous) => ({
-                        ...previous,
-                        name: event.target.value,
-                      }))
-                      setGroupErrors((previous) => omitFieldErrors(previous, 'name'))
-                    }}
-                  />
-                </Field>
-
-                <div className="admin-form-note">
-                  생성 후에는 바로 작업공간으로 이동해 연락처와 모임 정보를 이어서 입력합니다.
-                </div>
-
-                <div className="button-row button-row--compact">
-                  <button className="primary-button" type="submit">
-                    Group 생성 후 작업공간 열기
+                    작업공간 열기
                   </button>
-                </div>
-              </form>
-            ) : (
-              <EmptyState
-                title="District가 먼저 필요합니다."
-                description="현재 모델에서는 Group 생성 전에 District를 하나 이상 등록해야 합니다."
-              />
-            )}
-          </section>
+                ) : null}
+
+                {groupForm.id ? (
+                  <button
+                    className="ghost-button ghost-button--danger"
+                    type="button"
+                    onClick={() => void deleteGroup()}
+                    disabled={saving || deleting}
+                  >
+                    {deleting ? '삭제 중...' : 'Group 삭제'}
+                  </button>
+                ) : null}
+              </div>
+            </form>
+          </div>
         </div>
-      </PageSection>
-    </>
+      ) : null}
+    </div>
   )
 
-  async function createGroup() {
+  function toggleSortMode() {
+    setSortMode((previous) => (previous === 'district' ? 'location' : 'district'))
+  }
+
+  function startCreatingGroup() {
+    if (!hasDistrictOptions) {
+      return
+    }
+
+    setGroupForm({
+      ...EMPTY_GROUP_FORM,
+      districtId: String(sortedDistricts[0].id),
+    })
+    setGroupErrors({})
+    setEditorOpen(true)
+  }
+
+  function startEditingGroup(group) {
+    setGroupForm({
+      id: group.id,
+      districtId: String(group.districtId),
+      name: group.name,
+      locationName: group.locationName ?? '',
+      locationAddress: group.locationAddress ?? '',
+      introduction: group.introduction ?? '',
+      notice: group.notice ?? '',
+      changeSummary: group.changeSummary ?? '',
+    })
+    setGroupErrors({})
+    setEditorOpen(true)
+  }
+
+  function closeEditor() {
+    if (saving || deleting) {
+      return
+    }
+
+    setEditorOpen(false)
+    setGroupForm(EMPTY_GROUP_FORM)
+    setGroupErrors({})
+  }
+
+  async function saveGroup() {
+    setSaving(true)
+
     try {
-      const createdGroup = await adminGroupApi.createGroup({
+      const payload = {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
-      })
+        locationName: groupForm.locationName,
+        locationAddress: groupForm.locationAddress,
+        introduction: groupForm.introduction,
+        notice: groupForm.notice,
+        changeSummary: groupForm.changeSummary,
+      }
+      const savedGroup = groupForm.id
+        ? await adminGroupApi.updateGroup(groupForm.id, payload)
+        : await adminGroupApi.createGroup(payload)
 
-      onSuccess('Group을 생성했습니다. 작업공간으로 이동합니다.')
+      setGroups((previous) => {
+        if (groupForm.id) {
+          return previous.map((group) => (group.id === savedGroup.id ? savedGroup : group))
+        }
+
+        return [...previous, savedGroup]
+      })
+      setSearchQuery('')
+      setEditorOpen(false)
+      setGroupForm(EMPTY_GROUP_FORM)
       setGroupErrors({})
-      setGroupForm((previous) => ({
-        ...EMPTY_GROUP_FORM,
-        districtId: previous.districtId,
-      }))
-      navigateToGroupEditor(createdGroup.id)
+      onSuccess(groupForm.id ? 'Group을 수정했습니다.' : 'Group을 생성했습니다.')
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       if (fieldErrors) {
@@ -249,7 +400,39 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
       }
 
       setGroupErrors({})
-      onError(error, 'Group 생성에 실패했습니다.')
+      onError(error, groupForm.id ? 'Group 수정에 실패했습니다.' : 'Group 생성에 실패했습니다.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function deleteGroup() {
+    if (!groupForm.id) {
+      return
+    }
+
+    const confirmed = window.confirm(`"${groupForm.name}" Group을 삭제하시겠습니까?`)
+    if (!confirmed) {
+      return
+    }
+
+    setDeleting(true)
+
+    try {
+      const deletingId = groupForm.id
+
+      await adminGroupApi.deleteGroup(deletingId)
+
+      setGroups((previous) => previous.filter((group) => group.id !== deletingId))
+      setEditorOpen(false)
+      setGroupForm(EMPTY_GROUP_FORM)
+      setGroupErrors({})
+      onSuccess('Group을 삭제했습니다.')
+    } catch (error) {
+      setGroupErrors({})
+      onError(error, 'Group 삭제에 실패했습니다.')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -258,6 +441,47 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   }
 }
 
+function sortGroups(groups, districts, sortMode) {
+  return [...groups].sort((left, right) => {
+    if (sortMode === 'location') {
+      const leftLocation = left.locationName || ''
+      const rightLocation = right.locationName || ''
+      const locationCompare = textCollator.compare(leftLocation, rightLocation)
+      if (locationCompare !== 0) {
+        return locationCompare
+      }
+    }
+
+    const districtCompare = textCollator.compare(
+      districtNameFor(left.districtId, districts),
+      districtNameFor(right.districtId, districts),
+    )
+    if (districtCompare !== 0) {
+      return districtCompare
+    }
+
+    const nameCompare = textCollator.compare(left.name, right.name)
+    if (nameCompare !== 0) {
+      return nameCompare
+    }
+
+    return left.id - right.id
+  })
+}
+
+function createEmptyGroupForm() {
+  return {
+    id: null,
+    districtId: '',
+    name: '',
+    locationName: '',
+    locationAddress: '',
+    introduction: '',
+    notice: '',
+    changeSummary: '',
+  }
+}
+
 function districtNameFor(districtId, districts) {
-  return districts.find((district) => district.id === districtId)?.name ?? `District #${districtId}`
+  return districts.find((district) => district.id === districtId)?.name ?? `지역연합 #${districtId}`
 }

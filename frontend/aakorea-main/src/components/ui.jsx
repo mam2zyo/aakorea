@@ -41,7 +41,7 @@ export function AdminPageHeader({
   return (
     <section className="admin-page-header">
       <div className="admin-page-header__copy">
-        <p className="eyebrow">{eyebrow}</p>
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1 className="admin-page-header__title">{title}</h1>
         {description ? (
           <p className="admin-page-header__description">{description}</p>

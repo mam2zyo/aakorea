@@ -15,9 +15,9 @@ export function AdminLoginPage({
 
   return (
     <PageSection
-      label="Admin Auth"
-      title="운영 세션을 시작합니다."
-      description="운영 화면은 세션 기반 인증으로 보호되며, 로그인 후 District와 Group 작업공간으로 이동합니다."
+      label="Admin Login"
+      title="운영 콘솔 로그인"
+      description="관리자 메뉴는 로그인 후 접근할 수 있습니다."
     >
       {sessionChecked && session.authenticated ? (
         <EmptyState
@@ -35,6 +35,7 @@ export function AdminLoginPage({
           <label className="field">
             <span className="field__label">아이디</span>
             <input
+              autoComplete="username"
               placeholder="admin"
               value={authForm.username}
               onChange={(event) =>
@@ -49,6 +50,7 @@ export function AdminLoginPage({
           <label className="field">
             <span className="field__label">비밀번호</span>
             <input
+              autoComplete="current-password"
               type="password"
               placeholder="password"
               value={authForm.password}
@@ -60,10 +62,6 @@ export function AdminLoginPage({
               }
             />
           </label>
-
-          <div className="auth-note">
-            로그인 후 이동 경로: <strong>{sanitizeAdminRedirect(redirectPath)}</strong>
-          </div>
 
           <div className="button-row button-row--compact">
             <button

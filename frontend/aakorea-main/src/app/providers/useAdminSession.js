@@ -8,7 +8,7 @@ const UNAUTHENTICATED_SESSION = {
   username: null,
 }
 
-export function useAdminSession(route, { onError, onSuccess }) {
+export function useAdminSession(route, { onError }) {
   const [authPending, setAuthPending] = useState(false)
   const [session, setSession] = useState(UNAUTHENTICATED_SESSION)
   const [sessionChecked, setSessionChecked] = useState(false)
@@ -43,7 +43,6 @@ export function useAdminSession(route, { onError, onSuccess }) {
       const authStatus = await authApi.login(credentials)
       setSession(authStatus)
       setSessionChecked(true)
-      onSuccess('운영 세션에 로그인했습니다.')
       navigate(redirectPath, { replace: true })
     } catch (error) {
       onError(error, '로그인에 실패했습니다.')
@@ -59,7 +58,6 @@ export function useAdminSession(route, { onError, onSuccess }) {
       await authApi.logout()
       setSession(UNAUTHENTICATED_SESSION)
       setSessionChecked(true)
-      onSuccess('운영 세션에서 로그아웃했습니다.')
       navigate(redirectPath, { replace: true })
     } catch (error) {
       onError(error, '로그아웃에 실패했습니다.')

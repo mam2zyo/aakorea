@@ -19,6 +19,11 @@ export const adminContentApi = {
       body: payload,
     })
   },
+  deleteContentPage(id) {
+    return request(`/api/admin/content-pages/${id}`, {
+      method: 'DELETE',
+    })
+  },
   getNotices() {
     return request('/api/admin/notices')
   },
@@ -35,6 +40,11 @@ export const adminContentApi = {
     return request(`/api/admin/notices/${id}`, {
       method: 'PUT',
       body: payload,
+    })
+  },
+  deleteNotice(id) {
+    return request(`/api/admin/notices/${id}`, {
+      method: 'DELETE',
     })
   },
 }

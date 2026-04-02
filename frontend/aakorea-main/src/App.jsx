@@ -10,7 +10,6 @@ function App() {
   const { authPending, handleLogin, handleLogout, session, sessionChecked } =
     useAdminSession(route, {
       onError: showError,
-      onSuccess: showSuccess,
     })
 
   return (

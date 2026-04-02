@@ -1,37 +1,50 @@
-const ADMIN_NAV_SECTIONS = [
-  {
-    label: '운영 데이터',
-    items: [
-      {
-        label: 'Group 관리',
-        href: '/admin/groups',
-        match: (path) => path === '/admin/groups' || path.startsWith('/admin/groups/'),
-      },
-      {
-        label: 'District 관리',
-        href: '/admin/districts',
-        match: (path) => path === '/admin/districts',
-      },
-    ],
-  },
-  {
-    label: '공개 콘텐츠',
-    items: [
-      {
-        label: '안내 페이지',
-        href: '/admin/content-pages',
-        match: (path) => path === '/admin/content-pages',
-      },
-      {
-        label: '공지 관리',
-        href: '/admin/notices',
-        match: (path) => path === '/admin/notices',
-      },
-    ],
-  },
+const ADMIN_NAV_GROUPS = [
+  [
+    {
+      label: 'Group 관리',
+      href: '/admin/groups',
+      match: (path) => path === '/admin/groups' || path.startsWith('/admin/groups/'),
+    },
+    {
+      label: '지역연합 관리',
+      href: '/admin/districts',
+      match: (path) => path === '/admin/districts',
+    },
+    {
+      label: '온라인 모임 관리',
+      status: '준비 중',
+    },
+    {
+      label: '제12단계 운동 관리',
+      status: '준비 중',
+    },
+  ],
+  [
+    {
+      label: '공지 관리',
+      href: '/admin/notices',
+      match: (path) => path === '/admin/notices',
+    },
+    {
+      label: '안내 페이지',
+      href: '/admin/content-pages',
+      match: (path) => path === '/admin/content-pages',
+    },
+  ],
+  [
+    {
+      label: '운영 현황',
+      href: '/admin/overview',
+      match: (path) => path === '/admin/overview',
+    },
+  ],
 ]
 
-const UPCOMING_ADMIN_ITEMS = ['온라인 모임 관리', '제12단계 운동 관리']
+const ADMIN_UTILITY_ITEM = {
+  label: '계정 설정',
+  href: '/admin/account',
+  match: (path) => path === '/admin/account',
+}
 
 function AdminNavLink({ active, children, href, onNavigate }) {
   return (
@@ -48,13 +61,6 @@ function AdminNavLink({ active, children, href, onNavigate }) {
   )
 }
 
-function findCurrentAdminTitle(currentPath) {
-  const matchedItem = ADMIN_NAV_SECTIONS.flatMap((section) => section.items)
-    .find((item) => item.match(currentPath))
-
-  return matchedItem?.label ?? '운영 메뉴'
-}
-
 export function AdminLayout({
   children,
   currentPath,
@@ -63,8 +69,6 @@ export function AdminLayout({
   onNavigate,
   session,
 }) {
-  const currentTitle = findCurrentAdminTitle(currentPath)
-
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -76,65 +80,75 @@ export function AdminLayout({
           >
             AAKorea Admin
           </button>
-          <p className="admin-sidebar__description">
-            로그인하면 바로 정렬된 관리 목록으로 진입하는 운영 콘솔입니다.
-          </p>
-        </div>
-
-        <div className="admin-sidebar__identity">
-          <span className="shell-badge">
-            {session.authenticated ? session.username : '비인증'}
-          </span>
         </div>
 
         <nav className="admin-sidebar__nav" aria-label="관리자 메뉴">
-          {ADMIN_NAV_SECTIONS.map((section) => (
-            <div key={section.label} className="admin-nav-section">
-              <p className="admin-nav-section__label">{section.label}</p>
+          {session.authenticated ? (
+            <>
+              {ADMIN_NAV_GROUPS.map((group, index) => (
+                <div key={group.map((item) => item.label).join('-')} className="admin-nav-group">
+                  {index > 0 ? <div className="admin-nav-divider" aria-hidden="true" /> : null}
+                  <div className="admin-nav-list">
+                    {group.map((item) => (
+                      item.href ? (
+                        <AdminNavLink
+                          key={item.href}
+                          active={item.match(currentPath)}
+                          href={item.href}
+                          onNavigate={onNavigate}
+                        >
+                          {item.label}
+                        </AdminNavLink>
+                      ) : (
+                        <span key={item.label} className="admin-nav-link admin-nav-link--disabled">
+                          <span className="admin-nav-link__label">{item.label}</span>
+                          {item.status ? (
+                            <span className="admin-nav-link__status">{item.status}</span>
+                          ) : null}
+                        </span>
+                      )
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="admin-nav-group">
               <div className="admin-nav-list">
-                {section.items.map((item) => (
-                  <AdminNavLink
-                    key={item.href}
-                    active={item.match(currentPath)}
-                    href={item.href}
-                    onNavigate={onNavigate}
-                  >
-                    {item.label}
-                  </AdminNavLink>
-                ))}
+                <span className="admin-nav-link admin-nav-link--disabled">
+                  로그인 후 운영 메뉴를 사용할 수 있습니다.
+                </span>
               </div>
             </div>
-          ))}
-
-          <div className="admin-nav-section">
-            <p className="admin-nav-section__label">추가 예정</p>
-            <div className="admin-nav-list">
-              {UPCOMING_ADMIN_ITEMS.map((item) => (
-                <span key={item} className="admin-nav-link admin-nav-link--disabled">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
+          )}
         </nav>
+
+        <div className="admin-sidebar__utility">
+          <div className="admin-nav-divider" aria-hidden="true" />
+          <span className="shell-badge">
+            {session.authenticated ? session.username : '비인증'}
+          </span>
+          {session.authenticated ? (
+            <AdminNavLink
+              active={ADMIN_UTILITY_ITEM.match(currentPath)}
+              href={ADMIN_UTILITY_ITEM.href}
+              onNavigate={onNavigate}
+            >
+              {ADMIN_UTILITY_ITEM.label}
+            </AdminNavLink>
+          ) : null}
+        </div>
       </aside>
 
       <div className="admin-main">
         <header className="admin-main__bar">
           <div className="admin-main__heading">
-            <p className="eyebrow">Admin Console</p>
-            <h1>{currentTitle}</h1>
+            <p className="eyebrow">AAKorea Admin</p>
+            <h1>운영 관리자 페이지</h1>
           </div>
 
-          <div className="admin-main__actions">
-            <button
-              className="ghost-button ghost-button--small"
-              type="button"
-              onClick={() => onNavigate('/')}
-            >
-              공개 홈
-            </button>
-            {session.authenticated ? (
+          {session.authenticated ? (
+            <div className="admin-main__actions">
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
@@ -142,8 +156,8 @@ export function AdminLayout({
               >
                 로그아웃
               </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </header>
 
         <div className="admin-main__content">

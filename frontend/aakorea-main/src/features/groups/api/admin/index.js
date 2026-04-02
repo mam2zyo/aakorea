@@ -18,6 +18,11 @@ export const adminGroupApi = {
       body: payload,
     })
   },
+  deleteGroup(id) {
+    return request(`/api/admin/groups/${id}`, {
+      method: 'DELETE',
+    })
+  },
   getGroupContacts(groupId) {
     return request(withQuery('/api/admin/group-contacts', {
       groupId,

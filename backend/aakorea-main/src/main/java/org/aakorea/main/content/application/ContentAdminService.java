@@ -61,6 +61,11 @@ public class ContentAdminService {
         return toContentPageData(contentPage);
     }
 
+    @Transactional
+    public void deleteContentPage(Long id) {
+        contentPageRepository.delete(getContentPageEntity(id));
+    }
+
     public List<NoticeSummaryData> getNotices() {
         return noticeRepository.findAllByOrderByPublishedAtDescIdDesc().stream()
                 .map(this::toNoticeSummaryData)
@@ -92,6 +97,11 @@ public class ContentAdminService {
                 normalizePublishedAt(published, publishedAt));
 
         return toNoticeData(notice);
+    }
+
+    @Transactional
+    public void deleteNotice(Long id) {
+        noticeRepository.delete(getNoticeEntity(id));
     }
 
     private ContentPage getContentPageEntity(Long id) {

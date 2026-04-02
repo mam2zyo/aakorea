@@ -8,6 +8,7 @@ import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.generalservice.application.DistrictAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,12 @@ public class DistrictAdminController {
             @Valid @RequestBody DistrictRequest request
     ) {
         return ApiResponse.success(districtAdminService.updateDistrict(id, request.name()));
+    }
+
+    @DeleteMapping("/districts/{id}")
+    public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
+        districtAdminService.deleteDistrict(id);
+        return ResponseEntity.noContent().build();
     }
 
     public record DistrictRequest(

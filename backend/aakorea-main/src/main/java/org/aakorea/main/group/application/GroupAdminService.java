@@ -9,6 +9,7 @@ import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
+import org.aakorea.main.group.infrastructure.MeetingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class GroupAdminService {
     private final DistrictRepository districtRepository;
     private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
+    private final MeetingRepository meetingRepository;
 
     public List<GroupData> getGroups(Long districtId) {
         List<Group> groups = districtId != null
@@ -85,6 +87,17 @@ public class GroupAdminService {
                 GroupFieldSupport.optionalText(notice),
                 GroupFieldSupport.optionalText(changeSummary));
         return toGroupData(group);
+    }
+
+    @Transactional
+    public void deleteGroup(Long id) {
+        Group group = getGroup(id);
+
+        if (groupContactRepository.existsByGroup_Id(id) || meetingRepository.existsByGroup_Id(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "연락처 또는 모임이 연결된 Group은 삭제할 수 없습니다.");
+        }
+
+        groupRepository.delete(group);
     }
 
     public List<GroupContactData> getGroupContacts(Long groupId) {
