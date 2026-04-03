@@ -34,6 +34,12 @@ public class Meeting {
     @Column(nullable = false)
     private String province;
 
+    @Column(name = "location_name")
+    private String locationName;
+
+    @Column(name = "location_address")
+    private String locationAddress;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DayOfWeek dayOfWeek;
@@ -45,45 +51,46 @@ public class Meeting {
     @Column(nullable = false)
     private MeetingType type;
 
-    @Column(name = "meeting_place_note", length = 500)
-    private String meetingPlaceNote;
-
     @Column(nullable = false)
     private boolean active;
 
     public Meeting(
             Group group,
             String province,
+            String locationName,
+            String locationAddress,
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
-            String meetingPlaceNote,
             boolean active
     ) {
         this.group = group;
         this.province = province;
+        this.locationName = locationName;
+        this.locationAddress = locationAddress;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.meetingPlaceNote = meetingPlaceNote;
         this.active = active;
     }
 
     public void update(
             Group group,
             String province,
+            String locationName,
+            String locationAddress,
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
-            String meetingPlaceNote,
             boolean active
     ) {
         this.group = group;
         this.province = province;
+        this.locationName = locationName;
+        this.locationAddress = locationAddress;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.meetingPlaceNote = meetingPlaceNote;
         this.active = active;
     }
 }

@@ -117,6 +117,25 @@ final class MeetingFieldSupport {
         return TIME_FORMATTER.format(startTime);
     }
 
+    static void validateLocation(String locationName, String locationAddress) {
+        boolean hasLocationName = locationName != null;
+        boolean hasLocationAddress = locationAddress != null;
+
+        if (hasLocationName && hasLocationAddress) {
+            return;
+        }
+
+        if (hasLocationName) {
+            throw badRequest("locationAddress", "locationAddress is required when locationName is provided");
+        }
+
+        if (hasLocationAddress) {
+            throw badRequest("locationName", "locationName is required when locationAddress is provided");
+        }
+
+        throw badRequest("locationName", "locationName is required");
+    }
+
     private static String normalizeProvince(String province) {
         String normalized = province.trim().toLowerCase(Locale.ROOT);
         if (!SUPPORTED_PROVINCES.contains(normalized)) {

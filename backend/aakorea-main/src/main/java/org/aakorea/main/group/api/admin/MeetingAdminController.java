@@ -41,10 +41,11 @@ public class MeetingAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(meetingAdminService.createMeeting(
                 request.groupId(),
                 request.province(),
+                request.locationName(),
+                request.locationAddress(),
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
-                request.meetingPlaceNote(),
                 request.active())));
     }
 
@@ -57,20 +58,22 @@ public class MeetingAdminController {
                 id,
                 request.groupId(),
                 request.province(),
+                request.locationName(),
+                request.locationAddress(),
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
-                request.meetingPlaceNote(),
                 request.active()));
     }
 
     public record MeetingRequest(
             @NotNull(message = "groupId is required") Long groupId,
             @NotBlank(message = "province is required") String province,
+            @NotBlank(message = "locationName is required") String locationName,
+            @NotBlank(message = "locationAddress is required") String locationAddress,
             @NotBlank(message = "dayOfWeek is required") String dayOfWeek,
             @NotBlank(message = "startTime is required") String startTime,
             @NotBlank(message = "type is required") String type,
-            String meetingPlaceNote,
             @NotNull(message = "active is required") Boolean active
     ) {
     }

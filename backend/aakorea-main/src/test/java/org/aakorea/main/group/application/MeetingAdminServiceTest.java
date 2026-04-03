@@ -39,7 +39,7 @@ class MeetingAdminServiceTest {
     @Test
     void createMeetingNormalizesFieldsBeforeSaving() {
         District district = new District("서울");
-        Group group = new Group(district, "강남그룹", "강남역 인근", "서울특별시 강남구 테헤란로 123", null, null, null);
+        Group group = new Group(district, "강남그룹");
         ReflectionTestUtils.setField(group, "id", 20L);
 
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
@@ -52,10 +52,11 @@ class MeetingAdminServiceTest {
         MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
                 20L,
                 " Seoul ",
+                "  강남역 인근  ",
+                "  서울특별시 강남구 테헤란로 123  ",
                 "monday",
                 "19:30",
                 "open",
-                "  지하 강당  ",
                 true);
 
         ArgumentCaptor<Meeting> captor = ArgumentCaptor.forClass(Meeting.class);
@@ -63,10 +64,11 @@ class MeetingAdminServiceTest {
         Meeting savedMeeting = captor.getValue();
 
         assertThat(savedMeeting.getProvince()).isEqualTo("seoul");
+        assertThat(savedMeeting.getLocationName()).isEqualTo("강남역 인근");
+        assertThat(savedMeeting.getLocationAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
         assertThat(savedMeeting.getDayOfWeek()).isEqualTo(DayOfWeek.MONDAY);
         assertThat(savedMeeting.getStartTime().toString()).isEqualTo("19:30");
         assertThat(savedMeeting.getType()).isEqualTo(MeetingType.OPEN);
-        assertThat(savedMeeting.getMeetingPlaceNote()).isEqualTo("지하 강당");
         assertThat(result.id()).isEqualTo(100L);
         assertThat(result.startTime()).isEqualTo("19:30");
     }
@@ -91,10 +93,11 @@ class MeetingAdminServiceTest {
         Meeting meeting = new Meeting(
                 oldGroup,
                 "seoul",
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
                 DayOfWeek.MONDAY,
                 java.time.LocalTime.of(19, 30),
                 MeetingType.OPEN,
-                "기본 장소 사용",
                 true);
 
         ReflectionTestUtils.setField(newGroup, "id", 21L);
@@ -107,18 +110,20 @@ class MeetingAdminServiceTest {
                 100L,
                 21L,
                 "busan",
+                "해운대역 인근",
+                "부산광역시 해운대구 우동 123",
                 "TUESDAY",
                 "20:00",
                 "NOTFIXED",
-                "지구위원회 회의실",
                 false);
 
         assertThat(meeting.getGroup()).isEqualTo(newGroup);
         assertThat(meeting.getProvince()).isEqualTo("busan");
+        assertThat(meeting.getLocationName()).isEqualTo("해운대역 인근");
+        assertThat(meeting.getLocationAddress()).isEqualTo("부산광역시 해운대구 우동 123");
         assertThat(meeting.getDayOfWeek()).isEqualTo(DayOfWeek.TUESDAY);
         assertThat(meeting.getStartTime().toString()).isEqualTo("20:00");
         assertThat(meeting.getType()).isEqualTo(MeetingType.NOTFIXED);
-        assertThat(meeting.getMeetingPlaceNote()).isEqualTo("지구위원회 회의실");
         assertThat(meeting.isActive()).isFalse();
         assertThat(result.groupId()).isEqualTo(21L);
         assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED);

@@ -11,8 +11,9 @@ import { ensureSelectValue } from '../../lib/view'
 
 const GROUP_SORT_MODES = {
   district: '지역연합/이름순',
-  location: '기본 장소순',
+  name: '이름순',
 }
+
 const EMPTY_GROUP_FORM = createEmptyGroupForm()
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
@@ -66,7 +67,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   const filteredGroups = sortGroups(
     groups.filter((group) => {
       const districtName = districtNameFor(group.districtId, districts)
-      return [group.name, districtName, group.locationName ?? ''].some((value) =>
+      return [group.name, districtName].some((value) =>
         value.toLocaleLowerCase('ko').includes(normalizedQuery),
       )
     }),
@@ -101,9 +102,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
         </div>
 
         <div className="admin-list-toolbar__cluster admin-list-toolbar__cluster--end">
-          <span className="admin-directory-toolbar__count">
-            총 {filteredGroups.length}개
-          </span>
+          <span className="admin-directory-toolbar__count">총 {filteredGroups.length}개</span>
 
           <div className="admin-list-toolbar__divider" aria-hidden="true" />
 
@@ -126,7 +125,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
             title={hasDistrictOptions ? '등록된 Group이 없습니다.' : '지역연합이 먼저 필요합니다.'}
             description={
               hasDistrictOptions
-                ? '새 Group을 만들어 공개 모임 정보를 연결할 첫 작업공간을 준비해 주세요.'
+                ? '새 Group을 만들고 작업공간에서 연락처와 모임 정보를 이어서 등록해 주세요.'
                 : 'Group은 지역연합을 기준으로 등록하므로, 먼저 지역연합을 만들어 주세요.'
             }
           />
@@ -141,7 +140,6 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
               <span className="admin-table__heading" role="columnheader">번호</span>
               <span className="admin-table__heading" role="columnheader">지역연합</span>
               <span className="admin-table__heading" role="columnheader">Group</span>
-              <span className="admin-table__heading" role="columnheader">기본 장소</span>
               <span className="admin-table__heading" role="columnheader">관리</span>
             </div>
 
@@ -159,14 +157,8 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                 <span className="admin-table__cell" data-label="지역연합">
                   {districtNameFor(group.districtId, districts)}
                 </span>
-                <span
-                  className="admin-table__cell admin-table__cell--primary"
-                  data-label="Group"
-                >
+                <span className="admin-table__cell admin-table__cell--primary" data-label="Group">
                   <strong>{group.name}</strong>
-                </span>
-                <span className="admin-table__cell" data-label="기본 장소">
-                  {group.locationName || '기본 장소 미입력'}
                 </span>
                 <span className="admin-table__cell admin-table__cell--actions" data-label="관리">
                   <button
@@ -203,7 +195,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
               <div className="admin-overlay__heading">
                 <h2 id="group-editor-title">{groupForm.id ? 'Group 수정' : '새 Group'}</h2>
                 <p className="admin-form-note">
-                  기본 분류와 대표 장소만 여기서 정리하고, 연락처와 모임 시간표는 작업공간에서 이어서 관리합니다.
+                  Group에는 이름과 지역연합만 두고, 실제 장소와 시간표는 작업공간의 모임 정보에서 관리합니다.
                 </p>
               </div>
 
@@ -256,37 +248,6 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
                 />
               </Field>
 
-              <Field label="기본 장소명" error={readFieldError(groupErrors, 'locationName')}>
-                <input
-                  placeholder="예: AA 강남 모임실"
-                  value={groupForm.locationName}
-                  onChange={(event) => {
-                    setGroupForm((previous) => ({
-                      ...previous,
-                      locationName: event.target.value,
-                    }))
-                    setGroupErrors((previous) => omitFieldErrors(previous, 'locationName'))
-                  }}
-                />
-              </Field>
-
-              <Field
-                label="기본 장소 주소"
-                error={readFieldError(groupErrors, 'locationAddress')}
-              >
-                <input
-                  placeholder="예: 서울시 강남구 ..."
-                  value={groupForm.locationAddress}
-                  onChange={(event) => {
-                    setGroupForm((previous) => ({
-                      ...previous,
-                      locationAddress: event.target.value,
-                    }))
-                    setGroupErrors((previous) => omitFieldErrors(previous, 'locationAddress'))
-                  }}
-                />
-              </Field>
-
               <div className="button-row button-row--compact">
                 <button className="primary-button" type="submit" disabled={saving || deleting}>
                   {saving ? '저장 중...' : groupForm.id ? 'Group 저장' : 'Group 생성'}
@@ -322,7 +283,7 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
   )
 
   function toggleSortMode() {
-    setSortMode((previous) => (previous === 'district' ? 'location' : 'district'))
+    setSortMode((previous) => (previous === 'district' ? 'name' : 'district'))
   }
 
   function startCreatingGroup() {
@@ -343,11 +304,6 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
       id: group.id,
       districtId: String(group.districtId),
       name: group.name,
-      locationName: group.locationName ?? '',
-      locationAddress: group.locationAddress ?? '',
-      introduction: group.introduction ?? '',
-      notice: group.notice ?? '',
-      changeSummary: group.changeSummary ?? '',
     })
     setGroupErrors({})
     setEditorOpen(true)
@@ -370,11 +326,6 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
       const payload = {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
-        locationName: groupForm.locationName,
-        locationAddress: groupForm.locationAddress,
-        introduction: groupForm.introduction,
-        notice: groupForm.notice,
-        changeSummary: groupForm.changeSummary,
       }
       const savedGroup = groupForm.id
         ? await adminGroupApi.updateGroup(groupForm.id, payload)
@@ -443,12 +394,10 @@ export function GroupListPage({ onError, onNavigate, onSuccess }) {
 
 function sortGroups(groups, districts, sortMode) {
   return [...groups].sort((left, right) => {
-    if (sortMode === 'location') {
-      const leftLocation = left.locationName || ''
-      const rightLocation = right.locationName || ''
-      const locationCompare = textCollator.compare(leftLocation, rightLocation)
-      if (locationCompare !== 0) {
-        return locationCompare
+    if (sortMode === 'name') {
+      const nameCompare = textCollator.compare(left.name, right.name)
+      if (nameCompare !== 0) {
+        return nameCompare
       }
     }
 
@@ -474,11 +423,6 @@ function createEmptyGroupForm() {
     id: null,
     districtId: '',
     name: '',
-    locationName: '',
-    locationAddress: '',
-    introduction: '',
-    notice: '',
-    changeSummary: '',
   }
 }
 

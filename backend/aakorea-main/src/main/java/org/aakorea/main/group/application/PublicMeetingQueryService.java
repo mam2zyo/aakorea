@@ -8,6 +8,7 @@ import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
+import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class PublicMeetingQueryService {
 
     private final MeetingRepository meetingRepository;
+    private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
 
     public List<PublicMeetingSummary> getMeetings(String province, String dayOfWeek) {
@@ -50,27 +52,36 @@ public class PublicMeetingQueryService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "meeting not found");
         }
 
-        String contactPhone = groupContactRepository.findFirstByGroup_IdOrderByIdAsc(meeting.getGroup().getId())
-                .map(groupContact -> groupContact.getPhone())
-                .orElse(null);
-
         return new PublicMeetingDetail(
                 meeting.getId(),
                 meeting.getGroup().getId(),
                 meeting.getGroup().getName(),
+                toDistrictData(meeting.getGroup()),
+                findContactPhone(meeting.getGroup().getId()),
                 meeting.getProvince(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getMeetingPlaceNote(),
-                contactPhone,
-                toGroupProfile(meeting.getGroup()),
-                meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(meeting.getGroup().getId()).stream()
-                        .sorted(Comparator
-                                .comparingInt((Meeting item) -> item.getDayOfWeek().getValue())
-                                .thenComparing(Meeting::getStartTime))
-                        .map(this::toScheduleData)
-                        .toList());
+                meeting.getLocationName(),
+                meeting.getLocationAddress(),
+                getActiveGroupMeetings(meeting.getGroup().getId()));
+    }
+
+    public PublicGroupDetail getGroup(Long id) {
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found"));
+
+        List<GroupMeetingData> activeMeetings = getActiveGroupMeetings(id);
+        if (activeMeetings.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found");
+        }
+
+        return new PublicGroupDetail(
+                group.getId(),
+                group.getName(),
+                toDistrictData(group),
+                findContactPhone(group.getId()),
+                activeMeetings);
     }
 
     private PublicMeetingSummary toSummary(Meeting meeting) {
@@ -82,33 +93,39 @@ public class PublicMeetingQueryService {
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getMeetingPlaceNote(),
-                toGroupLocation(meeting.getGroup()));
+                meeting.getLocationName(),
+                meeting.getLocationAddress());
     }
 
-    private GroupLocationData toGroupLocation(Group group) {
-        return new GroupLocationData(group.getLocationName(), group.getLocationAddress());
+    private DistrictData toDistrictData(Group group) {
+        return new DistrictData(group.getDistrict().getId(), group.getDistrict().getName());
     }
 
-    private GroupProfileData toGroupProfile(Group group) {
-        return new GroupProfileData(
-                group.getId(),
-                group.getName(),
-                group.getLocationName(),
-                group.getLocationAddress(),
-                group.getIntroduction(),
-                group.getNotice(),
-                group.getChangeSummary());
+    private String findContactPhone(Long groupId) {
+        return groupContactRepository.findFirstByGroup_IdOrderByIdAsc(groupId)
+                .map(groupContact -> groupContact.getPhone())
+                .orElse(null);
     }
 
-    private MeetingScheduleData toScheduleData(Meeting meeting) {
-        return new MeetingScheduleData(
+    private List<GroupMeetingData> getActiveGroupMeetings(Long groupId) {
+        return meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(groupId).stream()
+                .sorted(Comparator
+                        .comparingInt((Meeting item) -> item.getDayOfWeek().getValue())
+                        .thenComparing(Meeting::getStartTime)
+                        .thenComparing(Meeting::getId))
+                .map(this::toGroupMeetingData)
+                .toList();
+    }
+
+    private GroupMeetingData toGroupMeetingData(Meeting meeting) {
+        return new GroupMeetingData(
                 meeting.getId(),
                 meeting.getProvince(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getMeetingPlaceNote());
+                meeting.getLocationName(),
+                meeting.getLocationAddress());
     }
 
     public record PublicMeetingSummary(
@@ -119,8 +136,8 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String meetingPlaceNote,
-            GroupLocationData groupLocation
+            String locationName,
+            String locationAddress
     ) {
     }
 
@@ -128,38 +145,41 @@ public class PublicMeetingQueryService {
             Long id,
             Long groupId,
             String groupName,
+            DistrictData district,
+            String contactPhone,
             String province,
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String meetingPlaceNote,
-            String contactPhone,
-            GroupProfileData group,
-            List<MeetingScheduleData> groupMeetings
-    ) {
-    }
-
-    public record GroupLocationData(String name, String address) {
-    }
-
-    public record GroupProfileData(
-            Long id,
-            String name,
             String locationName,
             String locationAddress,
-            String introduction,
-            String notice,
-            String changeSummary
+            List<GroupMeetingData> groupMeetings
     ) {
     }
 
-    public record MeetingScheduleData(
+    public record PublicGroupDetail(
+            Long id,
+            String name,
+            DistrictData district,
+            String contactPhone,
+            List<GroupMeetingData> meetings
+    ) {
+    }
+
+    public record DistrictData(
+            Long id,
+            String name
+    ) {
+    }
+
+    public record GroupMeetingData(
             Long id,
             String province,
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String meetingPlaceNote
+            String locationName,
+            String locationAddress
     ) {
     }
 }

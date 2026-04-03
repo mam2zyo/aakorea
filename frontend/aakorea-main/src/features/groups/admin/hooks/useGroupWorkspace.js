@@ -14,11 +14,6 @@ import {
 const EMPTY_GROUP_FORM = {
   districtId: '',
   name: '',
-  locationName: '',
-  locationAddress: '',
-  introduction: '',
-  notice: '',
-  changeSummary: '',
 }
 
 const EMPTY_CONTACT_FORM = {
@@ -29,10 +24,11 @@ const EMPTY_CONTACT_FORM = {
 const EMPTY_MEETING_FORM = {
   id: null,
   province: PROVINCE_OPTIONS[0]?.value ?? 'seoul',
+  locationName: '',
+  locationAddress: '',
   dayOfWeek: DAY_OF_WEEK_OPTIONS[0]?.value ?? 'MONDAY',
   startTime: '19:00',
   type: MEETING_TYPE_OPTIONS[0]?.value ?? 'OPEN',
-  meetingPlaceNote: '',
   active: true,
 }
 
@@ -103,11 +99,6 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
       const updatedGroup = await adminGroupApi.updateGroup(groupData.id, {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
-        locationName: groupForm.locationName,
-        locationAddress: groupForm.locationAddress,
-        introduction: groupForm.introduction,
-        notice: groupForm.notice,
-        changeSummary: groupForm.changeSummary,
       })
 
       setGroupData(updatedGroup)
@@ -160,10 +151,11 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
       const payload = {
         groupId: numericGroupId,
         province: meetingForm.province,
+        locationName: meetingForm.locationName,
+        locationAddress: meetingForm.locationAddress,
         dayOfWeek: meetingForm.dayOfWeek,
         startTime: meetingForm.startTime,
         type: meetingForm.type,
-        meetingPlaceNote: meetingForm.meetingPlaceNote,
         active: meetingForm.active,
       }
 
@@ -172,10 +164,7 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
         : await adminMeetingApi.createMeeting(payload)
 
       setMeetingErrors({})
-      setMeetingForm({
-        ...EMPTY_MEETING_FORM,
-        province: meetingForm.province,
-      })
+      setMeetingForm(createMeetingFormDefaults(savedMeeting))
       setMeetings((previous) =>
         mergeById(previous, savedMeeting).sort((left, right) => left.id - right.id),
       )
@@ -206,10 +195,11 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
   }
 
   function startNewMeeting() {
-    setMeetingForm({
-      ...EMPTY_MEETING_FORM,
-      province: meetingForm.province,
-    })
+    const sourceMeeting = hasMeetingLocation(meetingForm)
+      ? meetingForm
+      : meetings[0] ?? { province: meetingForm.province }
+
+    setMeetingForm(createMeetingFormDefaults(sourceMeeting))
     setMeetingErrors({})
   }
 
@@ -217,10 +207,11 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
     setMeetingForm({
       id: meeting.id,
       province: meeting.province,
+      locationName: meeting.locationName ?? '',
+      locationAddress: meeting.locationAddress ?? '',
       dayOfWeek: meeting.dayOfWeek,
       startTime: meeting.startTime,
       type: meeting.type,
-      meetingPlaceNote: meeting.meetingPlaceNote ?? '',
       active: meeting.active,
     })
     setMeetingErrors({})
@@ -293,12 +284,20 @@ function toGroupForm(group) {
   return {
     districtId: String(group.districtId),
     name: group.name ?? '',
-    locationName: group.locationName ?? '',
-    locationAddress: group.locationAddress ?? '',
-    introduction: group.introduction ?? '',
-    notice: group.notice ?? '',
-    changeSummary: group.changeSummary ?? '',
   }
+}
+
+function createMeetingFormDefaults(source = {}) {
+  return {
+    ...EMPTY_MEETING_FORM,
+    province: source.province ?? EMPTY_MEETING_FORM.province,
+    locationName: source.locationName ?? '',
+    locationAddress: source.locationAddress ?? '',
+  }
+}
+
+function hasMeetingLocation(meeting) {
+  return Boolean(meeting.locationName || meeting.locationAddress)
 }
 
 function mergeById(items, savedItem) {

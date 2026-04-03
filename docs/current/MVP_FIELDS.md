@@ -113,7 +113,7 @@
   District 식별자
 
 - `name`  
-  운영자가 구분할 수 있는 District 이름
+  운영자가 구분할 수 있는 지역연합 이름
 
 ### 현재 제외하는 필드
 
@@ -139,11 +139,6 @@
 - `id`
 - `districtId`
 - `name`
-- `locationName`
-- `locationAddress`
-- `introduction`
-- `notice`
-- `changeSummary`
 
 ### 필드 설명
 
@@ -151,34 +146,27 @@
   Group 식별자
 
 - `districtId`  
-  소속 District 참조값
+  소속 지역연합(District) 참조값
 
 - `name`  
   운영 및 공개에서 식별 가능한 그룹명
 
-- `locationName`  
-  Group 기본 장소명
-
-- `locationAddress`  
-  Group 기본 주소
-
-- `introduction`  
-  방문자에게 보여줄 간단 소개 또는 인사말
-
-- `notice`  
-  Group 단위 공지 또는 방문 전 안내
-
-- `changeSummary`  
-  최근 변경 사항 요약
-
 ### 중요한 제약
 
+- `Group`은 위치 정보와 `province`를 직접 가지지 않는다
 - `province`는 `Group`에 두지 않는다
 - 지역 탐색 기준은 현재 `Meeting`이 가진다
+- 공개 상세는 `GroupDetails` 형태를 취할 수 있지만,
+  실제 장소 정보는 선택된 `Meeting`이 가진다
 - 이유와 모델 경계는 `DOMAIN_MODEL.md`를 따른다
 
 ### 현재 제외하는 필드
 
+- `locationName`
+- `locationAddress`
+- `introduction`
+- `notice`
+- `changeSummary`
 - 그룹 소개 본문
 - 대표 이미지
 - 세부 조직 유형
@@ -187,10 +175,18 @@
 
 ### 확장 후보
 
+- `introduction`
+- `notice`
+- `changeSummary`
 - `slug`
 - `description`
-- `mapUrl`
-- `heroImage`
+
+### 참고
+
+- 현재 구현 코드에는 `Group.locationName`, `Group.locationAddress`,
+  `Group.introduction`, `Group.notice`, `Group.changeSummary`가 남아 있다
+- 다음 조정에서는 이 값들을 `Group`에서 제거하고,
+  위치 정보는 `Meeting`으로 옮기며 소개/공지/변경요약은 별도 재검토 대상으로 둔다
 
 ---
 
@@ -238,15 +234,16 @@
 
 ### 최소 필드
 
-현재 구현 기준 최소 필드는 아래와 같다.
+다음 조정 기준 최소 필드는 아래와 같다.
 
 - `id`
 - `groupId`
 - `province`
+- `locationName`
+- `locationAddress`
 - `dayOfWeek`
 - `startTime`
 - `type`
-- `meetingPlaceNote`
 - `active`
 
 ### 필드 설명
@@ -257,8 +254,15 @@
 - `groupId`  
   소속 Group 참조값
 
-- `province`  
+- `province`
   공개 탐색에 사용하는 지역 기준값
+  향후 지도 API 연동 시 `locationAddress` 기반으로 자동 산출해 저장할 수 있다
+
+- `locationName`
+  해당 모임의 장소명
+
+- `locationAddress`
+  해당 모임의 주소
 
 - `dayOfWeek`  
   기본 모임 요일
@@ -269,9 +273,6 @@
 - `type`  
   `MeetingType` enum 값  
   허용값: `OPEN`, `CLOSED`, `NOTFIXED`
-
-- `meetingPlaceNote`  
-  Group 기본 장소와 다른 방/홀/세부 안내가 있을 때 사용하는 예외 메모
 
 - `active`  
   현재 공개/운영 대상 여부
@@ -284,20 +285,23 @@
 - `type`은 `MeetingType` enum으로 관리한다
 - `NOTFIXED`는 공개/비공개 성격이 회차별로 고정되지 않는 경우에 사용한다
 - 예: 기본적으로 `CLOSED`이지만 마지막 주만 `OPEN`인 모임
-- 기본 위치 정보는 `Group`이 가진다
-- `meetingPlaceNote`는 예외가 있을 때만 사용한다
+- `Meeting`이 `locationName`, `locationAddress`, `province`를 직접 가진다
+- 같은 `Group` 안에서 장소가 반복되더라도,
+  이는 도메인 중복보다 운영 입력 중복에 가깝게 본다
 
 ### 현재 구조 판단
 
-최근 운영 데이터 기준으로는 대부분의 `Group`이 하나의 기본 주소와 기본 장소를 공유하고,  
-`Meeting`은 요일과 시간만 달라지는 경우가 압도적으로 많다.
+최근 운영 데이터 기준으로는 같은 `Group` 안의 여러 `Meeting`이
+같은 장소를 반복 입력하게 될 가능성이 높다.
 
-따라서 현재 구현은 아래 방향을 따른다.
+그렇더라도 다음 조정은 아래 방향을 따른다.
 
 - `Meeting`은 `Group`의 하위 일정 단위로 본다
-- 기본 위치 정보는 `Meeting`보다 `Group`에 둔다
-- `Meeting`에는 `dayOfWeek`, `startTime`, `active`, 필요 시 `type` 정도를 남긴다
-- 장소 예외는 `meetingPlaceNote` 같은 얇은 override 필드로 처리한다
+- 위치 정보의 도메인 소유권은 `Meeting`에 둔다
+- 공개 상세는 `GroupDetails` 형태를 취하되, 선택된 `Meeting`을 포커스로 사용한다
+- 운영 UI는 새 `Meeting` 생성 시 같은 `Group`의 기존 모임 장소를 기본값으로 제안해
+  입력 중복을 줄인다
+- `meetingPlaceNote` 같은 예외 전용 필드는 다음 구조에서 제거하는 쪽을 우선한다
 
 ### 현재 제외하는 필드
 
@@ -313,9 +317,11 @@
 ### 확장 후보
 
 - `meetingTypeNotes`
-- `meetingPlaceNote`
 - `notes`
 - `isOnline`
+- `mapPlaceId`
+- `latitude`
+- `longitude`
 
 ---
 
@@ -430,11 +436,10 @@
 - `Meeting.province`
 - `Meeting.dayOfWeek`
 - `Meeting.startTime`
-
-- `Group.locationName`
-- `Group.locationAddress`
-- `Meeting.meetingPlaceNote`
-
+- `Meeting.locationName`
+- `Meeting.locationAddress`
+- `Group.name`
+- `District.name`
 - `GroupContact.phone`
 
 ### 운영 기준 유지에 직접 필요한 필드

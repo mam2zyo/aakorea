@@ -167,6 +167,7 @@ function renderPage({
       return (
         <MeetingSearchPage
           dayOfWeek={route.dayOfWeek}
+          groupId={route.groupId}
           meetingId={route.meetingId}
           onError={onError}
           onNavigate={onNavigate}

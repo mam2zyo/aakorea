@@ -51,6 +51,20 @@ export function GroupMeetingsCard({
           </select>
         </Field>
 
+        <Field label="모임 장소명" error={readFieldError(errors, 'locationName')}>
+          <input
+            value={form.locationName}
+            onChange={(event) => onFieldChange('locationName', event.target.value)}
+          />
+        </Field>
+
+        <Field label="모임 주소" error={readFieldError(errors, 'locationAddress')}>
+          <input
+            value={form.locationAddress}
+            onChange={(event) => onFieldChange('locationAddress', event.target.value)}
+          />
+        </Field>
+
         <Field label="요일" error={readFieldError(errors, 'dayOfWeek')}>
           <select
             value={form.dayOfWeek}
@@ -85,14 +99,6 @@ export function GroupMeetingsCard({
           </select>
         </Field>
 
-        <Field label="예외 장소 메모" error={readFieldError(errors, 'meetingPlaceNote')}>
-          <textarea
-            rows={3}
-            value={form.meetingPlaceNote}
-            onChange={(event) => onFieldChange('meetingPlaceNote', event.target.value)}
-          />
-        </Field>
-
         <ToggleField
           checked={form.active}
           label="공개 활성 모임으로 유지"
@@ -119,6 +125,9 @@ export function GroupMeetingsCard({
             </strong>
             <span className="entity-item__meta">
               {lookupLabel(PROVINCE_OPTIONS, meeting.province)} · {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
+            </span>
+            <span className="entity-item__meta">
+              {meeting.locationName || '장소 미입력'}
             </span>
             <StatusPill active={meeting.active} />
           </div>

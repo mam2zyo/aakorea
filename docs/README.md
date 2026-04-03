@@ -151,7 +151,8 @@ docs/
 │     └─ ADMIN_CONTENT.md
 └─ reference/
    ├─ AA_ORG_DESIGN_ANALYSIS.md
-   └─ FRONTEND_SCREEN_SPLIT_PROPOSAL.md
+   ├─ FRONTEND_SCREEN_SPLIT_PROPOSAL.md
+   └─ GROUP_PUBLIC_API_DTO_REFACTOR.md
 ```
 
 필요 시 이후에 다음과 같은 구조를 추가할 수 있다.

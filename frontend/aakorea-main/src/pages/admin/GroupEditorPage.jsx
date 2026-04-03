@@ -80,7 +80,7 @@ export function GroupEditorPage({ groupId, onError, onNavigate, onSuccess }) {
       <PageSection
         label="Group Editor"
         title="Group 중심으로 공개 운영 정보를 관리합니다."
-        description="기본 장소와 안내 문구는 Group에 두고, Meeting은 요일/시간과 예외 장소 안내만 관리하는 구조로 정리했습니다."
+        description="Group은 이름과 지역연합만 관리하고, 실제 모임 장소와 주소는 각 Meeting에서 직접 관리합니다."
       >
         {loading ? <div className="section-note">Group 작업공간을 불러오는 중입니다...</div> : null}
 

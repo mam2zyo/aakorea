@@ -31,62 +31,13 @@ public class Group {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "location_name")
-    private String locationName;
-
-    @Column(name = "location_address")
-    private String locationAddress;
-
-    @Column(length = 4000)
-    private String introduction;
-
-    @Column(length = 4000)
-    private String notice;
-
-    @Column(name = "change_summary", length = 4000)
-    private String changeSummary;
-
     public Group(District district, String name) {
-        this(district, name, null, null, null, null, null);
-    }
-
-    public Group(
-            District district,
-            String name,
-            String locationName,
-            String locationAddress,
-            String introduction,
-            String notice,
-            String changeSummary
-    ) {
         this.district = district;
         this.name = name;
-        this.locationName = locationName;
-        this.locationAddress = locationAddress;
-        this.introduction = introduction;
-        this.notice = notice;
-        this.changeSummary = changeSummary;
     }
 
     public void update(District district, String name) {
-        update(district, name, locationName, locationAddress, introduction, notice, changeSummary);
-    }
-
-    public void update(
-            District district,
-            String name,
-            String locationName,
-            String locationAddress,
-            String introduction,
-            String notice,
-            String changeSummary
-    ) {
         this.district = district;
         this.name = name;
-        this.locationName = locationName;
-        this.locationAddress = locationAddress;
-        this.introduction = introduction;
-        this.notice = notice;
-        this.changeSummary = changeSummary;
     }
 }

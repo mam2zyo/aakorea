@@ -15,6 +15,7 @@ import org.aakorea.main.common.security.RestAccessDeniedHandler;
 import org.aakorea.main.common.security.RestAuthenticationEntryPoint;
 import org.aakorea.main.common.security.SecurityConfig;
 import org.aakorea.main.group.api.admin.MeetingAdminController;
+import org.aakorea.main.group.api.publicapi.PublicGroupController;
 import org.aakorea.main.group.api.publicapi.PublicMeetingController;
 import org.aakorea.main.group.application.MeetingAdminService;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
@@ -26,7 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = {MeetingAdminController.class, PublicMeetingController.class})
+@WebMvcTest(controllers = {MeetingAdminController.class, PublicMeetingController.class, PublicGroupController.class})
 @Import({
         GlobalExceptionHandler.class,
         RestAccessDeniedHandler.class,
@@ -56,19 +57,21 @@ class MeetingApiTest {
         given(meetingAdminService.createMeeting(
                 20L,
                 "seoul",
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
                 "MONDAY",
                 "19:30",
                 "OPEN",
-                "지하 강당",
                 true))
                 .willReturn(new MeetingAdminService.MeetingData(
                         100L,
                         20L,
                         "seoul",
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        "지하 강당",
                         true));
 
         mockMvc.perform(post("/api/admin/meetings")
@@ -78,10 +81,11 @@ class MeetingApiTest {
                                 {
                                   "groupId": 20,
                                   "province": "seoul",
+                                  "locationName": "강남역 인근",
+                                  "locationAddress": "서울특별시 강남구 테헤란로 123",
                                   "dayOfWeek": "MONDAY",
                                   "startTime": "19:30",
                                   "type": "OPEN",
-                                  "meetingPlaceNote": "지하 강당",
                                   "active": true
                                 }
                                 """))
@@ -89,10 +93,11 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.id").value(100))
                 .andExpect(jsonPath("$.data.groupId").value(20))
                 .andExpect(jsonPath("$.data.province").value("seoul"))
+                .andExpect(jsonPath("$.data.locationName").value("강남역 인근"))
+                .andExpect(jsonPath("$.data.locationAddress").value("서울특별시 강남구 테헤란로 123"))
                 .andExpect(jsonPath("$.data.dayOfWeek").value("MONDAY"))
                 .andExpect(jsonPath("$.data.startTime").value("19:30"))
                 .andExpect(jsonPath("$.data.type").value("OPEN"))
-                .andExpect(jsonPath("$.data.meetingPlaceNote").value("지하 강당"))
                 .andExpect(jsonPath("$.data.active").value(true));
     }
 
@@ -107,8 +112,8 @@ class MeetingApiTest {
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        "지하 강당",
-                        new PublicMeetingQueryService.GroupLocationData("강남역 인근", "서울특별시 강남구 테헤란로 123"))));
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123")));
 
         mockMvc.perform(get("/api/public/meetings")
                         .param("province", "seoul")
@@ -121,7 +126,7 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data[0].dayOfWeek").value("MONDAY"))
                 .andExpect(jsonPath("$.data[0].startTime").value("19:30"))
                 .andExpect(jsonPath("$.data[0].type").value("OPEN"))
-                .andExpect(jsonPath("$.data[0].groupLocation.name").value("강남역 인근"));
+                .andExpect(jsonPath("$.data[0].locationName").value("강남역 인근"));
     }
 
     @Test
@@ -131,34 +136,54 @@ class MeetingApiTest {
                         100L,
                         20L,
                         "강남그룹",
+                        new PublicMeetingQueryService.DistrictData(1L, "서울지역연합"),
+                        "02-1234-5678",
                         "seoul",
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
-                        "지하 강당",
-                        "02-1234-5678",
-                        new PublicMeetingQueryService.GroupProfileData(
-                                20L,
-                                "강남그룹",
-                                "강남역 인근",
-                                "서울특별시 강남구 테헤란로 123",
-                                "반갑습니다",
-                                "이번 주 공지 없음",
-                                "최근 변경 없음"),
-                        List.of(new PublicMeetingQueryService.MeetingScheduleData(
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        List.of(new PublicMeetingQueryService.GroupMeetingData(
                                 100L,
                                 "seoul",
                                 DayOfWeek.MONDAY,
                                 "19:30",
                                 MeetingType.OPEN,
-                                "지하 강당"))));
+                                "강남역 인근",
+                                "서울특별시 강남구 테헤란로 123"))));
 
         mockMvc.perform(get("/api/public/meetings/100"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(100))
                 .andExpect(jsonPath("$.data.groupName").value("강남그룹"))
                 .andExpect(jsonPath("$.data.contactPhone").value("02-1234-5678"))
-                .andExpect(jsonPath("$.data.group.locationName").value("강남역 인근"))
+                .andExpect(jsonPath("$.data.locationName").value("강남역 인근"))
                 .andExpect(jsonPath("$.data.groupMeetings[0].id").value(100));
+    }
+
+    @Test
+    void publicGroupDetailReturnsMeetingsAndDistrict() throws Exception {
+        given(publicMeetingQueryService.getGroup(20L))
+                .willReturn(new PublicMeetingQueryService.PublicGroupDetail(
+                        20L,
+                        "강남그룹",
+                        new PublicMeetingQueryService.DistrictData(1L, "서울지역연합"),
+                        "02-1234-5678",
+                        List.of(new PublicMeetingQueryService.GroupMeetingData(
+                                100L,
+                                "seoul",
+                                DayOfWeek.MONDAY,
+                                "19:30",
+                                MeetingType.OPEN,
+                                "강남역 인근",
+                                "서울특별시 강남구 테헤란로 123"))));
+
+        mockMvc.perform(get("/api/public/groups/20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(20))
+                .andExpect(jsonPath("$.data.name").value("강남그룹"))
+                .andExpect(jsonPath("$.data.district.name").value("서울지역연합"))
+                .andExpect(jsonPath("$.data.meetings[0].locationName").value("강남역 인근"));
     }
 }

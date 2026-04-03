@@ -19,7 +19,7 @@ export function GroupBasicsCard({
           void onSubmit()
         }}
       >
-        <Field label="District" error={readFieldError(errors, 'districtId')}>
+        <Field label="지역연합" error={readFieldError(errors, 'districtId')}>
           <select
             value={form.districtId}
             onChange={(event) => onFieldChange('districtId', event.target.value)}
@@ -36,44 +36,6 @@ export function GroupBasicsCard({
           <input
             value={form.name}
             onChange={(event) => onFieldChange('name', event.target.value)}
-          />
-        </Field>
-
-        <Field label="기본 장소명" error={readFieldError(errors, 'locationName')}>
-          <input
-            value={form.locationName}
-            onChange={(event) => onFieldChange('locationName', event.target.value)}
-          />
-        </Field>
-
-        <Field label="기본 주소" error={readFieldError(errors, 'locationAddress')}>
-          <input
-            value={form.locationAddress}
-            onChange={(event) => onFieldChange('locationAddress', event.target.value)}
-          />
-        </Field>
-
-        <Field label="소개" error={readFieldError(errors, 'introduction')}>
-          <textarea
-            rows={4}
-            value={form.introduction}
-            onChange={(event) => onFieldChange('introduction', event.target.value)}
-          />
-        </Field>
-
-        <Field label="공지" error={readFieldError(errors, 'notice')}>
-          <textarea
-            rows={3}
-            value={form.notice}
-            onChange={(event) => onFieldChange('notice', event.target.value)}
-          />
-        </Field>
-
-        <Field label="최근 변경 요약" error={readFieldError(errors, 'changeSummary')}>
-          <textarea
-            rows={3}
-            value={form.changeSummary}
-            onChange={(event) => onFieldChange('changeSummary', event.target.value)}
           />
         </Field>
 

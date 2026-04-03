@@ -40,12 +40,7 @@ public class GroupAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(
                 groupAdminService.createGroup(
                         request.districtId(),
-                        request.name(),
-                        request.locationName(),
-                        request.locationAddress(),
-                        request.introduction(),
-                        request.notice(),
-                        request.changeSummary())));
+                        request.name())));
     }
 
     @PutMapping("/groups/{id}")
@@ -56,12 +51,7 @@ public class GroupAdminController {
         return ApiResponse.success(groupAdminService.updateGroup(
                 id,
                 request.districtId(),
-                request.name(),
-                request.locationName(),
-                request.locationAddress(),
-                request.introduction(),
-                request.notice(),
-                request.changeSummary()));
+                request.name()));
     }
 
     @DeleteMapping("/groups/{id}")
@@ -95,12 +85,7 @@ public class GroupAdminController {
 
     public record GroupRequest(
             @NotNull(message = "districtId is required") Long districtId,
-            @NotBlank(message = "name is required") String name,
-            String locationName,
-            String locationAddress,
-            String introduction,
-            String notice,
-            String changeSummary
+            @NotBlank(message = "name is required") String name
     ) {
     }
 

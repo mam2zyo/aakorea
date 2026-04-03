@@ -51,20 +51,25 @@ public class MeetingAdminService {
     public MeetingData createMeeting(
             Long groupId,
             String province,
+            String locationName,
+            String locationAddress,
             String dayOfWeek,
             String startTime,
             String type,
-            String meetingPlaceNote,
             boolean active
     ) {
         Group group = getGroup(groupId);
+        String normalizedLocationName = MeetingFieldSupport.optionalText(locationName);
+        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
+        MeetingFieldSupport.validateLocation(normalizedLocationName, normalizedLocationAddress);
         Meeting meeting = new Meeting(
                 group,
                 MeetingFieldSupport.requireProvince(province),
+                normalizedLocationName,
+                normalizedLocationAddress,
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
-                MeetingFieldSupport.optionalText(meetingPlaceNote),
                 active);
 
         return toMeetingData(meetingRepository.save(meeting));
@@ -75,21 +80,26 @@ public class MeetingAdminService {
             Long id,
             Long groupId,
             String province,
+            String locationName,
+            String locationAddress,
             String dayOfWeek,
             String startTime,
             String type,
-            String meetingPlaceNote,
             boolean active
     ) {
         Meeting meeting = getMeeting(id);
         Group group = getGroup(groupId);
+        String normalizedLocationName = MeetingFieldSupport.optionalText(locationName);
+        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
+        MeetingFieldSupport.validateLocation(normalizedLocationName, normalizedLocationAddress);
         meeting.update(
                 group,
                 MeetingFieldSupport.requireProvince(province),
+                normalizedLocationName,
+                normalizedLocationAddress,
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
-                MeetingFieldSupport.optionalText(meetingPlaceNote),
                 active);
 
         return toMeetingData(meeting);
@@ -110,10 +120,11 @@ public class MeetingAdminService {
                 meeting.getId(),
                 meeting.getGroup().getId(),
                 meeting.getProvince(),
+                meeting.getLocationName(),
+                meeting.getLocationAddress(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getMeetingPlaceNote(),
                 meeting.isActive());
     }
 
@@ -121,10 +132,11 @@ public class MeetingAdminService {
             Long id,
             Long groupId,
             String province,
+            String locationName,
+            String locationAddress,
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String meetingPlaceNote,
             boolean active
     ) {
     }

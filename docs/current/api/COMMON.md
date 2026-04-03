@@ -199,23 +199,33 @@ application/json
 "startTime": "19:30"
 ```
 
-### Group Base Location
+### Location Fields
 
-- `Group`에 속한 기본 장소 정보
-- 현재 MVP에서는 `locationName`, `locationAddress`를 사용한다
+현재 구현과 다음 조정 방향은 아래처럼 구분한다.
 
-예:
+- 현재 구현:
+  `Group.locationName`, `Group.locationAddress`, `Meeting.meetingPlaceNote`
+- 다음 조정:
+  `Meeting.locationName`, `Meeting.locationAddress`, `Meeting.province`
+
+현재 구조 예:
 
 ```json
 "locationName": "강남역 인근",
-"locationAddress": "서울특별시 강남구 테헤란로 123"
+"locationAddress": "서울특별시 강남구 테헤란로 123",
+"meetingPlaceNote": "지하 강당"
 ```
 
-### MeetingPlaceNote
+다음 구조 예:
 
-- 문자열
-- 특정 요일/회차에만 다른 방, 홀, 세부 장소 안내가 필요할 때 사용한다
-- 값이 없으면 Group 기본 장소를 그대로 사용한다
+```json
+"locationName": "강남역 인근",
+"locationAddress": "서울특별시 강남구 테헤란로 123",
+"province": "seoul"
+```
+
+다음 조정에서는 위치 정보의 소유권을 `Meeting`으로 옮기고,
+`meetingPlaceNote`는 제거하는 쪽을 우선한다.
 
 ### Phone
 

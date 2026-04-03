@@ -44,7 +44,7 @@ class GroupAdminServiceTest {
     void createGroupThrowsWhenDistrictDoesNotExist() {
         given(districtRepository.findById(99L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> groupAdminService.createGroup(99L, "강남그룹", null, null, null, null, null))
+        assertThatThrownBy(() -> groupAdminService.createGroup(99L, "강남그룹"))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -54,10 +54,10 @@ class GroupAdminServiceTest {
     }
 
     @Test
-    void updateGroupChangesDistrictAndFields() {
+    void updateGroupChangesDistrictAndName() {
         District oldDistrict = new District("서울");
         District newDistrict = new District("부산");
-        Group group = new Group(oldDistrict, "기존그룹", "기존 장소", "기존 주소", null, null, null);
+        Group group = new Group(oldDistrict, "기존그룹");
         ReflectionTestUtils.setField(oldDistrict, "id", 1L);
         ReflectionTestUtils.setField(newDistrict, "id", 2L);
         ReflectionTestUtils.setField(group, "id", 7L);
@@ -68,21 +68,12 @@ class GroupAdminServiceTest {
         GroupAdminService.GroupData result = groupAdminService.updateGroup(
                 7L,
                 2L,
-                "  새그룹  ",
-                "  새 장소  ",
-                "  부산광역시 해운대구  ",
-                "  반갑습니다  ",
-                "  이번 주 변경 없음  ",
-                "  최근 변경 요약  ");
+                "  새그룹  ");
 
         assertThat(group.getDistrict()).isEqualTo(newDistrict);
         assertThat(group.getName()).isEqualTo("새그룹");
-        assertThat(group.getLocationName()).isEqualTo("새 장소");
-        assertThat(group.getLocationAddress()).isEqualTo("부산광역시 해운대구");
-        assertThat(group.getIntroduction()).isEqualTo("반갑습니다");
         assertThat(result.districtId()).isEqualTo(newDistrict.getId());
         assertThat(result.name()).isEqualTo("새그룹");
-        assertThat(result.locationName()).isEqualTo("새 장소");
     }
 
     @Test

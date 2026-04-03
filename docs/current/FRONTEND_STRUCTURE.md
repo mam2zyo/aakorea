@@ -34,7 +34,7 @@
 - `ContentPage` 공개 조회
 - `Notice` 목록/상세 조회
 - `Province` 기준 `Meeting` 검색
-- 선택 시 `Meeting` 상세 확인
+- 선택 시 상세 확인
 - `GroupContact.phone` 확인 및 전화 연결
 
 ### 2. 운영 인증 영역
@@ -62,7 +62,9 @@
 또한 최근 구조 검토에서는 공개 영역도 같은 기준을 더 분명히 따를 필요가 있다는 판단을 유지한다.
 
 - 공개 사용자는 여전히 `Meeting` 목록을 기준으로 모임을 찾는다
-- 그러나 상세에서 실제로 확인하는 정보는 `Group`의 연락처, 공지, 안내, 기본 위치 정보와 더 가깝다
+- 그러나 상세 진입은 순수 `MeetingDetail`보다 `GroupDetails` 페이지가 더 자연스럽다
+- `GroupDetails`는 그룹명과 지역연합, 연락처, 모임 리스트를 보여 주고,
+  선택된 `Meeting`의 장소를 포커스로 보여 준다
 - 따라서 프론트 구조도 `Meeting`을 완전히 독립 feature로 분리하기보다  
   `Group` 도메인 아래의 공개 검색/상세 흐름으로 재배치하는 편이 더 자연스럽다
 
@@ -77,6 +79,18 @@
 - `/notices`
 - `/notices/:id`
 - `/meetings`
+
+### 다음 공개 상세 라우트 조정 방향
+
+현재 구현은 `/meetings` 안에서 목록과 상세 패널을 함께 관리한다.
+다음 조정에서는 아래 흐름을 권장한다.
+
+- 검색 결과 목록은 계속 `/meetings`에서 유지한다
+- 특정 모임을 선택하면 `/groups/:groupId?meetingId=:meetingId` 같은
+  `GroupDetails` 경로로 이동한다
+- `meetingId`는 선택 포커스를 유지하기 위한 값으로 사용한다
+- `GroupDetails` 내부에서 모임 목록을 다시 선택하면
+  선택 포커스와 장소 표시만 바뀌게 한다
 
 #### 운영 라우트
 
@@ -229,7 +243,8 @@
 ### 핵심 원칙
 
 - `Meeting`은 독립 feature라기보다 `Group` 도메인에 속한 공개 탐색 단위로 본다
-- 공개 검색은 `Meeting` 목록으로 시작하되, 공개 상세 정보의 중심은 `Group`으로 옮길 수 있게 준비한다
+- 공개 검색은 `Meeting` 목록으로 시작하되,
+  공개 상세는 `GroupDetails` 형태로 재구성하고 선택된 `Meeting` 포커스를 유지한다
 - 운영 화면은 계속 `Group` 작업공간 중심을 유지한다
 - 운영 관리자 레이아웃은 점차 설명형 카드보다 정렬된 목록 중심 콘솔 구조로 옮긴다
 - 공통 UI, 공통 네트워크, 공통 스타일은 `shared`로 분리한다
@@ -280,7 +295,7 @@ src/
 - 운영 `Group` 목록
 - 운영 `Group` 작업공간
 - 공개 `Meeting` 검색
-- 공개 `Group`/`Meeting` 접근 상세
+- 공개 `GroupDetails`
 - `GroupContact` 관련 API와 표시 로직
 
 예를 들어 아래와 같은 구조가 적절하다.
@@ -302,11 +317,18 @@ features/groups/
     styles.css
   public/
     MeetingSearchPage.jsx
+    GroupDetailsPage.jsx
     styles.css
 ```
 
 현재 공개 `MeetingSearchPage`는 목록과 상세 패널을 같은 화면에서 함께 관리한다.  
-상세 패널은 순수 `MeetingDetail`이 아니라, 선택한 모임 일정과 그 모임이 속한 `Group`의 연락/안내 정보를 함께 보여주는 패널 역할을 맡는다.
+다음 조정에서는 이를 아래처럼 나누는 편이 더 자연스럽다.
+
+- `MeetingSearchPage`는 필터와 검색 결과 목록에 집중한다
+- 결과를 클릭하면 `GroupDetailsPage`로 이동한다
+- `GroupDetailsPage`는 그룹명, 지역연합, 연락처, 모임 리스트를 보여 준다
+- 장소 정보는 페이지 공통값이 아니라 선택된 `Meeting`에 맞춰 바뀐다
+- 소개/공지/변경요약 블록은 현 단계에서 제외한다
 
 ### 바꾸지 않는 것
 
@@ -322,7 +344,8 @@ features/groups/
 
 1. `pages/`에 남아 있는 thin wrapper와 직접 구현 화면의 경계를 더 분명히 정리한다
 2. `/admin/overview`, `/admin/account`를 실제 운영 화면으로 채우거나, placeholder라면 메뉴 노출 수준을 다시 판단한다
-3. 공개 `Notice`, `ContentPage`, `MeetingSearch` 화면의 공통 패턴을 hook / 하위 컴포넌트 단위로 더 분리한다
+3. 공개 `MeetingSearch`와 `GroupDetails`를 라우트 기준으로 분리하고,
+   선택된 `meetingId` 포커스 상태를 URL로 안정화한다
 4. 전용 프론트 테스트 환경을 추가해 라우팅, 인증 가드, 주요 렌더링 흐름 회귀를 자동화한다
 5. import migration이 끝나는 시점에 `src/lib/api.js` compatibility export를 더 축소하거나 제거한다
 
@@ -341,5 +364,7 @@ features/groups/
 - 미인증 상태에서 `/admin/*` 진입 시 `/admin/login`으로 이동한다
 - `GroupContact`, `Meeting`은 `Group` 작업공간 안에서 그룹 단위로 조회/편집한다
 - 공개 `Meeting` 검색 역시 장기적으로는 `Group` 도메인 feature 아래에서 관리하는 편이 자연스럽다
+- 공개 상세는 `GroupDetails` 페이지로 분리하고,
+  선택된 `Meeting`의 위치를 페이지 포커스로 사용한다
 - `ContentPage`, `Notice`는 각각 독립 운영 화면에서 목록과 편집을 함께 관리한다
 - 공개 공지 화면은 `/notices`를 중심으로 목록과 상세를 함께 연결한다

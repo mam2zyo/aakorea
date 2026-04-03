@@ -37,7 +37,7 @@ export function PublicLayout({ children, currentPath, flash, onNavigate }) {
             처음 안내
           </NavLink>
           <NavLink
-            active={currentPath === '/meetings'}
+            active={currentPath === '/meetings' || currentPath.startsWith('/groups/')}
             href="/meetings"
             onNavigate={onNavigate}
           >

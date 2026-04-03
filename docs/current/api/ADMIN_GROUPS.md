@@ -27,6 +27,21 @@
 
 운영 API는 인증이 필요한 관리용 API다.
 
+## 현재 계약과 다음 조정 방향
+
+이 문서의 예시 payload는 **현재 구현된 API 계약**을 따른다.
+
+다만 다음 조정에서는 `Group` 계약을 아래처럼 단순화한다.
+
+- `District`는 지역연합 메타데이터로 해석한다
+- `Group`은 `id`, `districtId`, `name` 중심으로 유지한다
+- `locationName`, `locationAddress`는 `Meeting`으로 이동한다
+- `introduction`, `notice`, `changeSummary`는 현 단계에서 제거하고,
+  이후 별도 콘텐츠 성격을 다시 검토한다
+
+즉, 현재 예시 응답에 포함된 위치/소개/공지/변경요약 필드는
+차기 구조 조정에서 `Group` 계약 밖으로 이동할 수 있다.
+
 ### 1. Group 목록 조회
 
 ## GET `/api/admin/groups`
@@ -101,6 +116,11 @@ Group을 생성한다.
 - `name` 필수
 - `locationName`, `locationAddress`는 함께 입력하거나 함께 비워 둔다
 - 참조 대상 District가 존재해야 한다
+
+### 다음 조정 메모
+
+- 다음 구조에서는 `locationName`, `locationAddress` 검증이 `Group`이 아니라 `Meeting` 생성/수정으로 이동한다
+- `introduction`, `notice`, `changeSummary`도 `Group` 생성/수정 요청에서 제외하는 쪽을 우선한다
 
 ---
 

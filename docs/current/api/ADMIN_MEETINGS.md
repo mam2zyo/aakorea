@@ -9,7 +9,7 @@
 이 문서가 답하는 질문:
 
 - 운영자는 `Meeting`을 어떻게 조회, 생성, 수정하는가?
-- `MeetingType`과 `meetingPlaceNote`는 어떤 형식으로 전달되는가?
+- `MeetingType`과 위치 정보는 어떤 형식으로 전달되는가?
 - 어떤 검증이 필요한가?
 
 이 문서에 포함하지 않는 내용:
@@ -32,6 +32,16 @@
 - 기본 위치 정보는 `Group`이 보유한다
 - `Meeting`은 요일, 시간, 진행 여부, 공개 형식, 예외 장소 메모를 가진다
 - 운영자는 `Group` 편집 화면에서 기본 장소와 일정 정보를 함께 관리한다
+
+다음 조정에서는 아래 방향을 권장한다.
+
+- 위치 정보의 소유권을 `Meeting`으로 옮긴다
+- `Meeting`은 `province`, `locationName`, `locationAddress`,
+  `dayOfWeek`, `startTime`, `type`, `active`를 직접 가진다
+- `meetingPlaceNote`는 제거하는 쪽을 우선한다
+- 향후 지도 API를 붙이면 `locationAddress` 기반으로 `province`를 자동 저장할 수 있게 한다
+- 같은 `Group` 안에서 주소가 반복되는 경우는
+  새 모임 생성 시 기존 모임의 주소를 기본값으로 제안하는 UX로 완화한다
 
 ---
 
@@ -122,6 +132,13 @@ Meeting을 생성한다.
 - `startTime` 형식 검증
 - `meetingPlaceNote`는 optional
 - 참조 대상 Group이 존재해야 한다
+
+### 다음 조정 메모
+
+- 다음 구조에서는 `locationName`, `locationAddress` 검증이 추가된다
+- `province`는 수동 입력을 유지할 수도 있지만,
+  장기적으로는 주소 기반 자동 저장을 우선 검토한다
+- `meetingPlaceNote` 검증은 제거 대상이다
 
 ---
 

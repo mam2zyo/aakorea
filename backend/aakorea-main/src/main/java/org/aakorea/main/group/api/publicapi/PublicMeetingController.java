@@ -18,15 +18,17 @@ public class PublicMeetingController {
     private final PublicMeetingQueryService publicMeetingQueryService;
 
     @GetMapping
-    public ApiResponse<List<PublicMeetingQueryService.PublicMeetingSummary>> getMeetings(
+    public ApiResponse<List<PublicMeetingResponses.MeetingSummary>> getMeetings(
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String dayOfWeek
     ) {
-        return ApiResponse.success(publicMeetingQueryService.getMeetings(province, dayOfWeek));
+        return ApiResponse.success(PublicMeetingResponseMapper.toMeetingSummaries(
+                publicMeetingQueryService.getMeetings(province, dayOfWeek)));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<PublicMeetingQueryService.PublicMeetingDetail> getMeeting(@PathVariable Long id) {
-        return ApiResponse.success(publicMeetingQueryService.getMeeting(id));
+    public ApiResponse<PublicMeetingResponses.MeetingDetail> getMeeting(@PathVariable Long id) {
+        return ApiResponse.success(PublicMeetingResponseMapper.toMeetingDetail(
+                publicMeetingQueryService.getMeeting(id)));
     }
 }

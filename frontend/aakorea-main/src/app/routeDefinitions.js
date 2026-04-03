@@ -11,9 +11,21 @@ export function parseRoute(pathname, search = '') {
   if (normalizedPath === '/meetings') {
     return createRoute('meetings', normalizedPath, {
       section: 'public',
+      groupId: optionalNumber(params.get('groupId')),
+      meetingId: optionalNumber(params.get('meetingId')),
       province: params.get('province') ?? '',
       dayOfWeek: params.get('dayOfWeek') ?? '',
-      meetingId: params.get('meetingId') ?? '',
+    })
+  }
+
+  const groupMatch = normalizedPath.match(/^\/groups\/(\d+)$/)
+  if (groupMatch) {
+    return createRoute('meetings', normalizedPath, {
+      section: 'public',
+      groupId: Number(groupMatch[1]),
+      meetingId: optionalNumber(params.get('meetingId')),
+      province: params.get('province') ?? '',
+      dayOfWeek: params.get('dayOfWeek') ?? '',
     })
   }
 
@@ -131,4 +143,13 @@ function createRoute(name, currentPath, extra = {}) {
     currentPath,
     ...extra,
   }
+}
+
+function optionalNumber(value) {
+  if (!value) {
+    return null
+  }
+
+  const parsedValue = Number(value)
+  return Number.isFinite(parsedValue) ? parsedValue : null
 }

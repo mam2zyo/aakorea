@@ -4,8 +4,8 @@ export const publicMeetingApi = {
   getMeetings(filters) {
     return request(withQuery('/api/public/meetings', filters))
   },
-  getMeeting(id) {
-    return request(`/api/public/meetings/${id}`)
+  getGroup(id) {
+    return request(`/api/public/groups/${id}`)
   },
 }
 
