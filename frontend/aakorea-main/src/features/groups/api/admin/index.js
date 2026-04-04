@@ -58,6 +58,11 @@ export const adminMeetingApi = {
       body: payload,
     })
   },
+  deleteMeeting(id) {
+    return request(`/api/admin/meetings/${id}`, {
+      method: 'DELETE',
+    })
+  },
 }
 
 function withQuery(path, params) {

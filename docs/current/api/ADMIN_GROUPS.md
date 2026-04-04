@@ -4,55 +4,29 @@
 
 ## 이 문서의 역할
 
-이 문서는 AAKorea Main 웹앱의 현재 MVP에서 운영 `Group`, `GroupContact` API 계약을 정의한다.
-
-이 문서가 답하는 질문:
-
-- 운영자는 `Group`, `GroupContact`를 어떻게 관리하는가?
-- 각 조회/생성/수정/삭제 API는 어떤 요청과 응답을 갖는가?
-- 기본 검증은 무엇인가?
-
-이 문서에 포함하지 않는 내용:
-
-- 공통 응답 형식과 상태 코드의 전체 규약
-- 운영 인증 API
-- 운영 `District`, `Meeting` 관리 API
-- 도메인 채택 이유
-
-공통 규약은 `COMMON.md`를 따른다.
+이 문서는 현재 구현된 운영 `Group`, `GroupContact` API 계약을 정리한다.
 
 ---
 
-## 운영 API
+## 현재 구조 요약
 
-운영 API는 인증이 필요한 관리용 API다.
+- `Group`은 `id`, `districtId`, `name`만 가진다
+- 위치 정보는 `Meeting`이 가진다
+- `introduction`, `notice`, `changeSummary`는 현재 제외한다
+- `GroupContact`는 현재 그룹당 1건만 허용한다
+- 그룹 삭제 시 연결된 연락처와 모임도 함께 삭제한다
 
-## 현재 계약과 다음 조정 방향
+---
 
-이 문서의 예시 payload는 **현재 구현된 API 계약**을 따른다.
+## 1. 그룹 목록 조회
 
-다만 다음 조정에서는 `Group` 계약을 아래처럼 단순화한다.
+### GET `/api/admin/groups`
 
-- `District`는 지역연합 메타데이터로 해석한다
-- `Group`은 `id`, `districtId`, `name` 중심으로 유지한다
-- `locationName`, `locationAddress`는 `Meeting`으로 이동한다
-- `introduction`, `notice`, `changeSummary`는 현 단계에서 제거하고,
-  이후 별도 콘텐츠 성격을 다시 검토한다
-
-즉, 현재 예시 응답에 포함된 위치/소개/공지/변경요약 필드는
-차기 구조 조정에서 `Group` 계약 밖으로 이동할 수 있다.
-
-### 1. Group 목록 조회
-
-## GET `/api/admin/groups`
-
-Group 목록을 조회한다.
-
-### Query Params
+#### Query Params
 
 - `districtId` (optional)
 
-### Response 200
+#### Response 200
 
 ```json
 {
@@ -60,12 +34,7 @@ Group 목록을 조회한다.
     {
       "id": 20,
       "districtId": 1,
-      "name": "강남그룹",
-      "locationName": "번동3단지 종합사회복지관 지하강당",
-      "locationAddress": "서울 강북구 오현로 208",
-      "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
-      "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
-      "changeSummary": "최근 장소 변경 없음"
+      "name": "강남그룹"
     }
   ]
 }
@@ -73,124 +42,93 @@ Group 목록을 조회한다.
 
 ---
 
-### 2. Group 생성
+## 2. 그룹 생성
 
-## POST `/api/admin/groups`
+### POST `/api/admin/groups`
 
-Group을 생성한다.
-
-### Request Body
+#### Request Body
 
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹",
-  "locationName": "번동3단지 종합사회복지관 지하강당",
-  "locationAddress": "서울 강북구 오현로 208",
-  "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
-  "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
-  "changeSummary": "최근 장소 변경 없음"
+  "name": "강남그룹"
 }
 ```
 
-### Response 201
+#### Response 201
 
 ```json
 {
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹",
-    "locationName": "번동3단지 종합사회복지관 지하강당",
-    "locationAddress": "서울 강북구 오현로 208",
-    "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
-    "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
-    "changeSummary": "최근 장소 변경 없음"
+    "name": "강남그룹"
   }
 }
 ```
 
-### 기본 검증
+#### 기본 검증
 
 - `districtId` 필수
 - `name` 필수
-- `locationName`, `locationAddress`는 함께 입력하거나 함께 비워 둔다
-- 참조 대상 District가 존재해야 한다
-
-### 다음 조정 메모
-
-- 다음 구조에서는 `locationName`, `locationAddress` 검증이 `Group`이 아니라 `Meeting` 생성/수정으로 이동한다
-- `introduction`, `notice`, `changeSummary`도 `Group` 생성/수정 요청에서 제외하는 쪽을 우선한다
+- 대상 `District`가 존재해야 한다
 
 ---
 
-### 3. Group 수정
+## 3. 그룹 수정
 
-## PUT `/api/admin/groups/{id}`
+### PUT `/api/admin/groups/{id}`
 
-Group을 수정한다.
-
-### Request Body
+#### Request Body
 
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹",
-  "locationName": "번동3단지 종합사회복지관 지하강당",
-  "locationAddress": "서울 강북구 오현로 208",
-  "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
-  "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
-  "changeSummary": "최근 장소 변경 없음"
+  "name": "강남그룹"
 }
 ```
 
-### Response 200
+#### Response 200
 
 ```json
 {
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹",
-    "locationName": "번동3단지 종합사회복지관 지하강당",
-    "locationAddress": "서울 강북구 오현로 208",
-    "introduction": "처음 오신 분도 편하게 문의하실 수 있습니다.",
-    "notice": "공휴일 운영 여부는 대표 연락처로 먼저 확인해 주세요.",
-    "changeSummary": "최근 장소 변경 없음"
+    "name": "강남그룹"
   }
 }
 ```
 
 ---
 
-### 4. Group 삭제
+## 4. 그룹 삭제
 
-## DELETE `/api/admin/groups/{id}`
+### DELETE `/api/admin/groups/{id}`
 
-Group을 삭제한다.
+#### Response 204
 
-### Response 204
+응답 본문 없음
 
-응답 본문 없이 종료한다.
+#### 현재 구현 규칙
 
-### 기본 규칙
+- 연결된 `Meeting`을 함께 삭제한다
+- 연결된 `GroupContact`를 함께 삭제한다
+- 대상이 없으면 `404`
 
-- 연결된 `GroupContact` 또는 `Meeting`이 있으면 409를 반환한다
-- 대상이 없으면 404를 반환한다
+즉, 현재는 `409`로 막는 방식이 아니라 **cascade delete 성격의 서비스 삭제**를 사용한다.
 
 ---
 
-### 5. GroupContact 목록 조회
+## 5. 연락처 목록 조회
 
-## GET `/api/admin/group-contacts`
+### GET `/api/admin/group-contacts`
 
-GroupContact 목록을 조회한다.
-
-### Query Params
+#### Query Params
 
 - `groupId` (optional)
 
-### Response 200
+#### Response 200
 
 ```json
 {
@@ -206,13 +144,11 @@ GroupContact 목록을 조회한다.
 
 ---
 
-### 6. GroupContact 생성
+## 6. 연락처 생성
 
-## POST `/api/admin/group-contacts`
+### POST `/api/admin/group-contacts`
 
-GroupContact를 생성한다.
-
-### Request Body
+#### Request Body
 
 ```json
 {
@@ -221,7 +157,7 @@ GroupContact를 생성한다.
 }
 ```
 
-### Response 201
+#### Response 201
 
 ```json
 {
@@ -233,22 +169,31 @@ GroupContact를 생성한다.
 }
 ```
 
-### 기본 검증
+#### 현재 구현 규칙
 
 - `groupId` 필수
 - `phone` 필수
-- `phone` 공백 불가
-- 참조 대상 Group이 존재해야 한다
+- 대상 그룹이 존재해야 한다
+- 같은 그룹에 연락처가 이미 있으면 `409 Conflict`
+
+오류 이유:
+
+```json
+{
+  "error": {
+    "code": "CONFLICT",
+    "message": "group contact already exists"
+  }
+}
+```
 
 ---
 
-### 7. GroupContact 수정
+## 7. 연락처 수정
 
-## PUT `/api/admin/group-contacts/{id}`
+### PUT `/api/admin/group-contacts/{id}`
 
-GroupContact를 수정한다.
-
-### Request Body
+#### Request Body
 
 ```json
 {
@@ -256,7 +201,7 @@ GroupContact를 수정한다.
 }
 ```
 
-### Response 200
+#### Response 200
 
 ```json
 {
@@ -268,7 +213,13 @@ GroupContact를 수정한다.
 }
 ```
 
-### 기본 규칙
+---
 
-- 현재 구현에는 `GroupContact` 삭제 API가 없다
-- 대상이 없으면 404를 반환한다
+## 현재 구현에 없는 것
+
+- `DELETE /api/admin/group-contacts/{id}`
+- `email` 저장
+- `mailingAddress` 저장
+
+현재 관리자 화면의 `email`, `우편수신주소`는 목업 UI일 뿐,
+이 API 계약에는 포함되지 않는다.

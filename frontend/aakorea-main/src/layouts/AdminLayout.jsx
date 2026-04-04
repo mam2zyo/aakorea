@@ -1,7 +1,7 @@
 const ADMIN_NAV_GROUPS = [
   [
     {
-      label: 'Group 관리',
+      label: '그룹 관리',
       href: '/admin/groups',
       match: (path) => path === '/admin/groups' || path.startsWith('/admin/groups/'),
     },

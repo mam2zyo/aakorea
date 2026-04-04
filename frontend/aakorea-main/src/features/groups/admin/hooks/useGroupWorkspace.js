@@ -32,7 +32,7 @@ const EMPTY_MEETING_FORM = {
   active: true,
 }
 
-export function useGroupWorkspace({ groupId, onError, onSuccess }) {
+export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess }) {
   const numericGroupId = Number(groupId)
 
   const [districts, setDistricts] = useState([])
@@ -75,8 +75,11 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
       if (targetGroup) {
         setGroupForm(toGroupForm(targetGroup))
       }
+
+      setContactForm(contactData[0] ? toContactForm(contactData[0]) : EMPTY_CONTACT_FORM)
+      setMeetingForm(meetingData[0] ? toMeetingForm(meetingData[0]) : EMPTY_MEETING_FORM)
     } catch (error) {
-      onError(error, 'Group 작업공간을 불러오지 못했습니다.')
+      onError(error, '그룹 편집 정보를 불러오지 못했습니다.')
     } finally {
       setLoading(false)
     }
@@ -92,7 +95,7 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
 
   async function saveGroup() {
     if (!groupData) {
-      return
+      return false
     }
 
     try {
@@ -101,19 +104,22 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
         name: groupForm.name,
       })
 
+      onGroupSaved?.(updatedGroup)
       setGroupData(updatedGroup)
       setGroupForm(toGroupForm(updatedGroup))
       setGroupErrors({})
-      onSuccess('Group 기본 정보를 저장했습니다.')
+      onSuccess('그룹 기본 정보를 저장했습니다.')
+      return true
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       if (fieldErrors) {
         setGroupErrors(fieldErrors)
-        return
+        return false
       }
 
       setGroupErrors({})
-      onError(error, 'Group 기본 정보 저장에 실패했습니다.')
+      onError(error, '그룹 기본 정보 저장에 실패했습니다.')
+      return false
     }
   }
 
@@ -129,20 +135,22 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
         })
 
       setContactErrors({})
-      setContactForm(EMPTY_CONTACT_FORM)
+      setContactForm(toContactForm(savedContact))
       setGroupContacts((previous) =>
         mergeById(previous, savedContact).sort((left, right) => left.id - right.id),
       )
       onSuccess(contactForm.id ? '연락처를 수정했습니다.' : '연락처를 추가했습니다.')
+      return true
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       if (fieldErrors) {
         setContactErrors(fieldErrors)
-        return
+        return false
       }
 
       setContactErrors({})
       onError(error, '연락처 저장에 실패했습니다.')
+      return false
     }
   }
 
@@ -164,20 +172,40 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
         : await adminMeetingApi.createMeeting(payload)
 
       setMeetingErrors({})
-      setMeetingForm(createMeetingFormDefaults(savedMeeting))
+      setMeetingForm(toMeetingForm(savedMeeting))
       setMeetings((previous) =>
         mergeById(previous, savedMeeting).sort((left, right) => left.id - right.id),
       )
       onSuccess(meetingForm.id ? '모임을 수정했습니다.' : '모임을 추가했습니다.')
+      return true
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       if (fieldErrors) {
         setMeetingErrors(fieldErrors)
-        return
+        return false
       }
 
       setMeetingErrors({})
       onError(error, '모임 저장에 실패했습니다.')
+      return false
+    }
+  }
+
+  async function deleteMeeting(meetingId) {
+    try {
+      await adminMeetingApi.deleteMeeting(meetingId)
+      const remainingMeetings = meetings.filter((meeting) => meeting.id !== meetingId)
+
+      setMeetings(remainingMeetings)
+      if (meetingForm.id === meetingId) {
+        setMeetingForm(remainingMeetings[0] ? toMeetingForm(remainingMeetings[0]) : EMPTY_MEETING_FORM)
+      }
+      setMeetingErrors({})
+      onSuccess('모임을 삭제했습니다.')
+      return true
+    } catch (error) {
+      onError(error, '모임 삭제에 실패했습니다.')
+      return false
     }
   }
 
@@ -248,6 +276,13 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
     }))
   }
 
+  function resetGroupForm() {
+    if (groupData) {
+      setGroupForm(toGroupForm(groupData))
+    }
+    setGroupErrors({})
+  }
+
   function districtLabel(districtId) {
     return districts.find((district) => district.id === districtId)?.name ?? null
   }
@@ -268,6 +303,7 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
     saveGroup,
     saveContact,
     saveMeeting,
+    deleteMeeting,
     startNewContact,
     startEditContact,
     startNewMeeting,
@@ -276,6 +312,7 @@ export function useGroupWorkspace({ groupId, onError, onSuccess }) {
     updateContactField,
     updateMeetingField,
     updateMeetingActive,
+    resetGroupForm,
     districtLabel,
   }
 }
@@ -284,6 +321,26 @@ function toGroupForm(group) {
   return {
     districtId: String(group.districtId),
     name: group.name ?? '',
+  }
+}
+
+function toContactForm(contact) {
+  return {
+    id: contact.id,
+    phone: contact.phone ?? '',
+  }
+}
+
+function toMeetingForm(meeting) {
+  return {
+    id: meeting.id,
+    province: meeting.province ?? EMPTY_MEETING_FORM.province,
+    locationName: meeting.locationName ?? '',
+    locationAddress: meeting.locationAddress ?? '',
+    dayOfWeek: meeting.dayOfWeek ?? EMPTY_MEETING_FORM.dayOfWeek,
+    startTime: meeting.startTime ?? EMPTY_MEETING_FORM.startTime,
+    type: meeting.type ?? EMPTY_MEETING_FORM.type,
+    active: meeting.active ?? EMPTY_MEETING_FORM.active,
   }
 }
 

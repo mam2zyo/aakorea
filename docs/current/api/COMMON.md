@@ -142,10 +142,10 @@ application/json
 현재 MVP에서는 여전히 `Meeting.active` / `published` 전환을 우선한다.  
 다만 현재 구현에는 아래와 같은 제한적 삭제 API가 포함되어 있다.
 
-- `District`, `Group`
+- `District`, `Group`, `Meeting`
 - `ContentPage`, `Notice`
 
-반면 `Meeting`, `GroupContact`는 현재 수정/상태 관리 중심으로 유지한다.
+반면 `GroupContact`는 현재 수정 중심으로 유지한다.
 
 ---
 
@@ -201,31 +201,19 @@ application/json
 
 ### Location Fields
 
-현재 구현과 다음 조정 방향은 아래처럼 구분한다.
-
-- 현재 구현:
-  `Group.locationName`, `Group.locationAddress`, `Meeting.meetingPlaceNote`
-- 다음 조정:
-  `Meeting.locationName`, `Meeting.locationAddress`, `Meeting.province`
-
-현재 구조 예:
+현재 구현은 위치 정보를 `Meeting`이 직접 가진다.
 
 ```json
+"province": "seoul",
 "locationName": "강남역 인근",
-"locationAddress": "서울특별시 강남구 테헤란로 123",
-"meetingPlaceNote": "지하 강당"
+"locationAddress": "서울특별시 강남구 테헤란로 123"
 ```
 
-다음 구조 예:
+현재는 아래 항목을 위치 필드로 사용하지 않는다.
 
-```json
-"locationName": "강남역 인근",
-"locationAddress": "서울특별시 강남구 테헤란로 123",
-"province": "seoul"
-```
-
-다음 조정에서는 위치 정보의 소유권을 `Meeting`으로 옮기고,
-`meetingPlaceNote`는 제거하는 쪽을 우선한다.
+- `Group.locationName`
+- `Group.locationAddress`
+- `Meeting.meetingPlaceNote`
 
 ### Phone
 
@@ -246,9 +234,12 @@ application/json
 
 운영 관리에 필요한 내부 정보는 공개 API에 포함하지 않는다.
 
-### 3. 대표 연락처 선택 규칙은 구현에서 명확히 정한다
+### 3. 대표 연락처 규칙은 현재 구현 기준으로 본다
 
-공개 `Meeting` 상세에서 어떤 `GroupContact`를 노출할지는 서비스 계층에서 일관되게 처리한다.
+현재 구현 기준:
+
+- 관리자 UI는 그룹당 연락처 1건만 허용한다
+- 공개 상세는 `id` 오름차순 첫 `GroupContact`를 대표 번호로 사용한다
 
 ### 4. DTO는 API 계약 기준으로 별도 설계한다
 

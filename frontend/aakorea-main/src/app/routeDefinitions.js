@@ -78,7 +78,7 @@ export function parseRoute(pathname, search = '') {
 
   const adminGroupMatch = normalizedPath.match(/^\/admin\/groups\/(\d+)$/)
   if (adminGroupMatch) {
-    return createRoute('admin-group-editor', normalizedPath, {
+    return createRoute('admin-groups', normalizedPath, {
       section: 'admin',
       groupId: Number(adminGroupMatch[1]),
     })

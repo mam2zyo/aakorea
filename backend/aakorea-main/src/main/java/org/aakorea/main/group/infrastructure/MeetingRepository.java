@@ -10,4 +10,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long>, JpaSpec
     List<Meeting> findAllByGroup_IdAndActiveTrueOrderByIdAsc(Long groupId);
 
     boolean existsByGroup_Id(Long groupId);
+
+    void deleteAllByGroup_Id(Long groupId);
 }

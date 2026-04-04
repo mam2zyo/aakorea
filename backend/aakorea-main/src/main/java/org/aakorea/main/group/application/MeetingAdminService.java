@@ -105,6 +105,12 @@ public class MeetingAdminService {
         return toMeetingData(meeting);
     }
 
+    @Transactional
+    public void deleteMeeting(Long id) {
+        Meeting meeting = getMeeting(id);
+        meetingRepository.delete(meeting);
+    }
+
     private Meeting getMeeting(Long id) {
         return meetingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "meeting not found"));

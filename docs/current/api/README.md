@@ -36,13 +36,13 @@
   공개 `ContentPage`, `Notice` 조회 API 계약
 
 - `PUBLIC_MEETINGS.md`
-  공개 `Meeting` 조회 API 계약
+  공개 `Meeting` 검색과 그룹 상세 모달용 API 계약
 
 - `ADMIN_GENERAL_SERVICES.md`
   운영 `generalservice` 계열 API 계약. 현재는 `District` API를 포함한다
 
 - `ADMIN_GROUPS.md`
-  운영 `Group`, `GroupContact` API 계약
+  운영 `Group`, `GroupContact` API 계약. 현재 연락처 1:1 규칙 포함
 
 - `ADMIN_MEETINGS.md`
   운영 `Meeting` API 계약
@@ -90,6 +90,7 @@
 - `GET /api/public/notices/{id}`
 - `GET /api/public/meetings`
 - `GET /api/public/meetings/{id}`
+- `GET /api/public/groups/{id}`
 
 ### 인증
 
@@ -113,6 +114,7 @@
 - `GET /api/admin/meetings`
 - `POST /api/admin/meetings`
 - `PUT /api/admin/meetings/{id}`
+- `DELETE /api/admin/meetings/{id}`
 - `GET /api/admin/content-pages`
 - `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`

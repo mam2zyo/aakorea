@@ -90,6 +90,23 @@ class GroupAdminServiceTest {
     }
 
     @Test
+    void createGroupContactThrowsWhenRepresentativeContactAlreadyExists() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+
+        given(groupRepository.findById(13L)).willReturn(Optional.of(group));
+        given(groupContactRepository.existsByGroup_Id(13L)).willReturn(true);
+
+        assertThatThrownBy(() -> groupAdminService.createGroupContact(13L, "02-1234-5678"))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+                    assertThat(responseStatusException.getReason()).isEqualTo("group contact already exists");
+                });
+    }
+
+    @Test
     void updateGroupContactUpdatesPhone() {
         District district = new District("서울");
         Group group = new Group(district, "강남그룹");
@@ -105,33 +122,16 @@ class GroupAdminServiceTest {
     }
 
     @Test
-    void deleteGroupThrowsConflictWhenRelatedDataExists() {
+    void deleteGroupRemovesRelatedContactsAndMeetings() {
         District district = new District("서울");
         Group group = new Group(district, "강남그룹");
 
         given(groupRepository.findById(7L)).willReturn(Optional.of(group));
-        given(groupContactRepository.existsByGroup_Id(7L)).willReturn(true);
-
-        assertThatThrownBy(() -> groupAdminService.deleteGroup(7L))
-                .isInstanceOf(ResponseStatusException.class)
-                .satisfies(exception -> {
-                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
-                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-                    assertThat(responseStatusException.getReason()).isEqualTo("연락처 또는 모임이 연결된 Group은 삭제할 수 없습니다.");
-                });
-    }
-
-    @Test
-    void deleteGroupRemovesGroupWhenNoRelatedDataExists() {
-        District district = new District("서울");
-        Group group = new Group(district, "강남그룹");
-
-        given(groupRepository.findById(7L)).willReturn(Optional.of(group));
-        given(groupContactRepository.existsByGroup_Id(7L)).willReturn(false);
-        given(meetingRepository.existsByGroup_Id(7L)).willReturn(false);
 
         groupAdminService.deleteGroup(7L);
 
+        verify(meetingRepository).deleteAllByGroup_Id(7L);
+        verify(groupContactRepository).deleteAllByGroup_Id(7L);
         verify(groupRepository).delete(group);
     }
 }

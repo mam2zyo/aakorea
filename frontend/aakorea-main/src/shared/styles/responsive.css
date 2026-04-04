@@ -128,8 +128,93 @@
     padding: var(--space-5);
   }
 
+  .admin-overlay__dialog--editor {
+    max-height: calc(100vh - 32px);
+    padding: 0;
+  }
+
   .admin-overlay__header {
     flex-direction: column;
+  }
+
+  .admin-group-modal__header,
+  .admin-group-modal__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-group-modal__header,
+  .admin-group-modal__body,
+  .admin-group-modal__footer,
+  .admin-group-modal__tabs {
+    padding-right: var(--space-5);
+    padding-left: var(--space-5);
+  }
+
+  .admin-group-modal__tabs {
+    flex-wrap: wrap;
+  }
+
+  .admin-group-wizard__grid,
+  .admin-group-wizard__grid--intro,
+  .admin-group-wizard__grid--meeting-meta,
+  .admin-group-wizard__postcode,
+  .admin-group-wizard__address-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-group-wizard__section-head,
+  .admin-group-wizard__actions,
+  .admin-group-wizard__actions--split,
+  .admin-group-edit-sheet__header,
+  .admin-group-edit-sheet__header-actions,
+  .admin-group-edit-sheet__grid,
+  .admin-group-edit-sheet__status-toggle,
+  .admin-group-edit-sheet__rowline,
+  .admin-group-edit-sheet__rowaction,
+  .admin-group-edit-sheet__section-head,
+  .admin-group-edit-sheet__section-actions,
+  .admin-group-edit-sheet__meeting-item,
+  .admin-group-edit-sheet__meeting-inline-row,
+  .admin-group-edit-sheet__row,
+  .admin-group-edit-sheet__row-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-group-edit-sheet__grid {
+    display: flex;
+  }
+
+  .admin-group-edit-sheet__rowline {
+    display: flex;
+  }
+
+  .admin-group-edit-sheet__rowline--inline-action {
+    display: flex;
+  }
+
+  .admin-group-edit-sheet__meeting-meta-head,
+  .admin-group-edit-sheet__meeting-meta-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-group-edit-sheet__meeting-inline-row--address {
+    flex-wrap: wrap;
+  }
+
+  .admin-group-edit-sheet__rowcontrol,
+  .admin-group-edit-sheet__rowcontrol--compact,
+  .admin-group-edit-sheet__meeting-inline-control,
+  .admin-group-edit-sheet__meeting-inline-control--compact {
+    max-width: none;
+    width: 100%;
+  }
+
+  .admin-group-wizard__map-card {
+    right: var(--space-4);
+    left: var(--space-4);
+    max-width: none;
   }
 
   .status-banner--floating {

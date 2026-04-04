@@ -7,6 +7,8 @@ export function GroupBasicsCard({
   form,
   onFieldChange,
   onSubmit,
+  submitDisabled = false,
+  submitLabel = 'Group 기본 정보 저장',
 }) {
   return (
     <section className="editor-card editor-card--wide">
@@ -40,8 +42,8 @@ export function GroupBasicsCard({
         </Field>
 
         <div className="button-row button-row--compact">
-          <button className="primary-button" type="submit">
-            Group 기본 정보 저장
+          <button className="primary-button" type="submit" disabled={submitDisabled}>
+            {submitLabel}
           </button>
         </div>
       </form>

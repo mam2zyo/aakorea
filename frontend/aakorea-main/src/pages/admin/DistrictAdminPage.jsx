@@ -10,7 +10,7 @@ import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/fo
 
 const DISTRICT_SORT_MODES = {
   name: '이름순',
-  groupCount: '연결 Group 순',
+  groupCount: '연결 그룹 순',
 }
 const EMPTY_DISTRICT_FORM = createEmptyDistrictForm()
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
@@ -118,7 +118,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
         {districts.length === 0 ? (
           <EmptyState
             title="등록된 지역연합이 없습니다."
-            description="새 지역연합을 만들어 Group 분류의 첫 기준을 준비해 주세요."
+            description="새 지역연합을 만들어 그룹 분류의 첫 기준을 준비해 주세요."
           />
         ) : filteredDistricts.length === 0 ? (
           <EmptyState
@@ -130,7 +130,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
             <div className="admin-table__header" role="row">
               <span className="admin-table__heading" role="columnheader">번호</span>
               <span className="admin-table__heading" role="columnheader">지역연합</span>
-              <span className="admin-table__heading" role="columnheader">연결 Group</span>
+              <span className="admin-table__heading" role="columnheader">연결 그룹</span>
               <span className="admin-table__heading" role="columnheader">편집</span>
             </div>
 
@@ -154,7 +154,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
                 >
                   <strong>{district.name}</strong>
                 </span>
-                <span className="admin-table__cell" data-label="연결 Group">
+                <span className="admin-table__cell" data-label="연결 그룹">
                   {groupCountByDistrictId[district.id] ?? 0}개
                 </span>
                 <span className="admin-table__cell admin-table__cell--action" data-label="편집">
@@ -188,12 +188,12 @@ export function DistrictAdminPage({ onError, onSuccess }) {
                 </h2>
                 <p className="admin-form-note">
                   {districtForm.id
-                    ? '이름을 수정하면 연결된 Group 화면에서도 같은 지역연합 이름으로 바로 보입니다.'
-                    : '생성 후에는 Group 생성과 편집 화면에서 이 지역연합을 바로 선택할 수 있습니다.'}
+                    ? '이름을 수정하면 연결된 그룹 화면에서도 같은 지역연합 이름으로 바로 보입니다.'
+                    : '생성 후에는 그룹 생성과 편집 화면에서 이 지역연합을 바로 선택할 수 있습니다.'}
                 </p>
                 {districtForm.id ? (
                   <p className="admin-form-note">
-                    현재 연결 Group {selectedGroupCount}개
+                    현재 연결 그룹 {selectedGroupCount}개
                   </p>
                 ) : null}
               </div>

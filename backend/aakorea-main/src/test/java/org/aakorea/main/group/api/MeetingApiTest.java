@@ -1,8 +1,10 @@
 package org.aakorea.main.group.api;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -99,6 +101,15 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.startTime").value("19:30"))
                 .andExpect(jsonPath("$.data.type").value("OPEN"))
                 .andExpect(jsonPath("$.data.active").value(true));
+    }
+
+    @Test
+    void deleteMeetingReturnsNoContent() throws Exception {
+        willDoNothing().given(meetingAdminService).deleteMeeting(100L);
+
+        mockMvc.perform(delete("/api/admin/meetings/100")
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isNoContent());
     }
 
     @Test

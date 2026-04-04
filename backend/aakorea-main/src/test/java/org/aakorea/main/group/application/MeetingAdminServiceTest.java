@@ -128,4 +128,27 @@ class MeetingAdminServiceTest {
         assertThat(result.groupId()).isEqualTo(21L);
         assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED);
     }
+
+    @Test
+    void deleteMeetingRemovesMeeting() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        Meeting meeting = new Meeting(
+                group,
+                "seoul",
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                DayOfWeek.MONDAY,
+                java.time.LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                true);
+
+        ReflectionTestUtils.setField(meeting, "id", 100L);
+
+        given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
+
+        meetingAdminService.deleteMeeting(100L);
+
+        verify(meetingRepository).delete(meeting);
+    }
 }

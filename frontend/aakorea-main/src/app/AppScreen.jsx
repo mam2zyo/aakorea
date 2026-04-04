@@ -7,7 +7,6 @@ import { AdminLoginPage } from '../pages/admin/AdminLoginPage'
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage'
 import { ContentPageAdminPage } from '../pages/admin/ContentPageAdminPage'
 import { DistrictAdminPage } from '../pages/admin/DistrictAdminPage'
-import { GroupEditorPage } from '../pages/admin/GroupEditorPage'
 import { GroupListPage } from '../pages/admin/GroupListPage'
 import { NoticeAdminPage } from '../pages/admin/NoticeAdminPage'
 import { ContentPageViewPage } from '../pages/public/ContentPageViewPage'
@@ -209,7 +208,7 @@ function renderPage({
         >
           <EmptyState
             title="기본 관리자 화면을 여는 중입니다."
-            description="잠시 후 Group 관리 화면으로 이어집니다."
+            description="잠시 후 그룹 관리 화면으로 이어집니다."
           />
         </PageSection>
       )
@@ -227,15 +226,7 @@ function renderPage({
     case 'admin-groups':
       return (
         <GroupListPage
-          onError={onError}
-          onNavigate={onNavigate}
-          onSuccess={onSuccess}
-        />
-      )
-    case 'admin-group-editor':
-      return (
-        <GroupEditorPage
-          groupId={route.groupId}
+          editorGroupId={route.groupId}
           onError={onError}
           onNavigate={onNavigate}
           onSuccess={onSuccess}
