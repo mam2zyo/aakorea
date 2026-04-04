@@ -53,12 +53,14 @@ public class PublicMeetingQueryService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "meeting not found");
         }
 
+        String representativeContactPhone = findRepresentativeContactPhone(meeting.getGroup().getId());
+
         return new PublicMeetingDetail(
                 meeting.getId(),
                 meeting.getGroup().getId(),
                 meeting.getGroup().getName(),
                 toDistrictData(meeting.getGroup()),
-                findContactPhone(meeting.getGroup().getId()),
+                resolveMeetingContactPhone(meeting, representativeContactPhone),
                 meeting.getProvince().getCode(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
@@ -67,14 +69,15 @@ public class PublicMeetingQueryService {
                 meeting.getLocationAddress(),
                 meeting.getLatitude(),
                 meeting.getLongitude(),
-                getActiveGroupMeetings(meeting.getGroup().getId()));
+                getActiveGroupMeetings(meeting.getGroup().getId(), representativeContactPhone));
     }
 
     public PublicGroupDetail getGroup(Long id) {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found"));
 
-        List<GroupMeetingData> activeMeetings = getActiveGroupMeetings(id);
+        String representativeContactPhone = findRepresentativeContactPhone(id);
+        List<GroupMeetingData> activeMeetings = getActiveGroupMeetings(id, representativeContactPhone);
         if (activeMeetings.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found");
         }
@@ -83,7 +86,7 @@ public class PublicMeetingQueryService {
                 group.getId(),
                 group.getName(),
                 toDistrictData(group),
-                findContactPhone(group.getId()),
+                representativeContactPhone,
                 group.getNotice(),
                 activeMeetings);
     }
@@ -107,25 +110,26 @@ public class PublicMeetingQueryService {
         return new DistrictData(group.getDistrict().getId(), group.getDistrict().getName());
     }
 
-    private String findContactPhone(Long groupId) {
+    private String findRepresentativeContactPhone(Long groupId) {
         return groupContactRepository.findFirstByGroup_IdOrderByIdAsc(groupId)
                 .map(groupContact -> groupContact.getPhone())
                 .orElse(null);
     }
 
-    private List<GroupMeetingData> getActiveGroupMeetings(Long groupId) {
+    private List<GroupMeetingData> getActiveGroupMeetings(Long groupId, String representativeContactPhone) {
         return meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(groupId).stream()
                 .sorted(Comparator
                         .comparingInt((Meeting item) -> item.getDayOfWeek().getValue())
                         .thenComparing(Meeting::getStartTime)
                         .thenComparing(Meeting::getId))
-                .map(this::toGroupMeetingData)
+                .map(meeting -> toGroupMeetingData(meeting, representativeContactPhone))
                 .toList();
     }
 
-    private GroupMeetingData toGroupMeetingData(Meeting meeting) {
+    private GroupMeetingData toGroupMeetingData(Meeting meeting, String representativeContactPhone) {
         return new GroupMeetingData(
                 meeting.getId(),
+                resolveMeetingContactPhone(meeting, representativeContactPhone),
                 meeting.getProvince().getCode(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
@@ -134,6 +138,12 @@ public class PublicMeetingQueryService {
                 meeting.getLocationAddress(),
                 meeting.getLatitude(),
                 meeting.getLongitude());
+    }
+
+    private String resolveMeetingContactPhone(Meeting meeting, String representativeContactPhone) {
+        return meeting.getContactPhoneOverride() != null
+                ? meeting.getContactPhoneOverride()
+                : representativeContactPhone;
     }
 
     public record PublicMeetingSummary(
@@ -187,6 +197,7 @@ public class PublicMeetingQueryService {
 
     public record GroupMeetingData(
             Long id,
+            String contactPhone,
             String province,
             DayOfWeek dayOfWeek,
             String startTime,

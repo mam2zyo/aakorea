@@ -66,6 +66,7 @@ public final class PublicMeetingResponses {
 
     public record GroupMeeting(
             Long id,
+            String contactPhone,
             String province,
             DayOfWeek dayOfWeek,
             String startTime,

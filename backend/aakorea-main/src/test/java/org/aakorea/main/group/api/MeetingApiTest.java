@@ -62,6 +62,7 @@ class MeetingApiTest {
                 "서울특별시 강남구 테헤란로 123",
                 37.4979,
                 127.0276,
+                "010-9999-0000",
                 "MONDAY",
                 "19:30",
                 "OPEN",
@@ -74,6 +75,7 @@ class MeetingApiTest {
                         "서울특별시 강남구 테헤란로 123",
                         37.4979,
                         127.0276,
+                        "010-9999-0000",
                         DayOfWeek.MONDAY,
                         "19:30",
                         MeetingType.OPEN,
@@ -89,6 +91,7 @@ class MeetingApiTest {
                                   "locationAddress": "서울특별시 강남구 테헤란로 123",
                                   "latitude": 37.4979,
                                   "longitude": 127.0276,
+                                  "contactPhoneOverride": "010-9999-0000",
                                   "dayOfWeek": "MONDAY",
                                   "startTime": "19:30",
                                   "type": "OPEN",
@@ -103,6 +106,7 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.locationAddress").value("서울특별시 강남구 테헤란로 123"))
                 .andExpect(jsonPath("$.data.latitude").value(37.4979))
                 .andExpect(jsonPath("$.data.longitude").value(127.0276))
+                .andExpect(jsonPath("$.data.contactPhoneOverride").value("010-9999-0000"))
                 .andExpect(jsonPath("$.data.dayOfWeek").value("MONDAY"))
                 .andExpect(jsonPath("$.data.startTime").value("19:30"))
                 .andExpect(jsonPath("$.data.type").value("OPEN"))
@@ -151,14 +155,14 @@ class MeetingApiTest {
     }
 
     @Test
-    void publicMeetingDetailReturnsRepresentativeContactPhone() throws Exception {
+    void publicMeetingDetailReturnsMeetingSpecificContactPhoneWhenOverrideExists() throws Exception {
         given(publicMeetingQueryService.getMeeting(100L))
                 .willReturn(new PublicMeetingQueryService.PublicMeetingDetail(
                         100L,
                         20L,
                         "강남그룹",
                         new PublicMeetingQueryService.DistrictData(1L, "서울지역연합"),
-                        "02-1234-5678",
+                        "010-9999-0000",
                         "seoul",
                         DayOfWeek.MONDAY,
                         "19:30",
@@ -169,6 +173,7 @@ class MeetingApiTest {
                         127.0276,
                         List.of(new PublicMeetingQueryService.GroupMeetingData(
                                 100L,
+                                "010-9999-0000",
                                 "seoul",
                                 DayOfWeek.MONDAY,
                                 "19:30",
@@ -182,11 +187,12 @@ class MeetingApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(100))
                 .andExpect(jsonPath("$.data.groupName").value("강남그룹"))
-                .andExpect(jsonPath("$.data.contactPhone").value("02-1234-5678"))
+                .andExpect(jsonPath("$.data.contactPhone").value("010-9999-0000"))
                 .andExpect(jsonPath("$.data.locationDetail").value("강남역 인근"))
                 .andExpect(jsonPath("$.data.latitude").value(37.4979))
                 .andExpect(jsonPath("$.data.longitude").value(127.0276))
-                .andExpect(jsonPath("$.data.groupMeetings[0].id").value(100));
+                .andExpect(jsonPath("$.data.groupMeetings[0].id").value(100))
+                .andExpect(jsonPath("$.data.groupMeetings[0].contactPhone").value("010-9999-0000"));
     }
 
     @Test
@@ -200,6 +206,7 @@ class MeetingApiTest {
                         "첫 방문자는 10분 전에 와 주세요.",
                         List.of(new PublicMeetingQueryService.GroupMeetingData(
                                 100L,
+                                "010-9999-0000",
                                 "seoul",
                                 DayOfWeek.MONDAY,
                                 "19:30",
@@ -215,6 +222,8 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.name").value("강남그룹"))
                 .andExpect(jsonPath("$.data.district.name").value("서울지역연합"))
                 .andExpect(jsonPath("$.data.notice").value("첫 방문자는 10분 전에 와 주세요."))
+                .andExpect(jsonPath("$.data.contactPhone").value("02-1234-5678"))
+                .andExpect(jsonPath("$.data.meetings[0].contactPhone").value("010-9999-0000"))
                 .andExpect(jsonPath("$.data.meetings[0].locationDetail").value("강남역 인근"))
                 .andExpect(jsonPath("$.data.meetings[0].latitude").value(37.4979))
                 .andExpect(jsonPath("$.data.meetings[0].longitude").value(127.0276));

@@ -54,6 +54,7 @@ export function createEmptyCreateForm() {
     notice: '',
     locationAddress: '',
     locationDetail: '',
+    contactPhoneOverride: '',
     dayOfWeek: DAY_OF_WEEK_OPTIONS[0]?.value ?? 'MONDAY',
     startTime: '19:00',
     type: MEETING_TYPE_OPTIONS[0]?.value ?? 'OPEN',

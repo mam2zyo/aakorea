@@ -94,6 +94,10 @@ final class MeetingFieldSupport {
         return normalized.isEmpty() ? null : normalized;
     }
 
+    static String optionalPhone(String phone) {
+        return optionalText(phone);
+    }
+
     static Province resolveProvince(String locationAddress) {
         String normalizedAddress = requireText(locationAddress, "locationAddress");
 

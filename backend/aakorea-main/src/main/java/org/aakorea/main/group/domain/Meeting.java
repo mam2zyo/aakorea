@@ -57,6 +57,9 @@ public class Meeting {
     @Column(nullable = false)
     private MeetingType type;
 
+    @Column(name = "contact_phone_override")
+    private String contactPhoneOverride;
+
     @Column(nullable = false)
     private boolean active;
 
@@ -66,6 +69,7 @@ public class Meeting {
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
+            String contactPhoneOverride,
             boolean active
     ) {
         this.group = group;
@@ -73,6 +77,7 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
+        this.contactPhoneOverride = contactPhoneOverride;
         this.active = active;
     }
 
@@ -82,6 +87,7 @@ public class Meeting {
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
+            String contactPhoneOverride,
             boolean active
     ) {
         this.group = group;
@@ -89,6 +95,7 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
+        this.contactPhoneOverride = contactPhoneOverride;
         this.active = active;
     }
 

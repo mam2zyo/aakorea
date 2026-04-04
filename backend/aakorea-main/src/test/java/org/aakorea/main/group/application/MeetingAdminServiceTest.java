@@ -57,6 +57,7 @@ class MeetingAdminServiceTest {
                 "  서울특별시 강남구 테헤란로 123  ",
                 37.4979,
                 127.0276,
+                " 010-9999-0000 ",
                 "monday",
                 "19:30",
                 "open",
@@ -71,12 +72,14 @@ class MeetingAdminServiceTest {
         assertThat(savedMeeting.getLocationAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
         assertThat(savedMeeting.getLatitude()).isEqualTo(37.4979);
         assertThat(savedMeeting.getLongitude()).isEqualTo(127.0276);
+        assertThat(savedMeeting.getContactPhoneOverride()).isEqualTo("010-9999-0000");
         assertThat(savedMeeting.getDayOfWeek()).isEqualTo(DayOfWeek.MONDAY);
         assertThat(savedMeeting.getStartTime().toString()).isEqualTo("19:30");
         assertThat(savedMeeting.getType()).isEqualTo(MeetingType.OPEN);
         assertThat(result.id()).isEqualTo(100L);
         assertThat(result.latitude()).isEqualTo(37.4979);
         assertThat(result.longitude()).isEqualTo(127.0276);
+        assertThat(result.contactPhoneOverride()).isEqualTo("010-9999-0000");
         assertThat(result.startTime()).isEqualTo("19:30");
     }
 
@@ -108,6 +111,7 @@ class MeetingAdminServiceTest {
                 DayOfWeek.MONDAY,
                 java.time.LocalTime.of(19, 30),
                 MeetingType.OPEN,
+                null,
                 true);
 
         ReflectionTestUtils.setField(newGroup, "id", 21L);
@@ -123,6 +127,7 @@ class MeetingAdminServiceTest {
                 "부산광역시 해운대구 우동 123",
                 35.1631,
                 129.1635,
+                "010-1111-2222",
                 "TUESDAY",
                 "20:00",
                 "NOTFIXED",
@@ -134,11 +139,13 @@ class MeetingAdminServiceTest {
         assertThat(meeting.getLocationAddress()).isEqualTo("부산광역시 해운대구 우동 123");
         assertThat(meeting.getLatitude()).isEqualTo(35.1631);
         assertThat(meeting.getLongitude()).isEqualTo(129.1635);
+        assertThat(meeting.getContactPhoneOverride()).isEqualTo("010-1111-2222");
         assertThat(meeting.getDayOfWeek()).isEqualTo(DayOfWeek.TUESDAY);
         assertThat(meeting.getStartTime().toString()).isEqualTo("20:00");
         assertThat(meeting.getType()).isEqualTo(MeetingType.NOTFIXED);
         assertThat(meeting.isActive()).isFalse();
         assertThat(result.groupId()).isEqualTo(21L);
+        assertThat(result.contactPhoneOverride()).isEqualTo("010-1111-2222");
         assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED);
     }
 
@@ -154,6 +161,7 @@ class MeetingAdminServiceTest {
                 20L,
                 "알 수 없는 위치",
                 "어딘가 1",
+                null,
                 null,
                 null,
                 "MONDAY",
@@ -183,6 +191,7 @@ class MeetingAdminServiceTest {
                 DayOfWeek.MONDAY,
                 java.time.LocalTime.of(19, 30),
                 MeetingType.OPEN,
+                null,
                 true);
 
         ReflectionTestUtils.setField(meeting, "id", 100L);
@@ -207,6 +216,7 @@ class MeetingAdminServiceTest {
                 "강남역 인근",
                 "서울특별시 강남구 테헤란로 123",
                 37.4979,
+                null,
                 null,
                 "MONDAY",
                 "19:30",

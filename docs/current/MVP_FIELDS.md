@@ -66,7 +66,8 @@
 ### 현재 구현 규칙
 
 - 그룹당 연락처는 1건만 허용한다
-- 현재 공개 화면도 이 대표 연락처 1건을 사용한다
+- 공개 화면의 기본 연락처는 이 대표 연락처다
+- 다만 특정 모임은 `Meeting.contactPhoneOverride`로 대표 연락처를 덮어쓸 수 있다
 
 ## 4. Meeting
 
@@ -79,6 +80,7 @@
 - `locationAddress`
 - `latitude`
 - `longitude`
+- `contactPhoneOverride`
 - `dayOfWeek`
 - `startTime`
 - `type`
@@ -100,6 +102,9 @@
 
 - `longitude`
   지도 API용 경도
+
+- `contactPhoneOverride`
+  특정 모임만 다른 담당 연락처를 써야 할 때 사용하는 예외 번호
 
 - `dayOfWeek`
   반복 요일
@@ -142,7 +147,7 @@
 
 - `Group.name`
 - `District.name`
-- `GroupContact.phone`
+- 선택된 `Meeting.contactPhoneOverride ?? GroupContact.phone`
 - `Meeting` 목록
 - 선택된 `Meeting.locationAddress`
 - 선택된 `Meeting.locationDetail`
@@ -169,6 +174,7 @@
 - `type`
 - `locationDetail`
 - `locationAddress`
+- `contactPhoneOverride`
 - `active`
 
 ---

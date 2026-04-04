@@ -103,6 +103,18 @@ export function GroupMeetingFormModal({
               />
             </Field>
 
+            <Field
+              className="admin-group-wizard__field admin-group-wizard__field--wide"
+              label="모임별 연락처 (선택)"
+              error={readFieldError(errors, 'contactPhoneOverride')}
+            >
+              <input
+                placeholder="비우면 그룹 대표 연락처를 사용합니다."
+                value={form.contactPhoneOverride}
+                onChange={(event) => onFieldChange('contactPhoneOverride', event.target.value)}
+              />
+            </Field>
+
             {showActiveToggle ? (
               <div className="admin-group-edit-sheet__status-toggle">
                 <span className="admin-group-edit-sheet__status-label">모임 상태</span>

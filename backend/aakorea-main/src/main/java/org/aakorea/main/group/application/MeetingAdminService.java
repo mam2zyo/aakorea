@@ -56,6 +56,7 @@ public class MeetingAdminService {
             String locationAddress,
             Double latitude,
             Double longitude,
+            String contactPhoneOverride,
             String dayOfWeek,
             String startTime,
             String type,
@@ -66,6 +67,7 @@ public class MeetingAdminService {
         String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
         Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
         Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
+        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
         MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
         MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
         Meeting meeting = new Meeting(
@@ -79,6 +81,7 @@ public class MeetingAdminService {
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
+                normalizedContactPhoneOverride,
                 active);
 
         return toMeetingData(meetingRepository.save(meeting));
@@ -92,6 +95,7 @@ public class MeetingAdminService {
             String locationAddress,
             Double latitude,
             Double longitude,
+            String contactPhoneOverride,
             String dayOfWeek,
             String startTime,
             String type,
@@ -103,6 +107,7 @@ public class MeetingAdminService {
         String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
         Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
         Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
+        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
         MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
         MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
         meeting.update(
@@ -116,6 +121,7 @@ public class MeetingAdminService {
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
+                normalizedContactPhoneOverride,
                 active);
 
         return toMeetingData(meeting);
@@ -146,6 +152,7 @@ public class MeetingAdminService {
                 meeting.getLocationAddress(),
                 meeting.getLatitude(),
                 meeting.getLongitude(),
+                meeting.getContactPhoneOverride(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
@@ -160,6 +167,7 @@ public class MeetingAdminService {
             String locationAddress,
             Double latitude,
             Double longitude,
+            String contactPhoneOverride,
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,

@@ -405,6 +405,7 @@ export function GroupManagementPage({
         groupId: savedGroup.id,
         locationDetail: createForm.locationDetail,
         locationAddress: createForm.locationAddress,
+        contactPhoneOverride: createForm.contactPhoneOverride,
         dayOfWeek: createForm.dayOfWeek,
         startTime: createForm.startTime,
         type: createForm.type,

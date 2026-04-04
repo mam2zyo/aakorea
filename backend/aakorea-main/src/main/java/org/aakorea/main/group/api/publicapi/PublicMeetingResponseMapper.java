@@ -80,6 +80,7 @@ final class PublicMeetingResponseMapper {
     private static PublicMeetingResponses.GroupMeeting toGroupMeeting(GroupMeetingData groupMeeting) {
         return new PublicMeetingResponses.GroupMeeting(
                 groupMeeting.id(),
+                groupMeeting.contactPhone(),
                 groupMeeting.province(),
                 groupMeeting.dayOfWeek(),
                 groupMeeting.startTime(),

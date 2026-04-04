@@ -218,6 +218,18 @@ export function CreateGroupWizard({
             />
           </Field>
 
+          <Field
+            className="admin-group-wizard__field admin-group-wizard__field--wide"
+            label="모임별 연락처 (선택)"
+            error={readFieldError(createErrors, 'contactPhoneOverride')}
+          >
+            <input
+              placeholder="비우면 대표 연락처를 사용합니다."
+              value={createForm.contactPhoneOverride}
+              onChange={(event) => onFieldChange('contactPhoneOverride', event.target.value)}
+            />
+          </Field>
+
           <div className="admin-group-wizard__map-mock">
             <span className="admin-group-wizard__map-pin" aria-hidden="true" />
             <div className="admin-group-wizard__map-card">

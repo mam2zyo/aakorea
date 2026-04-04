@@ -110,6 +110,7 @@
 - `locationAddress`
 - `latitude`
 - `longitude`
+- `contactPhoneOverride`
 - `dayOfWeek`
 - `startTime`
 - `type`
@@ -123,6 +124,13 @@
 - 사용자는 `Meeting` 목록으로 탐색을 시작한다
 - 공개 상세는 그룹 문맥으로 보여 주지만, 실제 장소는 선택된 `Meeting` 기준으로 바뀐다
 - “그룹 장소”보다 “모임 장소”가 실제 운영 언어에 가깝기 때문에, 위치 정보는 `Meeting`에 둔다
+- 그룹 대표 번호와 다른 담당자를 써야 하는 예외도 `Meeting` 단위로 둔다
+
+### Meeting 연락처 규칙
+
+- 기본 연락처는 `GroupContact.phone`이다
+- 특정 모임만 다른 담당자를 써야 하면 `Meeting.contactPhoneOverride`를 사용한다
+- 공개 상세에서 실제 전화 연결은 `Meeting.contactPhoneOverride ?? GroupContact.phone` 규칙을 따른다
 
 ### Meeting 상태
 
@@ -152,7 +160,7 @@
 
 - 검색 시작점: `Meeting`
 - 상세 문맥: `Group`
-- 연락 연결: `GroupContact`
+- 연락 연결: 기본은 `GroupContact`, 예외는 `Meeting.contactPhoneOverride`
 
 즉, **사용자는 모임을 찾고, 그룹 맥락 안에서 세부 장소와 연락처를 확인한다.**
 

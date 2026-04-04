@@ -85,6 +85,7 @@
     "meetings": [
       {
         "id": 100,
+        "contactPhone": "010-9999-0000",
         "province": "seoul",
         "dayOfWeek": "MONDAY",
         "startTime": "19:30",
@@ -108,8 +109,10 @@
 
 #### 연락처 규칙
 
-- 현재 서비스는 `GroupContact` 중 `id` 오름차순 첫 연락처를 대표 번호로 반환한다
+- 현재 서비스는 `GroupContact` 중 `id` 오름차순 첫 연락처를 그룹 대표 번호로 본다
 - 현재 관리자 UI는 그룹당 연락처 1건만 허용한다
+- 다만 선택된 모임에 `contactPhoneOverride`가 있으면, 모달 하단의 실제 전화 연결은 그 번호를 우선 사용한다
+- `meetings[]`의 각 항목도 `contactPhone`을 포함하므로, 모임을 바꿀 때 표시 번호도 함께 바뀐다
 
 #### 그룹 공지 규칙
 
@@ -137,7 +140,7 @@
       "id": 1,
       "name": "서울지역연합"
     },
-    "contactPhone": "02-1234-5678",
+    "contactPhone": "010-9999-0000",
     "province": "seoul",
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
@@ -149,6 +152,7 @@
     "groupMeetings": [
       {
         "id": 100,
+        "contactPhone": "010-9999-0000",
         "province": "seoul",
         "dayOfWeek": "MONDAY",
         "startTime": "19:30",
@@ -167,6 +171,7 @@
 
 - 현재 메인 프론트 흐름은 이 API보다 `GET /api/public/groups/{id}`를 더 직접적으로 사용한다
 - 다만 단건 기준 상세 응답은 아직 백엔드에 유지한다
+- 단건 상세의 `contactPhone`도 `Meeting.contactPhoneOverride ?? GroupContact.phone` 규칙을 따른다
 
 ---
 

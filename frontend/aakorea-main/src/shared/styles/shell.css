@@ -1546,6 +1546,63 @@
   min-width: 0;
 }
 
+.admin-import-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-import-panel__file-input {
+  display: none;
+}
+
+.admin-import-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-import-panel__field {
+  gap: var(--space-3);
+}
+
+.admin-import-panel__textarea {
+  min-height: 18rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  line-height: 1.6;
+}
+
+.admin-import-panel__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.admin-import-panel__meta {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-import-panel__meta span {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-import-panel__summary,
+.admin-import-panel__issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-import-panel__preview-item {
+  justify-content: flex-start;
+}
+
 .entity-list {
   display: flex;
   flex-direction: column;

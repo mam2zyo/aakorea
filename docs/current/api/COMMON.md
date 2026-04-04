@@ -241,7 +241,8 @@ application/json
 현재 구현 기준:
 
 - 관리자 UI는 그룹당 연락처 1건만 허용한다
-- 공개 상세는 `id` 오름차순 첫 `GroupContact`를 대표 번호로 사용한다
+- 공개 상세의 그룹 대표 번호는 `id` 오름차순 첫 `GroupContact`를 사용한다
+- 다만 실제 전화 연결은 `Meeting.contactPhoneOverride ?? GroupContact.phone` 규칙을 따른다
 
 ### 4. DTO는 API 계약 기준으로 별도 설계한다
 

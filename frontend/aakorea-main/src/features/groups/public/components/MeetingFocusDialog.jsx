@@ -19,6 +19,8 @@ export function MeetingFocusDialog({
   onNavigate,
   selectedMeeting,
 }) {
+  const contactPhone = selectedMeeting?.contactPhone || groupDetails?.contactPhone || ''
+
   return (
     <div
       className="meeting-focus-overlay"
@@ -139,14 +141,14 @@ export function MeetingFocusDialog({
           ) : null}
         </div>
 
-        {groupDetails?.contactPhone ? (
+        {contactPhone ? (
           <footer className="meeting-focus-dialog__footer">
             <div className="meeting-focus-contact">
               <p className="meeting-focus-contact__label">연락처</p>
-              <strong className="meeting-focus-contact__value">{groupDetails.contactPhone}</strong>
+              <strong className="meeting-focus-contact__value">{contactPhone}</strong>
             </div>
 
-            <a className="primary-button meeting-focus-contact__action" href={`tel:${groupDetails.contactPhone}`}>
+            <a className="primary-button meeting-focus-contact__action" href={`tel:${contactPhone}`}>
               전화 걸기
             </a>
           </footer>

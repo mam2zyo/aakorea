@@ -213,7 +213,12 @@ function renderPage({
         </PageSection>
       )
     case 'admin-overview':
-      return <AdminOverviewPage />
+      return (
+        <AdminOverviewPage
+          onError={onError}
+          onSuccess={onSuccess}
+        />
+      )
     case 'admin-account':
       return <AdminAccountPage />
     case 'admin-districts':

@@ -17,6 +17,7 @@
 - `locationAddress`
 - `latitude`
 - `longitude`
+- `contactPhoneOverride`
 - `dayOfWeek`
 - `startTime`
 - `type`
@@ -49,6 +50,7 @@
       "locationAddress": "서울특별시 강남구 테헤란로 123",
       "latitude": 37.4979,
       "longitude": 127.0276,
+      "contactPhoneOverride": "010-9999-0000",
       "dayOfWeek": "MONDAY",
       "startTime": "19:30",
       "type": "OPEN",
@@ -73,6 +75,7 @@
   "locationAddress": "서울특별시 강남구 테헤란로 123",
   "latitude": 37.4979,
   "longitude": 127.0276,
+  "contactPhoneOverride": "010-9999-0000",
   "dayOfWeek": "MONDAY",
   "startTime": "19:30",
   "type": "OPEN",
@@ -92,6 +95,7 @@
     "locationAddress": "서울특별시 강남구 테헤란로 123",
     "latitude": 37.4979,
     "longitude": 127.0276,
+    "contactPhoneOverride": "010-9999-0000",
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
     "type": "OPEN",
@@ -106,6 +110,7 @@
 - `locationDetail` 필수
 - `locationAddress` 필수
 - `latitude`, `longitude`는 선택
+- `contactPhoneOverride`는 선택
 - `dayOfWeek` 필수
 - `startTime` 필수
 - `type` 필수
@@ -118,6 +123,7 @@
 
 - 현재 관리자의 `새 모임 추가` 화면은 상태 UI를 보여주지 않는다
 - 프론트는 기본값 `active=true`로 생성 요청을 보낸다
+- 모임별 담당자가 다르면 `contactPhoneOverride`로 별도 번호를 저장할 수 있다
 
 ---
 
@@ -134,6 +140,7 @@
   "locationAddress": "서울특별시 강남구 테헤란로 123",
   "latitude": 37.4979,
   "longitude": 127.0276,
+  "contactPhoneOverride": null,
   "dayOfWeek": "TUESDAY",
   "startTime": "20:00",
   "type": "NOTFIXED",
@@ -153,6 +160,7 @@
     "locationAddress": "서울특별시 강남구 테헤란로 123",
     "latitude": 37.4979,
     "longitude": 127.0276,
+    "contactPhoneOverride": null,
     "dayOfWeek": "TUESDAY",
     "startTime": "20:00",
     "type": "NOTFIXED",

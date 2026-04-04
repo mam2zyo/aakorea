@@ -4,6 +4,7 @@ import org.aakorea.main.content.application.ContentAdminService;
 import org.aakorea.main.content.application.PublicContentQueryService;
 import org.aakorea.main.group.application.GroupAdminService;
 import org.aakorea.main.group.application.MeetingAdminService;
+import org.aakorea.main.group.application.MeetingImportAdminService;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
 import org.aakorea.main.generalservice.application.DistrictAdminService;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,9 @@ class AakoreaMainApplicationTests {
 
     @MockitoBean
     private MeetingAdminService meetingAdminService;
+
+    @MockitoBean
+    private MeetingImportAdminService meetingImportAdminService;
 
     @MockitoBean
     private PublicMeetingQueryService publicMeetingQueryService;
