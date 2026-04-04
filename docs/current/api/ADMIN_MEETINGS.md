@@ -13,8 +13,10 @@
 `Meeting`은 현재 아래 필드를 직접 가진다.
 
 - `province`
-- `locationName`
+- `locationDetail`
 - `locationAddress`
+- `latitude`
+- `longitude`
 - `dayOfWeek`
 - `startTime`
 - `type`
@@ -43,8 +45,10 @@
       "id": 100,
       "groupId": 20,
       "province": "seoul",
-      "locationName": "강남역 인근",
+      "locationDetail": "강남역 인근",
       "locationAddress": "서울특별시 강남구 테헤란로 123",
+      "latitude": 37.4979,
+      "longitude": 127.0276,
       "dayOfWeek": "MONDAY",
       "startTime": "19:30",
       "type": "OPEN",
@@ -65,9 +69,10 @@
 ```json
 {
   "groupId": 20,
-  "province": "seoul",
-  "locationName": "강남역 인근",
+  "locationDetail": "강남역 인근",
   "locationAddress": "서울특별시 강남구 테헤란로 123",
+  "latitude": 37.4979,
+  "longitude": 127.0276,
   "dayOfWeek": "MONDAY",
   "startTime": "19:30",
   "type": "OPEN",
@@ -83,8 +88,10 @@
     "id": 100,
     "groupId": 20,
     "province": "seoul",
-    "locationName": "강남역 인근",
+    "locationDetail": "강남역 인근",
     "locationAddress": "서울특별시 강남구 테헤란로 123",
+    "latitude": 37.4979,
+    "longitude": 127.0276,
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
     "type": "OPEN",
@@ -96,14 +103,16 @@
 #### 기본 검증
 
 - `groupId` 필수
-- `province` 필수
-- `locationName` 필수
+- `locationDetail` 필수
 - `locationAddress` 필수
+- `latitude`, `longitude`는 선택
 - `dayOfWeek` 필수
 - `startTime` 필수
 - `type` 필수
 - `active` 필수
 - 대상 `Group`이 존재해야 한다
+- `locationAddress`에서 `province`를 자동 산출할 수 있어야 한다
+- `latitude`, `longitude`는 함께 오거나 둘 다 비어 있어야 한다
 
 #### 관리자 UI 메모
 
@@ -121,9 +130,10 @@
 ```json
 {
   "groupId": 20,
-  "province": "seoul",
-  "locationName": "강남역 인근",
+  "locationDetail": "강남역 인근",
   "locationAddress": "서울특별시 강남구 테헤란로 123",
+  "latitude": 37.4979,
+  "longitude": 127.0276,
   "dayOfWeek": "TUESDAY",
   "startTime": "20:00",
   "type": "NOTFIXED",
@@ -139,8 +149,10 @@
     "id": 100,
     "groupId": 20,
     "province": "seoul",
-    "locationName": "강남역 인근",
+    "locationDetail": "강남역 인근",
     "locationAddress": "서울특별시 강남구 테헤란로 123",
+    "latitude": 37.4979,
+    "longitude": 127.0276,
     "dayOfWeek": "TUESDAY",
     "startTime": "20:00",
     "type": "NOTFIXED",

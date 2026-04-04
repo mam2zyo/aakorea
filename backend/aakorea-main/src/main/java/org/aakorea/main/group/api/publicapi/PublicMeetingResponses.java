@@ -23,8 +23,10 @@ public final class PublicMeetingResponses {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
-            String locationAddress
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude
     ) {
     }
 
@@ -38,8 +40,10 @@ public final class PublicMeetingResponses {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
+            String locationDetail,
             String locationAddress,
+            Double latitude,
+            Double longitude,
             List<GroupMeeting> groupMeetings
     ) {
     }
@@ -65,8 +69,10 @@ public final class PublicMeetingResponses {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
-            String locationAddress
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude
     ) {
     }
 }

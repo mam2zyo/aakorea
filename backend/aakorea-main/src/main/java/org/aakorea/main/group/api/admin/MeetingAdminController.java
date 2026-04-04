@@ -41,9 +41,10 @@ public class MeetingAdminController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(meetingAdminService.createMeeting(
                 request.groupId(),
-                request.province(),
-                request.locationName(),
+                request.locationDetail(),
                 request.locationAddress(),
+                request.latitude(),
+                request.longitude(),
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
@@ -58,9 +59,10 @@ public class MeetingAdminController {
         return ApiResponse.success(meetingAdminService.updateMeeting(
                 id,
                 request.groupId(),
-                request.province(),
-                request.locationName(),
+                request.locationDetail(),
                 request.locationAddress(),
+                request.latitude(),
+                request.longitude(),
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
@@ -75,9 +77,10 @@ public class MeetingAdminController {
 
     public record MeetingRequest(
             @NotNull(message = "groupId is required") Long groupId,
-            @NotBlank(message = "province is required") String province,
-            @NotBlank(message = "locationName is required") String locationName,
+            @NotBlank(message = "locationDetail is required") String locationDetail,
             @NotBlank(message = "locationAddress is required") String locationAddress,
+            Double latitude,
+            Double longitude,
             @NotBlank(message = "dayOfWeek is required") String dayOfWeek,
             @NotBlank(message = "startTime is required") String startTime,
             @NotBlank(message = "type is required") String type,

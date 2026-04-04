@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.aakorea.main.shared.Location;
+import org.aakorea.main.shared.Province;
 
 @ExtendWith(MockitoExtension.class)
 class MeetingAdminServiceTest {
@@ -51,9 +53,10 @@ class MeetingAdminServiceTest {
 
         MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
                 20L,
-                " Seoul ",
                 "  강남역 인근  ",
                 "  서울특별시 강남구 테헤란로 123  ",
+                37.4979,
+                127.0276,
                 "monday",
                 "19:30",
                 "open",
@@ -63,13 +66,17 @@ class MeetingAdminServiceTest {
         verify(meetingRepository).save(captor.capture());
         Meeting savedMeeting = captor.getValue();
 
-        assertThat(savedMeeting.getProvince()).isEqualTo("seoul");
-        assertThat(savedMeeting.getLocationName()).isEqualTo("강남역 인근");
+        assertThat(savedMeeting.getProvince()).isEqualTo(Province.SEOUL);
+        assertThat(savedMeeting.getLocationDetail()).isEqualTo("강남역 인근");
         assertThat(savedMeeting.getLocationAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
+        assertThat(savedMeeting.getLatitude()).isEqualTo(37.4979);
+        assertThat(savedMeeting.getLongitude()).isEqualTo(127.0276);
         assertThat(savedMeeting.getDayOfWeek()).isEqualTo(DayOfWeek.MONDAY);
         assertThat(savedMeeting.getStartTime().toString()).isEqualTo("19:30");
         assertThat(savedMeeting.getType()).isEqualTo(MeetingType.OPEN);
         assertThat(result.id()).isEqualTo(100L);
+        assertThat(result.latitude()).isEqualTo(37.4979);
+        assertThat(result.longitude()).isEqualTo(127.0276);
         assertThat(result.startTime()).isEqualTo("19:30");
     }
 
@@ -92,9 +99,12 @@ class MeetingAdminServiceTest {
         Group newGroup = new Group(newDistrict, "해운대그룹");
         Meeting meeting = new Meeting(
                 oldGroup,
-                "seoul",
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null),
                 DayOfWeek.MONDAY,
                 java.time.LocalTime.of(19, 30),
                 MeetingType.OPEN,
@@ -109,18 +119,21 @@ class MeetingAdminServiceTest {
         MeetingAdminService.MeetingData result = meetingAdminService.updateMeeting(
                 100L,
                 21L,
-                "busan",
                 "해운대역 인근",
                 "부산광역시 해운대구 우동 123",
+                35.1631,
+                129.1635,
                 "TUESDAY",
                 "20:00",
                 "NOTFIXED",
                 false);
 
         assertThat(meeting.getGroup()).isEqualTo(newGroup);
-        assertThat(meeting.getProvince()).isEqualTo("busan");
-        assertThat(meeting.getLocationName()).isEqualTo("해운대역 인근");
+        assertThat(meeting.getProvince()).isEqualTo(Province.BUSAN);
+        assertThat(meeting.getLocationDetail()).isEqualTo("해운대역 인근");
         assertThat(meeting.getLocationAddress()).isEqualTo("부산광역시 해운대구 우동 123");
+        assertThat(meeting.getLatitude()).isEqualTo(35.1631);
+        assertThat(meeting.getLongitude()).isEqualTo(129.1635);
         assertThat(meeting.getDayOfWeek()).isEqualTo(DayOfWeek.TUESDAY);
         assertThat(meeting.getStartTime().toString()).isEqualTo("20:00");
         assertThat(meeting.getType()).isEqualTo(MeetingType.NOTFIXED);
@@ -130,14 +143,43 @@ class MeetingAdminServiceTest {
     }
 
     @Test
+    void createMeetingThrowsWhenAddressCannotDetermineProvince() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        ReflectionTestUtils.setField(group, "id", 20L);
+
+        given(groupRepository.findById(20L)).willReturn(Optional.of(group));
+
+        assertThatThrownBy(() -> meetingAdminService.createMeeting(
+                20L,
+                "알 수 없는 위치",
+                "어딘가 1",
+                null,
+                null,
+                "MONDAY",
+                "19:30",
+                "OPEN",
+                true))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+                    assertThat(responseStatusException.getReason()).isEqualTo("locationAddress cannot determine province");
+                });
+    }
+
+    @Test
     void deleteMeetingRemovesMeeting() {
         District district = new District("서울");
         Group group = new Group(district, "강남그룹");
         Meeting meeting = new Meeting(
                 group,
-                "seoul",
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null),
                 DayOfWeek.MONDAY,
                 java.time.LocalTime.of(19, 30),
                 MeetingType.OPEN,
@@ -150,5 +192,31 @@ class MeetingAdminServiceTest {
         meetingAdminService.deleteMeeting(100L);
 
         verify(meetingRepository).delete(meeting);
+    }
+
+    @Test
+    void createMeetingThrowsWhenOnlyLatitudeIsProvided() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        ReflectionTestUtils.setField(group, "id", 20L);
+
+        given(groupRepository.findById(20L)).willReturn(Optional.of(group));
+
+        assertThatThrownBy(() -> meetingAdminService.createMeeting(
+                20L,
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                37.4979,
+                null,
+                "MONDAY",
+                "19:30",
+                "OPEN",
+                true))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+                    assertThat(responseStatusException.getReason()).isEqualTo("longitude is required when latitude is provided");
+                });
     }
 }

@@ -72,7 +72,11 @@ public class GroupAdminController {
             @Valid @RequestBody CreateGroupContactRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(
-                groupAdminService.createGroupContact(request.groupId(), request.phone())));
+                groupAdminService.createGroupContact(
+                        request.groupId(),
+                        request.phone(),
+                        request.email(),
+                        toPostalContactInput(request.postalContact()))));
     }
 
     @PutMapping("/group-contacts/{id}")
@@ -80,7 +84,23 @@ public class GroupAdminController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateGroupContactRequest request
     ) {
-        return ApiResponse.success(groupAdminService.updateGroupContact(id, request.phone()));
+        return ApiResponse.success(groupAdminService.updateGroupContact(
+                id,
+                request.phone(),
+                request.email(),
+                toPostalContactInput(request.postalContact())));
+    }
+
+    private GroupAdminService.PostalContactInput toPostalContactInput(PostalContactRequest postalContact) {
+        if (postalContact == null) {
+            return null;
+        }
+
+        return new GroupAdminService.PostalContactInput(
+                postalContact.recipient(),
+                postalContact.postalCode(),
+                postalContact.roadAddress(),
+                postalContact.detailAddress());
     }
 
     public record GroupRequest(
@@ -91,12 +111,24 @@ public class GroupAdminController {
 
     public record CreateGroupContactRequest(
             @NotNull(message = "groupId is required") Long groupId,
-            @NotBlank(message = "phone is required") String phone
+            @NotBlank(message = "phone is required") String phone,
+            String email,
+            PostalContactRequest postalContact
     ) {
     }
 
     public record UpdateGroupContactRequest(
-            @NotBlank(message = "phone is required") String phone
+            @NotBlank(message = "phone is required") String phone,
+            String email,
+            PostalContactRequest postalContact
+    ) {
+    }
+
+    public record PostalContactRequest(
+            String recipient,
+            String postalCode,
+            String roadAddress,
+            String detailAddress
     ) {
     }
 }

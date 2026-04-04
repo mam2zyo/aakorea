@@ -810,6 +810,11 @@
   padding: var(--space-6);
 }
 
+.address-search-dialog__body {
+  padding: 0;
+  overflow: hidden;
+}
+
 .admin-group-modal__panel {
   display: flex;
   flex-direction: column;

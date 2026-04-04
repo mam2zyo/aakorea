@@ -37,7 +37,7 @@
 
 ### 현재 제외한 필드
 
-- `locationName`
+- `locationDetail`
 - `locationAddress`
 - `introduction`
 - `notice`
@@ -57,26 +57,16 @@
 - `id`
 - `groupId`
 - `phone`
+- `email`
+- `postalContact.recipient`
+- `postalContact.postalCode`
+- `postalContact.roadAddress`
+- `postalContact.detailAddress`
 
 ### 현재 구현 규칙
 
 - 그룹당 연락처는 1건만 허용한다
 - 현재 공개 화면도 이 대표 연락처 1건을 사용한다
-
-### 관리자 UI에만 있는 목업 필드
-
-아래 필드는 화면에 비활성 mock으로만 존재하고 아직 저장되지 않는다.
-
-- `email`
-- `mailingAddress.recipient`
-- `mailingAddress.postalCode`
-- `mailingAddress.roadAddress`
-- `mailingAddress.addressDetails`
-
-즉, 프론트에서는 미래 구조를 보기 위한 자리만 있고,
-현재 API와 DB에는 아직 반영되지 않았다.
-
----
 
 ## 4. Meeting
 
@@ -85,8 +75,10 @@
 - `id`
 - `groupId`
 - `province`
-- `locationName`
+- `locationDetail`
 - `locationAddress`
+- `latitude`
+- `longitude`
 - `dayOfWeek`
 - `startTime`
 - `type`
@@ -97,11 +89,17 @@
 - `province`
   공개 검색 기준 지역
 
-- `locationName`
-  장소명
+- `locationDetail`
+  상세 위치 설명
 
 - `locationAddress`
   주소
+
+- `latitude`
+  지도 API용 위도
+
+- `longitude`
+  지도 API용 경도
 
 - `dayOfWeek`
   반복 요일
@@ -137,7 +135,7 @@
 - `Meeting.dayOfWeek`
 - `Meeting.startTime`
 - `Meeting.type`
-- `Meeting.locationName`
+- `Meeting.locationDetail`
 - `Meeting.locationAddress`
 
 ### 모임 상세 모달
@@ -147,7 +145,7 @@
 - `GroupContact.phone`
 - `Meeting` 목록
 - 선택된 `Meeting.locationAddress`
-- 선택된 `Meeting.locationName`
+- 선택된 `Meeting.locationDetail`
 
 ---
 
@@ -161,28 +159,26 @@
 ### 그룹 수정 메인 모달
 
 - 기본 정보: `Group.name`, `District.name`
-- 연락처: `GroupContact.phone`
-- 모임 정보: 각 `Meeting`의 `dayOfWeek`, `startTime`, `locationName`
+- 연락처: `GroupContact.phone`, `GroupContact.email`, `GroupContact.postalContact`
+- 모임 정보: 각 `Meeting`의 `dayOfWeek`, `startTime`, `locationDetail`
 
 ### 모임 수정 서브 모달
 
 - `dayOfWeek`
 - `startTime`
 - `type`
-- `locationName`
-- `province`
+- `locationDetail`
 - `locationAddress`
 - `active`
 
 ---
 
-## 7. 다음 저장 후보
+## 7. 다음 확장 후보
 
 현재 논의는 끝났지만 아직 저장 구조로 확정되지 않은 항목:
 
-- `GroupContact.email`
-- `GroupContact.mailingAddress`
-- 주소 검색 API 기반 `postalCode` 저장
-- 주소 기반 `province` 자동 저장
+- 지오코딩 상태 메타데이터
+- 주소 정규화 결과 캐시
+- 지도 공급자별 place id
 
 이 항목들은 현재 MVP 핵심 필드가 아니라 **다음 확장 후보**다.

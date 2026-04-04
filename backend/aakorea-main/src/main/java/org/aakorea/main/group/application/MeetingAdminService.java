@@ -9,6 +9,8 @@ import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.shared.Location;
+import org.aakorea.main.shared.Province;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class MeetingAdminService {
     private final GroupRepository groupRepository;
 
     public List<MeetingData> getMeetings(Long groupId, String province, Boolean active) {
-        String normalizedProvince = MeetingFieldSupport.optionalProvince(province);
+        Province normalizedProvince = MeetingFieldSupport.optionalProvince(province);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
@@ -35,7 +37,7 @@ public class MeetingAdminService {
         }
         if (normalizedProvince != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("province"), normalizedProvince));
+                    criteriaBuilder.equal(root.get("location").get("province"), normalizedProvince));
         }
         if (active != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
@@ -50,23 +52,30 @@ public class MeetingAdminService {
     @Transactional
     public MeetingData createMeeting(
             Long groupId,
-            String province,
-            String locationName,
+            String locationDetail,
             String locationAddress,
+            Double latitude,
+            Double longitude,
             String dayOfWeek,
             String startTime,
             String type,
             boolean active
     ) {
         Group group = getGroup(groupId);
-        String normalizedLocationName = MeetingFieldSupport.optionalText(locationName);
+        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
         String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        MeetingFieldSupport.validateLocation(normalizedLocationName, normalizedLocationAddress);
+        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
+        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
+        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
+        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
         Meeting meeting = new Meeting(
                 group,
-                MeetingFieldSupport.requireProvince(province),
-                normalizedLocationName,
-                normalizedLocationAddress,
+                new Location(
+                        MeetingFieldSupport.resolveProvince(normalizedLocationAddress),
+                        normalizedLocationDetail,
+                        normalizedLocationAddress,
+                        normalizedLatitude,
+                        normalizedLongitude),
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
@@ -79,9 +88,10 @@ public class MeetingAdminService {
     public MeetingData updateMeeting(
             Long id,
             Long groupId,
-            String province,
-            String locationName,
+            String locationDetail,
             String locationAddress,
+            Double latitude,
+            Double longitude,
             String dayOfWeek,
             String startTime,
             String type,
@@ -89,14 +99,20 @@ public class MeetingAdminService {
     ) {
         Meeting meeting = getMeeting(id);
         Group group = getGroup(groupId);
-        String normalizedLocationName = MeetingFieldSupport.optionalText(locationName);
+        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
         String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        MeetingFieldSupport.validateLocation(normalizedLocationName, normalizedLocationAddress);
+        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
+        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
+        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
+        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
         meeting.update(
                 group,
-                MeetingFieldSupport.requireProvince(province),
-                normalizedLocationName,
-                normalizedLocationAddress,
+                new Location(
+                        MeetingFieldSupport.resolveProvince(normalizedLocationAddress),
+                        normalizedLocationDetail,
+                        normalizedLocationAddress,
+                        normalizedLatitude,
+                        normalizedLongitude),
                 MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
@@ -125,9 +141,11 @@ public class MeetingAdminService {
         return new MeetingData(
                 meeting.getId(),
                 meeting.getGroup().getId(),
-                meeting.getProvince(),
-                meeting.getLocationName(),
+                meeting.getProvince().getCode(),
+                meeting.getLocationDetail(),
                 meeting.getLocationAddress(),
+                meeting.getLatitude(),
+                meeting.getLongitude(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
@@ -138,8 +156,10 @@ public class MeetingAdminService {
             Long id,
             Long groupId,
             String province,
-            String locationName,
+            String locationDetail,
             String locationAddress,
+            Double latitude,
+            Double longitude,
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,

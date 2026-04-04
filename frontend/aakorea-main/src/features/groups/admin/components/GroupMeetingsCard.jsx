@@ -1,3 +1,4 @@
+import { AddressSearchField } from '../../../../components/AddressSearchField'
 import {
   EntityList,
   Field,
@@ -8,7 +9,6 @@ import {
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-  PROVINCE_OPTIONS,
 } from '../../../../lib/options'
 import { readFieldError } from '../../../../lib/formErrors'
 import { lookupLabel } from '../../../../lib/view'
@@ -38,32 +38,20 @@ export function GroupMeetingsCard({
           void onSubmit()
         }}
       >
-        <Field label="지역" error={readFieldError(errors, 'province')}>
-          <select
-            value={form.province}
-            onChange={(event) => onFieldChange('province', event.target.value)}
-          >
-            {PROVINCE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="모임 장소명" error={readFieldError(errors, 'locationName')}>
+        <Field label="상세 위치" error={readFieldError(errors, 'locationDetail')}>
           <input
-            value={form.locationName}
-            onChange={(event) => onFieldChange('locationName', event.target.value)}
+            value={form.locationDetail}
+            onChange={(event) => onFieldChange('locationDetail', event.target.value)}
           />
         </Field>
 
-        <Field label="모임 주소" error={readFieldError(errors, 'locationAddress')}>
-          <input
-            value={form.locationAddress}
-            onChange={(event) => onFieldChange('locationAddress', event.target.value)}
-          />
-        </Field>
+        <AddressSearchField
+          addressError={readFieldError(errors, 'locationAddress')}
+          addressLabel="모임 주소"
+          addressValue={form.locationAddress}
+          onAddressChange={(value) => onFieldChange('locationAddress', value)}
+          onAddressSelected={({ address }) => onFieldChange('locationAddress', address)}
+        />
 
         <Field label="요일" error={readFieldError(errors, 'dayOfWeek')}>
           <select
@@ -124,10 +112,10 @@ export function GroupMeetingsCard({
               {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
             </strong>
             <span className="entity-item__meta">
-              {lookupLabel(PROVINCE_OPTIONS, meeting.province)} · {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
+              {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
             </span>
             <span className="entity-item__meta">
-              {meeting.locationName || '장소 미입력'}
+              {meeting.locationDetail || '상세 위치 미입력'}
             </span>
             <StatusPill active={meeting.active} />
           </div>

@@ -136,7 +136,14 @@
     {
       "id": 30,
       "groupId": 20,
-      "phone": "02-1234-5678"
+      "phone": "02-1234-5678",
+      "email": "group@example.org",
+      "postalContact": {
+        "recipient": "담당자",
+        "postalCode": "06123",
+        "roadAddress": "서울특별시 강남구 테헤란로 123",
+        "detailAddress": "7층"
+      }
     }
   ]
 }
@@ -153,7 +160,14 @@
 ```json
 {
   "groupId": 20,
-  "phone": "02-1234-5678"
+  "phone": "02-1234-5678",
+  "email": "group@example.org",
+  "postalContact": {
+    "recipient": "담당자",
+    "postalCode": "06123",
+    "roadAddress": "서울특별시 강남구 테헤란로 123",
+    "detailAddress": "7층"
+  }
 }
 ```
 
@@ -164,7 +178,14 @@
   "data": {
     "id": 30,
     "groupId": 20,
-    "phone": "02-1234-5678"
+    "phone": "02-1234-5678",
+    "email": "group@example.org",
+    "postalContact": {
+      "recipient": "담당자",
+      "postalCode": "06123",
+      "roadAddress": "서울특별시 강남구 테헤란로 123",
+      "detailAddress": "7층"
+    }
   }
 }
 ```
@@ -173,6 +194,8 @@
 
 - `groupId` 필수
 - `phone` 필수
+- `email` 선택
+- `postalContact` 선택
 - 대상 그룹이 존재해야 한다
 - 같은 그룹에 연락처가 이미 있으면 `409 Conflict`
 
@@ -197,7 +220,14 @@
 
 ```json
 {
-  "phone": "02-9876-5432"
+  "phone": "02-9876-5432",
+  "email": "group@example.org",
+  "postalContact": {
+    "recipient": "담당자",
+    "postalCode": "06123",
+    "roadAddress": "서울특별시 강남구 테헤란로 123",
+    "detailAddress": "7층"
+  }
 }
 ```
 
@@ -208,7 +238,14 @@
   "data": {
     "id": 30,
     "groupId": 20,
-    "phone": "02-9876-5432"
+    "phone": "02-9876-5432",
+    "email": "group@example.org",
+    "postalContact": {
+      "recipient": "담당자",
+      "postalCode": "06123",
+      "roadAddress": "서울특별시 강남구 테헤란로 123",
+      "detailAddress": "7층"
+    }
   }
 }
 ```
@@ -218,8 +255,3 @@
 ## 현재 구현에 없는 것
 
 - `DELETE /api/admin/group-contacts/{id}`
-- `email` 저장
-- `mailingAddress` 저장
-
-현재 관리자 화면의 `email`, `우편수신주소`는 목업 UI일 뿐,
-이 API 계약에는 포함되지 않는다.

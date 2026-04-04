@@ -1,6 +1,9 @@
 package org.aakorea.main.group.domain;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,6 +19,8 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.aakorea.main.shared.Location;
+import org.aakorea.main.shared.Province;
 
 @Getter
 @Entity
@@ -31,14 +36,15 @@ public class Meeting {
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
-    @Column(nullable = false)
-    private String province;
-
-    @Column(name = "location_name")
-    private String locationName;
-
-    @Column(name = "location_address")
-    private String locationAddress;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "province", column = @Column(name = "province", nullable = false)),
+            @AttributeOverride(name = "detail", column = @Column(name = "location_detail")),
+            @AttributeOverride(name = "address", column = @Column(name = "location_address")),
+            @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
+    })
+    private Location location;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -56,18 +62,14 @@ public class Meeting {
 
     public Meeting(
             Group group,
-            String province,
-            String locationName,
-            String locationAddress,
+            Location location,
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
             boolean active
     ) {
         this.group = group;
-        this.province = province;
-        this.locationName = locationName;
-        this.locationAddress = locationAddress;
+        this.location = location;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
@@ -76,21 +78,37 @@ public class Meeting {
 
     public void update(
             Group group,
-            String province,
-            String locationName,
-            String locationAddress,
+            Location location,
             DayOfWeek dayOfWeek,
             LocalTime startTime,
             MeetingType type,
             boolean active
     ) {
         this.group = group;
-        this.province = province;
-        this.locationName = locationName;
-        this.locationAddress = locationAddress;
+        this.location = location;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
         this.active = active;
+    }
+
+    public Province getProvince() {
+        return location == null ? null : location.getProvince();
+    }
+
+    public String getLocationDetail() {
+        return location == null ? null : location.getDetail();
+    }
+
+    public String getLocationAddress() {
+        return location == null ? null : location.getAddress();
+    }
+
+    public Double getLatitude() {
+        return location == null ? null : location.getLatitude();
+    }
+
+    public Double getLongitude() {
+        return location == null ? null : location.getLongitude();
     }
 }

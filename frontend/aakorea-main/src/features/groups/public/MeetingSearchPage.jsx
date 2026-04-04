@@ -121,7 +121,10 @@ export function MeetingSearchPage({
     return groupDetails.meetings[0] ?? null
   }, [groupDetails, meetingId])
 
-  const closePath = useMemo(() => buildMeetingsPath(filters), [filters.dayOfWeek, filters.province])
+  const closePath = useMemo(
+    () => buildMeetingsPath({ dayOfWeek: filters.dayOfWeek, province: filters.province }),
+    [filters.dayOfWeek, filters.province],
+  )
   const selectedSearchMeetingId = selectedMeeting?.id ?? meetingId ?? null
 
   useEffect(() => {
@@ -262,7 +265,7 @@ export function MeetingSearchPage({
                       {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
                     </strong>
                     <span className="meeting-search-item__meta">
-                      {meeting.locationName || '장소 미정'}
+                      {meeting.locationDetail || '상세 위치 미정'}
                     </span>
                   </div>
                   <span className="meeting-search-item__province">
@@ -350,7 +353,7 @@ export function MeetingSearchPage({
                     <p className="meeting-focus-section__label">모임 장소</p>
                     <div className="meeting-focus-location-summary">
                       <strong className="meeting-focus-location-card__title">
-                        {selectedMeeting.locationName || '장소명 미정'}
+                        {selectedMeeting.locationDetail || '상세 위치 미정'}
                       </strong>
                       <p className="meeting-focus-location-card__address">
                         {selectedMeeting.locationAddress || '공개 주소 없음'}
@@ -363,7 +366,7 @@ export function MeetingSearchPage({
                       <div className="meeting-focus-map__pin" aria-hidden="true" />
                       <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
                         <strong className="meeting-focus-location-card__title">
-                          {selectedMeeting.locationName || '선택한 모임 위치'}
+                          {selectedMeeting.locationDetail || '선택한 모임 위치'}
                         </strong>
                         <p className="meeting-focus-location-card__address">
                           {selectedMeeting.locationAddress || '지도 API 연동 시 이 위치가 이 영역에 표시됩니다.'}

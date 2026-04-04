@@ -10,6 +10,7 @@ import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.shared.Province;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -27,12 +28,12 @@ public class PublicMeetingQueryService {
     private final GroupContactRepository groupContactRepository;
 
     public List<PublicMeetingSummary> getMeetings(String province, String dayOfWeek) {
-        String normalizedProvince = MeetingFieldSupport.requireProvince(province);
+        Province normalizedProvince = MeetingFieldSupport.requireProvince(province);
         DayOfWeek normalizedDayOfWeek = MeetingFieldSupport.optionalDayOfWeek(dayOfWeek);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 criteriaBuilder.isTrue(root.get("active")),
-                criteriaBuilder.equal(root.get("province"), normalizedProvince));
+                criteriaBuilder.equal(root.get("location").get("province"), normalizedProvince));
 
         if (normalizedDayOfWeek != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
@@ -58,12 +59,14 @@ public class PublicMeetingQueryService {
                 meeting.getGroup().getName(),
                 toDistrictData(meeting.getGroup()),
                 findContactPhone(meeting.getGroup().getId()),
-                meeting.getProvince(),
+                meeting.getProvince().getCode(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getLocationName(),
+                meeting.getLocationDetail(),
                 meeting.getLocationAddress(),
+                meeting.getLatitude(),
+                meeting.getLongitude(),
                 getActiveGroupMeetings(meeting.getGroup().getId()));
     }
 
@@ -89,12 +92,14 @@ public class PublicMeetingQueryService {
                 meeting.getId(),
                 meeting.getGroup().getId(),
                 meeting.getGroup().getName(),
-                meeting.getProvince(),
+                meeting.getProvince().getCode(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getLocationName(),
-                meeting.getLocationAddress());
+                meeting.getLocationDetail(),
+                meeting.getLocationAddress(),
+                meeting.getLatitude(),
+                meeting.getLongitude());
     }
 
     private DistrictData toDistrictData(Group group) {
@@ -120,12 +125,14 @@ public class PublicMeetingQueryService {
     private GroupMeetingData toGroupMeetingData(Meeting meeting) {
         return new GroupMeetingData(
                 meeting.getId(),
-                meeting.getProvince(),
+                meeting.getProvince().getCode(),
                 meeting.getDayOfWeek(),
                 MeetingFieldSupport.formatTime(meeting.getStartTime()),
                 meeting.getType(),
-                meeting.getLocationName(),
-                meeting.getLocationAddress());
+                meeting.getLocationDetail(),
+                meeting.getLocationAddress(),
+                meeting.getLatitude(),
+                meeting.getLongitude());
     }
 
     public record PublicMeetingSummary(
@@ -136,8 +143,10 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
-            String locationAddress
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude
     ) {
     }
 
@@ -151,8 +160,10 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
+            String locationDetail,
             String locationAddress,
+            Double latitude,
+            Double longitude,
             List<GroupMeetingData> groupMeetings
     ) {
     }
@@ -178,8 +189,10 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             String startTime,
             MeetingType type,
-            String locationName,
-            String locationAddress
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude
     ) {
     }
 }

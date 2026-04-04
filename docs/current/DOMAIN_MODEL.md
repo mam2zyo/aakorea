@@ -84,14 +84,14 @@
 도메인적으로는 연락 지점 개체지만, 현재 구현과 운영 UX는 아래 기준을 따른다.
 
 - 그룹당 대표 연락처 1건만 관리한다
-- 현재 저장 필드는 `phone` 하나다
+- 현재 저장 필드는 `phone`, `email`, `postalContact`다
+- 우편 수신 정보는 공용 값 객체 `PostalContact`로 묶어 둔다
 - 공개 화면에서는 이 번호를 전화 연결에 사용한다
 
 ### 현재 구현 메모
 
 - 백엔드 생성 로직은 그룹당 연락처가 이미 있으면 `409 Conflict`를 반환한다
 - 공개 API는 현재 `id` 오름차순 첫 연락처를 대표 번호로 사용한다
-- 관리자 화면의 `email`, `우편수신주소`는 **목업 비활성 필드**이며 아직 저장되지 않는다
 
 따라서 현재 도메인 문맥에서는 `GroupContact`를 “복수 연락처 목록”보다
 **대표 연락처 1건**으로 이해하는 편이 정확하다.
@@ -105,12 +105,17 @@
 현재 구현에서 `Meeting`은 아래를 직접 가진다.
 
 - `province`
-- `locationName`
+- `locationDetail`
 - `locationAddress`
+- `latitude`
+- `longitude`
 - `dayOfWeek`
 - `startTime`
 - `type`
 - `active`
+
+내부 구현에서는 위치 필드를 공용 값 객체 `Location`으로 묶고,
+공개/API 계약에서는 기존처럼 평평한 필드로 풀어 낸다.
 
 ### 현재 확정된 해석
 

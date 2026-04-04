@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { AddressSearchField } from '../../components/AddressSearchField'
 import {
   AdminPageHeader,
   EmptyState,
@@ -8,6 +9,7 @@ import {
 import { adminDistrictApi } from '../../features/districts/api/admin'
 import { adminGroupApi, adminMeetingApi } from '../../features/groups/api/admin'
 import { useGroupWorkspace } from '../../features/groups/admin/hooks/useGroupWorkspace'
+import { formatPostalContact } from '../../lib/address'
 import {
   getApiFieldErrors,
   omitFieldErrors,
@@ -16,7 +18,6 @@ import {
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-  PROVINCE_OPTIONS,
 } from '../../lib/options'
 import { ensureSelectValue, lookupLabel } from '../../lib/view'
 
@@ -283,7 +284,7 @@ export function GroupListPage({
                   onNext={() => void saveCreateBasics()}
                   onPrevious={() => setCreateStep(1)}
                   onSubmit={() => void completeCreateFlow()}
-                  onToggleMailingInfo={toggleMailingInfo}
+                  onTogglePostalContactInfo={togglePostalContactInfo}
                 />
               ) : (
                 <EditGroupSheet
@@ -313,10 +314,10 @@ export function GroupListPage({
     setCreateErrors((previous) => omitFieldErrors(previous, field))
   }
 
-  function toggleMailingInfo() {
+  function togglePostalContactInfo() {
     setCreateForm((previous) => ({
       ...previous,
-      mailingInfoExpanded: !previous.mailingInfoExpanded,
+      postalContactExpanded: !previous.postalContactExpanded,
     }))
   }
 
@@ -392,12 +393,13 @@ export function GroupListPage({
       await adminGroupApi.createGroupContact({
         groupId: savedGroup.id,
         phone: createForm.phone,
+        email: createForm.email,
+        postalContact: toPostalContactPayload(createForm),
       })
 
       await adminMeetingApi.createMeeting({
         groupId: savedGroup.id,
-        province: createForm.province,
-        locationName: createForm.locationName,
+        locationDetail: createForm.locationDetail,
         locationAddress: createForm.locationAddress,
         dayOfWeek: createForm.dayOfWeek,
         startTime: createForm.startTime,
@@ -521,8 +523,6 @@ function EditGroupSheet({
   const [showCreateMeetingModal, setShowCreateMeetingModal] = useState(false)
   const [returnMeeting, setReturnMeeting] = useState(null)
   const selectedContact = groupContacts[0] ?? null
-  const contactEmailMock = 'abc@example.org'
-  const contactMailingAddressMock = '경기도 어쩌구 저쩌구'
 
   if (missingGroup) {
     return (
@@ -612,14 +612,14 @@ function EditGroupSheet({
           <div className="admin-group-edit-sheet__rowline">
             <span className="admin-group-edit-sheet__rowlabel">이메일</span>
             <div className="admin-group-edit-sheet__rowcontrol">
-              <span className="admin-group-edit-sheet__rowvalue admin-group-edit-sheet__rowvalue--muted">{contactEmailMock}</span>
+              <span className="admin-group-edit-sheet__rowvalue">{selectedContact?.email || '-'}</span>
             </div>
           </div>
 
           <div className="admin-group-edit-sheet__rowline">
             <span className="admin-group-edit-sheet__rowlabel">우편수신주소</span>
             <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-              <span className="admin-group-edit-sheet__rowvalue admin-group-edit-sheet__rowvalue--muted">{contactMailingAddressMock}</span>
+              <span className="admin-group-edit-sheet__rowvalue">{formatPostalContact(selectedContact?.postalContact)}</span>
             </div>
           </div>
         </div>
@@ -649,7 +649,7 @@ function EditGroupSheet({
                     <strong>
                       {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
                     </strong>
-                    <span>{meeting.locationName || '장소명 미입력'}</span>
+                    <span>{meeting.locationDetail || '상세 위치 미입력'}</span>
                   </div>
 
                   <div className="admin-group-edit-sheet__meeting-meta-actions">
@@ -815,14 +815,50 @@ function EditGroupSheet({
                 <div className="admin-group-edit-sheet__rowline">
                   <span className="admin-group-edit-sheet__rowlabel">이메일</span>
                   <div className="admin-group-edit-sheet__rowcontrol">
-                    <input disabled value={contactEmailMock} />
+                    <input
+                      placeholder="example@email.com"
+                      value={contactForm.email}
+                      onChange={(event) => updateContactField('email', event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-group-edit-sheet__rowline">
+                  <label className="admin-group-edit-sheet__rowlabel" htmlFor="contact-modal-mailing-recipient">
+                    수령인
+                  </label>
+                  <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
+                    <input
+                      id="contact-modal-mailing-recipient"
+                    value={contactForm.postalRecipient}
+                    onChange={(event) => updateContactField('postalRecipient', event.target.value)}
+                    />
                   </div>
                 </div>
 
                 <div className="admin-group-edit-sheet__rowline">
                   <span className="admin-group-edit-sheet__rowlabel">우편수신주소</span>
                   <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-                    <input disabled value={contactMailingAddressMock} />
+                    <div className="field-grid">
+                      <AddressSearchField
+                        addressLabel="도로명 주소"
+                        addressValue={contactForm.postalRoadAddress}
+                        onAddressChange={(value) => updateContactField('postalRoadAddress', value)}
+                        onAddressSelected={({ postalCode, address }) => {
+                          updateContactField('postalCode', postalCode)
+                          updateContactField('postalRoadAddress', address)
+                        }}
+                        postalCodeValue={contactForm.postalCode}
+                        onPostalCodeChange={(value) => updateContactField('postalCode', value)}
+                      />
+
+                      <Field label="상세 주소">
+                        <input
+                          value={contactForm.postalDetailAddress}
+                          onChange={(event) => updateContactField('postalDetailAddress', event.target.value)}
+                        />
+                      </Field>
+                    </div>
                   </div>
                 </div>
 
@@ -910,52 +946,25 @@ function EditGroupSheet({
                   </Field>
                 </div>
 
-                <div className="admin-group-wizard__grid">
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--wide"
-                    label="장소명"
-                    error={readFieldError(meetingErrors, 'locationName')}
-                  >
-                    <input
-                      value={meetingForm.locationName}
-                      onChange={(event) => updateMeetingField('locationName', event.target.value)}
-                    />
-                  </Field>
+                <AddressSearchField
+                  addressError={readFieldError(meetingErrors, 'locationAddress')}
+                  addressLabel="주소"
+                  addressValue={meetingForm.locationAddress}
+                  onAddressChange={(value) => updateMeetingField('locationAddress', value)}
+                  onAddressSelected={({ address }) => updateMeetingField('locationAddress', address)}
+                />
 
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--compact"
-                    label="지역"
-                    error={readFieldError(meetingErrors, 'province')}
-                  >
-                    <select
-                      value={meetingForm.province}
-                      onChange={(event) => updateMeetingField('province', event.target.value)}
-                    >
-                      {PROVINCE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                </div>
-
-                <div className="admin-group-wizard__address-row">
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--wide"
-                    label="주소"
-                    error={readFieldError(meetingErrors, 'locationAddress')}
-                  >
-                    <input
-                      value={meetingForm.locationAddress}
-                      onChange={(event) => updateMeetingField('locationAddress', event.target.value)}
-                    />
-                  </Field>
-
-                  <button className="ghost-button ghost-button--small" type="button">
-                    주소 검색
-                  </button>
-                </div>
+                <Field
+                  className="admin-group-wizard__field admin-group-wizard__field--wide"
+                  label="상세 위치"
+                  error={readFieldError(meetingErrors, 'locationDetail')}
+                >
+                  <input
+                    placeholder="예: 교육관 3층, 정문 옆"
+                    value={meetingForm.locationDetail}
+                    onChange={(event) => updateMeetingField('locationDetail', event.target.value)}
+                  />
+                </Field>
 
                 <div className="admin-group-wizard__actions">
                   <button className="primary-button" type="submit">
@@ -1041,52 +1050,25 @@ function EditGroupSheet({
                   </Field>
                 </div>
 
-                <div className="admin-group-wizard__grid">
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--wide"
-                    label="장소명"
-                    error={readFieldError(meetingErrors, 'locationName')}
-                  >
-                    <input
-                      value={meetingForm.locationName}
-                      onChange={(event) => updateMeetingField('locationName', event.target.value)}
-                    />
-                  </Field>
+                <AddressSearchField
+                  addressError={readFieldError(meetingErrors, 'locationAddress')}
+                  addressLabel="주소"
+                  addressValue={meetingForm.locationAddress}
+                  onAddressChange={(value) => updateMeetingField('locationAddress', value)}
+                  onAddressSelected={({ address }) => updateMeetingField('locationAddress', address)}
+                />
 
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--compact"
-                    label="지역"
-                    error={readFieldError(meetingErrors, 'province')}
-                  >
-                    <select
-                      value={meetingForm.province}
-                      onChange={(event) => updateMeetingField('province', event.target.value)}
-                    >
-                      {PROVINCE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                </div>
-
-                <div className="admin-group-wizard__address-row">
-                  <Field
-                    className="admin-group-wizard__field admin-group-wizard__field--wide"
-                    label="주소"
-                    error={readFieldError(meetingErrors, 'locationAddress')}
-                  >
-                    <input
-                      value={meetingForm.locationAddress}
-                      onChange={(event) => updateMeetingField('locationAddress', event.target.value)}
-                    />
-                  </Field>
-
-                  <button className="ghost-button ghost-button--small" type="button">
-                    주소 검색
-                  </button>
-                </div>
+                <Field
+                  className="admin-group-wizard__field admin-group-wizard__field--wide"
+                  label="상세 위치"
+                  error={readFieldError(meetingErrors, 'locationDetail')}
+                >
+                  <input
+                    placeholder="예: 본관 B1, 건물 뒤편"
+                    value={meetingForm.locationDetail}
+                    onChange={(event) => updateMeetingField('locationDetail', event.target.value)}
+                  />
+                </Field>
 
                 <MeetingActiveToggle
                   active={meetingForm.active}
@@ -1221,7 +1203,7 @@ function EditGroupSheet({
 
   async function handleDeleteMeeting(meeting) {
     const meetingLabel = `${lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} ${meeting.startTime}`
-    const locationLabel = meeting.locationName || '장소명 미입력'
+    const locationLabel = meeting.locationDetail || '상세 위치 미입력'
     const confirmed = window.confirm(`"${meetingLabel} · ${locationLabel}" 모임을 삭제하시겠습니까?`)
 
     if (!confirmed) {
@@ -1309,9 +1291,9 @@ function CreateGroupWizard({
   onNext,
   onPrevious,
   onSubmit,
-  onToggleMailingInfo,
+  onTogglePostalContactInfo,
 }) {
-  const addressPreviewTitle = createForm.locationName || '지도 연동 예정'
+  const addressPreviewTitle = createForm.locationDetail || '지도 연동 예정'
   const addressPreviewText = createForm.locationAddress || '주소 검색 API 연결 후 이 영역에 지도가 표시됩니다.'
 
   return (
@@ -1377,51 +1359,43 @@ function CreateGroupWizard({
             <div className="admin-group-wizard__section-head">
               <div>
                 <strong>우편물 수령 정보</strong>
-                <p>백엔드 연결 전까지는 화면 목업용으로만 유지됩니다.</p>
+                <p>GSO 우편물을 실제로 받는 경우에만 입력해 주세요.</p>
               </div>
 
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
-                onClick={onToggleMailingInfo}
+                onClick={onTogglePostalContactInfo}
               >
-                {createForm.mailingInfoExpanded ? '접기' : '입력'}
+                {createForm.postalContactExpanded ? '접기' : '입력'}
               </button>
             </div>
 
-            {createForm.mailingInfoExpanded ? (
+            {createForm.postalContactExpanded ? (
               <div className="admin-group-wizard__grid">
                 <Field label="수령인">
                   <input
-                    value={createForm.mailingRecipient}
-                    onChange={(event) => onFieldChange('mailingRecipient', event.target.value)}
+                    value={createForm.postalRecipient}
+                    onChange={(event) => onFieldChange('postalRecipient', event.target.value)}
                   />
                 </Field>
 
-                <div className="admin-group-wizard__postcode">
-                  <Field label="우편번호">
-                    <input
-                      value={createForm.mailingPostalCode}
-                      onChange={(event) => onFieldChange('mailingPostalCode', event.target.value)}
-                    />
-                  </Field>
-
-                  <button className="ghost-button ghost-button--small" type="button">
-                    주소 검색
-                  </button>
-                </div>
-
-                <Field className="admin-group-wizard__field admin-group-wizard__field--wide" label="도로명 주소">
-                  <input
-                    value={createForm.mailingRoadAddress}
-                    onChange={(event) => onFieldChange('mailingRoadAddress', event.target.value)}
-                  />
-                </Field>
+                <AddressSearchField
+                  addressLabel="도로명 주소"
+                  addressValue={createForm.postalRoadAddress}
+                  onAddressChange={(value) => onFieldChange('postalRoadAddress', value)}
+                  onAddressSelected={({ postalCode, address }) => {
+                    onFieldChange('postalCode', postalCode)
+                    onFieldChange('postalRoadAddress', address)
+                  }}
+                  postalCodeValue={createForm.postalCode}
+                  onPostalCodeChange={(value) => onFieldChange('postalCode', value)}
+                />
 
                 <Field className="admin-group-wizard__field admin-group-wizard__field--wide" label="상세 주소">
                   <input
-                    value={createForm.mailingAddressDetails}
-                    onChange={(event) => onFieldChange('mailingAddressDetails', event.target.value)}
+                    value={createForm.postalDetailAddress}
+                    onChange={(event) => onFieldChange('postalDetailAddress', event.target.value)}
                   />
                 </Field>
               </div>
@@ -1483,52 +1457,25 @@ function CreateGroupWizard({
             </Field>
           </div>
 
-          <div className="admin-group-wizard__address-row">
-            <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
-              label="주소"
-              error={readFieldError(createErrors, 'locationAddress')}
-            >
-              <input
-                value={createForm.locationAddress}
-                onChange={(event) => onFieldChange('locationAddress', event.target.value)}
-              />
-            </Field>
+          <AddressSearchField
+            addressError={readFieldError(createErrors, 'locationAddress')}
+            addressLabel="주소"
+            addressValue={createForm.locationAddress}
+            onAddressChange={(value) => onFieldChange('locationAddress', value)}
+            onAddressSelected={({ address }) => onFieldChange('locationAddress', address)}
+          />
 
-            <button className="ghost-button ghost-button--small" type="button">
-              주소 검색
-            </button>
-          </div>
-
-          <div className="admin-group-wizard__grid">
-            <Field
-              className="admin-group-wizard__field admin-group-wizard__field--compact"
-              label="지역"
-              error={readFieldError(createErrors, 'province')}
-            >
-              <select
-                value={createForm.province}
-                onChange={(event) => onFieldChange('province', event.target.value)}
-              >
-                {PROVINCE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
-              label="장소명"
-              error={readFieldError(createErrors, 'locationName')}
-            >
-              <input
-                value={createForm.locationName}
-                onChange={(event) => onFieldChange('locationName', event.target.value)}
-              />
-            </Field>
-          </div>
+          <Field
+            className="admin-group-wizard__field admin-group-wizard__field--wide"
+            label="상세 위치"
+            error={readFieldError(createErrors, 'locationDetail')}
+          >
+            <input
+              placeholder="예: 본당 지하 1층, 정문 왼편"
+              value={createForm.locationDetail}
+              onChange={(event) => onFieldChange('locationDetail', event.target.value)}
+            />
+          </Field>
 
           <div className="admin-group-wizard__map-mock">
             <span className="admin-group-wizard__map-pin" aria-hidden="true" />
@@ -1542,7 +1489,7 @@ function CreateGroupWizard({
             <strong>
               {lookupLabel(DAY_OF_WEEK_OPTIONS, createForm.dayOfWeek)} {createForm.startTime} · {lookupLabel(MEETING_TYPE_OPTIONS, createForm.type)}
             </strong>
-            <span>{createForm.locationName || '장소명을 입력해 주세요.'}</span>
+            <span>{createForm.locationDetail || '상세 위치를 입력해 주세요.'}</span>
           </div>
 
           <div className="admin-group-wizard__actions admin-group-wizard__actions--split">
@@ -1591,18 +1538,35 @@ function createEmptyCreateForm() {
     phone: '',
     email: '',
     districtId: '',
-    mailingAddressDetails: '',
-    mailingInfoExpanded: false,
-    mailingPostalCode: '',
-    mailingRecipient: '',
-    mailingRoadAddress: '',
+    postalDetailAddress: '',
+    postalContactExpanded: false,
+    postalCode: '',
+    postalRecipient: '',
+    postalRoadAddress: '',
     name: '',
-    province: PROVINCE_OPTIONS[0]?.value ?? 'seoul',
     locationAddress: '',
-    locationName: '',
+    locationDetail: '',
     dayOfWeek: DAY_OF_WEEK_OPTIONS[0]?.value ?? 'MONDAY',
     startTime: '19:00',
     type: MEETING_TYPE_OPTIONS[0]?.value ?? 'OPEN',
+  }
+}
+
+function toPostalContactPayload(form) {
+  if (
+    !form.postalRecipient &&
+    !form.postalCode &&
+    !form.postalRoadAddress &&
+    !form.postalDetailAddress
+  ) {
+    return null
+  }
+
+  return {
+    recipient: form.postalRecipient,
+    postalCode: form.postalCode,
+    roadAddress: form.postalRoadAddress,
+    detailAddress: form.postalDetailAddress,
   }
 }
 
@@ -1642,17 +1606,6 @@ function MeetingActiveToggle({ active, onToggle }) {
       </button>
     </div>
   )
-}
-
-function mergeById(items, savedItem) {
-  const existingIndex = items.findIndex((item) => item.id === savedItem.id)
-  if (existingIndex === -1) {
-    return [...items, savedItem]
-  }
-
-  const nextItems = [...items]
-  nextItems[existingIndex] = savedItem
-  return nextItems
 }
 
 function districtNameFor(districtId, districts) {

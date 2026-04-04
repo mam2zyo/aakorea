@@ -5,38 +5,19 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-import java.util.Set;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.group.domain.MeetingType;
+import org.aakorea.main.shared.Province;
 import org.springframework.web.server.ResponseStatusException;
 
 final class MeetingFieldSupport {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    private static final Set<String> SUPPORTED_PROVINCES = Set.of(
-            "seoul",
-            "busan",
-            "daegu",
-            "incheon",
-            "gwangju",
-            "daejeon",
-            "ulsan",
-            "sejong",
-            "gyeonggi",
-            "gangwon",
-            "chungbuk",
-            "chungnam",
-            "jeonbuk",
-            "jeonnam",
-            "gyeongbuk",
-            "gyeongnam",
-            "jeju");
-
     private MeetingFieldSupport() {
     }
 
-    static String requireProvince(String province) {
+    static Province requireProvince(String province) {
         if (province == null || province.isBlank()) {
             throw badRequest("province", "province is required");
         }
@@ -44,7 +25,7 @@ final class MeetingFieldSupport {
         return normalizeProvince(province);
     }
 
-    static String optionalProvince(String province) {
+    static Province optionalProvince(String province) {
         if (province == null) {
             return null;
         }
@@ -113,35 +94,83 @@ final class MeetingFieldSupport {
         return normalized.isEmpty() ? null : normalized;
     }
 
+    static Province resolveProvince(String locationAddress) {
+        String normalizedAddress = requireText(locationAddress, "locationAddress");
+
+        try {
+            return Province.fromAddress(normalizedAddress);
+        } catch (IllegalArgumentException exception) {
+            throw badRequest("locationAddress", "locationAddress cannot determine province");
+        }
+    }
+
+    static Double optionalLatitude(Double latitude) {
+        if (latitude == null) {
+            return null;
+        }
+
+        if (latitude < -90.0 || latitude > 90.0) {
+            throw badRequest("latitude", "latitude is invalid");
+        }
+
+        return latitude;
+    }
+
+    static Double optionalLongitude(Double longitude) {
+        if (longitude == null) {
+            return null;
+        }
+
+        if (longitude < -180.0 || longitude > 180.0) {
+            throw badRequest("longitude", "longitude is invalid");
+        }
+
+        return longitude;
+    }
+
     static String formatTime(LocalTime startTime) {
         return TIME_FORMATTER.format(startTime);
     }
 
-    static void validateLocation(String locationName, String locationAddress) {
-        boolean hasLocationName = locationName != null;
+    static void validateLocation(String locationDetail, String locationAddress) {
+        boolean hasLocationDetail = locationDetail != null;
         boolean hasLocationAddress = locationAddress != null;
 
-        if (hasLocationName && hasLocationAddress) {
+        if (hasLocationDetail && hasLocationAddress) {
             return;
         }
 
-        if (hasLocationName) {
-            throw badRequest("locationAddress", "locationAddress is required when locationName is provided");
+        if (hasLocationDetail) {
+            throw badRequest("locationAddress", "locationAddress is required when locationDetail is provided");
         }
 
         if (hasLocationAddress) {
-            throw badRequest("locationName", "locationName is required when locationAddress is provided");
+            throw badRequest("locationDetail", "locationDetail is required when locationAddress is provided");
         }
 
-        throw badRequest("locationName", "locationName is required");
+        throw badRequest("locationDetail", "locationDetail is required");
     }
 
-    private static String normalizeProvince(String province) {
-        String normalized = province.trim().toLowerCase(Locale.ROOT);
-        if (!SUPPORTED_PROVINCES.contains(normalized)) {
+    static void validateCoordinates(Double latitude, Double longitude) {
+        if (latitude == null && longitude == null) {
+            return;
+        }
+
+        if (latitude == null) {
+            throw badRequest("latitude", "latitude is required when longitude is provided");
+        }
+
+        if (longitude == null) {
+            throw badRequest("longitude", "longitude is required when latitude is provided");
+        }
+    }
+
+    private static Province normalizeProvince(String province) {
+        try {
+            return Province.fromCode(province);
+        } catch (IllegalArgumentException exception) {
             throw badRequest("province", "province is invalid");
         }
-        return normalized;
     }
 
     private static ResponseStatusException badRequest(String fieldName, String reason) {

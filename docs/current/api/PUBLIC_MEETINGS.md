@@ -46,8 +46,10 @@
       "dayOfWeek": "MONDAY",
       "startTime": "19:30",
       "type": "OPEN",
-      "locationName": "강남역 인근",
-      "locationAddress": "서울특별시 강남구 테헤란로 123"
+      "locationDetail": "강남역 인근",
+      "locationAddress": "서울특별시 강남구 테헤란로 123",
+      "latitude": 37.4979,
+      "longitude": 127.0276
     }
   ]
 }
@@ -86,8 +88,10 @@
         "dayOfWeek": "MONDAY",
         "startTime": "19:30",
         "type": "OPEN",
-        "locationName": "강남역 인근",
-        "locationAddress": "서울특별시 강남구 테헤란로 123"
+        "locationDetail": "강남역 인근",
+        "locationAddress": "서울특별시 강남구 테헤란로 123",
+        "latitude": 37.4979,
+        "longitude": 127.0276
       }
     ]
   }
@@ -131,8 +135,10 @@
     "dayOfWeek": "MONDAY",
     "startTime": "19:30",
     "type": "OPEN",
-    "locationName": "강남역 인근",
+    "locationDetail": "강남역 인근",
     "locationAddress": "서울특별시 강남구 테헤란로 123",
+    "latitude": 37.4979,
+    "longitude": 127.0276,
     "groupMeetings": [
       {
         "id": 100,
@@ -140,8 +146,10 @@
         "dayOfWeek": "MONDAY",
         "startTime": "19:30",
         "type": "OPEN",
-        "locationName": "강남역 인근",
-        "locationAddress": "서울특별시 강남구 테헤란로 123"
+        "locationDetail": "강남역 인근",
+        "locationAddress": "서울특별시 강남구 테헤란로 123",
+        "latitude": 37.4979,
+        "longitude": 127.0276
       }
     ]
   }

@@ -80,7 +80,7 @@ class GroupAdminServiceTest {
     void createGroupContactThrowsWhenGroupDoesNotExist() {
         given(groupRepository.findById(13L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> groupAdminService.createGroupContact(13L, "02-1234-5678"))
+        assertThatThrownBy(() -> groupAdminService.createGroupContact(13L, "02-1234-5678", null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -97,7 +97,7 @@ class GroupAdminServiceTest {
         given(groupRepository.findById(13L)).willReturn(Optional.of(group));
         given(groupContactRepository.existsByGroup_Id(13L)).willReturn(true);
 
-        assertThatThrownBy(() -> groupAdminService.createGroupContact(13L, "02-1234-5678"))
+        assertThatThrownBy(() -> groupAdminService.createGroupContact(13L, "02-1234-5678", null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -110,15 +110,31 @@ class GroupAdminServiceTest {
     void updateGroupContactUpdatesPhone() {
         District district = new District("서울");
         Group group = new Group(district, "강남그룹");
-        GroupContact groupContact = new GroupContact(group, "02-1111-2222");
+        GroupContact groupContact = new GroupContact(group, "02-1111-2222", null, null);
 
         given(groupContactRepository.findById(5L)).willReturn(Optional.of(groupContact));
 
         GroupAdminService.GroupContactData result =
-                groupAdminService.updateGroupContact(5L, " 02-9876-5432 ");
+                groupAdminService.updateGroupContact(
+                        5L,
+                        " 02-9876-5432 ",
+                        " hello@example.com ",
+                        new GroupAdminService.PostalContactInput(
+                                " 담당자 ",
+                                " 12345 ",
+                                " 서울특별시 강남구 테헤란로 123 ",
+                                " 7층 "));
 
         assertThat(groupContact.getPhone()).isEqualTo("02-9876-5432");
+        assertThat(groupContact.getEmail()).isEqualTo("hello@example.com");
+        assertThat(groupContact.getPostalContact()).isNotNull();
+        assertThat(groupContact.getPostalContact().getRecipient()).isEqualTo("담당자");
+        assertThat(groupContact.getPostalContact().getPostalCode()).isEqualTo("12345");
+        assertThat(groupContact.getPostalContact().getRoadAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
+        assertThat(groupContact.getPostalContact().getDetailAddress()).isEqualTo("7층");
         assertThat(result.phone()).isEqualTo("02-9876-5432");
+        assertThat(result.email()).isEqualTo("hello@example.com");
+        assertThat(result.postalContact()).isNotNull();
     }
 
     @Test

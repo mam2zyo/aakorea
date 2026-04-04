@@ -25,6 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.aakorea.main.shared.Location;
+import org.aakorea.main.shared.Province;
 
 @ExtendWith(MockitoExtension.class)
 class PublicMeetingQueryServiceTest {
@@ -58,9 +60,12 @@ class PublicMeetingQueryServiceTest {
         Group group = new Group(district, "강남그룹");
         Meeting meeting = new Meeting(
                 group,
-                "seoul",
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276),
                 DayOfWeek.MONDAY,
                 LocalTime.of(19, 30),
                 MeetingType.OPEN,
@@ -81,8 +86,10 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.getFirst().groupName()).isEqualTo("강남그룹");
         assertThat(result.getFirst().startTime()).isEqualTo("19:30");
         assertThat(result.getFirst().type()).isEqualTo(MeetingType.OPEN);
-        assertThat(result.getFirst().locationName()).isEqualTo("강남역 인근");
+        assertThat(result.getFirst().locationDetail()).isEqualTo("강남역 인근");
         assertThat(result.getFirst().locationAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
+        assertThat(result.getFirst().latitude()).isEqualTo(37.4979);
+        assertThat(result.getFirst().longitude()).isEqualTo(127.0276);
     }
 
     @Test
@@ -92,14 +99,17 @@ class PublicMeetingQueryServiceTest {
         Group group = new Group(district, "강남그룹");
         Meeting meeting = new Meeting(
                 group,
-                "seoul",
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276),
                 DayOfWeek.MONDAY,
                 LocalTime.of(19, 30),
                 MeetingType.OPEN,
                 true);
-        GroupContact groupContact = new GroupContact(group, "02-1234-5678");
+        GroupContact groupContact = new GroupContact(group, "02-1234-5678", null, null);
 
         ReflectionTestUtils.setField(group, "id", 20L);
         ReflectionTestUtils.setField(meeting, "id", 100L);
@@ -115,7 +125,9 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.groupName()).isEqualTo("강남그룹");
         assertThat(result.contactPhone()).isEqualTo("02-1234-5678");
         assertThat(result.district().name()).isEqualTo("서울");
-        assertThat(result.locationName()).isEqualTo("강남역 인근");
+        assertThat(result.locationDetail()).isEqualTo("강남역 인근");
+        assertThat(result.latitude()).isEqualTo(37.4979);
+        assertThat(result.longitude()).isEqualTo(127.0276);
         assertThat(result.groupMeetings()).hasSize(1);
     }
 
@@ -126,14 +138,17 @@ class PublicMeetingQueryServiceTest {
         Group group = new Group(district, "강남그룹");
         Meeting meeting = new Meeting(
                 group,
-                "seoul",
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276),
                 DayOfWeek.MONDAY,
                 LocalTime.of(19, 30),
                 MeetingType.OPEN,
                 true);
-        GroupContact groupContact = new GroupContact(group, "02-1234-5678");
+        GroupContact groupContact = new GroupContact(group, "02-1234-5678", null, null);
 
         ReflectionTestUtils.setField(group, "id", 20L);
         ReflectionTestUtils.setField(meeting, "id", 100L);

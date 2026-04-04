@@ -205,13 +205,15 @@ application/json
 
 ```json
 "province": "seoul",
-"locationName": "강남역 인근",
-"locationAddress": "서울특별시 강남구 테헤란로 123"
+"locationDetail": "강남역 인근",
+"locationAddress": "서울특별시 강남구 테헤란로 123",
+"latitude": 37.4979,
+"longitude": 127.0276
 ```
 
 현재는 아래 항목을 위치 필드로 사용하지 않는다.
 
-- `Group.locationName`
+- `Group.locationDetail`
 - `Group.locationAddress`
 - `Meeting.meetingPlaceNote`
 

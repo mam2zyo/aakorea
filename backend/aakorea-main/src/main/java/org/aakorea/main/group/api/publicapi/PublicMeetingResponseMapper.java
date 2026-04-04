@@ -35,8 +35,10 @@ final class PublicMeetingResponseMapper {
                 meetingDetail.dayOfWeek(),
                 meetingDetail.startTime(),
                 meetingDetail.type(),
-                meetingDetail.locationName(),
+                meetingDetail.locationDetail(),
                 meetingDetail.locationAddress(),
+                meetingDetail.latitude(),
+                meetingDetail.longitude(),
                 toGroupMeetings(meetingDetail.groupMeetings()));
     }
 
@@ -58,8 +60,10 @@ final class PublicMeetingResponseMapper {
                 meetingSummary.dayOfWeek(),
                 meetingSummary.startTime(),
                 meetingSummary.type(),
-                meetingSummary.locationName(),
-                meetingSummary.locationAddress());
+                meetingSummary.locationDetail(),
+                meetingSummary.locationAddress(),
+                meetingSummary.latitude(),
+                meetingSummary.longitude());
     }
 
     private static PublicMeetingResponses.District toDistrict(DistrictData districtData) {
@@ -79,7 +83,9 @@ final class PublicMeetingResponseMapper {
                 groupMeeting.dayOfWeek(),
                 groupMeeting.startTime(),
                 groupMeeting.type(),
-                groupMeeting.locationName(),
-                groupMeeting.locationAddress());
+                groupMeeting.locationDetail(),
+                groupMeeting.locationAddress(),
+                groupMeeting.latitude(),
+                groupMeeting.longitude());
     }
 }

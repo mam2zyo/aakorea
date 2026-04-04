@@ -3,7 +3,6 @@ import { getApiFieldErrors, omitFieldErrors } from '../../../../lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-  PROVINCE_OPTIONS,
 } from '../../../../lib/options'
 import {
   adminDistrictApi,
@@ -19,12 +18,16 @@ const EMPTY_GROUP_FORM = {
 const EMPTY_CONTACT_FORM = {
   id: null,
   phone: '',
+  email: '',
+  postalRecipient: '',
+  postalCode: '',
+  postalRoadAddress: '',
+  postalDetailAddress: '',
 }
 
 const EMPTY_MEETING_FORM = {
   id: null,
-  province: PROVINCE_OPTIONS[0]?.value ?? 'seoul',
-  locationName: '',
+  locationDetail: '',
   locationAddress: '',
   dayOfWeek: DAY_OF_WEEK_OPTIONS[0]?.value ?? 'MONDAY',
   startTime: '19:00',
@@ -128,10 +131,14 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
       const savedContact = contactForm.id
         ? await adminGroupApi.updateGroupContact(contactForm.id, {
           phone: contactForm.phone,
+          email: contactForm.email,
+          postalContact: toPostalContactPayload(contactForm),
         })
         : await adminGroupApi.createGroupContact({
           groupId: numericGroupId,
           phone: contactForm.phone,
+          email: contactForm.email,
+          postalContact: toPostalContactPayload(contactForm),
         })
 
       setContactErrors({})
@@ -158,8 +165,7 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
     try {
       const payload = {
         groupId: numericGroupId,
-        province: meetingForm.province,
-        locationName: meetingForm.locationName,
+        locationDetail: meetingForm.locationDetail,
         locationAddress: meetingForm.locationAddress,
         dayOfWeek: meetingForm.dayOfWeek,
         startTime: meetingForm.startTime,
@@ -218,6 +224,11 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
     setContactForm({
       id: contact.id,
       phone: contact.phone,
+      email: contact.email ?? '',
+      postalRecipient: contact.postalContact?.recipient ?? '',
+      postalCode: contact.postalContact?.postalCode ?? '',
+      postalRoadAddress: contact.postalContact?.roadAddress ?? '',
+      postalDetailAddress: contact.postalContact?.detailAddress ?? '',
     })
     setContactErrors({})
   }
@@ -225,7 +236,7 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   function startNewMeeting() {
     const sourceMeeting = hasMeetingLocation(meetingForm)
       ? meetingForm
-      : meetings[0] ?? { province: meetingForm.province }
+      : meetings[0] ?? {}
 
     setMeetingForm(createMeetingFormDefaults(sourceMeeting))
     setMeetingErrors({})
@@ -234,8 +245,7 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   function startEditMeeting(meeting) {
     setMeetingForm({
       id: meeting.id,
-      province: meeting.province,
-      locationName: meeting.locationName ?? '',
+      locationDetail: meeting.locationDetail ?? '',
       locationAddress: meeting.locationAddress ?? '',
       dayOfWeek: meeting.dayOfWeek,
       startTime: meeting.startTime,
@@ -328,14 +338,18 @@ function toContactForm(contact) {
   return {
     id: contact.id,
     phone: contact.phone ?? '',
+    email: contact.email ?? '',
+    postalRecipient: contact.postalContact?.recipient ?? '',
+    postalCode: contact.postalContact?.postalCode ?? '',
+    postalRoadAddress: contact.postalContact?.roadAddress ?? '',
+    postalDetailAddress: contact.postalContact?.detailAddress ?? '',
   }
 }
 
 function toMeetingForm(meeting) {
   return {
     id: meeting.id,
-    province: meeting.province ?? EMPTY_MEETING_FORM.province,
-    locationName: meeting.locationName ?? '',
+    locationDetail: meeting.locationDetail ?? '',
     locationAddress: meeting.locationAddress ?? '',
     dayOfWeek: meeting.dayOfWeek ?? EMPTY_MEETING_FORM.dayOfWeek,
     startTime: meeting.startTime ?? EMPTY_MEETING_FORM.startTime,
@@ -347,14 +361,31 @@ function toMeetingForm(meeting) {
 function createMeetingFormDefaults(source = {}) {
   return {
     ...EMPTY_MEETING_FORM,
-    province: source.province ?? EMPTY_MEETING_FORM.province,
-    locationName: source.locationName ?? '',
+    locationDetail: source.locationDetail ?? '',
     locationAddress: source.locationAddress ?? '',
   }
 }
 
 function hasMeetingLocation(meeting) {
-  return Boolean(meeting.locationName || meeting.locationAddress)
+  return Boolean(meeting.locationDetail || meeting.locationAddress)
+}
+
+function toPostalContactPayload(form) {
+  if (
+    !form.postalRecipient &&
+    !form.postalCode &&
+    !form.postalRoadAddress &&
+    !form.postalDetailAddress
+  ) {
+    return null
+  }
+
+  return {
+    recipient: form.postalRecipient,
+    postalCode: form.postalCode,
+    roadAddress: form.postalRoadAddress,
+    detailAddress: form.postalDetailAddress,
+  }
 }
 
 function mergeById(items, savedItem) {

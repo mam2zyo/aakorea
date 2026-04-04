@@ -10,6 +10,7 @@ import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.shared.PostalContact;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,19 +77,36 @@ public class GroupAdminService {
     }
 
     @Transactional
-    public GroupContactData createGroupContact(Long groupId, String phone) {
+    public GroupContactData createGroupContact(
+            Long groupId,
+            String phone,
+            String email,
+            PostalContactInput postalContact
+    ) {
         Group group = getGroup(groupId);
         if (groupContactRepository.existsByGroup_Id(groupId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "group contact already exists");
         }
-        GroupContact groupContact = groupContactRepository.save(new GroupContact(group, requirePhone(phone)));
+        GroupContact groupContact = groupContactRepository.save(new GroupContact(
+                group,
+                requirePhone(phone),
+                optionalText(email),
+                toPostalContact(postalContact)));
         return toGroupContactData(groupContact);
     }
 
     @Transactional
-    public GroupContactData updateGroupContact(Long id, String phone) {
+    public GroupContactData updateGroupContact(
+            Long id,
+            String phone,
+            String email,
+            PostalContactInput postalContact
+    ) {
         GroupContact groupContact = getGroupContact(id);
-        groupContact.update(requirePhone(phone));
+        groupContact.update(
+                requirePhone(phone),
+                optionalText(email),
+                toPostalContact(postalContact));
         return toGroupContactData(groupContact);
     }
 
@@ -118,7 +136,9 @@ public class GroupAdminService {
         return new GroupContactData(
                 groupContact.getId(),
                 groupContact.getGroup().getId(),
-                groupContact.getPhone());
+                groupContact.getPhone(),
+                groupContact.getEmail(),
+                toPostalContactData(groupContact.getPostalContact()));
     }
 
     private String requirePhone(String value) {
@@ -129,6 +149,41 @@ public class GroupAdminService {
         return value.trim();
     }
 
+    private String optionalText(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String normalized = value.trim();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    private PostalContact toPostalContact(PostalContactInput postalContact) {
+        if (postalContact == null) {
+            return null;
+        }
+
+        PostalContact normalized = new PostalContact(
+                optionalText(postalContact.recipient()),
+                optionalText(postalContact.postalCode()),
+                optionalText(postalContact.roadAddress()),
+                optionalText(postalContact.detailAddress()));
+
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    private PostalContactData toPostalContactData(PostalContact postalContact) {
+        if (postalContact == null) {
+            return null;
+        }
+
+        return new PostalContactData(
+                postalContact.getRecipient(),
+                postalContact.getPostalCode(),
+                postalContact.getRoadAddress(),
+                postalContact.getDetailAddress());
+    }
+
     public record GroupData(
             Long id,
             Long districtId,
@@ -136,6 +191,28 @@ public class GroupAdminService {
     ) {
     }
 
-    public record GroupContactData(Long id, Long groupId, String phone) {
+    public record GroupContactData(
+            Long id,
+            Long groupId,
+            String phone,
+            String email,
+            PostalContactData postalContact
+    ) {
+    }
+
+    public record PostalContactInput(
+            String recipient,
+            String postalCode,
+            String roadAddress,
+            String detailAddress
+    ) {
+    }
+
+    public record PostalContactData(
+            String recipient,
+            String postalCode,
+            String roadAddress,
+            String detailAddress
+    ) {
     }
 }
