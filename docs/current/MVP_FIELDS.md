@@ -34,13 +34,13 @@
 - `id`
 - `districtId`
 - `name`
+- `notice`
 
 ### 현재 제외한 필드
 
 - `locationDetail`
 - `locationAddress`
 - `introduction`
-- `notice`
 - `changeSummary`
 
 ### 비고
@@ -117,7 +117,7 @@
 
 - 새 모임 추가의 기본 `active`는 `true`
 - 새 모임 추가에서는 상태 필드를 노출하지 않는다
-- 모임 수정에서만 `진행중 / 잠정 중단` 토글을 노출한다
+- 모임 수정에서만 `공개 중 / 비공개` 토글을 노출한다
 
 ### 현재 제외한 필드
 

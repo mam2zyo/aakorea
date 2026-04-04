@@ -10,9 +10,9 @@
 
 ## 현재 구조 요약
 
-- `Group`은 `id`, `districtId`, `name`만 가진다
+- `Group`은 `id`, `districtId`, `name`, `notice`를 가진다
 - 위치 정보는 `Meeting`이 가진다
-- `introduction`, `notice`, `changeSummary`는 현재 제외한다
+- `introduction`, `changeSummary`는 현재 제외한다
 - `GroupContact`는 현재 그룹당 1건만 허용한다
 - 그룹 삭제 시 연결된 연락처와 모임도 함께 삭제한다
 
@@ -34,7 +34,8 @@
     {
       "id": 20,
       "districtId": 1,
-      "name": "강남그룹"
+      "name": "강남그룹",
+      "notice": "첫 방문자는 10분 전에 와 주세요."
     }
   ]
 }
@@ -51,7 +52,8 @@
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹"
+  "name": "강남그룹",
+  "notice": "첫 방문자는 10분 전에 와 주세요."
 }
 ```
 
@@ -62,7 +64,8 @@
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹"
+    "name": "강남그룹",
+    "notice": "첫 방문자는 10분 전에 와 주세요."
   }
 }
 ```
@@ -71,6 +74,7 @@
 
 - `districtId` 필수
 - `name` 필수
+- `notice` 선택, 공백은 `null`로 정규화, 최대 200자
 - 대상 `District`가 존재해야 한다
 
 ---
@@ -84,7 +88,8 @@
 ```json
 {
   "districtId": 1,
-  "name": "강남그룹"
+  "name": "강남그룹",
+  "notice": "첫 방문자는 10분 전에 와 주세요."
 }
 ```
 
@@ -95,7 +100,8 @@
   "data": {
     "id": 20,
     "districtId": 1,
-    "name": "강남그룹"
+    "name": "강남그룹",
+    "notice": "첫 방문자는 10분 전에 와 주세요."
   }
 }
 ```

@@ -1,64 +1,65 @@
 const ADMIN_NAV_GROUPS = [
   [
     {
-      label: '그룹 관리',
-      href: '/admin/groups',
-      match: (path) => path === '/admin/groups' || path.startsWith('/admin/groups/'),
+      label: "그룹 관리",
+      href: "/admin/groups",
+      match: (path) =>
+        path === "/admin/groups" || path.startsWith("/admin/groups/"),
     },
     {
-      label: '지역연합 관리',
-      href: '/admin/districts',
-      match: (path) => path === '/admin/districts',
+      label: "지역연합 관리",
+      href: "/admin/districts",
+      match: (path) => path === "/admin/districts",
     },
     {
-      label: '온라인 모임 관리',
-      status: '준비 중',
+      label: "온라인 모임 관리",
+      status: "준비 중",
     },
     {
-      label: '제12단계 운동 관리',
-      status: '준비 중',
+      label: "제12단계 운동 관리",
+      status: "준비 중",
     },
   ],
   [
     {
-      label: '공지 관리',
-      href: '/admin/notices',
-      match: (path) => path === '/admin/notices',
+      label: "공지 관리",
+      href: "/admin/notices",
+      match: (path) => path === "/admin/notices",
     },
     {
-      label: '안내 페이지',
-      href: '/admin/content-pages',
-      match: (path) => path === '/admin/content-pages',
+      label: "안내 페이지",
+      href: "/admin/content-pages",
+      match: (path) => path === "/admin/content-pages",
     },
   ],
   [
     {
-      label: '운영 현황',
-      href: '/admin/overview',
-      match: (path) => path === '/admin/overview',
+      label: "운영 현황",
+      href: "/admin/overview",
+      match: (path) => path === "/admin/overview",
     },
   ],
-]
+];
 
 const ADMIN_UTILITY_ITEM = {
-  label: '계정 설정',
-  href: '/admin/account',
-  match: (path) => path === '/admin/account',
-}
+  label: "계정 설정",
+  href: "/admin/account",
+  match: (path) => path === "/admin/account",
+};
 
 function AdminNavLink({ active, children, href, onNavigate }) {
   return (
     <a
-      className={`admin-nav-link${active ? ' admin-nav-link--active' : ''}`}
+      className={`admin-nav-link${active ? " admin-nav-link--active" : ""}`}
       href={href}
       onClick={(event) => {
-        event.preventDefault()
-        onNavigate(href)
+        event.preventDefault();
+        onNavigate(href);
       }}
     >
       {children}
     </a>
-  )
+  );
 }
 
 export function AdminLayout({
@@ -76,7 +77,7 @@ export function AdminLayout({
           <button
             className="brand-button"
             type="button"
-            onClick={() => onNavigate('/admin/groups')}
+            onClick={() => onNavigate("/admin/groups")}
           >
             AAKorea Admin
           </button>
@@ -86,10 +87,15 @@ export function AdminLayout({
           {session.authenticated ? (
             <>
               {ADMIN_NAV_GROUPS.map((group, index) => (
-                <div key={group.map((item) => item.label).join('-')} className="admin-nav-group">
-                  {index > 0 ? <div className="admin-nav-divider" aria-hidden="true" /> : null}
+                <div
+                  key={group.map((item) => item.label).join("-")}
+                  className="admin-nav-group"
+                >
+                  {index > 0 ? (
+                    <div className="admin-nav-divider" aria-hidden="true" />
+                  ) : null}
                   <div className="admin-nav-list">
-                    {group.map((item) => (
+                    {group.map((item) =>
                       item.href ? (
                         <AdminNavLink
                           key={item.href}
@@ -100,14 +106,21 @@ export function AdminLayout({
                           {item.label}
                         </AdminNavLink>
                       ) : (
-                        <span key={item.label} className="admin-nav-link admin-nav-link--disabled">
-                          <span className="admin-nav-link__label">{item.label}</span>
+                        <span
+                          key={item.label}
+                          className="admin-nav-link admin-nav-link--disabled"
+                        >
+                          <span className="admin-nav-link__label">
+                            {item.label}
+                          </span>
                           {item.status ? (
-                            <span className="admin-nav-link__status">{item.status}</span>
+                            <span className="admin-nav-link__status">
+                              {item.status}
+                            </span>
                           ) : null}
                         </span>
-                      )
-                    ))}
+                      ),
+                    )}
                   </div>
                 </div>
               ))}
@@ -126,7 +139,7 @@ export function AdminLayout({
         <div className="admin-sidebar__utility">
           <div className="admin-nav-divider" aria-hidden="true" />
           <span className="shell-badge">
-            {session.authenticated ? session.username : '비인증'}
+            {session.authenticated ? session.username : "비인증"}
           </span>
           {session.authenticated ? (
             <AdminNavLink
@@ -144,7 +157,7 @@ export function AdminLayout({
         <header className="admin-main__bar">
           <div className="admin-main__heading">
             <p className="eyebrow">AAKorea Admin</p>
-            <h1>운영 관리자 페이지</h1>
+            <h1>관리자 페이지</h1>
           </div>
 
           {session.authenticated ? (
@@ -152,7 +165,7 @@ export function AdminLayout({
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
-                onClick={() => void onLogout('/admin/login')}
+                onClick={() => void onLogout("/admin/login")}
               >
                 로그아웃
               </button>
@@ -171,5 +184,5 @@ export function AdminLayout({
         </div>
       </div>
     </div>
-  )
+  );
 }

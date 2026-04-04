@@ -31,13 +31,26 @@ public class Group {
     @Column(nullable = false)
     private String name;
 
+    @Column(length = 200)
+    private String notice;
+
     public Group(District district, String name) {
+        this(district, name, null);
+    }
+
+    public Group(District district, String name, String notice) {
         this.district = district;
         this.name = name;
+        this.notice = notice;
     }
 
     public void update(District district, String name) {
+        update(district, name, this.notice);
+    }
+
+    public void update(District district, String name, String notice) {
         this.district = district;
         this.name = name;
+        this.notice = notice;
     }
 }

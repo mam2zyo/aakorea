@@ -84,6 +84,7 @@ public class PublicMeetingQueryService {
                 group.getName(),
                 toDistrictData(group),
                 findContactPhone(group.getId()),
+                group.getNotice(),
                 activeMeetings);
     }
 
@@ -173,6 +174,7 @@ public class PublicMeetingQueryService {
             String name,
             DistrictData district,
             String contactPhone,
+            String notice,
             List<GroupMeetingData> meetings
     ) {
     }

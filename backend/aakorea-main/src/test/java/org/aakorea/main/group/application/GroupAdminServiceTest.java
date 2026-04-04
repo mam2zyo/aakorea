@@ -44,7 +44,7 @@ class GroupAdminServiceTest {
     void createGroupThrowsWhenDistrictDoesNotExist() {
         given(districtRepository.findById(99L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> groupAdminService.createGroup(99L, "강남그룹"))
+        assertThatThrownBy(() -> groupAdminService.createGroup(99L, "강남그룹", null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -54,7 +54,7 @@ class GroupAdminServiceTest {
     }
 
     @Test
-    void updateGroupChangesDistrictAndName() {
+    void updateGroupChangesDistrictNameAndNotice() {
         District oldDistrict = new District("서울");
         District newDistrict = new District("부산");
         Group group = new Group(oldDistrict, "기존그룹");
@@ -68,12 +68,38 @@ class GroupAdminServiceTest {
         GroupAdminService.GroupData result = groupAdminService.updateGroup(
                 7L,
                 2L,
-                "  새그룹  ");
+                "  새그룹  ",
+                "  첫 방문자는 10분 전에 와 주세요.  ");
 
         assertThat(group.getDistrict()).isEqualTo(newDistrict);
         assertThat(group.getName()).isEqualTo("새그룹");
+        assertThat(group.getNotice()).isEqualTo("첫 방문자는 10분 전에 와 주세요.");
         assertThat(result.districtId()).isEqualTo(newDistrict.getId());
         assertThat(result.name()).isEqualTo("새그룹");
+        assertThat(result.notice()).isEqualTo("첫 방문자는 10분 전에 와 주세요.");
+    }
+
+    @Test
+    void updateGroupThrowsWhenNoticeExceedsMaxLength() {
+        District district = new District("서울");
+        Group group = new Group(district, "기존그룹");
+        ReflectionTestUtils.setField(group, "id", 7L);
+        ReflectionTestUtils.setField(district, "id", 1L);
+
+        given(groupRepository.findById(7L)).willReturn(Optional.of(group));
+        given(districtRepository.findById(1L)).willReturn(Optional.of(district));
+
+        assertThatThrownBy(() -> groupAdminService.updateGroup(
+                7L,
+                1L,
+                "새그룹",
+                "a".repeat(201)))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+                    assertThat(responseStatusException.getReason()).isEqualTo("notice must be at most 200 characters");
+                });
     }
 
     @Test

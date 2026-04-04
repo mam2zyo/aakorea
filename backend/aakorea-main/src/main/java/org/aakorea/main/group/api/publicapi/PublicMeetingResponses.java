@@ -53,6 +53,7 @@ public final class PublicMeetingResponses {
             String name,
             District district,
             String contactPhone,
+            String notice,
             List<GroupMeeting> meetings
     ) {
     }

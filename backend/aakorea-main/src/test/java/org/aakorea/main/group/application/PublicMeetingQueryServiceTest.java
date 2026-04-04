@@ -57,7 +57,7 @@ class PublicMeetingQueryServiceTest {
     @Test
     void getMeetingsMapsPublicSummaryResponse() {
         District district = new District("서울");
-        Group group = new Group(district, "강남그룹");
+        Group group = new Group(district, "강남그룹", "첫 방문자는 10분 전에 와 주세요.");
         Meeting meeting = new Meeting(
                 group,
                 new Location(
@@ -96,7 +96,7 @@ class PublicMeetingQueryServiceTest {
     void getMeetingReturnsRepresentativeContact() {
         District district = new District("서울");
         ReflectionTestUtils.setField(district, "id", 1L);
-        Group group = new Group(district, "강남그룹");
+        Group group = new Group(district, "강남그룹", "첫 방문자는 10분 전에 와 주세요.");
         Meeting meeting = new Meeting(
                 group,
                 new Location(
@@ -135,7 +135,7 @@ class PublicMeetingQueryServiceTest {
     void getGroupReturnsGroupDetailsForActiveMeetings() {
         District district = new District("서울");
         ReflectionTestUtils.setField(district, "id", 1L);
-        Group group = new Group(district, "강남그룹");
+        Group group = new Group(district, "강남그룹", "첫 방문자는 10분 전에 와 주세요.");
         Meeting meeting = new Meeting(
                 group,
                 new Location(
@@ -164,6 +164,7 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.name()).isEqualTo("강남그룹");
         assertThat(result.district().name()).isEqualTo("서울");
         assertThat(result.contactPhone()).isEqualTo("02-1234-5678");
+        assertThat(result.notice()).isEqualTo("첫 방문자는 10분 전에 와 주세요.");
         assertThat(result.meetings()).hasSize(1);
     }
 }

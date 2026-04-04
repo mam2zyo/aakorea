@@ -39,10 +39,14 @@ public class GroupAdminService {
     @Transactional
     public GroupData createGroup(
             Long districtId,
-            String name
+            String name,
+            String notice
     ) {
         District district = getDistrict(districtId);
-        Group group = groupRepository.save(new Group(district, GroupFieldSupport.requireName(name)));
+        Group group = groupRepository.save(new Group(
+                district,
+                GroupFieldSupport.requireName(name),
+                GroupFieldSupport.optionalNotice(notice)));
         return toGroupData(group);
     }
 
@@ -50,11 +54,15 @@ public class GroupAdminService {
     public GroupData updateGroup(
             Long id,
             Long districtId,
-            String name
+            String name,
+            String notice
     ) {
         Group group = getGroup(id);
         District district = getDistrict(districtId);
-        group.update(district, GroupFieldSupport.requireName(name));
+        group.update(
+                district,
+                GroupFieldSupport.requireName(name),
+                GroupFieldSupport.optionalNotice(notice));
         return toGroupData(group);
     }
 
@@ -129,7 +137,8 @@ public class GroupAdminService {
         return new GroupData(
                 group.getId(),
                 group.getDistrict().getId(),
-                group.getName());
+                group.getName(),
+                group.getNotice());
     }
 
     private GroupContactData toGroupContactData(GroupContact groupContact) {
@@ -187,7 +196,8 @@ public class GroupAdminService {
     public record GroupData(
             Long id,
             Long districtId,
-            String name
+            String name,
+            String notice
     ) {
     }
 

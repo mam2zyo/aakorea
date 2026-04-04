@@ -197,6 +197,7 @@ class MeetingApiTest {
                         "강남그룹",
                         new PublicMeetingQueryService.DistrictData(1L, "서울지역연합"),
                         "02-1234-5678",
+                        "첫 방문자는 10분 전에 와 주세요.",
                         List.of(new PublicMeetingQueryService.GroupMeetingData(
                                 100L,
                                 "seoul",
@@ -213,6 +214,7 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data.id").value(20))
                 .andExpect(jsonPath("$.data.name").value("강남그룹"))
                 .andExpect(jsonPath("$.data.district.name").value("서울지역연합"))
+                .andExpect(jsonPath("$.data.notice").value("첫 방문자는 10분 전에 와 주세요."))
                 .andExpect(jsonPath("$.data.meetings[0].locationDetail").value("강남역 인근"))
                 .andExpect(jsonPath("$.data.meetings[0].latitude").value(37.4979))
                 .andExpect(jsonPath("$.data.meetings[0].longitude").value(127.0276));

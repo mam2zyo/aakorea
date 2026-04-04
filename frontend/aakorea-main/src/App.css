@@ -2,5 +2,4 @@
 @import './shared/styles/forms.css';
 @import './features/home/styles.css';
 @import './features/groups/public/styles.css';
-@import './features/groups/admin/styles.css';
 @import './shared/styles/responsive.css';

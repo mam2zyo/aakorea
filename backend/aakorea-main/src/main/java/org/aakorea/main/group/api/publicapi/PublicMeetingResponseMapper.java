@@ -48,6 +48,7 @@ final class PublicMeetingResponseMapper {
                 groupDetail.name(),
                 toDistrict(groupDetail.district()),
                 groupDetail.contactPhone(),
+                groupDetail.notice(),
                 toGroupMeetings(groupDetail.meetings()));
     }
 

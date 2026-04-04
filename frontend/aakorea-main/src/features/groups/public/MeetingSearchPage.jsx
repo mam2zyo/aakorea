@@ -1,21 +1,16 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useEffect } from 'react'
 import {
-  EmptyState,
   Field,
   PageIntro,
   PageSection,
 } from '../../../components/ui'
 import {
-  DAY_OF_WEEK_OPTIONS,
-  MEETING_TYPE_OPTIONS,
   PROVINCE_OPTIONS,
   SEARCH_DAY_OF_WEEK_OPTIONS,
 } from '../../../lib/options'
-import { lookupLabel } from '../../../lib/view'
-import { ApiError } from '../../../shared/lib/request'
-import { publicMeetingApi } from '../api/public'
-
-const DEFAULT_PROVINCE = PROVINCE_OPTIONS[0]?.value ?? 'seoul'
+import { MeetingFocusDialog } from './components/MeetingFocusDialog'
+import { MeetingResultsSection } from './components/MeetingResultsSection'
+import { useMeetingSearch } from './hooks/useMeetingSearch'
 
 export function MeetingSearchPage({
   dayOfWeek,
@@ -25,107 +20,26 @@ export function MeetingSearchPage({
   onNavigate,
   province,
 }) {
-  const [filters, setFilters] = useState({
-    province: province || DEFAULT_PROVINCE,
-    dayOfWeek: dayOfWeek || '',
+  const {
+    closePath,
+    detailLoading,
+    filters,
+    groupDetails,
+    isDialogOpen,
+    loading,
+    meetings,
+    missingGroup,
+    selectedMeeting,
+    selectedSearchMeetingId,
+    setFilters,
+    loadMeetings,
+  } = useMeetingSearch({
+    dayOfWeek,
+    groupId,
+    meetingId,
+    onError,
+    province,
   })
-  const [meetings, setMeetings] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [groupDetails, setGroupDetails] = useState(null)
-  const [detailLoading, setDetailLoading] = useState(false)
-  const [missingGroup, setMissingGroup] = useState(false)
-
-  const activeGroupId = Number.isFinite(groupId) ? groupId : null
-  const isDialogOpen = activeGroupId !== null
-
-  useEffect(() => {
-    setFilters({
-      province: province || DEFAULT_PROVINCE,
-      dayOfWeek: dayOfWeek || '',
-    })
-  }, [dayOfWeek, province])
-
-  async function loadMeetings() {
-    setLoading(true)
-
-    try {
-      const summaries = await publicMeetingApi.getMeetings({
-        province: filters.province || DEFAULT_PROVINCE,
-        dayOfWeek: filters.dayOfWeek,
-      })
-
-      setMeetings(summaries)
-    } catch (error) {
-      setMeetings([])
-      onError(error, '공개 모임 목록을 불러오지 못했습니다.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadMeetingsEffect = useEffectEvent(() => {
-    void loadMeetings()
-  })
-
-  useEffect(() => {
-    loadMeetingsEffect()
-  }, [filters.dayOfWeek, filters.province])
-
-  async function loadGroupDetails(targetGroupId) {
-    if (!Number.isFinite(targetGroupId)) {
-      setGroupDetails(null)
-      setMissingGroup(false)
-      return
-    }
-
-    setDetailLoading(true)
-
-    try {
-      const detail = await publicMeetingApi.getGroup(targetGroupId)
-      setGroupDetails(detail)
-      setMissingGroup(false)
-    } catch (error) {
-      setGroupDetails(null)
-
-      if (error instanceof ApiError && error.status === 404) {
-        setMissingGroup(true)
-        return
-      }
-
-      onError(error, '선택한 Group 정보를 불러오지 못했습니다.')
-    } finally {
-      setDetailLoading(false)
-    }
-  }
-
-  const loadGroupDetailsEffect = useEffectEvent((targetGroupId) => {
-    void loadGroupDetails(targetGroupId)
-  })
-
-  useEffect(() => {
-    loadGroupDetailsEffect(activeGroupId)
-  }, [activeGroupId])
-
-  const selectedMeeting = useMemo(() => {
-    if (!groupDetails) {
-      return null
-    }
-
-    if (Number.isFinite(meetingId)) {
-      const focusedMeeting = groupDetails.meetings.find((meeting) => meeting.id === meetingId)
-      if (focusedMeeting) {
-        return focusedMeeting
-      }
-    }
-
-    return groupDetails.meetings[0] ?? null
-  }, [groupDetails, meetingId])
-
-  const closePath = useMemo(
-    () => buildMeetingsPath({ dayOfWeek: filters.dayOfWeek, province: filters.province }),
-    [filters.dayOfWeek, filters.province],
-  )
-  const selectedSearchMeetingId = selectedMeeting?.id ?? meetingId ?? null
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -230,196 +144,26 @@ export function MeetingSearchPage({
           </div>
         </form>
 
-        {loading ? <div className="section-note">모임 목록을 불러오는 중입니다...</div> : null}
-
-        <section className="meeting-search-results">
-          <div className="meeting-search-results__header">
-            <div className="meeting-search-results__copy">
-              <strong>모임 목록</strong>
-              <p>리스트에서 모임을 선택하면 장소와 그룹 안내가 모달로 열립니다.</p>
-            </div>
-            <span>{meetings.length}개</span>
-          </div>
-
-          {meetings.length === 0 ? (
-            <EmptyState
-              title="조건에 맞는 모임이 없습니다."
-              description="지역이나 요일 조건을 바꿔 다시 확인해 주세요."
-            />
-          ) : (
-            <div className="meeting-list">
-              {meetings.map((meeting) => (
-                <button
-                  key={meeting.id}
-                  className={`meeting-search-item${
-                    selectedSearchMeetingId === meeting.id ? ' meeting-search-item--active' : ''
-                  }`}
-                  type="button"
-                  onClick={() => onNavigate(buildMeetingsPath(filters, meeting.groupId, meeting.id))}
-                >
-                  <div className="meeting-search-item__body">
-                    <span className="meeting-search-item__group">{meeting.groupName}</span>
-                    <strong className="meeting-search-item__title">
-                      {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
-                      {' · '}
-                      {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
-                    </strong>
-                    <span className="meeting-search-item__meta">
-                      {meeting.locationDetail || '상세 위치 미정'}
-                    </span>
-                  </div>
-                  <span className="meeting-search-item__province">
-                    {lookupLabel(PROVINCE_OPTIONS, meeting.province)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
+        <MeetingResultsSection
+          filters={filters}
+          loading={loading}
+          meetings={meetings}
+          onNavigate={onNavigate}
+          selectedSearchMeetingId={selectedSearchMeetingId}
+        />
       </PageSection>
 
       {isDialogOpen ? (
-        <div
-          className="meeting-focus-overlay"
-          role="presentation"
-          onClick={() => onNavigate(closePath)}
-        >
-          <section
-            aria-labelledby="meeting-focus-title"
-            aria-modal="true"
-            className="meeting-focus-dialog"
-            role="dialog"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="meeting-focus-dialog__header">
-              <div className="meeting-focus-dialog__identity">
-                <h2 id="meeting-focus-title">{groupDetails?.name ?? '모임 안내'}</h2>
-                <p className="meeting-focus-dialog__district">
-                  {groupDetails?.district?.name || '지역연합 정보 없음'}
-                </p>
-              </div>
-
-              <button
-                aria-label="모달 닫기"
-                className="meeting-focus-dialog__close"
-                type="button"
-                onClick={() => onNavigate(closePath)}
-              >
-                ×
-              </button>
-            </header>
-
-            <div className="meeting-focus-dialog__body">
-              {detailLoading ? (
-                <div className="meeting-focus-state">Group 안내를 불러오는 중입니다...</div>
-              ) : null}
-
-              {missingGroup ? (
-                <EmptyState
-                  title="요청한 Group을 찾지 못했습니다."
-                  description="비공개 처리되었거나 더 이상 공개 중인 모임이 없을 수 있습니다."
-                />
-              ) : null}
-
-              {groupDetails && selectedMeeting ? (
-                <div className="meeting-focus-sheet">
-                  <section className="meeting-focus-section">
-                    <div className="meeting-focus-section__header">
-                      <strong>모임 리스트</strong>
-                      <span>{groupDetails.meetings.length}개</span>
-                    </div>
-
-                    <div className="meeting-focus-list">
-                      {groupDetails.meetings.map((meeting) => (
-                        <button
-                          key={meeting.id}
-                          className={`meeting-focus-list__item${
-                            selectedMeeting.id === meeting.id ? ' meeting-focus-list__item--selected' : ''
-                          }`}
-                          type="button"
-                          onClick={() => onNavigate(buildMeetingsPath(filters, groupDetails.id, meeting.id))}
-                        >
-                          <span className="meeting-focus-list__dot" aria-hidden="true" />
-                          <strong>
-                            {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
-                          </strong>
-                          <span>{lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-
-                  <section className="meeting-focus-section meeting-focus-section--location">
-                    <p className="meeting-focus-section__label">모임 장소</p>
-                    <div className="meeting-focus-location-summary">
-                      <strong className="meeting-focus-location-card__title">
-                        {selectedMeeting.locationDetail || '상세 위치 미정'}
-                      </strong>
-                      <p className="meeting-focus-location-card__address">
-                        {selectedMeeting.locationAddress || '공개 주소 없음'}
-                      </p>
-                    </div>
-                  </section>
-
-                  <section className="meeting-focus-section meeting-focus-section--map">
-                    <div className="meeting-focus-map">
-                      <div className="meeting-focus-map__pin" aria-hidden="true" />
-                      <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
-                        <strong className="meeting-focus-location-card__title">
-                          {selectedMeeting.locationDetail || '선택한 모임 위치'}
-                        </strong>
-                        <p className="meeting-focus-location-card__address">
-                          {selectedMeeting.locationAddress || '지도 API 연동 시 이 위치가 이 영역에 표시됩니다.'}
-                        </p>
-                      </div>
-                    </div>
-                  </section>
-                </div>
-              ) : null}
-            </div>
-
-            {groupDetails ? (
-              <footer className="meeting-focus-dialog__footer">
-                <div className="meeting-focus-contact">
-                  <p className="meeting-focus-section__label">연락처</p>
-                  <strong className="meeting-focus-contact__value">
-                    {groupDetails.contactPhone || '공개 연락처 없음'}
-                  </strong>
-                </div>
-
-                {groupDetails.contactPhone ? (
-                  <a className="primary-button meeting-focus-contact__action" href={`tel:${groupDetails.contactPhone}`}>
-                    전화 걸기
-                  </a>
-                ) : null}
-              </footer>
-            ) : null}
-          </section>
-        </div>
+        <MeetingFocusDialog
+          detailLoading={detailLoading}
+          filters={filters}
+          groupDetails={groupDetails}
+          missingGroup={missingGroup}
+          onClose={() => onNavigate(closePath)}
+          onNavigate={onNavigate}
+          selectedMeeting={selectedMeeting}
+        />
       ) : null}
     </>
   )
-}
-
-function buildMeetingsPath(filters, groupId = null, meetingId = null) {
-  const searchParams = new URLSearchParams()
-
-  if (filters.province) {
-    searchParams.set('province', filters.province)
-  }
-
-  if (filters.dayOfWeek) {
-    searchParams.set('dayOfWeek', filters.dayOfWeek)
-  }
-
-  if (Number.isFinite(groupId)) {
-    searchParams.set('groupId', String(groupId))
-  }
-
-  if (Number.isFinite(meetingId)) {
-    searchParams.set('meetingId', String(meetingId))
-  }
-
-  const query = searchParams.toString()
-  return query ? `/meetings?${query}` : '/meetings'
 }

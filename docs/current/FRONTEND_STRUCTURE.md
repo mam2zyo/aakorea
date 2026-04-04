@@ -46,10 +46,16 @@
 
 1. 그룹명
 2. 지역연합
-3. 모임 리스트
-4. 선택된 모임의 주소 / 장소명
+3. 그룹 공지
+4. 모임 정보
 5. 지도 자리(mock 또는 지도 영역)
-6. 연락처 / 전화 걸기
+6. 연락처 / 전화 걸기 footer
+
+`모임 정보` 안에서는 아래가 함께 움직인다.
+
+- 같은 그룹의 모임 리스트
+- 선택된 모임의 `locationDetail`
+- 선택된 모임의 `locationAddress`
 
 핵심은 **그룹 문맥 안에서, 선택된 모임에 따라 장소가 바뀌는 구조**다.
 
@@ -85,6 +91,13 @@
 
 최근 변경으로 그룹 관리는 **목록 중심 + 대형 모달** 구조로 정리되었다.
 
+현재 Group 관련 프론트는 아래처럼 나뉜다.
+
+- route wrapper: `pages/admin/GroupListPage.jsx`
+- 실제 feature page: `features/groups/admin/GroupManagementPage.jsx`
+- 편집 상태 훅: `features/groups/admin/hooks/useGroupEditor.js`
+- 생성/편집 UI: `features/groups/admin/components/*`
+
 ### 목록 화면
 
 메인 진입점은 `/admin/groups`다.
@@ -111,6 +124,7 @@
 
 - 그룹 이름
 - 지역연합
+- 그룹 공지
 - 연락처
 - 이메일
 - 우편수신 정보(접힘)
@@ -127,7 +141,7 @@
 
 ### 그룹 수정
 
-그룹 수정은 문서형 카드 모달로 바뀌었다.
+그룹 수정은 **읽기 중심 시트 + 섹션별 서브 모달** 구조다.
 
 메인 모달은 읽기 중심이다.
 
@@ -161,7 +175,7 @@
 4. 모임 상태 토글
 
 모임 상태는 체크박스가 아니라 토글 버튼으로 표현되며,
-오른쪽 텍스트로 `진행중 / 잠정 중단`을 표시한다.
+오른쪽 텍스트로 `공개 중 / 비공개`를 표시한다.
 
 ---
 
@@ -170,13 +184,16 @@
 현재 프론트는 예전의 “작업공간” 개념보다 아래 방향에 더 가깝다.
 
 - 공개: 목록 + 같은 페이지 모달
-- 관리자: 목록 + 읽기 중심 편집 모달 + 서브 모달
+- 관리자: 목록 + 읽기 중심 편집 시트 + 서브 모달
 
 이 구조의 장점:
 
 - 사용자가 항상 원래 목록 문맥을 잃지 않는다
 - 메인 편집 화면이 과한 폼처럼 보이지 않는다
 - 수정 범위가 섹션별로 분리돼 직관성이 좋아진다
+
+추가로 최근 리팩터링으로, Group/Meeting 관련 페이지는
+`pages`가 route 진입점만 담당하고 실제 구현은 `features/groups/*` 아래에 두는 방향으로 정리했다.
 
 ---
 
@@ -192,16 +209,40 @@
 ## 현재 주요 파일
 
 - [frontend/aakorea-main/src/pages/admin/GroupListPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/pages/admin/GroupListPage.jsx)
-  그룹 목록, 생성 모달, 편집 모달, 서브 모달
+  관리자 그룹 화면 route wrapper
+
+- [frontend/aakorea-main/src/features/groups/admin/GroupManagementPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/GroupManagementPage.jsx)
+  그룹 목록, 생성 모달 진입, 편집 시트 orchestration
+
+- [frontend/aakorea-main/src/features/groups/admin/hooks/useGroupEditor.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/hooks/useGroupEditor.js)
+  단일 그룹 편집용 상태/저장 로직
+
+- [frontend/aakorea-main/src/features/groups/admin/components/CreateGroupWizard.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/components/CreateGroupWizard.jsx)
+  2단계 그룹 생성 위저드
+
+- [frontend/aakorea-main/src/features/groups/admin/components/EditGroupSheet.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/components/EditGroupSheet.jsx)
+  읽기 중심 그룹 편집 시트와 섹션별 서브 모달 연결
+
+- [frontend/aakorea-main/src/pages/public/MeetingSearchPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/pages/public/MeetingSearchPage.jsx)
+  공개 모임 화면 route wrapper
 
 - [frontend/aakorea-main/src/features/groups/public/MeetingSearchPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/MeetingSearchPage.jsx)
-  공개 모임 검색과 상세 모달
+  공개 모임 검색 화면 orchestration
 
-- [frontend/aakorea-main/src/features/groups/admin/hooks/useGroupWorkspace.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/hooks/useGroupWorkspace.js)
-  그룹 편집용 상태/저장 로직
+- [frontend/aakorea-main/src/features/groups/public/hooks/useMeetingSearch.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/hooks/useMeetingSearch.js)
+  공개 모임 검색/상세 로드 상태
 
-- [frontend/aakorea-main/src/app/routeDefinitions.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/app/routeDefinitions.js)
-  공개/운영 라우트 파싱
+- [frontend/aakorea-main/src/features/groups/public/components/MeetingFocusDialog.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/components/MeetingFocusDialog.jsx)
+  공개 모달 상세 렌더링
+
+- [frontend/aakorea-main/src/features/groups/api/admin/index.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/api/admin/index.js)
+  admin group / contact / meeting API export entry
+
+- [frontend/aakorea-main/src/features/groups/api/public/index.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/api/public/index.js)
+  public group / meeting API export entry
 
 - [frontend/aakorea-main/src/layouts/AdminLayout.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/layouts/AdminLayout.jsx)
   관리자 사이드바와 운영 셸
+
+- [frontend/aakorea-main/src/app/routeDefinitions.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/app/routeDefinitions.js)
+  공개/운영 라우트 파싱

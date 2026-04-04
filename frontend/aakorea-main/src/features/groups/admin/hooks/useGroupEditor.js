@@ -5,14 +5,16 @@ import {
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
 import {
-  adminDistrictApi,
   adminGroupApi,
+  adminGroupContactApi,
   adminMeetingApi,
 } from '../../../../lib/api'
+import { toPostalContactPayload } from '../utils'
 
 const EMPTY_GROUP_FORM = {
   districtId: '',
   name: '',
+  notice: '',
 }
 
 const EMPTY_CONTACT_FORM = {
@@ -35,50 +37,46 @@ const EMPTY_MEETING_FORM = {
   active: true,
 }
 
-export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess }) {
-  const numericGroupId = Number(groupId)
+export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }) {
+  const groupId = Number.isFinite(group?.id) ? group.id : null
 
-  const [districts, setDistricts] = useState([])
-  const [groupData, setGroupData] = useState(null)
   const [groupContacts, setGroupContacts] = useState([])
   const [meetings, setMeetings] = useState([])
-  const [groupForm, setGroupForm] = useState(EMPTY_GROUP_FORM)
+  const [groupForm, setGroupForm] = useState(toGroupForm(group))
   const [contactForm, setContactForm] = useState(EMPTY_CONTACT_FORM)
   const [meetingForm, setMeetingForm] = useState(EMPTY_MEETING_FORM)
   const [groupErrors, setGroupErrors] = useState({})
   const [contactErrors, setContactErrors] = useState({})
   const [meetingErrors, setMeetingErrors] = useState({})
   const [loading, setLoading] = useState(false)
-  const [missingGroup, setMissingGroup] = useState(false)
 
-  async function loadWorkspace() {
-    if (!Number.isFinite(numericGroupId)) {
-      setMissingGroup(true)
+  useEffect(() => {
+    setGroupForm(toGroupForm(group))
+    setGroupErrors({})
+    setContactErrors({})
+    setMeetingErrors({})
+  }, [group])
+
+  async function loadEditorData() {
+    if (!Number.isFinite(groupId)) {
+      setLoading(false)
+      setGroupContacts([])
+      setMeetings([])
+      setContactForm(EMPTY_CONTACT_FORM)
+      setMeetingForm(EMPTY_MEETING_FORM)
       return
     }
 
     setLoading(true)
 
     try {
-      const [districtData, groups, contactData, meetingData] = await Promise.all([
-        adminDistrictApi.getDistricts(),
-        adminGroupApi.getGroups(),
-        adminGroupApi.getGroupContacts(numericGroupId),
-        adminMeetingApi.getMeetings({ groupId: numericGroupId }),
+      const [contactData, meetingData] = await Promise.all([
+        adminGroupContactApi.getGroupContacts(groupId),
+        adminMeetingApi.getMeetings({ groupId }),
       ])
 
-      const targetGroup = groups.find((item) => item.id === numericGroupId) ?? null
-
-      setDistricts(districtData)
       setGroupContacts(contactData)
       setMeetings(meetingData)
-      setGroupData(targetGroup)
-      setMissingGroup(!targetGroup)
-
-      if (targetGroup) {
-        setGroupForm(toGroupForm(targetGroup))
-      }
-
       setContactForm(contactData[0] ? toContactForm(contactData[0]) : EMPTY_CONTACT_FORM)
       setMeetingForm(meetingData[0] ? toMeetingForm(meetingData[0]) : EMPTY_MEETING_FORM)
     } catch (error) {
@@ -88,27 +86,27 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
     }
   }
 
-  const loadWorkspaceEffect = useEffectEvent(() => {
-    void loadWorkspace()
+  const loadEditorDataEffect = useEffectEvent(() => {
+    void loadEditorData()
   })
 
   useEffect(() => {
-    loadWorkspaceEffect()
-  }, [numericGroupId])
+    loadEditorDataEffect()
+  }, [groupId])
 
   async function saveGroup() {
-    if (!groupData) {
+    if (!groupId) {
       return false
     }
 
     try {
-      const updatedGroup = await adminGroupApi.updateGroup(groupData.id, {
+      const updatedGroup = await adminGroupApi.updateGroup(groupId, {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
+        notice: groupForm.notice,
       })
 
       onGroupSaved?.(updatedGroup)
-      setGroupData(updatedGroup)
       setGroupForm(toGroupForm(updatedGroup))
       setGroupErrors({})
       onSuccess('그룹 기본 정보를 저장했습니다.')
@@ -127,15 +125,19 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   }
 
   async function saveContact() {
+    if (!groupId) {
+      return false
+    }
+
     try {
       const savedContact = contactForm.id
-        ? await adminGroupApi.updateGroupContact(contactForm.id, {
+        ? await adminGroupContactApi.updateGroupContact(contactForm.id, {
           phone: contactForm.phone,
           email: contactForm.email,
           postalContact: toPostalContactPayload(contactForm),
         })
-        : await adminGroupApi.createGroupContact({
-          groupId: numericGroupId,
+        : await adminGroupContactApi.createGroupContact({
+          groupId,
           phone: contactForm.phone,
           email: contactForm.email,
           postalContact: toPostalContactPayload(contactForm),
@@ -162,9 +164,13 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   }
 
   async function saveMeeting() {
+    if (!groupId) {
+      return false
+    }
+
     try {
       const payload = {
-        groupId: numericGroupId,
+        groupId,
         locationDetail: meetingForm.locationDetail,
         locationAddress: meetingForm.locationAddress,
         dayOfWeek: meetingForm.dayOfWeek,
@@ -221,15 +227,7 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   }
 
   function startEditContact(contact) {
-    setContactForm({
-      id: contact.id,
-      phone: contact.phone,
-      email: contact.email ?? '',
-      postalRecipient: contact.postalContact?.recipient ?? '',
-      postalCode: contact.postalContact?.postalCode ?? '',
-      postalRoadAddress: contact.postalContact?.roadAddress ?? '',
-      postalDetailAddress: contact.postalContact?.detailAddress ?? '',
-    })
+    setContactForm(toContactForm(contact))
     setContactErrors({})
   }
 
@@ -243,15 +241,7 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   }
 
   function startEditMeeting(meeting) {
-    setMeetingForm({
-      id: meeting.id,
-      locationDetail: meeting.locationDetail ?? '',
-      locationAddress: meeting.locationAddress ?? '',
-      dayOfWeek: meeting.dayOfWeek,
-      startTime: meeting.startTime,
-      type: meeting.type,
-      active: meeting.active,
-    })
+    setMeetingForm(toMeetingForm(meeting))
     setMeetingErrors({})
   }
 
@@ -287,19 +277,11 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
   }
 
   function resetGroupForm() {
-    if (groupData) {
-      setGroupForm(toGroupForm(groupData))
-    }
+    setGroupForm(toGroupForm(group))
     setGroupErrors({})
   }
 
-  function districtLabel(districtId) {
-    return districts.find((district) => district.id === districtId)?.name ?? null
-  }
-
   return {
-    districts,
-    groupData,
     groupContacts,
     meetings,
     groupForm,
@@ -309,7 +291,6 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
     contactErrors,
     meetingErrors,
     loading,
-    missingGroup,
     saveGroup,
     saveContact,
     saveMeeting,
@@ -323,14 +304,14 @@ export function useGroupWorkspace({ groupId, onError, onGroupSaved, onSuccess })
     updateMeetingField,
     updateMeetingActive,
     resetGroupForm,
-    districtLabel,
   }
 }
 
 function toGroupForm(group) {
   return {
-    districtId: String(group.districtId),
-    name: group.name ?? '',
+    districtId: group ? String(group.districtId) : '',
+    name: group?.name ?? '',
+    notice: group?.notice ?? '',
   }
 }
 
@@ -368,24 +349,6 @@ function createMeetingFormDefaults(source = {}) {
 
 function hasMeetingLocation(meeting) {
   return Boolean(meeting.locationDetail || meeting.locationAddress)
-}
-
-function toPostalContactPayload(form) {
-  if (
-    !form.postalRecipient &&
-    !form.postalCode &&
-    !form.postalRoadAddress &&
-    !form.postalDetailAddress
-  ) {
-    return null
-  }
-
-  return {
-    recipient: form.postalRecipient,
-    postalCode: form.postalCode,
-    roadAddress: form.postalRoadAddress,
-    detailAddress: form.postalDetailAddress,
-  }
 }
 
 function mergeById(items, savedItem) {
