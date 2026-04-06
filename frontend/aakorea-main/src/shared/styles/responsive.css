@@ -143,6 +143,16 @@
     align-items: stretch;
   }
 
+  .address-search-field__feedback,
+  .address-search-panel__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .postal-contact-card__meta {
+    grid-template-columns: 1fr;
+  }
+
   .admin-group-modal__header,
   .admin-group-modal__body,
   .admin-group-modal__footer,
@@ -166,6 +176,8 @@
   .admin-group-wizard__section-head,
   .admin-group-wizard__actions,
   .admin-group-wizard__actions--split,
+  .admin-group-wizard__meeting-item,
+  .admin-group-wizard__meeting-actions,
   .admin-group-edit-sheet__header,
   .admin-group-edit-sheet__header-actions,
   .admin-group-edit-sheet__grid,

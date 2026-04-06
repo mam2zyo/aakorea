@@ -10,7 +10,7 @@ export function GroupContactModal({
   onSubmit,
 }) {
   return (
-    <div className="admin-overlay admin-overlay--nested" role="presentation" onClick={onCancel}>
+    <div className="admin-overlay admin-overlay--nested" role="presentation">
       <section
         aria-modal="true"
         className="admin-overlay__dialog admin-overlay__dialog--submodal"
@@ -46,6 +46,8 @@ export function GroupContactModal({
               <div className="admin-group-edit-sheet__rowcontrol">
                 <input
                   id="contact-modal-phone"
+                  inputMode="numeric"
+                  maxLength={13}
                   placeholder="010-1234-5678"
                   value={form.phone}
                   onChange={(event) => onFieldChange('phone', event.target.value)}
@@ -68,40 +70,49 @@ export function GroupContactModal({
             </div>
 
             <div className="admin-group-edit-sheet__rowline">
-              <label className="admin-group-edit-sheet__rowlabel" htmlFor="contact-modal-postal-recipient">
-                수령인
-              </label>
+              <span className="admin-group-edit-sheet__rowlabel">우편수신정보 (선택)</span>
               <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-                <input
-                  id="contact-modal-postal-recipient"
-                  value={form.postalRecipient}
-                  onChange={(event) => onFieldChange('postalRecipient', event.target.value)}
-                />
-              </div>
-            </div>
+                <div className="postal-contact-card">
+                  <div className="admin-group-wizard__grid postal-contact-card__grid">
+                    <Field
+                      className="admin-group-wizard__field admin-group-wizard__field--wide"
+                      label="수령인"
+                      error={readFieldError(errors, 'postalRecipient')}
+                    >
+                      <input
+                        id="contact-modal-postal-recipient"
+                        value={form.postalRecipient}
+                        onChange={(event) => onFieldChange('postalRecipient', event.target.value)}
+                      />
+                    </Field>
 
-            <div className="admin-group-edit-sheet__rowline">
-              <span className="admin-group-edit-sheet__rowlabel">우편수신주소</span>
-              <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-                <div className="field-grid">
-                  <AddressSearchField
-                    addressLabel="도로명 주소"
-                    addressValue={form.postalRoadAddress}
-                    onAddressChange={(value) => onFieldChange('postalRoadAddress', value)}
-                    onAddressSelected={({ postalCode, address }) => {
-                      onFieldChange('postalCode', postalCode)
-                      onFieldChange('postalRoadAddress', address)
-                    }}
-                    postalCodeValue={form.postalCode}
-                    onPostalCodeChange={(value) => onFieldChange('postalCode', value)}
-                  />
-
-                  <Field label="상세 주소">
-                    <input
-                      value={form.postalDetailAddress}
-                      onChange={(event) => onFieldChange('postalDetailAddress', event.target.value)}
+                    <AddressSearchField
+                      addressLabel="도로명 주소"
+                      addressValue={form.postalRoadAddress}
+                      onAddressChange={(value) => onFieldChange('postalRoadAddress', value)}
+                      onAddressSelected={({ postalCode, address }) => {
+                        onFieldChange('postalCode', postalCode)
+                        onFieldChange('postalRoadAddress', address)
+                      }}
                     />
-                  </Field>
+
+                    <div className="postal-contact-card__meta">
+                      <Field label="상세 주소">
+                        <input
+                          value={form.postalDetailAddress}
+                          onChange={(event) => onFieldChange('postalDetailAddress', event.target.value)}
+                        />
+                      </Field>
+
+                      <Field label="우편번호" error={readFieldError(errors, 'postalCode')}>
+                        <input
+                          className="address-search-field__value address-search-field__value--disabled"
+                          disabled
+                          value={form.postalCode}
+                        />
+                      </Field>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

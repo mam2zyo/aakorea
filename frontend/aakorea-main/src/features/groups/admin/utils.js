@@ -46,12 +46,16 @@ export function createEmptyCreateForm() {
     email: '',
     districtId: '',
     postalDetailAddress: '',
-    postalContactExpanded: false,
     postalCode: '',
     postalRecipient: '',
     postalRoadAddress: '',
     name: '',
-    notice: '',
+    meetings: [],
+  }
+}
+
+export function createEmptyCreateMeeting() {
+  return {
     locationAddress: '',
     locationDetail: '',
     contactPhoneOverride: '',
@@ -91,7 +95,6 @@ export function hasCreateBasicsErrors(fieldErrors) {
   return Object.keys(fieldErrors).some((field) => [
     'districtId',
     'name',
-    'notice',
     'phone',
     'email',
     'postalRecipient',

@@ -1,27 +1,115 @@
+import { useState } from 'react'
 import { AddressSearchField } from '../../../../components/AddressSearchField'
 import { Field } from '../../../../components/ui'
-import { readFieldError } from '../../../../lib/formErrors'
+import { omitFieldErrors, readFieldError } from '../../../../lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
+import { normalizePhoneFieldValue } from '../../../../lib/phone'
 import { lookupLabel } from '../../../../lib/view'
+import { createEmptyCreateMeeting } from '../utils'
+import { GroupMeetingFormModal } from './GroupMeetingFormModal'
 
 export function CreateGroupWizard({
   createErrors,
   createForm,
   createStep,
-  districtName,
   saving,
   sortedDistricts,
   onFieldChange,
   onNext,
   onPrevious,
+  onResetPostalContactInfo,
   onSubmit,
-  onTogglePostalContactInfo,
 }) {
-  const addressPreviewTitle = createForm.locationDetail || '지도 연동 예정'
-  const addressPreviewText = createForm.locationAddress || '주소 검색 API 연결 후 이 영역에 지도가 표시됩니다.'
+  const [meetingDraft, setMeetingDraft] = useState(() => createEmptyCreateMeeting())
+  const [meetingDraftErrors, setMeetingDraftErrors] = useState({})
+  const [editingMeetingIndex, setEditingMeetingIndex] = useState(null)
+  const [showMeetingModal, setShowMeetingModal] = useState(false)
+  const hasPostalContactInfo = Boolean(
+    createForm.postalRecipient ||
+      createForm.postalRoadAddress ||
+      createForm.postalCode ||
+      createForm.postalDetailAddress,
+  )
+  const meetings = createForm.meetings ?? []
+  const meetingListError = readFieldError(createErrors, 'meetings')
+  const isEditingMeeting = Number.isInteger(editingMeetingIndex)
+
+  function openNewMeetingModal() {
+    const previousMeeting = meetings[meetings.length - 1]
+    setMeetingDraft(createNextMeetingDraft(previousMeeting))
+    setMeetingDraftErrors({})
+    setEditingMeetingIndex(null)
+    setShowMeetingModal(true)
+  }
+
+  function openEditMeetingModal(index) {
+    const targetMeeting = meetings[index]
+    if (!targetMeeting) {
+      return
+    }
+
+    setMeetingDraft({ ...createEmptyCreateMeeting(), ...targetMeeting })
+    setMeetingDraftErrors({})
+    setEditingMeetingIndex(index)
+    setShowMeetingModal(true)
+  }
+
+  function closeMeetingModal() {
+    setMeetingDraft(createEmptyCreateMeeting())
+    setMeetingDraftErrors({})
+    setEditingMeetingIndex(null)
+    setShowMeetingModal(false)
+  }
+
+  function updateMeetingDraftField(field, value) {
+    const nextValue = normalizePhoneFieldValue(field, value)
+
+    setMeetingDraft((previous) => ({
+      ...previous,
+      [field]: nextValue,
+    }))
+    setMeetingDraftErrors((previous) => omitFieldErrors(previous, field))
+  }
+
+  function saveMeetingDraft() {
+    const normalizedMeeting = normalizeMeetingDraft(meetingDraft)
+    const nextErrors = validateMeetingDraft(normalizedMeeting)
+
+    if (Object.keys(nextErrors).length > 0) {
+      setMeetingDraftErrors(nextErrors)
+      return
+    }
+
+    const nextMeetings = isEditingMeeting
+      ? meetings.map((meeting, index) => (index === editingMeetingIndex ? normalizedMeeting : meeting))
+      : [...meetings, normalizedMeeting]
+
+    onFieldChange('meetings', nextMeetings)
+    closeMeetingModal()
+  }
+
+  function deleteMeeting(index) {
+    const targetMeeting = meetings[index]
+    if (!targetMeeting) {
+      return
+    }
+
+    const meetingLabel = `${lookupLabel(DAY_OF_WEEK_OPTIONS, targetMeeting.dayOfWeek)} ${targetMeeting.startTime}`
+    const locationLabel = targetMeeting.locationDetail || '상세 위치 미입력'
+    const confirmed = window.confirm(`"${meetingLabel} · ${locationLabel}" 모임을 삭제하시겠습니까?`)
+
+    if (!confirmed) {
+      return
+    }
+
+    onFieldChange(
+      'meetings',
+      meetings.filter((_, meetingIndex) => meetingIndex !== index),
+    )
+  }
 
   return (
     <section className="admin-group-wizard">
@@ -62,25 +150,13 @@ export function CreateGroupWizard({
                 ))}
               </select>
             </Field>
-
-            <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
-              label="그룹 공지 (선택)"
-              error={readFieldError(createErrors, 'notice')}
-            >
-              <textarea
-                rows={4}
-                maxLength={200}
-                placeholder="예: 첫 방문자는 10분 전에 와 주세요."
-                value={createForm.notice}
-                onChange={(event) => onFieldChange('notice', event.target.value)}
-              />
-            </Field>
           </div>
 
           <div className="admin-group-wizard__section">
             <Field label="대표 연락처" error={readFieldError(createErrors, 'phone')}>
               <input
+                inputMode="numeric"
+                maxLength={13}
                 placeholder="010-1234-5678"
                 value={createForm.phone}
                 onChange={(event) => onFieldChange('phone', event.target.value)}
@@ -99,22 +175,28 @@ export function CreateGroupWizard({
           <section className="admin-group-wizard__section admin-group-wizard__section--mailing">
             <div className="admin-group-wizard__section-head">
               <div>
-                <strong>우편물 수령 정보</strong>
+                <span className="field__label admin-group-wizard__section-title">
+                  우편물 수령 정보 (선택)
+                </span>
                 <p>GSO 우편물을 실제로 받는 경우에만 입력해 주세요.</p>
               </div>
 
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
-                onClick={onTogglePostalContactInfo}
+                disabled={!hasPostalContactInfo}
+                onClick={onResetPostalContactInfo}
               >
-                {createForm.postalContactExpanded ? '접기' : '입력'}
+                초기화
               </button>
             </div>
 
-            {createForm.postalContactExpanded ? (
-              <div className="admin-group-wizard__grid">
-                <Field label="수령인">
+            <div className="admin-group-wizard__field admin-group-wizard__field--wide postal-contact-card">
+              <div className="admin-group-wizard__grid postal-contact-card__grid">
+                <Field
+                  className="admin-group-wizard__field admin-group-wizard__field--wide"
+                  label="수령인"
+                >
                   <input
                     value={createForm.postalRecipient}
                     onChange={(event) => onFieldChange('postalRecipient', event.target.value)}
@@ -129,18 +211,26 @@ export function CreateGroupWizard({
                     onFieldChange('postalCode', postalCode)
                     onFieldChange('postalRoadAddress', address)
                   }}
-                  postalCodeValue={createForm.postalCode}
-                  onPostalCodeChange={(value) => onFieldChange('postalCode', value)}
                 />
 
-                <Field className="admin-group-wizard__field admin-group-wizard__field--wide" label="상세 주소">
-                  <input
-                    value={createForm.postalDetailAddress}
-                    onChange={(event) => onFieldChange('postalDetailAddress', event.target.value)}
-                  />
-                </Field>
+                <div className="postal-contact-card__meta">
+                  <Field label="상세 주소">
+                    <input
+                      value={createForm.postalDetailAddress}
+                      onChange={(event) => onFieldChange('postalDetailAddress', event.target.value)}
+                    />
+                  </Field>
+
+                  <Field label="우편번호" error={readFieldError(createErrors, 'postalCode')}>
+                    <input
+                      className="address-search-field__value address-search-field__value--disabled"
+                      disabled
+                      value={createForm.postalCode}
+                    />
+                  </Field>
+                </div>
               </div>
-            ) : null}
+            </div>
           </section>
 
           <div className="admin-group-wizard__actions">
@@ -150,114 +240,170 @@ export function CreateGroupWizard({
           </div>
         </form>
       ) : (
-        <form
-          className="admin-group-wizard__form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            void onSubmit()
-          }}
-        >
-          <div className="admin-group-wizard__summary">
-            <strong>{createForm.name || '새 그룹'}</strong>
-            <span>{districtName}</span>
-          </div>
+        <div className="admin-group-wizard__form">
+          <section className="admin-group-wizard__section admin-group-wizard__section--meetings">
+            <div className="admin-group-wizard__section-head">
+              <div>
+                <strong>모임 등록</strong>
+                <p>모임 추가 버튼을 눌러 등록해 주세요.</p>
+              </div>
 
-          <div className="admin-group-wizard__grid admin-group-wizard__grid--meeting-meta">
-            <Field label="요일" error={readFieldError(createErrors, 'dayOfWeek')}>
-              <select
-                value={createForm.dayOfWeek}
-                onChange={(event) => onFieldChange('dayOfWeek', event.target.value)}
+              <button
+                className="ghost-button ghost-button--small address-search-field__action admin-group-wizard__meeting-add"
+                type="button"
+                onClick={openNewMeetingModal}
               >
-                {DAY_OF_WEEK_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="시작 시간" error={readFieldError(createErrors, 'startTime')}>
-              <input
-                type="time"
-                value={createForm.startTime}
-                onChange={(event) => onFieldChange('startTime', event.target.value)}
-              />
-            </Field>
-
-            <Field label="모임 유형" error={readFieldError(createErrors, 'type')}>
-              <select
-                value={createForm.type}
-                onChange={(event) => onFieldChange('type', event.target.value)}
-              >
-                {MEETING_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-
-          <AddressSearchField
-            addressError={readFieldError(createErrors, 'locationAddress')}
-            addressLabel="주소"
-            addressValue={createForm.locationAddress}
-            onAddressChange={(value) => onFieldChange('locationAddress', value)}
-            onAddressSelected={({ address }) => onFieldChange('locationAddress', address)}
-          />
-
-          <Field
-            className="admin-group-wizard__field admin-group-wizard__field--wide"
-            label="상세 위치"
-            error={readFieldError(createErrors, 'locationDetail')}
-          >
-            <input
-              placeholder="예: 본당 지하 1층, 정문 왼편"
-              value={createForm.locationDetail}
-              onChange={(event) => onFieldChange('locationDetail', event.target.value)}
-            />
-          </Field>
-
-          <Field
-            className="admin-group-wizard__field admin-group-wizard__field--wide"
-            label="모임별 연락처 (선택)"
-            error={readFieldError(createErrors, 'contactPhoneOverride')}
-          >
-            <input
-              placeholder="비우면 대표 연락처를 사용합니다."
-              value={createForm.contactPhoneOverride}
-              onChange={(event) => onFieldChange('contactPhoneOverride', event.target.value)}
-            />
-          </Field>
-
-          <div className="admin-group-wizard__map-mock">
-            <span className="admin-group-wizard__map-pin" aria-hidden="true" />
-            <div className="admin-group-wizard__map-card">
-              <strong>{addressPreviewTitle}</strong>
-              <span>{addressPreviewText}</span>
+                모임 추가
+              </button>
             </div>
-          </div>
 
-          <div className="admin-group-wizard__meeting-preview">
-            <strong>
-              {lookupLabel(DAY_OF_WEEK_OPTIONS, createForm.dayOfWeek)} {createForm.startTime}
-              {' · '}
-              {lookupLabel(MEETING_TYPE_OPTIONS, createForm.type)}
-            </strong>
-            <span>{createForm.locationDetail || '상세 위치를 입력해 주세요.'}</span>
-          </div>
+            {meetingListError ? <span className="field__error">{meetingListError}</span> : null}
+
+            {meetings.length > 0 ? (
+              <div className="admin-group-wizard__meeting-list">
+                {meetings.map((meeting, index) => (
+                  <article
+                    key={`${meeting.dayOfWeek}-${meeting.startTime}-${meeting.locationAddress}-${index}`}
+                    className="admin-group-wizard__meeting-item"
+                  >
+                    <div className="admin-group-wizard__meeting-summary">
+                      <strong>
+                        {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
+                        {' · '}
+                        {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
+                      </strong>
+                      <span className="admin-group-wizard__meeting-location">
+                        {meeting.locationDetail || '상세 위치 미입력'}
+                      </span>
+                      <span className="admin-group-wizard__meeting-address">
+                        {meeting.locationAddress || '주소 미선택'}
+                      </span>
+                      {meeting.contactPhoneOverride ? (
+                        <span className="admin-group-wizard__meeting-contact">
+                          모임별 연락처: {meeting.contactPhoneOverride}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="admin-group-wizard__meeting-actions">
+                      <button
+                        className="ghost-button ghost-button--small"
+                        type="button"
+                        onClick={() => openEditMeetingModal(index)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className="ghost-button ghost-button--danger ghost-button--small"
+                        type="button"
+                        onClick={() => deleteMeeting(index)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+          </section>
+
+          {meetings.length === 0 ? (
+            <div className="admin-group-wizard__meeting-preview">
+              <strong>모임을 추가하면 요약이 이곳에 표시됩니다.</strong>
+            </div>
+          ) : null}
+
+          {meetings.length === 0 ? (
+            <div className="admin-group-wizard__meeting-empty">
+              <strong>등록된 모임이 아직 없습니다.</strong>
+            </div>
+          ) : null}
 
           <div className="admin-group-wizard__actions admin-group-wizard__actions--split">
-            <button className="ghost-button" type="button" onClick={onPrevious} disabled={saving}>
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                onPrevious()
+              }}
+              disabled={saving}
+            >
               이전
             </button>
 
-            <button className="primary-button" type="submit" disabled={saving}>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => void onSubmit()}
+              disabled={saving || meetings.length === 0}
+            >
               {saving ? '등록 중...' : '완료'}
             </button>
           </div>
-        </form>
+        </div>
       )}
+
+      {showMeetingModal ? (
+        <GroupMeetingFormModal
+          errors={meetingDraftErrors}
+          form={meetingDraft}
+          onCancel={closeMeetingModal}
+          onFieldChange={updateMeetingDraftField}
+          onSubmit={saveMeetingDraft}
+          submitLabel={isEditingMeeting ? '저장' : '추가'}
+          title={isEditingMeeting ? '모임 수정' : '새 모임 추가'}
+        />
+      ) : null}
     </section>
   )
+}
+
+function validateMeetingDraft(form) {
+  const errors = {}
+
+  if (!form.dayOfWeek) {
+    errors.dayOfWeek = '요일을 선택해 주세요.'
+  }
+
+  if (!form.startTime) {
+    errors.startTime = '시작 시간을 입력해 주세요.'
+  }
+
+  if (!form.type) {
+    errors.type = '모임 유형을 선택해 주세요.'
+  }
+
+  if (!form.locationAddress) {
+    errors.locationAddress = '주소를 선택해 주세요.'
+  }
+
+  if (!form.locationDetail) {
+    errors.locationDetail = '상세 위치를 입력해 주세요.'
+  }
+
+  return errors
+}
+
+function normalizeMeetingDraft(form) {
+  return {
+    ...createEmptyCreateMeeting(),
+    ...form,
+    locationAddress: String(form.locationAddress ?? '').trim(),
+    locationDetail: String(form.locationDetail ?? '').trim(),
+    contactPhoneOverride: String(form.contactPhoneOverride ?? '').trim(),
+  }
+}
+
+function createNextMeetingDraft(previousMeeting) {
+  if (!previousMeeting) {
+    return createEmptyCreateMeeting()
+  }
+
+  return {
+    ...createEmptyCreateMeeting(),
+    ...previousMeeting,
+    dayOfWeek: createEmptyCreateMeeting().dayOfWeek,
+  }
 }

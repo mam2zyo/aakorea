@@ -9,7 +9,7 @@ export function GroupBasicsModal({
   onSubmit,
 }) {
   return (
-    <div className="admin-overlay admin-overlay--nested" role="presentation" onClick={onCancel}>
+    <div className="admin-overlay admin-overlay--nested" role="presentation">
       <section
         aria-modal="true"
         className="admin-overlay__dialog admin-overlay__dialog--submodal"

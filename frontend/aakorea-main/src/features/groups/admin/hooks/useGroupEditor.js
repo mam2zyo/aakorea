@@ -1,6 +1,10 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { getApiFieldErrors, omitFieldErrors } from '../../../../lib/formErrors'
 import {
+  formatKoreanPhoneNumber,
+  normalizePhoneFieldValue,
+} from '../../../../lib/phone'
+import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
@@ -256,17 +260,21 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }) {
   }
 
   function updateContactField(field, value) {
+    const nextValue = normalizePhoneFieldValue(field, value)
+
     setContactForm((previous) => ({
       ...previous,
-      [field]: value,
+      [field]: nextValue,
     }))
     setContactErrors((previous) => omitFieldErrors(previous, field))
   }
 
   function updateMeetingField(field, value) {
+    const nextValue = normalizePhoneFieldValue(field, value)
+
     setMeetingForm((previous) => ({
       ...previous,
-      [field]: value,
+      [field]: nextValue,
     }))
     setMeetingErrors((previous) => omitFieldErrors(previous, field))
   }
@@ -320,7 +328,7 @@ function toGroupForm(group) {
 function toContactForm(contact) {
   return {
     id: contact.id,
-    phone: contact.phone ?? '',
+    phone: formatKoreanPhoneNumber(contact.phone),
     email: contact.email ?? '',
     postalRecipient: contact.postalContact?.recipient ?? '',
     postalCode: contact.postalContact?.postalCode ?? '',
@@ -334,7 +342,7 @@ function toMeetingForm(meeting) {
     id: meeting.id,
     locationDetail: meeting.locationDetail ?? '',
     locationAddress: meeting.locationAddress ?? '',
-    contactPhoneOverride: meeting.contactPhoneOverride ?? '',
+    contactPhoneOverride: formatKoreanPhoneNumber(meeting.contactPhoneOverride),
     dayOfWeek: meeting.dayOfWeek ?? EMPTY_MEETING_FORM.dayOfWeek,
     startTime: meeting.startTime ?? EMPTY_MEETING_FORM.startTime,
     type: meeting.type ?? EMPTY_MEETING_FORM.type,

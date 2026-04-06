@@ -18,7 +18,7 @@ export function GroupMeetingFormModal({
   title,
 }) {
   return (
-    <div className="admin-overlay admin-overlay--nested" role="presentation" onClick={onCancel}>
+    <div className="admin-overlay admin-overlay--nested" role="presentation">
       <section
         aria-modal="true"
         className="admin-overlay__dialog admin-overlay__dialog--submodal"
@@ -109,6 +109,8 @@ export function GroupMeetingFormModal({
               error={readFieldError(errors, 'contactPhoneOverride')}
             >
               <input
+                inputMode="numeric"
+                maxLength={13}
                 placeholder="비우면 그룹 대표 연락처를 사용합니다."
                 value={form.contactPhoneOverride}
                 onChange={(event) => onFieldChange('contactPhoneOverride', event.target.value)}

@@ -586,7 +586,7 @@
 }
 
 .admin-overlay--nested {
-  position: absolute;
+  position: fixed;
   z-index: 40;
   padding: var(--space-5);
   background: rgba(24, 18, 12, 0.18);
@@ -930,6 +930,8 @@
 
 .admin-group-wizard__section--mailing {
   gap: var(--space-5);
+  padding-top: 0;
+  border-top: 0;
 }
 
 .admin-group-wizard__section-head {
@@ -940,6 +942,11 @@
 }
 
 .admin-group-wizard__section-head strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.admin-group-wizard__section-title {
   display: block;
   margin-bottom: 0.3rem;
 }
@@ -957,18 +964,177 @@
   align-items: end;
 }
 
-.admin-group-wizard__summary {
+.address-search-field__feedback,
+.address-search-panel {
+  border: 1px solid rgba(216, 203, 184, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(255, 252, 246, 0.88);
+}
+
+.postal-contact-card {
+  border: 1px solid rgba(216, 203, 184, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(255, 252, 246, 0.94);
+  padding: var(--space-4);
+}
+
+.postal-contact-card__grid {
+  gap: var(--space-4);
+}
+
+.postal-contact-card__meta {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.75fr) minmax(120px, 0.65fr);
+  gap: var(--space-4);
+}
+
+.address-search-field__value--disabled:disabled {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(54, 43, 31, 0.88);
+  box-shadow: none;
+  cursor: default;
+  padding: 0;
+  appearance: none;
+  -webkit-text-fill-color: rgba(54, 43, 31, 0.88);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.address-search-field__value--disabled:disabled::placeholder {
+  color: var(--color-text-muted);
+}
+
+.address-search-field__action {
+  border-color: rgba(44, 106, 75, 0.32);
+  background: rgba(44, 106, 75, 0.1);
+  color: var(--color-primary-strong);
+  box-shadow: 0 10px 24px rgba(44, 106, 75, 0.08);
+}
+
+.address-search-field__action:hover {
+  background: rgba(44, 106, 75, 0.14);
+}
+
+.address-search-field__feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--color-danger);
+  padding: var(--space-3) var(--space-4);
+}
+
+.address-search-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
 
-.admin-group-wizard__summary strong {
-  font-size: 1.12rem;
+.address-search-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
 }
 
-.admin-group-wizard__summary span {
+.address-search-panel__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.address-search-panel__copy span,
+.address-search-panel__note {
   color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
+.address-search-panel__error {
+  color: var(--color-danger);
+  font-size: 0.92rem;
+}
+
+.address-search-panel__embed {
+  height: clamp(320px, 55vh, 460px);
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: #fff;
+}
+
+.address-search-panel__embed--hidden {
+  display: none;
+}
+
+.admin-group-wizard__section--meetings {
+  gap: var(--space-5);
+  padding-top: 0;
+  border-top: 0;
+}
+
+.admin-group-wizard__meeting-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(216, 203, 184, 0.72);
+}
+
+.admin-group-wizard__meeting-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid rgba(216, 203, 184, 0.72);
+}
+
+.admin-group-wizard__meeting-summary {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-group-wizard__meeting-location {
+  color: var(--color-text);
+}
+
+.admin-group-wizard__meeting-address,
+.admin-group-wizard__meeting-contact {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
+.admin-group-wizard__meeting-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.admin-group-wizard__meeting-add {
+  box-shadow: 0 10px 24px rgba(44, 106, 75, 0.08);
+}
+
+.admin-group-wizard__meeting-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  margin-top: var(--space-3);
+  border: 1px dashed rgba(216, 203, 184, 0.92);
+  border-radius: var(--radius-md);
+  background: rgba(255, 252, 246, 0.86);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.admin-group-wizard__meeting-empty strong {
+  width: 100%;
 }
 
 .admin-group-wizard__map-mock {
@@ -1020,8 +1186,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding-top: var(--space-4);
-  border-top: 1px solid rgba(216, 203, 184, 0.72);
 }
 
 .admin-group-wizard__actions {
@@ -1152,6 +1316,20 @@
 
 .admin-group-edit-sheet input:disabled::placeholder,
 .admin-group-edit-sheet textarea:disabled::placeholder {
+  color: var(--color-text-muted);
+}
+
+.admin-group-edit-sheet .address-search-field__value--disabled:disabled {
+  border-color: transparent;
+  background: transparent;
+  color: rgba(54, 43, 31, 0.88);
+  padding: 0;
+  -webkit-text-fill-color: rgba(54, 43, 31, 0.88);
+  cursor: default;
+  pointer-events: none;
+}
+
+.admin-group-edit-sheet .address-search-field__value--disabled:disabled::placeholder {
   color: var(--color-text-muted);
 }
 

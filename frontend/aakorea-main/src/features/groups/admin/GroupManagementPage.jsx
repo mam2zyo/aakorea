@@ -10,6 +10,7 @@ import {
   adminMeetingApi,
 } from '../../../lib/api'
 import { getApiFieldErrors, omitFieldErrors } from '../../../lib/formErrors'
+import { normalizePhoneFieldValue } from '../../../lib/phone'
 import { ensureSelectValue } from '../../../lib/view'
 import { CreateGroupWizard } from './components/CreateGroupWizard'
 import { EditGroupSheet } from './components/EditGroupSheet'
@@ -122,7 +123,7 @@ export function GroupManagementPage({
     : currentEditorGroup
       ? currentEditorGroup.name
       : '그룹 수정'
-  const createStepLabel = createStep === 1 ? '기본 정보' : '첫 모임'
+  const createStepLabel = createStep === 1 ? '기본 정보' : '모임 정보'
 
   return (
     <div className="admin-flat-page">
@@ -236,7 +237,7 @@ export function GroupManagementPage({
       </div>
 
       {editorState.open ? (
-        <div className="admin-overlay" role="presentation" onClick={closeEditor}>
+        <div className="admin-overlay" role="presentation">
           <section
             aria-labelledby="group-editor-title"
             aria-modal="true"
@@ -272,14 +273,13 @@ export function GroupManagementPage({
                   createErrors={createErrors}
                   createForm={createForm}
                   createStep={createStep}
-                  districtName={districtNameFor(Number(createForm.districtId), districts)}
                   saving={saving}
                   sortedDistricts={sortedDistricts}
                   onFieldChange={updateCreateField}
                   onNext={() => void saveCreateBasics()}
                   onPrevious={() => setCreateStep(1)}
+                  onResetPostalContactInfo={resetCreatePostalContactInfo}
                   onSubmit={() => void completeCreateFlow()}
-                  onTogglePostalContactInfo={togglePostalContactInfo}
                 />
               ) : (
                 <EditGroupSheet
@@ -303,18 +303,32 @@ export function GroupManagementPage({
   }
 
   function updateCreateField(field, value) {
+    const nextValue = normalizePhoneFieldValue(field, value)
+
     setCreateForm((previous) => ({
       ...previous,
-      [field]: value,
+      [field]: nextValue,
     }))
     setCreateErrors((previous) => omitFieldErrors(previous, field))
   }
 
-  function togglePostalContactInfo() {
+  function resetCreatePostalContactInfo() {
     setCreateForm((previous) => ({
       ...previous,
-      postalContactExpanded: !previous.postalContactExpanded,
+      postalRecipient: '',
+      postalCode: '',
+      postalRoadAddress: '',
+      postalDetailAddress: '',
     }))
+    setCreateErrors((previous) =>
+      omitFieldErrors(
+        previous,
+        'postalRecipient',
+        'postalCode',
+        'postalRoadAddress',
+        'postalDetailAddress',
+      ),
+    )
   }
 
   function startCreatingGroup() {
@@ -370,13 +384,6 @@ export function GroupManagementPage({
         return
       }
 
-      if (createForm.notice.trim().length > 200) {
-        setCreateErrors({
-          notice: '그룹 공지는 200자 이하로 입력해 주세요.',
-        })
-        return
-      }
-
       setCreateErrors({})
       setCreateStep(2)
     } catch {
@@ -385,13 +392,20 @@ export function GroupManagementPage({
   }
 
   async function completeCreateFlow() {
+    if (!createForm.meetings?.length) {
+      setCreateErrors((previous) => ({
+        ...omitFieldErrors(previous, 'meetings'),
+        meetings: '최소 한 개의 모임을 등록해 주세요.',
+      }))
+      return
+    }
+
     setSaving(true)
 
     try {
       const savedGroup = await adminGroupApi.createGroup({
         districtId: Number(createForm.districtId),
         name: createForm.name,
-        notice: createForm.notice,
       })
 
       await adminGroupContactApi.createGroupContact({
@@ -401,33 +415,39 @@ export function GroupManagementPage({
         postalContact: toPostalContactPayload(createForm),
       })
 
-      await adminMeetingApi.createMeeting({
-        groupId: savedGroup.id,
-        locationDetail: createForm.locationDetail,
-        locationAddress: createForm.locationAddress,
-        contactPhoneOverride: createForm.contactPhoneOverride,
-        dayOfWeek: createForm.dayOfWeek,
-        startTime: createForm.startTime,
-        type: createForm.type,
-        active: true,
-      })
+      for (const meeting of createForm.meetings) {
+        await adminMeetingApi.createMeeting({
+          groupId: savedGroup.id,
+          locationDetail: meeting.locationDetail,
+          locationAddress: meeting.locationAddress,
+          contactPhoneOverride: meeting.contactPhoneOverride,
+          dayOfWeek: meeting.dayOfWeek,
+          startTime: meeting.startTime,
+          type: meeting.type,
+          active: true,
+        })
+      }
 
       await loadGroupIndex()
       setSearchQuery('')
       resetCreateFlow()
       setEditorState(CLOSED_EDITOR)
-      onSuccess('새 그룹과 첫 모임을 등록했습니다.')
+      onSuccess('새 그룹과 모임 정보를 등록했습니다.')
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       if (fieldErrors) {
         if (hasCreateBasicsErrors(fieldErrors)) {
           setCreateStep(1)
+          setCreateErrors(fieldErrors)
+          return
         }
-        setCreateErrors(fieldErrors)
+        setCreateErrors({
+          meetings: '모임 정보 저장에 실패했습니다. 각 모임 정보를 다시 확인해 주세요.',
+        })
         return
       }
 
-      onError(error, '첫 모임 등록에 실패했습니다.')
+      onError(error, '모임 등록에 실패했습니다.')
     } finally {
       setSaving(false)
     }
