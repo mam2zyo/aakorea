@@ -101,13 +101,13 @@ export function KakaoMeetingMap({
   locationAddress,
   locationDetail,
 }) {
-  const isDesktopMapVisible = useMediaQuery(DESKTOP_MAP_MEDIA_QUERY)
+  const isDesktopViewport = useMediaQuery(DESKTOP_MAP_MEDIA_QUERY)
   const mapContainerRef = useRef(null)
   const [loadError, setLoadError] = useState(false)
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
 
   useEffect(() => {
-    if (!isDesktopMapVisible || !hasCoordinates || !mapContainerRef.current) {
+    if (!hasCoordinates || !mapContainerRef.current) {
       return undefined
     }
 
@@ -119,10 +119,11 @@ export function KakaoMeetingMap({
           return
         }
 
+        setLoadError(false)
         const position = new kakao.maps.LatLng(latitude, longitude)
         const map = new kakao.maps.Map(mapContainerRef.current, {
           center: position,
-          level: 3,
+          level: isDesktopViewport ? 3 : 4,
         })
         const marker = new kakao.maps.Marker({
           position,
@@ -139,9 +140,9 @@ export function KakaoMeetingMap({
     return () => {
       cancelled = true
     }
-  }, [hasCoordinates, isDesktopMapVisible, latitude, longitude])
+  }, [hasCoordinates, isDesktopViewport, latitude, longitude])
 
-  if (!isDesktopMapVisible || !hasCoordinates) {
+  if (!hasCoordinates) {
     return null
   }
 
@@ -156,14 +157,16 @@ export function KakaoMeetingMap({
         aria-hidden="true"
       />
 
-      <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
-        <strong className="meeting-focus-location-card__title">
-          {locationDetail || '선택한 모임 위치'}
-        </strong>
-        <p className="meeting-focus-location-card__address">
-          {locationAddress || '공개 주소 없음'}
-        </p>
-      </div>
+      {isDesktopViewport ? (
+        <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
+          <strong className="meeting-focus-location-card__title">
+            {locationDetail || '선택한 모임 위치'}
+          </strong>
+          <p className="meeting-focus-location-card__address">
+            {locationAddress || '공개 주소 없음'}
+          </p>
+        </div>
+      ) : null}
 
       {loadError ? (
         <p className="meeting-focus-map__error">지도 정보를 불러오지 못했습니다.</p>

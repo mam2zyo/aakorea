@@ -607,6 +607,11 @@
     font-size: 0.78rem;
   }
 
+  .meeting-focus-map {
+    min-height: 148px;
+    border-radius: 18px;
+  }
+
   .meeting-focus-map__copy {
     right: 0.9rem;
     bottom: 0.9rem;
