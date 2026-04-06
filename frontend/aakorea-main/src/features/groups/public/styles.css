@@ -587,7 +587,14 @@
   }
 
   .meeting-focus-dialog__footer {
-    padding: 0.55rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    position: relative;
+    z-index: 1;
+    margin-top: -0.65rem;
+    padding: 1rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    background:
+      linear-gradient(180deg, rgba(255, 252, 246, 0.08) 0%, rgba(255, 252, 246, 0.72) 36%, rgba(248, 242, 232, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .meeting-focus-section {
