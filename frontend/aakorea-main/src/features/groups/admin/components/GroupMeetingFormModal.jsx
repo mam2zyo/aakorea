@@ -123,17 +123,21 @@ export function GroupMeetingFormModal({
 
                 <button
                   aria-checked={form.active}
-                  className={`admin-group-edit-sheet__status-button${
-                    form.active ? ' admin-group-edit-sheet__status-button--active' : ''
+                  className={`admin-group-edit-sheet__switch${
+                    form.active ? ' admin-group-edit-sheet__switch--active' : ''
                   }`}
                   role="switch"
                   type="button"
                   onClick={onToggleActive}
                 >
-                  <span className="admin-group-edit-sheet__status-track">
-                    <span className="admin-group-edit-sheet__status-thumb" />
+                  <span className="admin-group-edit-sheet__switch-track">
+                    <span className="admin-group-edit-sheet__switch-thumb" />
                   </span>
-                  <span className="admin-group-edit-sheet__status-text">
+                  <span
+                    className={`admin-group-edit-sheet__switch-text admin-group-edit-sheet__switch-text--${
+                      form.active ? 'active' : 'inactive'
+                    }`}
+                  >
                     {form.active ? '공개 중' : '비공개'}
                   </span>
                 </button>
