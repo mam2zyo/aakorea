@@ -230,3 +230,4 @@
 - reset은 테스트용으로 `meetings -> group_contacts -> groups -> districts` 순서로만 비운다
 - 좌표는 원본 HTML에 없으므로 신규 생성 시 `null`이다
 - 기존 Meeting 좌표가 있으면 update 시 유지한다
+- import 적용 후 좌표가 비어 있는 모임은 `POST /api/admin/meetings/backfill-coordinates`로 일괄 보정할 수 있다

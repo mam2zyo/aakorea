@@ -47,6 +47,9 @@
 - `ADMIN_MEETINGS.md`
   운영 `Meeting` API 계약
 
+- `ADMIN_MEETING_IMPORTS.md`
+  운영 테스트 도구용 정제 JSON import API 계약
+
 - `ADMIN_CONTENT.md`
   운영 `ContentPage`, `Notice` API 계약
 
@@ -66,7 +69,8 @@
 5. `ADMIN_GENERAL_SERVICES.md`
 6. `ADMIN_GROUPS.md`
 7. `ADMIN_MEETINGS.md`
-8. `ADMIN_CONTENT.md`
+8. `ADMIN_MEETING_IMPORTS.md`
+9. `ADMIN_CONTENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -115,6 +119,7 @@
 - `POST /api/admin/meetings`
 - `PUT /api/admin/meetings/{id}`
 - `DELETE /api/admin/meetings/{id}`
+- `POST /api/admin/meetings/backfill-coordinates`
 - `GET /api/admin/content-pages`
 - `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`
@@ -139,6 +144,7 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 운영 `District` API를 확인할 때: `ADMIN_GENERAL_SERVICES.md`
 - 운영 `Group`, `GroupContact` API를 확인할 때: `ADMIN_GROUPS.md`
 - 운영 모임 API를 확인할 때: `ADMIN_MEETINGS.md`
+- 운영 테스트 도구용 import API를 확인할 때: `ADMIN_MEETING_IMPORTS.md`
 - 운영 콘텐츠 API를 확인할 때: `ADMIN_CONTENT.md`
 
 범위 포함/제외 판단은 `../PRODUCT_SCOPE.md`를 따른다.  

@@ -13,7 +13,7 @@
 - 운영 `Group` 목록 및 생성
 - 운영 `Group` 편집 화면에서 `GroupContact`, `Meeting` 동시 관리
 - 운영 `ContentPage`, `Notice` 관리
-- 운영 셸의 `운영 현황`, `계정 설정` 라우트 확보
+- 운영 셸의 `테스트 도구`, `계정 설정` 라우트 제공
 
 ---
 
@@ -29,6 +29,12 @@ npm install
 
 ```bash
 npm run dev
+```
+
+대화면 카카오 지도를 확인하려면 프론트 env에 아래 값을 넣는다.
+
+```env
+VITE_KAKAO_MAP_JAVASCRIPT_KEY=your-kakao-javascript-key
 ```
 
 빌드:
@@ -51,6 +57,12 @@ npm run lint
 - 개발 서버에서는 Vite proxy가 `/api` 요청을 `http://localhost:8080`으로 전달
 - 필요 시 `VITE_PROXY_TARGET` 환경 변수로 프록시 대상을 바꿀 수 있음
 - 세션 인증 API를 사용하므로 요청은 cookie credential을 포함함
+
+백엔드가 주소 기반 좌표 계산을 수행하려면 실행 환경에 아래 값이 있어야 한다.
+
+```env
+AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
+```
 
 ---
 
@@ -79,6 +91,9 @@ npm run lint
 
 - `src/pages/admin/`
   로그인, District 관리, Group 목록, Group 작업공간, 콘텐츠 관리 화면을 둠
+
+- `src/pages/admin/AdminOverviewPage.jsx`
+  테스트 도구 화면 entrypoint를 두고 정제 JSON import와 좌표 보정 패널을 조합
 
 - `src/features/`
   `auth`, `districts`, `groups`, `content`, `home` 기준으로 API/하위 컴포넌트/스타일을 분리
@@ -121,5 +136,5 @@ npm run lint
 - `/admin/content-pages`
 - `/admin/notices`
 
-`/admin/overview`, `/admin/account`는 관리자 사이드바 구조를 먼저 고정하기 위해 라우트와 메뉴는 연결되어 있지만,
-현재 페이지 본문은 placeholder 상태다.
+`/admin/overview`는 현재 테스트 도구 화면으로 사용하며,
+정제 JSON import와 좌표 일괄 보정 기능을 함께 제공한다.
