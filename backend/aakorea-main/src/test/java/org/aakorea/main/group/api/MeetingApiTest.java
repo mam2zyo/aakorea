@@ -114,6 +114,50 @@ class MeetingApiTest {
     }
 
     @Test
+    void backfillCoordinatesReturnsSummary() throws Exception {
+        given(meetingAdminService.backfillMissingCoordinates(true))
+                .willReturn(new MeetingAdminService.CoordinateBackfillResult(
+                        true,
+                        2,
+                        1,
+                        0,
+                        1,
+                        List.of(
+                                new MeetingAdminService.CoordinateBackfillItem(
+                                        100L,
+                                        20L,
+                                        "강남그룹",
+                                        "서울특별시 강남구 테헤란로 123",
+                                        37.4979,
+                                        127.0276,
+                                        MeetingAdminService.CoordinateBackfillStatus.READY,
+                                        "coordinates resolved"),
+                                new MeetingAdminService.CoordinateBackfillItem(
+                                        101L,
+                                        21L,
+                                        "서초그룹",
+                                        "서울특별시 서초구 강남대로 456",
+                                        null,
+                                        null,
+                                        MeetingAdminService.CoordinateBackfillStatus.FAILED,
+                                        "locationAddress cannot determine coordinates"))));
+
+        mockMvc.perform(post("/api/admin/meetings/backfill-coordinates")
+                        .with(user("admin").roles("ADMIN"))
+                        .param("dryRun", "true")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.dryRun").value(true))
+                .andExpect(jsonPath("$.data.totalCandidateCount").value(2))
+                .andExpect(jsonPath("$.data.resolvedCount").value(1))
+                .andExpect(jsonPath("$.data.updatedCount").value(0))
+                .andExpect(jsonPath("$.data.failedCount").value(1))
+                .andExpect(jsonPath("$.data.items[0].meetingId").value(100))
+                .andExpect(jsonPath("$.data.items[0].status").value("READY"))
+                .andExpect(jsonPath("$.data.items[1].status").value("FAILED"));
+    }
+
+    @Test
     void deleteMeetingReturnsNoContent() throws Exception {
         willDoNothing().given(meetingAdminService).deleteMeeting(100L);
 

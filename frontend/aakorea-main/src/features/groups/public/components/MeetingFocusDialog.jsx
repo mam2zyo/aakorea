@@ -4,6 +4,7 @@ import {
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
 import { lookupLabel } from '../../../../lib/view'
+import { KakaoMeetingMap } from './KakaoMeetingMap'
 import {
   buildMeetingsPath,
   hasGroupNotice,
@@ -112,17 +113,13 @@ export function MeetingFocusDialog({
                   </p>
                 </div>
 
-                <div className="meeting-focus-map">
-                  <div className="meeting-focus-map__pin" aria-hidden="true" />
-                  <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
-                    <strong className="meeting-focus-location-card__title">
-                      {selectedMeeting.locationDetail || '선택한 모임 위치'}
-                    </strong>
-                    <p className="meeting-focus-location-card__address">
-                      {selectedMeeting.locationAddress || '지도 API 연동 시 이 위치가 이 영역에 표시됩니다.'}
-                    </p>
-                  </div>
-                </div>
+                <KakaoMeetingMap
+                  key={selectedMeeting.id}
+                  latitude={selectedMeeting.latitude}
+                  longitude={selectedMeeting.longitude}
+                  locationAddress={selectedMeeting.locationAddress}
+                  locationDetail={selectedMeeting.locationDetail}
+                />
 
                 {contactPhone ? (
                   <div className="meeting-focus-contact-block">

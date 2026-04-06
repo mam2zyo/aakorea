@@ -77,6 +77,13 @@ public class MeetingAdminController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/backfill-coordinates")
+    public ApiResponse<MeetingAdminService.CoordinateBackfillResult> backfillMissingCoordinates(
+            @RequestParam(defaultValue = "true") boolean dryRun
+    ) {
+        return ApiResponse.success(meetingAdminService.backfillMissingCoordinates(dryRun));
+    }
+
     public record MeetingRequest(
             @NotNull(message = "groupId is required") Long groupId,
             @NotBlank(message = "locationDetail is required") String locationDetail,

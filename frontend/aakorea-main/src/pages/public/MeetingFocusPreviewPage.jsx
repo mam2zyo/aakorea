@@ -24,6 +24,8 @@ const PREVIEW_GROUP_DETAILS = {
       type: 'CLOSED',
       locationDetail: '자비교회 2층 201호',
       locationAddress: '경기도 수원시 팔달구 정조로 123',
+      latitude: 37.280119,
+      longitude: 127.015445,
       contactPhone: '010-6322-5263',
     },
     {
@@ -33,6 +35,8 @@ const PREVIEW_GROUP_DETAILS = {
       type: 'OPEN',
       locationDetail: '자비교회 2층 201호',
       locationAddress: '경기도 수원시 팔달구 정조로 123',
+      latitude: 37.280119,
+      longitude: 127.015445,
       contactPhone: '010-6322-5263',
     },
   ],

@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
 import org.aakorea.main.generalservice.domain.District;
 import org.aakorea.main.group.domain.Group;
@@ -34,6 +36,9 @@ class MeetingAdminServiceTest {
 
     @Mock
     private GroupRepository groupRepository;
+
+    @Mock
+    private MeetingAddressGeocoder meetingAddressGeocoder;
 
     @InjectMocks
     private MeetingAdminService meetingAdminService;
@@ -81,6 +86,7 @@ class MeetingAdminServiceTest {
         assertThat(result.longitude()).isEqualTo(127.0276);
         assertThat(result.contactPhoneOverride()).isEqualTo("010-9999-0000");
         assertThat(result.startTime()).isEqualTo("19:30");
+        verifyNoInteractions(meetingAddressGeocoder);
     }
 
     @Test
@@ -204,6 +210,67 @@ class MeetingAdminServiceTest {
     }
 
     @Test
+    void createMeetingResolvesCoordinatesWhenTheyAreMissing() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        ReflectionTestUtils.setField(group, "id", 20L);
+
+        given(groupRepository.findById(20L)).willReturn(Optional.of(group));
+        given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
+                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+        given(meetingRepository.save(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting meeting = invocation.getArgument(0);
+            ReflectionTestUtils.setField(meeting, "id", 100L);
+            return meeting;
+        });
+
+        MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
+                20L,
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                null,
+                null,
+                null,
+                "MONDAY",
+                "19:30",
+                "OPEN",
+                true);
+
+        assertThat(result.latitude()).isEqualTo(37.4979);
+        assertThat(result.longitude()).isEqualTo(127.0276);
+        verify(meetingAddressGeocoder).resolveCoordinates("서울특별시 강남구 테헤란로 123");
+    }
+
+    @Test
+    void createMeetingThrowsWhenGeocoderCannotResolveCoordinates() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        ReflectionTestUtils.setField(group, "id", 20L);
+
+        given(groupRepository.findById(20L)).willReturn(Optional.of(group));
+        given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
+                .willReturn(null);
+
+        assertThatThrownBy(() -> meetingAdminService.createMeeting(
+                20L,
+                "강남역 인근",
+                "서울특별시 강남구 테헤란로 123",
+                null,
+                null,
+                null,
+                "MONDAY",
+                "19:30",
+                "OPEN",
+                true))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+                    assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+                    assertThat(responseStatusException.getReason()).isEqualTo("locationAddress cannot determine coordinates");
+                });
+    }
+
+    @Test
     void createMeetingThrowsWhenOnlyLatitudeIsProvided() {
         District district = new District("서울");
         Group group = new Group(district, "강남그룹");
@@ -228,5 +295,126 @@ class MeetingAdminServiceTest {
                     assertThat(responseStatusException.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
                     assertThat(responseStatusException.getReason()).isEqualTo("longitude is required when latitude is provided");
                 });
+    }
+
+    @Test
+    void backfillMissingCoordinatesDryRunReturnsResolvedPreview() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        Meeting meeting = new Meeting(
+                group,
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null),
+                DayOfWeek.MONDAY,
+                java.time.LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                null,
+                true);
+
+        ReflectionTestUtils.setField(group, "id", 20L);
+        ReflectionTestUtils.setField(meeting, "id", 100L);
+
+        given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
+        given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
+                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+
+        MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(true);
+
+        assertThat(result.dryRun()).isTrue();
+        assertThat(result.totalCandidateCount()).isEqualTo(1);
+        assertThat(result.resolvedCount()).isEqualTo(1);
+        assertThat(result.updatedCount()).isEqualTo(0);
+        assertThat(result.failedCount()).isEqualTo(0);
+        assertThat(result.items()).singleElement().satisfies(item -> {
+            assertThat(item.meetingId()).isEqualTo(100L);
+            assertThat(item.groupId()).isEqualTo(20L);
+            assertThat(item.groupName()).isEqualTo("강남그룹");
+            assertThat(item.latitude()).isEqualTo(37.4979);
+            assertThat(item.longitude()).isEqualTo(127.0276);
+            assertThat(item.status()).isEqualTo(MeetingAdminService.CoordinateBackfillStatus.READY);
+        });
+        assertThat(meeting.getLatitude()).isNull();
+        assertThat(meeting.getLongitude()).isNull();
+    }
+
+    @Test
+    void backfillMissingCoordinatesUpdatesResolvedMeetings() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        Meeting meeting = new Meeting(
+                group,
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null),
+                DayOfWeek.MONDAY,
+                java.time.LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                null,
+                true);
+
+        ReflectionTestUtils.setField(group, "id", 20L);
+        ReflectionTestUtils.setField(meeting, "id", 100L);
+
+        given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
+        given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
+                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+
+        MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(false);
+
+        assertThat(result.dryRun()).isFalse();
+        assertThat(result.totalCandidateCount()).isEqualTo(1);
+        assertThat(result.resolvedCount()).isEqualTo(1);
+        assertThat(result.updatedCount()).isEqualTo(1);
+        assertThat(result.failedCount()).isEqualTo(0);
+        assertThat(result.items()).singleElement().satisfies(item ->
+                assertThat(item.status()).isEqualTo(MeetingAdminService.CoordinateBackfillStatus.UPDATED));
+        assertThat(meeting.getLatitude()).isEqualTo(37.4979);
+        assertThat(meeting.getLongitude()).isEqualTo(127.0276);
+    }
+
+    @Test
+    void backfillMissingCoordinatesMarksUnresolvedAddressesAsFailed() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        Meeting meeting = new Meeting(
+                group,
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null),
+                DayOfWeek.MONDAY,
+                java.time.LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                null,
+                true);
+
+        ReflectionTestUtils.setField(group, "id", 20L);
+        ReflectionTestUtils.setField(meeting, "id", 100L);
+
+        given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
+        given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
+                .willReturn(null);
+
+        MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(false);
+
+        assertThat(result.totalCandidateCount()).isEqualTo(1);
+        assertThat(result.resolvedCount()).isEqualTo(0);
+        assertThat(result.updatedCount()).isEqualTo(0);
+        assertThat(result.failedCount()).isEqualTo(1);
+        assertThat(result.items()).singleElement().satisfies(item -> {
+            assertThat(item.status()).isEqualTo(MeetingAdminService.CoordinateBackfillStatus.FAILED);
+            assertThat(item.message()).isEqualTo("locationAddress cannot determine coordinates");
+        });
+        assertThat(meeting.getLatitude()).isNull();
+        assertThat(meeting.getLongitude()).isNull();
     }
 }

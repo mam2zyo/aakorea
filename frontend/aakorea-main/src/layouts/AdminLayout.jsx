@@ -34,7 +34,7 @@ const ADMIN_NAV_GROUPS = [
   ],
   [
     {
-      label: "운영 현황",
+      label: "테스트 도구",
       href: "/admin/overview",
       match: (path) => path === "/admin/overview",
     },

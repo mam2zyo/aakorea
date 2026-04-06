@@ -5,6 +5,11 @@ export const adminMeetingApi = {
   getMeetings(filters = {}) {
     return request(withQuery('/api/admin/meetings', filters))
   },
+  backfillCoordinates(dryRun = true) {
+    return request(withQuery('/api/admin/meetings/backfill-coordinates', { dryRun }), {
+      method: 'POST',
+    })
+  },
   createMeeting(payload) {
     return request('/api/admin/meetings', {
       method: 'POST',

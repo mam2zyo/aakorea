@@ -437,48 +437,17 @@
   overflow: hidden;
   border: 1px solid rgba(216, 203, 184, 0.82);
   border-radius: 22px;
-  background:
-    linear-gradient(135deg, rgba(44, 106, 75, 0.16), rgba(44, 106, 75, 0.03)),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.8), transparent 30%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.22) 0,
-      rgba(255, 255, 255, 0.22) 1px,
-      transparent 1px,
-      transparent 78px
-    ),
-    repeating-linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.16) 0,
-      rgba(255, 255, 255, 0.16) 1px,
-      transparent 1px,
-      transparent 64px
-    ),
-    #dfe9df;
+  background: linear-gradient(135deg, rgba(44, 106, 75, 0.08), rgba(255, 255, 255, 0.78));
   min-height: 180px;
-  padding: 1rem;
 }
 
-.meeting-focus-map__pin {
+.meeting-focus-map__canvas {
   position: absolute;
-  top: 28%;
-  left: 54%;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: var(--color-primary-strong);
-  box-shadow: 0 0 0 7px rgba(44, 106, 75, 0.12);
+  inset: 0;
 }
 
-.meeting-focus-map__pin::after {
-  content: '';
-  position: absolute;
-  top: 12px;
-  left: 5px;
-  width: 6px;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(29, 77, 53, 0.45);
+.meeting-focus-map--error .meeting-focus-map__canvas {
+  display: none;
 }
 
 .meeting-focus-map__copy {
@@ -486,6 +455,20 @@
   right: 1rem;
   bottom: 1rem;
   max-width: min(100%, 320px);
+}
+
+.meeting-focus-map__error {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.92);
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .meeting-focus-location-card {
@@ -624,11 +607,6 @@
     font-size: 0.78rem;
   }
 
-  .meeting-focus-map {
-    min-height: 168px;
-    padding: 0.9rem;
-  }
-
   .meeting-focus-map__copy {
     right: 0.9rem;
     bottom: 0.9rem;
@@ -644,5 +622,11 @@
   .meeting-focus-contact__fab-icon {
     width: 22px;
     height: 22px;
+  }
+}
+
+@media (min-width: 921px) {
+  .meeting-focus-map {
+    min-height: 260px;
   }
 }

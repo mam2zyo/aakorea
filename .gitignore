@@ -30,6 +30,8 @@ frontend/.vite/
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
+frontend/aakorea-main/.env
+frontend/aakorea-main/.env.*
 
 # =========================
 # Backend

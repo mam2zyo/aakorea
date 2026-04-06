@@ -99,6 +99,10 @@ public class Meeting {
         this.active = active;
     }
 
+    public void updateLocation(Location location) {
+        this.location = location;
+    }
+
     public Province getProvince() {
         return location == null ? null : location.getProvince();
     }

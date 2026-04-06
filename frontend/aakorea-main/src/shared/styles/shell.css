@@ -1730,11 +1730,18 @@
   gap: var(--space-4);
 }
 
+.admin-ops-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .admin-import-panel__file-input {
   display: none;
 }
 
-.admin-import-panel__body {
+.admin-import-panel__body,
+.admin-ops-panel__body {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -1771,13 +1778,15 @@
 }
 
 .admin-import-panel__summary,
-.admin-import-panel__issue-list {
+.admin-import-panel__issue-list,
+.admin-ops-panel__summary {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.admin-import-panel__preview-item {
+.admin-import-panel__preview-item,
+.admin-ops-panel__result-item {
   justify-content: flex-start;
 }
 
