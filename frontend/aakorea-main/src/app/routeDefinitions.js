@@ -18,6 +18,12 @@ export function parseRoute(pathname, search = '') {
     })
   }
 
+  if (import.meta.env.DEV && normalizedPath === '/__preview/meeting-focus') {
+    return createRoute('meeting-focus-preview', normalizedPath, {
+      section: 'public',
+    })
+  }
+
   const groupMatch = normalizedPath.match(/^\/groups\/(\d+)$/)
   if (groupMatch) {
     return createRoute('meetings', normalizedPath, {

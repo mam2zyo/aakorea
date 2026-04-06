@@ -11,6 +11,7 @@ import { GroupListPage } from '../pages/admin/GroupListPage'
 import { NoticeAdminPage } from '../pages/admin/NoticeAdminPage'
 import { ContentPageViewPage } from '../pages/public/ContentPageViewPage'
 import { HomePage } from '../pages/public/HomePage'
+import { MeetingFocusPreviewPage } from '../pages/public/MeetingFocusPreviewPage'
 import { MeetingSearchPage } from '../pages/public/MeetingSearchPage'
 import { NoticePage } from '../pages/public/NoticePage'
 import {
@@ -173,6 +174,8 @@ function renderPage({
           province={route.province}
         />
       )
+    case 'meeting-focus-preview':
+      return <MeetingFocusPreviewPage onNavigate={onNavigate} />
     case 'notices':
       return (
         <NoticePage

@@ -20,6 +20,7 @@ export function MeetingFocusDialog({
   selectedMeeting,
 }) {
   const contactPhone = selectedMeeting?.contactPhone || groupDetails?.contactPhone || ''
+  const hasNotice = Boolean(hasGroupNotice(groupDetails))
 
   return (
     <div
@@ -68,63 +69,49 @@ export function MeetingFocusDialog({
 
           {groupDetails && selectedMeeting ? (
             <div className="meeting-focus-sheet">
-              <section className="meeting-focus-section meeting-focus-section--notice">
-                <p className="meeting-focus-section__label">공지</p>
-                <div className="meeting-focus-notice">
-                  <p
-                    className={`meeting-focus-notice__body${
-                      hasGroupNotice(groupDetails) ? '' : ' meeting-focus-notice__body--muted'
-                    }`}
-                  >
-                    {readGroupNotice(groupDetails)}
-                  </p>
-                </div>
-              </section>
+              {hasNotice ? (
+                <section className="meeting-focus-section meeting-focus-section--notice">
+                  <p className="meeting-focus-section__label">공지</p>
+                  <div className="meeting-focus-notice">
+                    <p className="meeting-focus-notice__body">{readGroupNotice(groupDetails)}</p>
+                  </div>
+                </section>
+              ) : null}
 
               <section className="meeting-focus-section meeting-focus-section--meeting-info">
-                <p className="meeting-focus-section__label">모임 정보</p>
-                <div className="meeting-focus-info-stack">
-                  <div className="meeting-focus-list">
-                    {groupDetails.meetings.map((meeting) => (
-                      <button
-                        key={meeting.id}
-                        className={`meeting-focus-list__item${
-                          selectedMeeting.id === meeting.id ? ' meeting-focus-list__item--selected' : ''
-                        }`}
-                        type="button"
-                        onClick={() => onNavigate(buildMeetingsPath(filters, groupDetails.id, meeting.id))}
+                <p className="meeting-focus-section__label">모임 일정</p>
+                <div className="meeting-focus-list">
+                  {groupDetails.meetings.map((meeting) => (
+                    <button
+                      key={meeting.id}
+                      className={`meeting-focus-list__item${
+                        selectedMeeting.id === meeting.id ? ' meeting-focus-list__item--selected' : ''
+                      }`}
+                      type="button"
+                      onClick={() => onNavigate(buildMeetingsPath(filters, groupDetails.id, meeting.id))}
+                    >
+                      <strong>
+                        {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
+                      </strong>
+                      <span
+                        className={`meeting-focus-type-badge meeting-focus-type-badge--${meeting.type.toLowerCase()}`}
                       >
-                        <strong>
-                          {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
-                        </strong>
-                        <span>{lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="meeting-focus-document">
-                    <div className="meeting-focus-document__row">
-                      <p className="meeting-focus-document__label">모임 장소 상세</p>
-                      <div className="meeting-focus-document__value-group">
-                        <strong className="meeting-focus-document__value">
-                          {selectedMeeting.locationDetail || '상세 위치 미정'}
-                        </strong>
-                      </div>
-                    </div>
-
-                    <div className="meeting-focus-document__row">
-                      <p className="meeting-focus-document__label">주소</p>
-                      <div className="meeting-focus-document__value-group">
-                        <p className="meeting-focus-document__value meeting-focus-document__value--muted">
-                          {selectedMeeting.locationAddress || '공개 주소 없음'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                        {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
+                      </span>
+                    </button>
+                  ))}
                 </div>
-              </section>
 
-              <section className="meeting-focus-section meeting-focus-section--map">
+                <div className="meeting-focus-location-block">
+                  <p className="meeting-focus-location-block__label">모임 장소</p>
+                  <strong className="meeting-focus-location-block__title">
+                    {selectedMeeting.locationDetail || '상세 위치 미정'}
+                  </strong>
+                  <p className="meeting-focus-location-block__address">
+                    {selectedMeeting.locationAddress || '공개 주소 없음'}
+                  </p>
+                </div>
+
                 <div className="meeting-focus-map">
                   <div className="meeting-focus-map__pin" aria-hidden="true" />
                   <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
@@ -136,6 +123,13 @@ export function MeetingFocusDialog({
                     </p>
                   </div>
                 </div>
+
+                {contactPhone ? (
+                  <div className="meeting-focus-contact-block">
+                    <p className="meeting-focus-contact-block__label">연락처</p>
+                    <strong className="meeting-focus-contact-block__value">{contactPhone}</strong>
+                  </div>
+                ) : null}
               </section>
             </div>
           ) : null}
@@ -143,13 +137,22 @@ export function MeetingFocusDialog({
 
         {contactPhone ? (
           <footer className="meeting-focus-dialog__footer">
-            <div className="meeting-focus-contact">
-              <p className="meeting-focus-contact__label">연락처</p>
-              <strong className="meeting-focus-contact__value">{contactPhone}</strong>
-            </div>
-
-            <a className="primary-button meeting-focus-contact__action" href={`tel:${contactPhone}`}>
-              전화 걸기
+            <a
+              aria-label={`전화하기 ${contactPhone}`}
+              className="meeting-focus-contact__fab"
+              href={`tel:${contactPhone}`}
+            >
+              <svg
+                aria-hidden="true"
+                className="meeting-focus-contact__fab-icon"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M6.62 10.79a15.06 15.06 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.32.56 3.57.56a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.06 21 3 13.94 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.19 2.45.56 3.57a1 1 0 0 1-.24 1.02z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span className="meeting-focus-sr-only">전화하기</span>
             </a>
           </footer>
         ) : null}
