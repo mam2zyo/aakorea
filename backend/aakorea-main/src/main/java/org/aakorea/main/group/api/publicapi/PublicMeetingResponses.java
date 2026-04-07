@@ -26,7 +26,8 @@ public final class PublicMeetingResponses {
             String locationDetail,
             String locationAddress,
             Double latitude,
-            Double longitude
+            Double longitude,
+            Double distanceKm
     ) {
     }
 

@@ -64,7 +64,8 @@ final class PublicMeetingResponseMapper {
                 meetingSummary.locationDetail(),
                 meetingSummary.locationAddress(),
                 meetingSummary.latitude(),
-                meetingSummary.longitude());
+                meetingSummary.longitude(),
+                meetingSummary.distanceKm());
     }
 
     private static PublicMeetingResponses.District toDistrict(DistrictData districtData) {

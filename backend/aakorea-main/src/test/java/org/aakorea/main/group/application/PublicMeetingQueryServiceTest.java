@@ -45,7 +45,7 @@ class PublicMeetingQueryServiceTest {
 
     @Test
     void getMeetingsRequiresProvince() {
-        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings(null, null))
+        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings(null, null, null, null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -81,7 +81,7 @@ class PublicMeetingQueryServiceTest {
                 .willReturn(List.of(meeting));
 
         List<PublicMeetingQueryService.PublicMeetingSummary> result =
-                publicMeetingQueryService.getMeetings("Seoul", "monday");
+                publicMeetingQueryService.getMeetings("Seoul", "monday", null, null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().groupName()).isEqualTo("강남그룹");
@@ -91,6 +91,56 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.getFirst().locationAddress()).isEqualTo("서울특별시 강남구 테헤란로 123");
         assertThat(result.getFirst().latitude()).isEqualTo(37.4979);
         assertThat(result.getFirst().longitude()).isEqualTo(127.0276);
+        assertThat(result.getFirst().distanceKm()).isNull();
+    }
+
+    @Test
+    void getMeetingsSupportsNearbySearchAndSortsByDistance() {
+        District district = new District("서울");
+        Group group = new Group(district, "강남그룹");
+        Meeting nearestMeeting = new Meeting(
+                group,
+                new Location(
+                        Province.SEOUL,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276),
+                DayOfWeek.MONDAY,
+                LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                null,
+                true);
+        Meeting fartherMeeting = new Meeting(
+                group,
+                new Location(
+                        Province.INCHEON,
+                        "인천시청 인근",
+                        "인천광역시 남동구 정각로 29",
+                        37.4563,
+                        126.7052),
+                DayOfWeek.MONDAY,
+                LocalTime.of(20, 0),
+                MeetingType.CLOSED,
+                null,
+                true);
+
+        ReflectionTestUtils.setField(group, "id", 20L);
+        ReflectionTestUtils.setField(nearestMeeting, "id", 100L);
+        ReflectionTestUtils.setField(fartherMeeting, "id", 101L);
+
+        given(meetingRepository.findAll(
+                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any(),
+                any(org.springframework.data.domain.Sort.class)))
+                .willReturn(List.of(fartherMeeting, nearestMeeting));
+
+        List<PublicMeetingQueryService.PublicMeetingSummary> result =
+                publicMeetingQueryService.getMeetings(null, "MONDAY", 37.4980, 127.0280, 10);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().id()).isEqualTo(100L);
+        assertThat(result.getFirst().distanceKm()).isNotNull();
+        assertThat(result.getFirst().distanceKm()).isLessThan(1.0);
     }
 
     @Test

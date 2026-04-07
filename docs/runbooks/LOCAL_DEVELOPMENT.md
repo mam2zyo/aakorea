@@ -69,6 +69,7 @@
 대화면 공개 모달에서 카카오 지도를 렌더링하려면 아래 값이 필요하다.
 
 - `VITE_KAKAO_MAP_JAVASCRIPT_KEY`
+- `VITE_TMAP_APP_KEY` (optional, `T map 길안내` 링크를 사용할 때)
 
 Vite proxy 대상은 기본적으로 `http://localhost:8081`이다.
 다른 백엔드 주소를 테스트할 때만 `VITE_PROXY_TARGET`을 덮어쓴다.
@@ -105,6 +106,13 @@ npm run dev
 ```bash
 cd /home/mam2z/apps/aakorea-main/frontend/aakorea-main
 VITE_KAKAO_MAP_JAVASCRIPT_KEY=your-kakao-javascript-key npm run dev
+```
+
+`T map 길안내` 링크까지 함께 확인하려면 아래처럼 실행할 수 있다.
+
+```bash
+cd /home/mam2z/apps/aakorea-main/frontend/aakorea-main
+VITE_KAKAO_MAP_JAVASCRIPT_KEY=your-kakao-javascript-key VITE_TMAP_APP_KEY=your-tmap-app-key npm run dev
 ```
 
 프록시 대상을 바꿔야 할 때만 아래처럼 덮어쓴다.

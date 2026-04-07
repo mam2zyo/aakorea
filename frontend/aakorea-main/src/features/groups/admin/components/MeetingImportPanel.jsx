@@ -5,30 +5,42 @@ import { adminMeetingImportApi } from '../../../../lib/api'
 const IMPORT_PREVIEW_GROUP_LIMIT = 5
 
 export function MeetingImportPanel({ onError, onSuccess }) {
+  const [importHtmlText, setImportHtmlText] = useState('')
+  const [importHtmlFileName, setImportHtmlFileName] = useState('')
   const [importJsonText, setImportJsonText] = useState('')
   const [importFileName, setImportFileName] = useState('')
   const [importPreview, setImportPreview] = useState(null)
   const [importValidationMessage, setImportValidationMessage] = useState('')
+  const [normalizingImport, setNormalizingImport] = useState(false)
   const [previewingImport, setPreviewingImport] = useState(false)
   const [applyingImport, setApplyingImport] = useState(false)
   const [resettingImportData, setResettingImportData] = useState(false)
+  const importHtmlFileInputRef = useRef(null)
   const importFileInputRef = useRef(null)
 
-  const importBusy = previewingImport || applyingImport || resettingImportData
+  const importBusy = normalizingImport || previewingImport || applyingImport || resettingImportData
   const previewGroups = importPreview?.groups?.slice(0, IMPORT_PREVIEW_GROUP_LIMIT) ?? []
 
   return (
-    <section className="editor-card admin-import-panel" aria-label="정제 JSON import">
+    <section className="editor-card admin-import-panel" aria-label="HTML 또는 정제 JSON import">
       <div className="section-header">
         <div>
-          <h3>테스트용 정제 JSON Import</h3>
+          <h3>테스트용 HTML / 정제 JSON Import</h3>
           <p className="admin-form-note">
-            운영현황에서만 쓰는 도구입니다. `meeting.html`에서 정제한 JSON 파일을 붙여넣거나 업로드한 뒤,
-            미리보기로 검토하고 DB에 반영합니다.
+            운영현황에서만 쓰는 도구입니다. `meeting.html` 원본 HTML을 먼저 정제하거나, 이미 준비한 정제 JSON을
+            바로 붙여넣어 미리보기로 검토한 뒤 DB에 반영합니다.
           </p>
         </div>
 
         <div className="button-row button-row--compact">
+          <button
+            className="ghost-button ghost-button--small"
+            type="button"
+            onClick={openHtmlFilePicker}
+            disabled={importBusy}
+          >
+            HTML 파일 선택
+          </button>
           <button
             className="ghost-button ghost-button--small"
             type="button"
@@ -57,6 +69,14 @@ export function MeetingImportPanel({ onError, onSuccess }) {
       </div>
 
       <input
+        ref={importHtmlFileInputRef}
+        accept=".html,.htm,text/html"
+        className="admin-import-panel__file-input"
+        type="file"
+        onChange={(event) => void handleImportHtmlFileSelected(event)}
+      />
+
+      <input
         ref={importFileInputRef}
         accept=".json,application/json"
         className="admin-import-panel__file-input"
@@ -65,6 +85,35 @@ export function MeetingImportPanel({ onError, onSuccess }) {
       />
 
       <div className="admin-import-panel__body">
+        <label className="field admin-import-panel__field">
+          <span className="field__label">원본 HTML</span>
+          <textarea
+            className="admin-import-panel__textarea"
+            placeholder={'<html>...</html>'}
+            value={importHtmlText}
+            onChange={handleImportHtmlChange}
+            disabled={importBusy}
+          />
+        </label>
+
+        <div className="admin-import-panel__toolbar">
+          <div className="admin-import-panel__meta">
+            <strong>{importHtmlFileName || '직접 붙여넣기 입력'}</strong>
+            <span>원본 HTML을 정제 JSON으로 변환한 뒤 아래 preview/apply 흐름으로 이어집니다.</span>
+          </div>
+
+          <div className="button-row button-row--compact">
+            <button
+              className="ghost-button ghost-button--small"
+              type="button"
+              onClick={() => void normalizeImportHtml()}
+              disabled={importBusy || !importHtmlText.trim()}
+            >
+              {normalizingImport ? 'HTML 정제 중...' : 'HTML 정제'}
+            </button>
+          </div>
+        </div>
+
         <label className="field admin-import-panel__field">
           <span className="field__label">정제 JSON</span>
           <textarea
@@ -174,14 +223,41 @@ export function MeetingImportPanel({ onError, onSuccess }) {
     </section>
   )
 
+  function handleImportHtmlChange(event) {
+    setImportHtmlText(event.target.value)
+    setImportValidationMessage('')
+  }
+
   function handleImportJsonChange(event) {
     setImportJsonText(event.target.value)
     setImportPreview(null)
     setImportValidationMessage('')
   }
 
+  function openHtmlFilePicker() {
+    importHtmlFileInputRef.current?.click()
+  }
+
   function openImportFilePicker() {
     importFileInputRef.current?.click()
+  }
+
+  async function handleImportHtmlFileSelected(event) {
+    const [file] = event.target.files ?? []
+    if (!file) {
+      return
+    }
+
+    try {
+      const fileText = await file.text()
+      setImportHtmlText(fileText)
+      setImportHtmlFileName(file.name)
+      setImportValidationMessage('')
+    } catch (error) {
+      onError(error, 'HTML 파일을 읽지 못했습니다.')
+    } finally {
+      event.target.value = ''
+    }
   }
 
   async function handleImportFileSelected(event) {
@@ -204,13 +280,46 @@ export function MeetingImportPanel({ onError, onSuccess }) {
   }
 
   function clearImportWorkspace() {
+    setImportHtmlText('')
+    setImportHtmlFileName('')
     setImportJsonText('')
     setImportFileName('')
     setImportPreview(null)
     setImportValidationMessage('')
 
+    if (importHtmlFileInputRef.current) {
+      importHtmlFileInputRef.current.value = ''
+    }
     if (importFileInputRef.current) {
       importFileInputRef.current.value = ''
+    }
+  }
+
+  async function normalizeImportHtml() {
+    if (!importHtmlText.trim()) {
+      setImportValidationMessage('원본 HTML을 붙여넣거나 파일을 선택해 주세요.')
+      return
+    }
+
+    setNormalizingImport(true)
+
+    try {
+      const normalizedImport = await adminMeetingImportApi.normalizeImport({
+        html: importHtmlText,
+      })
+
+      setImportJsonText(JSON.stringify(normalizedImport, null, 2))
+      setImportFileName(importHtmlFileName ? `${importHtmlFileName} 정제 결과` : 'HTML 정제 결과')
+      setImportPreview(null)
+      setImportValidationMessage('')
+      onSuccess(
+        `원본 HTML을 정제했습니다. 원본 모임 ${normalizedImport.sourceMeetingCount}개, 그룹 ${normalizedImport.groups.length}개입니다.`,
+      )
+    } catch (error) {
+      setImportPreview(null)
+      onError(error, 'HTML 정제에 실패했습니다.')
+    } finally {
+      setNormalizingImport(false)
     }
   }
 

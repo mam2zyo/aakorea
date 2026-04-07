@@ -193,7 +193,7 @@ class MeetingApiTest {
 
     @Test
     void publicMeetingListReturnsMeetingSummaries() throws Exception {
-        given(publicMeetingQueryService.getMeetings("seoul", "MONDAY"))
+        given(publicMeetingQueryService.getMeetings("seoul", "MONDAY", null, null, null))
                 .willReturn(List.of(new PublicMeetingQueryService.PublicMeetingSummary(
                         100L,
                         20L,
@@ -205,7 +205,8 @@ class MeetingApiTest {
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
                         37.4979,
-                        127.0276)));
+                        127.0276,
+                        null)));
 
         mockMvc.perform(get("/api/public/meetings")
                         .param("province", "seoul")
@@ -221,6 +222,33 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data[0].locationDetail").value("강남역 인근"))
                 .andExpect(jsonPath("$.data[0].latitude").value(37.4979))
                 .andExpect(jsonPath("$.data[0].longitude").value(127.0276));
+    }
+
+    @Test
+    void publicNearbyMeetingListReturnsDistance() throws Exception {
+        given(publicMeetingQueryService.getMeetings(null, "MONDAY", 37.4979, 127.0276, 10))
+                .willReturn(List.of(new PublicMeetingQueryService.PublicMeetingSummary(
+                        100L,
+                        20L,
+                        "강남그룹",
+                        "seoul",
+                        DayOfWeek.MONDAY,
+                        "19:30",
+                        MeetingType.OPEN,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276,
+                        0.2)));
+
+        mockMvc.perform(get("/api/public/meetings")
+                        .param("dayOfWeek", "MONDAY")
+                        .param("latitude", "37.4979")
+                        .param("longitude", "127.0276")
+                        .param("radiusKm", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].groupName").value("강남그룹"))
+                .andExpect(jsonPath("$.data[0].distanceKm").value(0.2));
     }
 
     @Test

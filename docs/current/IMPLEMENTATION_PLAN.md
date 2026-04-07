@@ -45,7 +45,7 @@
 - `ContentPage`, `Notice` CRUD
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장
-- 정제 JSON import preview / apply / reset
+- HTML normalize + 정제 JSON import preview / apply / reset
 - 좌표 backfill dry-run / apply
 
 ---
@@ -75,27 +75,23 @@
 
 ### import 도구
 
-- 현재 관리자 UI는 **정제된 JSON**을 붙여넣거나 업로드한 뒤 `preview / apply / reset`을 사용한다
-- raw HTML을 정제 JSON으로 바꾸는 `normalize` API는 별도로 존재한다
+- 현재 관리자 UI는 원본 HTML을 붙여넣거나 업로드해 `normalize`한 뒤, 정제 JSON 기준으로 `preview / apply / reset`을 사용한다
+- 이미 준비된 정제 JSON을 바로 붙여넣거나 업로드해 같은 흐름으로 이어갈 수도 있다
 - reset은 테스트용 import 데이터 정리에만 사용한다
 
 ---
 
 ## 다음 작업 후보
 
-### 1. normalize HTML 단계의 관리자 UI 연결 여부 결정
+### 1. 공개 모임의 상세 검색 조건 UI 정리
 
-- 현재 API는 존재하지만 UI는 pre-generated JSON 업로드만 지원한다
+- 현재는 지역 / 요일 / nearby search까지 제공하고, 상세 필터 UI는 아직 최소 상태다
 
-### 2. 공개 모임 UX의 지도 / 외부 길찾기 CTA 정리
-
-- 현재는 데스크톱 내장 지도까지 제공하고, 모바일 deep link CTA는 제외한 상태다
-
-### 3. 운영자 개인 설정의 서버 저장 여부 결정
+### 2. 운영자 개인 설정의 서버 저장 여부 결정
 
 - `admin/account`의 theme preference는 현재 localStorage에만 저장한다
 
-### 4. 운영 runbook 확장
+### 3. 운영 runbook 확장
 
 - 배포와 환경 설정 문서는 `runbooks/`로 분리했다
 - import, backfill, theme publish 같은 운영 절차도 같은 위치로 확장할 수 있다
@@ -127,6 +123,7 @@
 현재는 아래가 안정적으로 동작하면 핵심 흐름이 성립한다고 본다.
 
 - 방문자가 지역 / 요일 기준으로 모임을 찾을 수 있다
+- 방문자가 현재 위치 기준 가까운 모임을 찾을 수 있다
 - 방문자가 모달에서 장소와 연락처를 확인할 수 있다
 - 운영자가 그룹과 모임을 생성 / 수정 / 삭제할 수 있다
 - 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다

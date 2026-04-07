@@ -10,10 +10,11 @@
 
 ## 현재 구조 요약
 
-- 1차 입력은 원본 HTML 문자열이다
+- 1차 입력은 원본 HTML 문자열 또는 이미 준비된 정제 JSON이다
 - `normalize`는 HTML을 정제 JSON으로 변환한다
 - `preview`와 `apply`는 HTML이 아니라 정제 JSON을 입력으로 받는다
-- 현재 관리자 UI는 pre-generated 정제 JSON을 붙여넣거나 업로드한 뒤 `preview` / `apply` / `reset`을 사용한다
+- 현재 관리자 UI는 원본 HTML을 붙여넣거나 업로드해 `normalize`한 뒤, 이어서 `preview` / `apply` / `reset`을 사용할 수 있다
+- 필요하면 미리 준비한 정제 JSON을 바로 붙여넣거나 업로드해 같은 흐름을 사용할 수도 있다
 - apply는 정제 JSON을 바탕으로 District / Group / GroupContact / Meeting을 upsert 한다
 - import는 현재 규칙상 `그룹명 다르면 다른 그룹`으로 본다
 - 필요할 때 정제 JSON을 생성해 [imports](/home/mam2z/apps/aakorea-main/backend/aakorea-main/src/main/resources/imports)에 두고 검토한다

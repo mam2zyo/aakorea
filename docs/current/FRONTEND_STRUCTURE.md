@@ -34,12 +34,14 @@
 
 - `/meetings?province=seoul`
 - `/meetings?province=seoul&dayOfWeek=MONDAY`
+- `/meetings?searchMode=nearby&dayOfWeek=MONDAY&latitude=37.4979&longitude=127.0276&radiusKm=20`
 - `/meetings?province=seoul&groupId=20&meetingId=100`
 - `/groups/20?meetingId=100`
 
 즉,
 
 - `province`, `dayOfWeek`는 검색 조건
+- nearby search에서는 `searchMode`, `latitude`, `longitude`, `radiusKm`를 함께 사용한다
 - `groupId`, `meetingId`는 상세 모달 상태
 - `/groups/:id`는 같은 상세 흐름의 직접 진입 alias다
 
@@ -63,8 +65,9 @@
 
 - 모바일에서는 본문 지도 영역을 숨긴다
 - 태블릿 / 데스크톱에서는 `latitude`, `longitude`가 있을 때 카카오 지도를 표시한다
+- 장소 블록 아래에는 `카카오맵 위치 보기`, `T map 길안내` 링크를 함께 둔다
 - 모바일 하단 액션은 `전화하기` CTA를 우선한다
-- 카카오맵 / 티맵 deep link CTA는 아직 후속 과제로 남겨 둔다
+- 현재 위치 nearby search는 `searchMode=nearby`와 좌표 query를 기준으로 유지한다
 
 ### 공개 테마 런타임
 
@@ -109,7 +112,7 @@
   공개 사이트 theme의 draft / publish / rollback
 
 - `/admin/overview`
-  정제 JSON import와 모임 좌표 일괄 보정 도구
+  HTML normalize + 정제 JSON import와 모임 좌표 일괄 보정 도구
 
 ---
 

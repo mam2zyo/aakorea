@@ -5,15 +5,18 @@ import {
   PROVINCE_OPTIONS,
 } from '../../../../lib/options'
 import { lookupLabel } from '../../../../lib/view'
-import { buildMeetingsPath } from '../utils'
+import { buildMeetingsPath, formatDistanceLabel, MEETING_SEARCH_MODE } from '../utils'
 
 export function MeetingResultsSection({
   filters,
   loading,
   meetings,
   onNavigate,
+  searchMeta,
   selectedSearchMeetingId,
 }) {
+  const nearbySearchActive = filters.searchMode === MEETING_SEARCH_MODE.NEARBY
+
   return (
     <>
       {loading ? <div className="section-note">모임 목록을 불러오는 중입니다...</div> : null}
@@ -22,7 +25,11 @@ export function MeetingResultsSection({
         <div className="meeting-search-results__header">
           <div className="meeting-search-results__copy">
             <strong>모임 목록</strong>
-            <p>리스트에서 모임을 선택하면 장소와 그룹 안내가 모달로 열립니다.</p>
+            <p>
+              {nearbySearchActive
+                ? `현재 위치 기준 결과입니다. 반경 ${searchMeta.appliedRadiusKm ?? filters.radiusKm ?? ''}km 안에서 가까운 순으로 보여 줍니다.`
+                : '리스트에서 모임을 선택하면 장소와 그룹 안내가 모달로 열립니다.'}
+            </p>
           </div>
           <span>{meetings.length}개</span>
         </div>
@@ -55,7 +62,9 @@ export function MeetingResultsSection({
                   </span>
                 </div>
                 <span className="meeting-search-item__province">
-                  {lookupLabel(PROVINCE_OPTIONS, meeting.province)}
+                  {nearbySearchActive && Number.isFinite(meeting.distanceKm)
+                    ? formatDistanceLabel(meeting.distanceKm)
+                    : lookupLabel(PROVINCE_OPTIONS, meeting.province)}
                 </span>
               </button>
             ))}

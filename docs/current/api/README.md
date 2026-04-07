@@ -47,7 +47,7 @@
   운영 `Meeting` API 계약
 
 - `ADMIN_MEETING_IMPORTS.md`
-  운영 테스트 도구용 정제 JSON import API 계약
+  운영 테스트 도구용 HTML normalize + 정제 JSON import API 계약
 
 - `ADMIN_CONTENT.md`
   운영 `ContentPage`, `Notice` API 계약

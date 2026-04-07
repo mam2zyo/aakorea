@@ -13,9 +13,10 @@
 현재 공개 화면은 아래 흐름을 사용한다.
 
 1. `/meetings`에서 지역/요일 기준으로 모임을 찾는다
-2. 모임을 클릭하면 같은 페이지 위에 상세 모달이 열린다
-3. 모달은 `groupId`, `meetingId` 쿼리로 상태를 유지한다
-4. 실제 상세 데이터는 `GET /api/public/groups/{id}`를 메인으로 사용한다
+2. 필요하면 현재 위치 기준 가까운 모임을 찾는다
+3. 모임을 클릭하면 같은 페이지 위에 상세 모달이 열린다
+4. 모달은 `groupId`, `meetingId` 쿼리로 상태를 유지한다
+5. 실제 상세 데이터는 `GET /api/public/groups/{id}`를 메인으로 사용한다
 
 즉, 현재 공개 UI는 별도 `GroupDetails` 페이지보다
 **검색 페이지 내 모달 상세**에 가깝다.
@@ -26,12 +27,15 @@
 
 ### GET `/api/public/meetings`
 
-지역 기준으로 공개 모임 목록을 조회한다.
+지역 기준 또는 현재 위치 기준으로 공개 모임 목록을 조회한다.
 
 #### Query Params
 
-- `province` (required)
+- `province` (region search에서 required)
 - `dayOfWeek` (optional)
+- `latitude` (nearby search에서 required)
+- `longitude` (nearby search에서 required)
+- `radiusKm` (nearby search에서 optional, 기본 반경은 프론트에서 시작 반경을 넣는다)
 
 #### Response 200
 
@@ -49,7 +53,8 @@
       "locationDetail": "강남역 인근",
       "locationAddress": "서울특별시 강남구 테헤란로 123",
       "latitude": 37.4979,
-      "longitude": 127.0276
+      "longitude": 127.0276,
+      "distanceKm": 0.2
     }
   ]
 }
@@ -57,9 +62,11 @@
 
 #### 현재 규칙
 
-- `province`는 필수
+- region search에서는 `province`가 필수다
 - `active=true`인 모임만 반환
 - `dayOfWeek`는 선택 필터
+- nearby search에서는 `latitude`, `longitude` 기준으로 반경 안의 결과를 거리순으로 반환한다
+- nearby search 응답의 `distanceKm`는 현재 위치 기준 거리다
 
 ---
 
@@ -103,9 +110,11 @@
 #### 현재 프론트 사용 방식
 
 - `/meetings?province=seoul&groupId=20&meetingId=100`
+- `/meetings?searchMode=nearby&dayOfWeek=MONDAY&latitude=37.4979&longitude=127.0276&radiusKm=20&groupId=20&meetingId=100`
 - `groupId`로 그룹 상세를 불러온다
 - `meetingId`로 초기 포커스 모임을 고른다
 - 사용자가 모임 리스트를 다시 누르면 같은 모달 안에서 장소가 바뀐다
+- nearby search일 때는 선택된 모임 주변의 `카카오맵 위치 보기`, `T map 길안내` 링크를 함께 노출한다
 
 #### 연락처 규칙
 

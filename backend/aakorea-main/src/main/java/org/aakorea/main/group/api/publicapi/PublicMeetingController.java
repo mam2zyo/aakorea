@@ -20,10 +20,13 @@ public class PublicMeetingController {
     @GetMapping
     public ApiResponse<List<PublicMeetingResponses.MeetingSummary>> getMeetings(
             @RequestParam(required = false) String province,
-            @RequestParam(required = false) String dayOfWeek
+            @RequestParam(required = false) String dayOfWeek,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Integer radiusKm
     ) {
         return ApiResponse.success(PublicMeetingResponseMapper.toMeetingSummaries(
-                publicMeetingQueryService.getMeetings(province, dayOfWeek)));
+                publicMeetingQueryService.getMeetings(province, dayOfWeek, latitude, longitude, radiusKm)));
     }
 
     @GetMapping("/{id}")

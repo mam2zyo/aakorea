@@ -1,21 +1,68 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { ApiError } from '../../../../shared/lib/request'
 import { publicGroupApi, publicMeetingApi } from '../../../../lib/api'
-import { DEFAULT_PROVINCE, buildMeetingsPath } from '../utils'
+import {
+  buildMeetingsPath,
+  buildNearbyRadiusSteps,
+  DEFAULT_NEARBY_RADIUS_KM,
+  DEFAULT_PROVINCE,
+  MEETING_SEARCH_MODE,
+  normalizeNearbyRadius,
+  readMeetingSearchMode,
+} from '../utils'
+
+function createSearchFilters({
+  dayOfWeek,
+  latitude,
+  longitude,
+  province,
+  radiusKm,
+  searchMode,
+}) {
+  const normalizedSearchMode = readMeetingSearchMode(searchMode)
+
+  return {
+    province: province || DEFAULT_PROVINCE,
+    dayOfWeek: dayOfWeek || '',
+    searchMode: normalizedSearchMode,
+    latitude: normalizedSearchMode === MEETING_SEARCH_MODE.NEARBY && Number.isFinite(latitude)
+      ? latitude
+      : null,
+    longitude: normalizedSearchMode === MEETING_SEARCH_MODE.NEARBY && Number.isFinite(longitude)
+      ? longitude
+      : null,
+    radiusKm: normalizedSearchMode === MEETING_SEARCH_MODE.NEARBY
+      ? normalizeNearbyRadius(radiusKm)
+      : DEFAULT_NEARBY_RADIUS_KM,
+  }
+}
 
 export function useMeetingSearch({
   dayOfWeek,
   groupId,
+  latitude,
+  longitude,
   meetingId,
   onError,
   province,
+  radiusKm,
+  searchMode,
 }) {
-  const [filters, setFilters] = useState({
-    province: province || DEFAULT_PROVINCE,
-    dayOfWeek: dayOfWeek || '',
-  })
+  const routeFilters = useMemo(() => createSearchFilters({
+    dayOfWeek,
+    latitude,
+    longitude,
+    province,
+    radiusKm,
+    searchMode,
+  }), [dayOfWeek, latitude, longitude, province, radiusKm, searchMode])
+  const [filters, setFilters] = useState(routeFilters)
   const [meetings, setMeetings] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchMeta, setSearchMeta] = useState({
+    appliedRadiusKm: null,
+    mode: routeFilters.searchMode,
+  })
   const [groupDetails, setGroupDetails] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [missingGroup, setMissingGroup] = useState(false)
@@ -24,22 +71,68 @@ export function useMeetingSearch({
   const isDialogOpen = activeGroupId !== null
 
   useEffect(() => {
-    setFilters({
-      province: province || DEFAULT_PROVINCE,
-      dayOfWeek: dayOfWeek || '',
-    })
-  }, [dayOfWeek, province])
+    setFilters(routeFilters)
+  }, [routeFilters])
 
-  async function loadMeetings() {
+  async function loadMeetings(activeFilters) {
     setLoading(true)
 
     try {
+      if (activeFilters.searchMode === MEETING_SEARCH_MODE.NEARBY) {
+        const radiusSteps = buildNearbyRadiusSteps(activeFilters.radiusKm)
+        let appliedRadiusKm = radiusSteps.at(-1) ?? activeFilters.radiusKm
+        let summaries = []
+
+        for (const candidateRadiusKm of radiusSteps) {
+          const candidateSummaries = await publicMeetingApi.getMeetings({
+            dayOfWeek: activeFilters.dayOfWeek,
+            latitude: activeFilters.latitude,
+            longitude: activeFilters.longitude,
+            radiusKm: candidateRadiusKm,
+          })
+
+          summaries = candidateSummaries
+          appliedRadiusKm = candidateRadiusKm
+
+          if (candidateSummaries.length >= 20 || candidateRadiusKm >= 50) {
+            break
+          }
+        }
+
+        setMeetings(summaries)
+        setSearchMeta({
+          appliedRadiusKm,
+          mode: MEETING_SEARCH_MODE.NEARBY,
+        })
+        if (activeFilters.radiusKm !== appliedRadiusKm) {
+          setFilters((previous) => {
+            if (
+              previous.searchMode !== MEETING_SEARCH_MODE.NEARBY
+              || previous.latitude !== activeFilters.latitude
+              || previous.longitude !== activeFilters.longitude
+            ) {
+              return previous
+            }
+
+            return {
+              ...previous,
+              radiusKm: appliedRadiusKm,
+            }
+          })
+        }
+        return
+      }
+
       const summaries = await publicMeetingApi.getMeetings({
-        province: filters.province || DEFAULT_PROVINCE,
-        dayOfWeek: filters.dayOfWeek,
+        province: activeFilters.province || DEFAULT_PROVINCE,
+        dayOfWeek: activeFilters.dayOfWeek,
       })
 
       setMeetings(summaries)
+      setSearchMeta({
+        appliedRadiusKm: null,
+        mode: MEETING_SEARCH_MODE.REGION,
+      })
     } catch (error) {
       setMeetings([])
       onError(error, '공개 모임 목록을 불러오지 못했습니다.')
@@ -48,13 +141,13 @@ export function useMeetingSearch({
     }
   }
 
-  const loadMeetingsEffect = useEffectEvent(() => {
-    void loadMeetings()
+  const loadMeetingsEffect = useEffectEvent((activeFilters) => {
+    void loadMeetings(activeFilters)
   })
 
   useEffect(() => {
-    loadMeetingsEffect()
-  }, [filters.dayOfWeek, filters.province])
+    loadMeetingsEffect(routeFilters)
+  }, [routeFilters])
 
   async function loadGroupDetails(targetGroupId) {
     if (!Number.isFinite(targetGroupId)) {
@@ -106,13 +199,33 @@ export function useMeetingSearch({
     return groupDetails.meetings[0] ?? null
   }, [groupDetails, meetingId])
 
+  const selectedSearchMeetingSummary = useMemo(() => {
+    const activeMeetingId = Number.isFinite(meetingId) ? meetingId : selectedMeeting?.id ?? null
+    if (!Number.isFinite(activeMeetingId)) {
+      return null
+    }
+
+    return meetings.find((meeting) => meeting.id === activeMeetingId) ?? null
+  }, [meetingId, meetings, selectedMeeting])
+  const activeFilters = useMemo(() => {
+    if (routeFilters.searchMode !== MEETING_SEARCH_MODE.NEARBY) {
+      return routeFilters
+    }
+
+    return {
+      ...routeFilters,
+      radiusKm: searchMeta.appliedRadiusKm ?? routeFilters.radiusKm,
+    }
+  }, [routeFilters, searchMeta.appliedRadiusKm])
+
   const closePath = useMemo(
-    () => buildMeetingsPath({ dayOfWeek: filters.dayOfWeek, province: filters.province }),
-    [filters.dayOfWeek, filters.province],
+    () => buildMeetingsPath(activeFilters),
+    [activeFilters],
   )
   const selectedSearchMeetingId = selectedMeeting?.id ?? meetingId ?? null
 
   return {
+    activeFilters,
     closePath,
     detailLoading,
     filters,
@@ -121,9 +234,10 @@ export function useMeetingSearch({
     loading,
     meetings,
     missingGroup,
+    searchMeta,
     selectedMeeting,
     selectedSearchMeetingId,
+    selectedSearchMeetingSummary,
     setFilters,
-    loadMeetings,
   }
 }

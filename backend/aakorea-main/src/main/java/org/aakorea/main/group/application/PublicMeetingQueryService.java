@@ -3,6 +3,7 @@ package org.aakorea.main.group.application;
 import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
@@ -23,13 +24,32 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional(readOnly = true)
 public class PublicMeetingQueryService {
 
+    private static final int MAX_NEARBY_MEETING_COUNT = 20;
+    private static final int DEFAULT_NEARBY_RADIUS_KM = 5;
+    private static final int MAX_NEARBY_RADIUS_KM = 50;
+    private static final double EARTH_RADIUS_KM = 6371.0088;
+
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
 
-    public List<PublicMeetingSummary> getMeetings(String province, String dayOfWeek) {
-        Province normalizedProvince = MeetingFieldSupport.requireProvince(province);
+    public List<PublicMeetingSummary> getMeetings(
+            String province,
+            String dayOfWeek,
+            Double latitude,
+            Double longitude,
+            Integer radiusKm
+    ) {
+        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
+        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
         DayOfWeek normalizedDayOfWeek = MeetingFieldSupport.optionalDayOfWeek(dayOfWeek);
+
+        if (normalizedLatitude != null || normalizedLongitude != null) {
+            MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
+            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, normalizeRadiusKm(radiusKm));
+        }
+
+        Province normalizedProvince = MeetingFieldSupport.requireProvince(province);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 criteriaBuilder.isTrue(root.get("active")),
@@ -41,7 +61,7 @@ public class PublicMeetingQueryService {
         }
 
         return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
-                .map(this::toSummary)
+                .map(meeting -> toSummary(meeting, null))
                 .toList();
     }
 
@@ -91,7 +111,40 @@ public class PublicMeetingQueryService {
                 activeMeetings);
     }
 
-    private PublicMeetingSummary toSummary(Meeting meeting) {
+    private List<PublicMeetingSummary> getNearbyMeetings(
+            Double latitude,
+            Double longitude,
+            DayOfWeek dayOfWeek,
+            int radiusKm
+    ) {
+        Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                criteriaBuilder.isTrue(root.get("active")),
+                criteriaBuilder.isNotNull(root.get("location").get("latitude")),
+                criteriaBuilder.isNotNull(root.get("location").get("longitude")));
+
+        if (dayOfWeek != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("dayOfWeek"), dayOfWeek));
+        }
+
+        return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
+                .map(meeting -> new NearbyMeeting(meeting, calculateDistanceKm(
+                        latitude,
+                        longitude,
+                        meeting.getLatitude(),
+                        meeting.getLongitude())))
+                .filter(item -> item.distanceKm() <= radiusKm)
+                .sorted(Comparator
+                        .comparingDouble(NearbyMeeting::distanceKm)
+                        .thenComparing(item -> item.meeting().getDayOfWeek().getValue())
+                        .thenComparing(item -> item.meeting().getStartTime())
+                        .thenComparing(item -> item.meeting().getId()))
+                .limit(MAX_NEARBY_MEETING_COUNT)
+                .map(item -> toSummary(item.meeting(), item.distanceKm()))
+                .toList();
+    }
+
+    private PublicMeetingSummary toSummary(Meeting meeting, Double distanceKm) {
         return new PublicMeetingSummary(
                 meeting.getId(),
                 meeting.getGroup().getId(),
@@ -103,7 +156,8 @@ public class PublicMeetingQueryService {
                 meeting.getLocationDetail(),
                 meeting.getLocationAddress(),
                 meeting.getLatitude(),
-                meeting.getLongitude());
+                meeting.getLongitude(),
+                distanceKm == null ? null : roundDistanceKm(distanceKm));
     }
 
     private DistrictData toDistrictData(Group group) {
@@ -146,6 +200,41 @@ public class PublicMeetingQueryService {
                 : representativeContactPhone;
     }
 
+    private int normalizeRadiusKm(Integer radiusKm) {
+        if (radiusKm == null) {
+            return DEFAULT_NEARBY_RADIUS_KM;
+        }
+
+        if (radiusKm < 1 || radiusKm > MAX_NEARBY_RADIUS_KM) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "radiusKm is invalid");
+        }
+
+        return radiusKm;
+    }
+
+    private double calculateDistanceKm(
+            double originLatitude,
+            double originLongitude,
+            double destinationLatitude,
+            double destinationLongitude
+    ) {
+        double originLatitudeRadians = Math.toRadians(originLatitude);
+        double destinationLatitudeRadians = Math.toRadians(destinationLatitude);
+        double latitudeDelta = Math.toRadians(destinationLatitude - originLatitude);
+        double longitudeDelta = Math.toRadians(destinationLongitude - originLongitude);
+
+        double haversine = Math.sin(latitudeDelta / 2) * Math.sin(latitudeDelta / 2)
+                + Math.cos(originLatitudeRadians) * Math.cos(destinationLatitudeRadians)
+                * Math.sin(longitudeDelta / 2) * Math.sin(longitudeDelta / 2);
+        double centralAngle = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+
+        return EARTH_RADIUS_KM * centralAngle;
+    }
+
+    private double roundDistanceKm(double distanceKm) {
+        return Double.parseDouble(String.format(Locale.ROOT, "%.1f", distanceKm));
+    }
+
     public record PublicMeetingSummary(
             Long id,
             Long groupId,
@@ -157,7 +246,8 @@ public class PublicMeetingQueryService {
             String locationDetail,
             String locationAddress,
             Double latitude,
-            Double longitude
+            Double longitude,
+            Double distanceKm
     ) {
     }
 
@@ -206,6 +296,12 @@ public class PublicMeetingQueryService {
             String locationAddress,
             Double latitude,
             Double longitude
+    ) {
+    }
+
+    private record NearbyMeeting(
+            Meeting meeting,
+            double distanceKm
     ) {
     }
 }

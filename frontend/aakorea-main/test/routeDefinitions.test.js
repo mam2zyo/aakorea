@@ -13,6 +13,20 @@ test('parseRoute keeps search metadata for public meeting routes', () => {
   assert.equal(route.dayOfWeek, 'MONDAY')
 })
 
+test('parseRoute reads nearby meeting search params', () => {
+  const route = parseRoute(
+    '/meetings',
+    '?searchMode=nearby&dayOfWeek=MONDAY&latitude=37.4979&longitude=127.0276&radiusKm=20',
+  )
+
+  assert.equal(route.name, 'meetings')
+  assert.equal(route.searchMode, 'nearby')
+  assert.equal(route.dayOfWeek, 'MONDAY')
+  assert.equal(route.latitude, 37.4979)
+  assert.equal(route.longitude, 127.0276)
+  assert.equal(route.radiusKm, 20)
+})
+
 test('parseRoute keeps search metadata for public notice detail routes', () => {
   const route = parseRoute('/notices/12', '?themePreview=harbor')
 

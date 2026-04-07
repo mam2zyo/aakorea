@@ -76,8 +76,6 @@ export function useAdminSession(route, { onError, onSuccess }) {
         `${registeredUser.displayName} 계정 등록이 완료되었습니다. 승인과 업무 권한 설정이 완료되면 등록한 이메일로 안내할 예정입니다.`,
       )
       navigate('/admin/login', { replace: true })
-    } catch (error) {
-      throw error
     } finally {
       setAuthPending(false)
     }

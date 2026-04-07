@@ -5,6 +5,7 @@ import { MeetingFocusDialog } from '../../features/groups/public/components/Meet
 const PREVIEW_FILTERS = {
   province: 'gyeonggi',
   dayOfWeek: '',
+  searchMode: 'region',
 }
 
 const PREVIEW_GROUP_DETAILS = {
@@ -87,6 +88,9 @@ export function MeetingFocusPreviewPage({ onNavigate }) {
         onClose={() => onNavigate('/meetings')}
         onNavigate={handlePreviewNavigate}
         selectedMeeting={selectedMeeting}
+        selectedSearchMeetingSummary={{
+          distanceKm: 2.4,
+        }}
       />
     </>
   )

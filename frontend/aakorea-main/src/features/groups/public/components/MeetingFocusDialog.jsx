@@ -6,7 +6,10 @@ import {
 import { lookupLabel } from '../../../../lib/view'
 import { KakaoMeetingMap } from './KakaoMeetingMap'
 import {
+  buildKakaoMapUrl,
   buildMeetingsPath,
+  buildTmapRouteUrl,
+  formatDistanceLabel,
   hasGroupNotice,
   readGroupNotice,
 } from '../utils'
@@ -19,9 +22,20 @@ export function MeetingFocusDialog({
   onClose,
   onNavigate,
   selectedMeeting,
+  selectedSearchMeetingSummary,
 }) {
   const contactPhone = selectedMeeting?.contactPhone || groupDetails?.contactPhone || ''
   const hasNotice = Boolean(hasGroupNotice(groupDetails))
+  const kakaoMapUrl = buildKakaoMapUrl(
+    selectedMeeting?.locationDetail || groupDetails?.name,
+    selectedMeeting?.latitude,
+    selectedMeeting?.longitude,
+  )
+  const tmapRouteUrl = buildTmapRouteUrl(
+    selectedMeeting?.locationDetail || groupDetails?.name,
+    selectedMeeting?.latitude,
+    selectedMeeting?.longitude,
+  )
 
   return (
     <div
@@ -111,6 +125,39 @@ export function MeetingFocusDialog({
                   <p className="meeting-focus-location-block__address">
                     {selectedMeeting.locationAddress || '공개 주소 없음'}
                   </p>
+                  {Number.isFinite(selectedSearchMeetingSummary?.distanceKm) ? (
+                    <p className="meeting-focus-location-block__distance">
+                      현재 위치에서 {formatDistanceLabel(selectedSearchMeetingSummary.distanceKm)}
+                    </p>
+                  ) : null}
+                  {kakaoMapUrl || tmapRouteUrl ? (
+                    <div className="meeting-focus-location-actions">
+                      {kakaoMapUrl ? (
+                        <a
+                          aria-label="카카오맵에서 위치 보기"
+                          className="meeting-focus-location-action"
+                          href={kakaoMapUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          <span className="meeting-focus-location-action__icon" aria-hidden="true">K</span>
+                          <span className="meeting-focus-location-action__label">카카오맵 위치 보기</span>
+                        </a>
+                      ) : null}
+                      {tmapRouteUrl ? (
+                        <a
+                          aria-label="티맵으로 길안내 열기"
+                          className="meeting-focus-location-action"
+                          href={tmapRouteUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          <span className="meeting-focus-location-action__icon" aria-hidden="true">T</span>
+                          <span className="meeting-focus-location-action__label">T map 길안내</span>
+                        </a>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <KakaoMeetingMap

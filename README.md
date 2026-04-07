@@ -42,7 +42,7 @@
 
 - 운영 `Meeting` 저장 시 주소만으로 카카오 REST API 지오코딩을 수행할 수 있다
 - 공개 모임 상세 모달은 모바일에서는 텍스트 중심, 대화면에서는 카카오 지도를 함께 표시한다
-- 관리자 `/admin/overview`는 `테스트 도구` 화면으로 사용하며, 정제 JSON import와 좌표 일괄 보정 도구를 함께 제공한다
+- 관리자 `/admin/overview`는 `테스트 도구` 화면으로 사용하며, HTML normalize 기반 import와 좌표 일괄 보정 도구를 함께 제공한다
 - 관리자 `/admin/public-theme`는 공개 사이트 테마를 `classic` / `harbor` / `breeze` preset 기준으로 draft / publish / rollback 한다
 
 ---

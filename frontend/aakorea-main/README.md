@@ -7,7 +7,7 @@
 - 공개 홈 화면
 - 공개 `ContentPage` 조회
 - 공개 `Notice` 목록/상세 조회
-- 공개 `Meeting` 조회와 상세 확인
+- 공개 `Meeting` 조회, 현재 위치 기준 nearby search, 상세 확인
 - 운영 로그인 / 로그아웃 / 세션 확인
 - 운영 `District` 관리
 - 운영 `Group` 목록 및 생성
@@ -35,6 +35,12 @@ npm run dev
 
 ```env
 VITE_KAKAO_MAP_JAVASCRIPT_KEY=your-kakao-javascript-key
+```
+
+`T map 길안내` 링크까지 쓰려면 아래 값도 추가할 수 있다.
+
+```env
+VITE_TMAP_APP_KEY=your-tmap-app-key
 ```
 
 로컬 env와 프록시 기준은

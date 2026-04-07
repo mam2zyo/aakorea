@@ -18,6 +18,10 @@ export function parseRoute(pathname, search = '') {
       section: 'public',
       groupId: optionalNumber(params.get('groupId')),
       meetingId: optionalNumber(params.get('meetingId')),
+      searchMode: params.get('searchMode') ?? '',
+      latitude: optionalFloat(params.get('latitude')),
+      longitude: optionalFloat(params.get('longitude')),
+      radiusKm: optionalInteger(params.get('radiusKm')),
       province: params.get('province') ?? '',
       dayOfWeek: params.get('dayOfWeek') ?? '',
     })
@@ -35,6 +39,10 @@ export function parseRoute(pathname, search = '') {
       section: 'public',
       groupId: Number(groupMatch[1]),
       meetingId: optionalNumber(params.get('meetingId')),
+      searchMode: params.get('searchMode') ?? '',
+      latitude: optionalFloat(params.get('latitude')),
+      longitude: optionalFloat(params.get('longitude')),
+      radiusKm: optionalInteger(params.get('radiusKm')),
       province: params.get('province') ?? '',
       dayOfWeek: params.get('dayOfWeek') ?? '',
     })
@@ -193,5 +201,23 @@ function optionalNumber(value) {
   }
 
   const parsedValue = Number(value)
+  return Number.isFinite(parsedValue) ? parsedValue : null
+}
+
+function optionalInteger(value) {
+  if (!value) {
+    return null
+  }
+
+  const parsedValue = Number.parseInt(value, 10)
+  return Number.isFinite(parsedValue) ? parsedValue : null
+}
+
+function optionalFloat(value) {
+  if (!value) {
+    return null
+  }
+
+  const parsedValue = Number.parseFloat(value)
   return Number.isFinite(parsedValue) ? parsedValue : null
 }
