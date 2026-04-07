@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app.auth.admin")
 public record AdminAuthProperties(
-        @NotBlank String username,
+        @NotBlank String email,
         @NotBlank String password
 ) {
 }

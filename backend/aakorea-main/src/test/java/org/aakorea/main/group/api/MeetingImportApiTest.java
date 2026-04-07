@@ -2,12 +2,16 @@ package org.aakorea.main.group.api;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.aakorea.main.support.AdminSecurityTestSupport.officeUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.domain.AdminRole;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
 import org.aakorea.main.common.error.GlobalExceptionHandler;
 import org.aakorea.main.common.security.RestAccessDeniedHandler;
 import org.aakorea.main.common.security.RestAuthenticationEntryPoint;
@@ -37,6 +41,15 @@ class MeetingImportApiTest {
     @MockitoBean
     private MeetingImportAdminService meetingImportAdminService;
 
+    @MockitoBean
+    private AdminUserRepository adminUserRepository;
+
+    @MockitoBean
+    private AdminUserPermissionGrantRepository adminUserPermissionGrantRepository;
+
+    @MockitoBean
+    private OfficePermissionService officePermissionService;
+
     @Test
     void importNormalizeRequiresAuthentication() throws Exception {
         mockMvc.perform(post("/api/admin/meeting-imports/normalize")
@@ -48,6 +61,21 @@ class MeetingImportApiTest {
                                 """))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    void importNormalizeRequiresSystemAdminRole() throws Exception {
+        mockMvc.perform(post("/api/admin/meeting-imports/normalize")
+                        .with(officeUser(AdminRole.MANAGER))
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "html": "<html></html>"
+                                }
+                                """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.error.message").value("forbidden"));
     }
 
     @Test
@@ -73,7 +101,7 @@ class MeetingImportApiTest {
                                         true))))));
 
         mockMvc.perform(post("/api/admin/meeting-imports/normalize")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {
@@ -132,7 +160,7 @@ class MeetingImportApiTest {
                                         false))))));
 
         mockMvc.perform(post("/api/admin/meeting-imports/preview")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {
@@ -177,7 +205,7 @@ class MeetingImportApiTest {
                         270L));
 
         mockMvc.perform(post("/api/admin/meeting-imports/reset")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.deletedDistrictCount").value(11))

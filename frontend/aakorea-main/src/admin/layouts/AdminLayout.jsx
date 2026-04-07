@@ -1,22 +1,34 @@
+import {
+  ADMIN_PERMISSION,
+  canAccessOperationsTools,
+  canManageAdminUsers,
+  hasPermission,
+  resolveAdminHomePath,
+} from '../app/adminAuthorization'
+
 const ADMIN_NAV_GROUPS = [
   [
     {
       label: "그룹 관리",
       href: "/admin/groups",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.GROUP_MANAGE),
       match: (path) =>
         path === "/admin/groups" || path.startsWith("/admin/groups/"),
     },
     {
       label: "지역연합 관리",
       href: "/admin/districts",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.DISTRICT_MANAGE),
       match: (path) => path === "/admin/districts",
     },
     {
       label: "온라인 모임 관리",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.GROUP_MANAGE),
       status: "준비 중",
     },
     {
       label: "제12단계 운동 관리",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.GROUP_MANAGE),
       status: "준비 중",
     },
   ],
@@ -24,23 +36,33 @@ const ADMIN_NAV_GROUPS = [
     {
       label: "공지 관리",
       href: "/admin/notices",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.NOTICE_MANAGE),
       match: (path) => path === "/admin/notices",
     },
     {
       label: "안내 페이지",
       href: "/admin/content-pages",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.CONTENT_PAGE_MANAGE),
       match: (path) => path === "/admin/content-pages",
     },
     {
       label: "공개 사이트 테마",
       href: "/admin/public-theme",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.PUBLIC_THEME_MANAGE),
       match: (path) => path === "/admin/public-theme",
+    },
+    {
+      label: "운영자 관리",
+      href: "/admin/admin-users",
+      canAccess: (session) => canManageAdminUsers(session),
+      match: (path) => path === "/admin/admin-users",
     },
   ],
   [
     {
       label: "테스트 도구",
       href: "/admin/overview",
+      canAccess: (session) => canAccessOperationsTools(session),
       match: (path) => path === "/admin/overview",
     },
   ],
@@ -49,6 +71,7 @@ const ADMIN_NAV_GROUPS = [
 const ADMIN_UTILITY_ITEM = {
   label: "계정 설정",
   href: "/admin/account",
+  canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.SELF_PREFERENCES_MANAGE),
   match: (path) => path === "/admin/account",
 };
 
@@ -80,6 +103,11 @@ export function AdminLayout({
     light: '라이트',
     system: '시스템',
   }[theme.themePreference]
+  const adminHomePath = resolveAdminHomePath(session)
+  const visibleNavGroups = ADMIN_NAV_GROUPS
+    .map((group) => group.filter((item) => item.canAccess?.(session) ?? true))
+    .filter((group) => group.length > 0)
+  const displayName = session.displayName ?? session.email ?? session.username ?? '비인증'
 
   return (
     <div className="admin-shell">
@@ -88,7 +116,7 @@ export function AdminLayout({
           <button
             className="brand-button"
             type="button"
-            onClick={() => onNavigate("/admin/groups")}
+            onClick={() => onNavigate(adminHomePath)}
           >
             AAKorea Admin
           </button>
@@ -97,7 +125,7 @@ export function AdminLayout({
         <nav className="admin-sidebar__nav" aria-label="관리자 메뉴">
           {session.authenticated ? (
             <>
-              {ADMIN_NAV_GROUPS.map((group, index) => (
+              {visibleNavGroups.map((group, index) => (
                 <div
                   key={group.map((item) => item.label).join("-")}
                   className="admin-nav-group"
@@ -150,12 +178,12 @@ export function AdminLayout({
         <div className="admin-sidebar__utility">
           <div className="admin-nav-divider" aria-hidden="true" />
           <span className="shell-badge">
-            {session.authenticated ? session.username : "비인증"}
+            {session.authenticated ? displayName : "비인증"}
           </span>
           <span className="shell-badge shell-badge--muted">
             테마 {themeLabel}
           </span>
-          {session.authenticated ? (
+          {session.authenticated && ADMIN_UTILITY_ITEM.canAccess(session) ? (
             <AdminNavLink
               active={ADMIN_UTILITY_ITEM.match(currentPath)}
               href={ADMIN_UTILITY_ITEM.href}

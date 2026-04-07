@@ -2,7 +2,7 @@ package org.aakorea.main.content.api;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.aakorea.main.support.AdminSecurityTestSupport.officeUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,6 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.aakorea.main.auth.application.OfficeAuthorizationService;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.domain.AdminPermission;
+import org.aakorea.main.auth.domain.AdminRole;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
 import org.aakorea.main.common.error.GlobalExceptionHandler;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.common.security.RestAccessDeniedHandler;
@@ -19,6 +25,8 @@ import org.aakorea.main.content.api.admin.ContentAdminController;
 import org.aakorea.main.content.api.publicapi.PublicContentController;
 import org.aakorea.main.content.application.ContentAdminService;
 import org.aakorea.main.content.application.PublicContentQueryService;
+import org.aakorea.main.content.infrastructure.ContentPageRepository;
+import org.aakorea.main.content.infrastructure.NoticeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {ContentAdminController.class, PublicContentController.class})
 @Import({
+        OfficeAuthorizationService.class,
         GlobalExceptionHandler.class,
         RestAccessDeniedHandler.class,
         RestAuthenticationEntryPoint.class,
@@ -43,6 +52,21 @@ class ContentApiTest {
 
     @MockitoBean
     private PublicContentQueryService publicContentQueryService;
+
+    @MockitoBean
+    private ContentPageRepository contentPageRepository;
+
+    @MockitoBean
+    private NoticeRepository noticeRepository;
+
+    @MockitoBean
+    private AdminUserRepository adminUserRepository;
+
+    @MockitoBean
+    private AdminUserPermissionGrantRepository adminUserPermissionGrantRepository;
+
+    @MockitoBean
+    private OfficePermissionService officePermissionService;
 
     @Test
     void adminContentApiRequiresAuthentication() throws Exception {
@@ -66,7 +90,10 @@ class ContentApiTest {
                         true));
 
         mockMvc.perform(post("/api/admin/content-pages")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(
+                                AdminRole.MANAGER,
+                                AdminPermission.CONTENT_PAGE_MANAGE,
+                                AdminPermission.CONTENT_PUBLISH))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {
@@ -81,6 +108,24 @@ class ContentApiTest {
                 .andExpect(jsonPath("$.data.key").value("first-visitor-guide"))
                 .andExpect(jsonPath("$.data.title").value("처음 오신 분 안내"))
                 .andExpect(jsonPath("$.data.published").value(true));
+    }
+
+    @Test
+    void createPublishedContentPageRequiresPublishPermission() throws Exception {
+        mockMvc.perform(post("/api/admin/content-pages")
+                        .with(officeUser(AdminRole.STAFF, AdminPermission.CONTENT_PAGE_MANAGE))
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "key": "first-visitor-guide",
+                                  "title": "처음 오신 분 안내",
+                                  "body": "페이지 본문",
+                                  "published": true
+                                }
+                                """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.error.message").value("forbidden"));
     }
 
     @Test
@@ -140,7 +185,10 @@ class ContentApiTest {
                 .willThrow(FieldValidationException.conflict("key", "content page key already exists"));
 
         mockMvc.perform(post("/api/admin/content-pages")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(
+                                AdminRole.MANAGER,
+                                AdminPermission.CONTENT_PAGE_MANAGE,
+                                AdminPermission.CONTENT_PUBLISH))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {

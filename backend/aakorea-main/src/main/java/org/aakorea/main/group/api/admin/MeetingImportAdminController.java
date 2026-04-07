@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.MeetingImportAdminService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ public class MeetingImportAdminController {
 
     private final MeetingImportAdminService meetingImportAdminService;
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/normalize")
     public ApiResponse<MeetingImportAdminService.NormalizedMeetingImport> normalizeImport(
             @Valid @RequestBody MeetingImportHtmlRequest request
@@ -24,6 +26,7 @@ public class MeetingImportAdminController {
         return ApiResponse.success(meetingImportAdminService.normalizeHtml(request.html()));
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/preview")
     public ApiResponse<MeetingImportAdminService.ImportPreview> previewImport(
             @RequestBody MeetingImportAdminService.NormalizedMeetingImport request
@@ -31,6 +34,7 @@ public class MeetingImportAdminController {
         return ApiResponse.success(meetingImportAdminService.previewImport(request));
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/apply")
     public ApiResponse<MeetingImportAdminService.ImportApplyResult> applyImport(
             @RequestBody MeetingImportAdminService.NormalizedMeetingImport request
@@ -38,6 +42,7 @@ public class MeetingImportAdminController {
         return ApiResponse.success(meetingImportAdminService.applyImport(request));
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/reset")
     public ApiResponse<MeetingImportAdminService.ImportResetResult> resetImportData() {
         return ApiResponse.success(meetingImportAdminService.resetImportData());

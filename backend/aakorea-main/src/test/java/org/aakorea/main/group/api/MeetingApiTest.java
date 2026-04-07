@@ -3,7 +3,7 @@ package org.aakorea.main.group.api;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.aakorea.main.support.AdminSecurityTestSupport.officeUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,6 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.DayOfWeek;
 import java.util.List;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.domain.AdminPermission;
+import org.aakorea.main.auth.domain.AdminRole;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
 import org.aakorea.main.common.error.GlobalExceptionHandler;
 import org.aakorea.main.common.security.RestAccessDeniedHandler;
 import org.aakorea.main.common.security.RestAuthenticationEntryPoint;
@@ -46,6 +51,15 @@ class MeetingApiTest {
 
     @MockitoBean
     private PublicMeetingQueryService publicMeetingQueryService;
+
+    @MockitoBean
+    private AdminUserRepository adminUserRepository;
+
+    @MockitoBean
+    private AdminUserPermissionGrantRepository adminUserPermissionGrantRepository;
+
+    @MockitoBean
+    private OfficePermissionService officePermissionService;
 
     @Test
     void adminMeetingApiRequiresAuthentication() throws Exception {
@@ -82,7 +96,7 @@ class MeetingApiTest {
                         true));
 
         mockMvc.perform(post("/api/admin/meetings")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.MANAGER, AdminPermission.GROUP_MANAGE))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {
@@ -143,7 +157,7 @@ class MeetingApiTest {
                                         "locationAddress cannot determine coordinates"))));
 
         mockMvc.perform(post("/api/admin/meetings/backfill-coordinates")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN))
                         .param("dryRun", "true")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -158,11 +172,22 @@ class MeetingApiTest {
     }
 
     @Test
+    void backfillCoordinatesRequiresSystemAdminRole() throws Exception {
+        mockMvc.perform(post("/api/admin/meetings/backfill-coordinates")
+                        .with(officeUser(AdminRole.MANAGER, AdminPermission.GROUP_MANAGE))
+                        .param("dryRun", "true")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.error.message").value("forbidden"));
+    }
+
+    @Test
     void deleteMeetingReturnsNoContent() throws Exception {
         willDoNothing().given(meetingAdminService).deleteMeeting(100L);
 
         mockMvc.perform(delete("/api/admin/meetings/100")
-                        .with(user("admin").roles("ADMIN")))
+                        .with(officeUser(AdminRole.MANAGER, AdminPermission.GROUP_MANAGE)))
                 .andExpect(status().isNoContent());
     }
 

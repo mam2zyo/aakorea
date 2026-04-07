@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react'
+import { ADMIN_PERMISSION, hasPermission } from '../../admin/app/adminAuthorization'
 import {
   AdminPageHeader,
   EmptyState,
@@ -14,7 +15,7 @@ const CONTENT_PAGE_SORT_MODES = {
 const EMPTY_CONTENT_PAGE_FORM = createEmptyContentPageForm()
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
-export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
+export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }) {
   const [contentPages, setContentPages] = useState([])
   const [contentPageForm, setContentPageForm] = useState(EMPTY_CONTENT_PAGE_FORM)
   const [contentPageErrors, setContentPageErrors] = useState({})
@@ -48,6 +49,11 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko')
+  const canPublish = hasPermission(session, ADMIN_PERMISSION.CONTENT_PUBLISH)
+  const publishedContentLocked = !canPublish
+    && (contentPageForm.originalPublished || contentPageForm.published)
+  const formBusy = saving || deleting
+  const formReadOnly = formBusy || publishedContentLocked
   const filteredContentPages = sortContentPages(
     contentPages.filter((contentPage) =>
       [contentPage.key, contentPage.title].some((value) =>
@@ -183,13 +189,18 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                 <p className="admin-form-note">
                   페이지 key는 공개 URL 경로에 쓰이므로, 공개 후에는 가능하면 안정적으로 유지하는 편이 좋습니다.
                 </p>
+                {!canPublish ? (
+                  <p className="admin-form-note">
+                    게시 상태 변경과 게시 중 안내 페이지 수정은 `content.publish` 권한이 필요합니다.
+                  </p>
+                ) : null}
               </div>
 
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
                 onClick={closeEditor}
-                disabled={saving || deleting}
+                disabled={formBusy}
               >
                 닫기
               </button>
@@ -206,6 +217,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                 <input
                   placeholder="first-visitor-guide"
                   value={contentPageForm.key}
+                  disabled={formReadOnly}
                   onChange={(event) => {
                     setContentPageForm((previous) => ({
                       ...previous,
@@ -219,6 +231,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
               <Field label="제목" error={readFieldError(contentPageErrors, 'title')}>
                 <input
                   value={contentPageForm.title}
+                  disabled={formReadOnly}
                   onChange={(event) => {
                     setContentPageForm((previous) => ({
                       ...previous,
@@ -233,6 +246,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                 <textarea
                   rows={10}
                   value={contentPageForm.body}
+                  disabled={formReadOnly}
                   onChange={(event) => {
                     setContentPageForm((previous) => ({
                       ...previous,
@@ -246,6 +260,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
               <label className="toggle-field">
                 <input
                   checked={contentPageForm.published}
+                  disabled={formReadOnly || !canPublish}
                   type="checkbox"
                   onChange={(event) =>
                     setContentPageForm((previous) => ({
@@ -258,7 +273,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
               </label>
 
               <div className="button-row button-row--compact">
-                <button className="primary-button" type="submit" disabled={saving || deleting}>
+                <button className="primary-button" type="submit" disabled={formReadOnly}>
                   {saving
                     ? '저장 중...'
                     : contentPageForm.id
@@ -271,7 +286,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                     className="ghost-button"
                     type="button"
                     onClick={() => onNavigate(`/content-pages/${contentPageForm.key}`)}
-                    disabled={saving || deleting}
+                    disabled={formBusy}
                   >
                     공개 미리 보기
                   </button>
@@ -282,7 +297,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                     className="ghost-button ghost-button--danger"
                     type="button"
                     onClick={() => void deleteContentPage()}
-                    disabled={saving || deleting}
+                    disabled={formReadOnly}
                   >
                     {deleting ? '삭제 중...' : '안내 페이지 삭제'}
                   </button>
@@ -315,6 +330,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
         key: data.key,
         title: data.title,
         body: data.body,
+        originalPublished: data.published,
         published: data.published,
       })
       setContentPageErrors({})
@@ -433,6 +449,7 @@ function createEmptyContentPageForm() {
     key: '',
     title: '',
     body: '',
+    originalPublished: false,
     published: false,
   }
 }

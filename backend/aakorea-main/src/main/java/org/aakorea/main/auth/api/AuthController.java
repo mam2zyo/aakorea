@@ -3,6 +3,7 @@ package org.aakorea.main.auth.api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.auth.application.AuthService;
@@ -28,10 +29,18 @@ public class AuthController {
             HttpServletResponse httpServletResponse
     ) {
         return ApiResponse.success(authService.login(
-                request.username(),
+                request.email(),
                 request.password(),
                 httpServletRequest,
                 httpServletResponse));
+    }
+
+    @PostMapping("/register")
+    public ApiResponse<AuthService.RegistrationStatus> register(@Valid @RequestBody RegisterRequest request) {
+        return ApiResponse.success(authService.register(
+                request.email(),
+                request.password(),
+                request.displayName()));
     }
 
     @PostMapping("/logout")
@@ -49,7 +58,14 @@ public class AuthController {
     }
 
     public record LoginRequest(
-            @NotBlank(message = "username is required") String username,
+            @NotBlank(message = "email is required") String email,
+            @NotBlank(message = "password is required") String password
+    ) {
+    }
+
+    public record RegisterRequest(
+            @NotBlank(message = "email is required") @Email(message = "email must be valid") String email,
+            @NotBlank(message = "displayName is required") String displayName,
             @NotBlank(message = "password is required") String password
     ) {
     }

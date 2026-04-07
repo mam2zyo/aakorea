@@ -7,6 +7,12 @@ export const authApi = {
       body: credentials,
     })
   },
+  register(payload) {
+    return request('/api/auth/register', {
+      method: 'POST',
+      body: payload,
+    })
+  },
   logout() {
     return request('/api/auth/logout', {
       method: 'POST',

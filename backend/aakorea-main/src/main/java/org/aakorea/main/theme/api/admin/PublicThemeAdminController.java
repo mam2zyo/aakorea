@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.theme.application.PublicThemeService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,11 +20,13 @@ public class PublicThemeAdminController {
 
     private final PublicThemeService publicThemeService;
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @GetMapping
     public ApiResponse<PublicThemeService.PublicThemeAdminData> getPublicThemeState() {
         return ApiResponse.success(publicThemeService.getAdminThemeState());
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PutMapping("/draft")
     public ApiResponse<PublicThemeService.PublicThemeAdminData> saveDraftTheme(
             @Valid @RequestBody ThemeDraftRequest request
@@ -31,11 +34,13 @@ public class PublicThemeAdminController {
         return ApiResponse.success(publicThemeService.saveDraftTheme(request.themeId()));
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/publish")
     public ApiResponse<PublicThemeService.PublicThemeAdminData> publishDraftTheme() {
         return ApiResponse.success(publicThemeService.publishDraftTheme());
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/rollback")
     public ApiResponse<PublicThemeService.PublicThemeAdminData> rollbackTheme() {
         return ApiResponse.success(publicThemeService.rollbackTheme());

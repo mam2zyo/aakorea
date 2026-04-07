@@ -1,5 +1,11 @@
 package org.aakorea.main.common.security;
 
+import java.util.List;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
+import org.aakorea.main.auth.support.OfficeAdminPrincipal;
+import org.aakorea.main.auth.support.OfficeAdminSessionRefreshFilter;
 import org.aakorea.main.common.config.AdminAuthProperties;
 import org.aakorea.main.common.config.AppCorsProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -7,26 +13,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
+@EnableMethodSecurity
 // @ConfigurationProperties 클래스를 스프링 빈으로 등록해 application.yml 값을 주입받는다.
 @EnableConfigurationProperties({AdminAuthProperties.class, AppCorsProperties.class})
 public class SecurityConfig {
@@ -36,7 +41,8 @@ public class SecurityConfig {
             HttpSecurity http,
             CorsConfigurationSource corsConfigurationSource,
             RestAuthenticationEntryPoint authenticationEntryPoint,
-            RestAccessDeniedHandler accessDeniedHandler
+            RestAccessDeniedHandler accessDeniedHandler,
+            OfficeAdminSessionRefreshFilter officeAdminSessionRefreshFilter
     ) throws Exception {
         // 이 프로젝트는 서버 렌더링 화면이 아니라 JSON API 중심이므로,
         // 기본 로그인 폼/HTTP Basic 대신 세션 기반 API 인증만 남겨 둔다.
@@ -62,6 +68,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
+                .addFilterAfter(officeAdminSessionRefreshFilter, SecurityContextHolderFilter.class)
                 .anonymous(Customizer.withDefaults());
 
         return http.build();
@@ -90,19 +97,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(AdminAuthProperties properties, PasswordEncoder passwordEncoder) {
-        String configuredPassword = properties.password();
-        // 외부 설정에 {bcrypt} 같은 prefix가 없으면 실행 시점에 기본 인코더로 해시한다.
-        String encodedPassword = configuredPassword.startsWith("{")
-                ? configuredPassword
-                : passwordEncoder.encode(configuredPassword);
+    public UserDetailsService userDetailsService(
+            AdminUserRepository adminUserRepository,
+            AdminUserPermissionGrantRepository adminUserPermissionGrantRepository,
+            OfficePermissionService officePermissionService
+    ) {
+        return username -> {
+            org.aakorea.main.auth.domain.AdminUser adminUser = adminUserRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("admin user not found"));
 
-        UserDetails admin = User.withUsername(properties.username())
-                .password(encodedPassword)
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin);
+            return OfficeAdminPrincipal.from(
+                    adminUser,
+                    officePermissionService.resolvePermissions(
+                            adminUser,
+                            adminUserPermissionGrantRepository.findAllByAdminUser_IdAndRevokedAtIsNull(adminUser.getId())));
+        };
     }
 
     @Bean

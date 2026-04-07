@@ -8,6 +8,7 @@ import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.generalservice.application.DistrictAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,11 +25,13 @@ public class DistrictAdminController {
 
     private final DistrictAdminService districtAdminService;
 
+    @PreAuthorize("hasAuthority('PERM_district.manage')")
     @GetMapping("/districts")
     public ApiResponse<List<DistrictAdminService.DistrictData>> getDistricts() {
         return ApiResponse.success(districtAdminService.getDistricts());
     }
 
+    @PreAuthorize("hasAuthority('PERM_district.manage')")
     @PostMapping("/districts")
     public ResponseEntity<ApiResponse<DistrictAdminService.DistrictData>> createDistrict(
             @Valid @RequestBody DistrictRequest request
@@ -37,6 +40,7 @@ public class DistrictAdminController {
                 districtAdminService.createDistrict(request.name())));
     }
 
+    @PreAuthorize("hasAuthority('PERM_district.manage')")
     @PutMapping("/districts/{id}")
     public ApiResponse<DistrictAdminService.DistrictData> updateDistrict(
             @PathVariable Long id,
@@ -45,6 +49,7 @@ public class DistrictAdminController {
         return ApiResponse.success(districtAdminService.updateDistrict(id, request.name()));
     }
 
+    @PreAuthorize("hasAuthority('PERM_district.manage')")
     @DeleteMapping("/districts/{id}")
     public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
         districtAdminService.deleteDistrict(id);

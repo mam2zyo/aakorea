@@ -39,6 +39,7 @@ export function useAppRoute() {
 }
 
 export {
+  buildAdminRegisterPath,
   buildAdminLoginPath,
   DEFAULT_ADMIN_PATH,
   parseRoute,

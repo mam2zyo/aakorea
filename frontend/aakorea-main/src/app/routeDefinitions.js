@@ -67,6 +67,18 @@ export function parseRoute(pathname, search = '') {
     })
   }
 
+  if (normalizedPath === '/admin/register') {
+    return create('admin-register', normalizedPath, {
+      section: 'admin',
+    })
+  }
+
+  if (normalizedPath === '/admin/pending') {
+    return create('admin-pending', normalizedPath, {
+      section: 'admin',
+    })
+  }
+
   if (normalizedPath === '/admin') {
     return create('admin-root', normalizedPath, { section: 'admin' })
   }
@@ -81,6 +93,10 @@ export function parseRoute(pathname, search = '') {
 
   if (normalizedPath === '/admin/account') {
     return create('admin-account', normalizedPath, { section: 'admin' })
+  }
+
+  if (normalizedPath === '/admin/admin-users') {
+    return create('admin-admin-users', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/public-theme') {
@@ -115,7 +131,9 @@ export function parseRoute(pathname, search = '') {
 }
 
 export function requiresAdminSession(route) {
-  return route.section === 'admin' && route.name !== 'admin-login'
+  return route.section === 'admin'
+    && route.name !== 'admin-login'
+    && route.name !== 'admin-register'
 }
 
 export function sanitizeAdminRedirect(value) {
@@ -123,7 +141,12 @@ export function sanitizeAdminRedirect(value) {
     return DEFAULT_ADMIN_PATH
   }
 
-  if (!value || !value.startsWith('/admin') || value.startsWith('/admin/login')) {
+  if (
+    !value
+    || !value.startsWith('/admin')
+    || value.startsWith('/admin/login')
+    || value.startsWith('/admin/register')
+  ) {
     return DEFAULT_ADMIN_PATH
   }
 
@@ -138,6 +161,10 @@ export function buildAdminLoginPath(redirectPath = DEFAULT_ADMIN_PATH) {
 
   const params = new URLSearchParams({ redirect: normalizedRedirect })
   return `/admin/login?${params.toString()}`
+}
+
+export function buildAdminRegisterPath() {
+  return '/admin/register'
 }
 
 function normalizePath(pathname) {

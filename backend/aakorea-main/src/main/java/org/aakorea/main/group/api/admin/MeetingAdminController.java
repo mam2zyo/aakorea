@@ -9,6 +9,7 @@ import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.MeetingAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ public class MeetingAdminController {
 
     private final MeetingAdminService meetingAdminService;
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @GetMapping
     public ApiResponse<List<MeetingAdminService.MeetingData>> getMeetings(
             @RequestParam(required = false) Long groupId,
@@ -35,6 +37,7 @@ public class MeetingAdminController {
         return ApiResponse.success(meetingAdminService.getMeetings(groupId, province, active));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PostMapping
     public ResponseEntity<ApiResponse<MeetingAdminService.MeetingData>> createMeeting(
             @Valid @RequestBody MeetingRequest request
@@ -52,6 +55,7 @@ public class MeetingAdminController {
                 request.active())));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PutMapping("/{id}")
     public ApiResponse<MeetingAdminService.MeetingData> updateMeeting(
             @PathVariable Long id,
@@ -71,12 +75,14 @@ public class MeetingAdminController {
                 request.active()));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeeting(@PathVariable Long id) {
         meetingAdminService.deleteMeeting(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping("/backfill-coordinates")
     public ApiResponse<MeetingAdminService.CoordinateBackfillResult> backfillMissingCoordinates(
             @RequestParam(defaultValue = "true") boolean dryRun

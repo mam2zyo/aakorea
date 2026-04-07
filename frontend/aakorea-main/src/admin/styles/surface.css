@@ -20,6 +20,18 @@
   border: 1px solid var(--color-border);
 }
 
+.admin-theme .admin-user-role-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.45rem 0.78rem;
+  font-size: 0.84rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
 .admin-theme .page-stack {
   display: flex;
   flex-direction: column;
@@ -168,6 +180,120 @@
   font-size: 0.84rem;
 }
 
+.admin-theme .admin-user-editor {
+  gap: var(--space-5);
+  padding-inline: var(--space-2);
+  --admin-user-editor-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.admin-theme .admin-user-editor__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-theme .admin-user-editor__identity-card {
+  padding: var(--space-1) 0;
+}
+
+.admin-theme .admin-user-editor__identity-grid {
+  grid-template-columns: var(--admin-user-editor-columns);
+  gap: var(--space-8);
+}
+
+.admin-theme .admin-user-editor__control-grid {
+  display: grid;
+  grid-template-columns: var(--admin-user-editor-columns);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.admin-theme .admin-user-editor__field {
+  min-width: 0;
+  width: 100%;
+}
+
+.admin-theme .admin-user-editor__identity-grid .detail-item dt,
+.admin-theme .admin-user-editor__field .field__label {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.admin-theme .admin-user-editor__identity-grid .detail-item dd {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.admin-theme .admin-user-editor__field select {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.admin-theme .admin-user-editor__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.admin-theme .admin-user-editor__audit-card {
+  margin-top: var(--space-1);
+}
+
+.admin-theme .admin-user-editor__history-block {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--admin-section-border);
+}
+
+.admin-theme .admin-user-editor__history-heading {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.admin-theme .admin-user-editor__history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-theme .admin-user-editor__history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.admin-theme .admin-user-editor__history-row,
+.admin-theme .admin-user-editor__history-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.admin-theme .admin-user-editor__history-row span,
+.admin-theme .admin-user-editor__history-meta {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+}
+
+.admin-theme .admin-user-editor__history-meta span:last-child {
+  white-space: nowrap;
+}
+
+.admin-theme .admin-user-editor__history-empty {
+  margin: 0;
+}
+
+.admin-theme .admin-user-editor__actions {
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
 .admin-theme .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -289,6 +415,11 @@
   color: var(--color-success-text);
 }
 
+.admin-theme .status-pill--pending {
+  background: color-mix(in srgb, var(--color-success) 35%, #f3d486);
+  color: color-mix(in srgb, var(--color-success-text) 45%, #7a5600);
+}
+
 .admin-theme .status-pill--inactive {
   background: var(--admin-status-inactive-background);
   color: var(--color-text-muted);
@@ -355,6 +486,53 @@
   margin-top: var(--space-5);
 }
 
+.admin-theme .admin-user-permission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3);
+}
+
+.admin-theme .admin-user-permission-button {
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-width: 0;
+  min-height: 116px;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  white-space: normal;
+  text-align: left;
+}
+
+.admin-theme .admin-user-permission-button strong,
+.admin-theme .admin-user-permission-button__description {
+  display: block;
+  width: 100%;
+}
+
+.admin-theme .admin-user-permission-button strong {
+  font-size: 1rem;
+}
+
+.admin-theme .admin-user-permission-button__description {
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.admin-theme .admin-user-permission-button:hover {
+  background: var(--admin-theme-choice-hover-background);
+}
+
+.admin-theme .admin-user-permission-button--active {
+  border-color: var(--color-primary);
+  background: var(--color-surface-strong);
+  color: var(--color-primary-strong);
+}
+
 @media (max-width: 920px) {
   .admin-theme .page-stack {
     padding-inline: var(--space-4);
@@ -381,5 +559,11 @@
     bottom: var(--space-4);
     left: var(--space-4);
     max-width: none;
+  }
+
+  .admin-theme .admin-user-editor__identity-grid,
+  .admin-theme .admin-user-editor__control-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 }

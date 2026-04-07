@@ -9,7 +9,7 @@ import { EmptyState, PageSection } from '../ui'
 export function AdminAppScreen({
   currentPath,
   flash,
-  isLoginScreen,
+  isStandaloneAdminScreen,
   onLogout,
   onNavigate,
   page,
@@ -25,7 +25,7 @@ export function AdminAppScreen({
     }))
   }, [theme.resolvedTheme, theme.systemTheme, theme.themePreference])
 
-  if (isLoginScreen) {
+  if (isStandaloneAdminScreen) {
     return (
       <div
         className="admin-auth-shell admin-theme"

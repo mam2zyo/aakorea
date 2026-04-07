@@ -5,10 +5,16 @@ import { navigate } from '../router'
 
 const UNAUTHENTICATED_SESSION = {
   authenticated: false,
+  userId: null,
+  email: null,
   username: null,
+  displayName: null,
+  role: null,
+  status: null,
+  permissions: [],
 }
 
-export function useAdminSession(route, { onError }) {
+export function useAdminSession(route, { onError, onSuccess }) {
   const [authPending, setAuthPending] = useState(false)
   const [session, setSession] = useState(UNAUTHENTICATED_SESSION)
   const [sessionChecked, setSessionChecked] = useState(false)
@@ -49,9 +55,29 @@ export function useAdminSession(route, { onError }) {
       const authStatus = await authApi.login(credentials)
       setSession(authStatus)
       setSessionChecked(true)
-      navigate(redirectPath, { replace: true })
+      navigate(authStatus.status === 'PENDING_APPROVAL'
+        ? '/admin/pending'
+        : redirectPath, { replace: true })
     } catch (error) {
       onError(error, '로그인에 실패했습니다.')
+    } finally {
+      setAuthPending(false)
+    }
+  }
+
+  async function handleRegister(registration) {
+    setAuthPending(true)
+
+    try {
+      const registeredUser = await authApi.register(registration)
+      setSession(UNAUTHENTICATED_SESSION)
+      setSessionChecked(true)
+      onSuccess?.(
+        `${registeredUser.displayName} 계정 등록이 완료되었습니다. 승인과 업무 권한 설정이 완료되면 등록한 이메일로 안내할 예정입니다.`,
+      )
+      navigate('/admin/login', { replace: true })
+    } catch (error) {
+      throw error
     } finally {
       setAuthPending(false)
     }
@@ -75,6 +101,7 @@ export function useAdminSession(route, { onError }) {
   return {
     authPending,
     handleLogin,
+    handleRegister,
     handleLogout,
     session,
     sessionChecked,

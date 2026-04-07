@@ -22,7 +22,7 @@
 
 - `deferred/`
   현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 주제를 둔다.
-  아직 디렉토리가 없더라도, 필요 시 이 원칙에 따라 추가한다.
+  필요 시 이 원칙에 따라 문서를 추가한다.
 
 현재 구현과 설계 판단의 기준은 항상 `current/` 아래 문서고,
 실행 및 운영 절차의 기준은 `runbooks/` 아래 문서다.
@@ -49,6 +49,9 @@
 - API 계약을 정리하고
 - 구현 상태와 다음 작업을 본다
 - 프론트 구조와 운영 절차를 확인한다
+
+현재 MVP 밖의 확장 목표를 검토할 때는
+`deferred/FUTURE_IMPLEMENTATION_GOALS.md`를 별도로 본다.
 
 ---
 
@@ -152,6 +155,7 @@ docs/
 │     ├─ README.md
 │     ├─ COMMON.md
 │     ├─ AUTH.md
+│     ├─ ADMIN_AUTHORIZATION.md
 │     ├─ PUBLIC_THEME.md
 │     ├─ PUBLIC_CONTENT.md
 │     ├─ PUBLIC_MEETINGS.md
@@ -160,6 +164,10 @@ docs/
 │     ├─ ADMIN_MEETINGS.md
 │     ├─ ADMIN_MEETING_IMPORTS.md
 │     └─ ADMIN_CONTENT.md
+├─ deferred/
+│  ├─ FUTURE_IMPLEMENTATION_GOALS.md
+│  ├─ OFFICE_AUTH_MODEL_DRAFT.md
+│  └─ OFFICE_AUTHORIZATION_DRAFT.md
 ├─ runbooks/
 │  ├─ README.md
 │  ├─ LOCAL_DEVELOPMENT.md

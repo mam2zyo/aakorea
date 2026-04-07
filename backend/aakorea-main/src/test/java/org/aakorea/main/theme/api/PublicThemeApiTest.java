@@ -2,7 +2,7 @@ package org.aakorea.main.theme.api;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.aakorea.main.support.AdminSecurityTestSupport.officeUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -10,6 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.domain.AdminRole;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
 import org.aakorea.main.common.error.GlobalExceptionHandler;
 import org.aakorea.main.common.security.RestAccessDeniedHandler;
 import org.aakorea.main.common.security.RestAuthenticationEntryPoint;
@@ -39,11 +43,29 @@ class PublicThemeApiTest {
     @MockitoBean
     private PublicThemeService publicThemeService;
 
+    @MockitoBean
+    private AdminUserRepository adminUserRepository;
+
+    @MockitoBean
+    private AdminUserPermissionGrantRepository adminUserPermissionGrantRepository;
+
+    @MockitoBean
+    private OfficePermissionService officePermissionService;
+
     @Test
     void adminThemeApiRequiresAuthentication() throws Exception {
         mockMvc.perform(get("/api/admin/public-theme"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    void adminThemeApiRequiresSystemAdminRole() throws Exception {
+        mockMvc.perform(get("/api/admin/public-theme")
+                        .with(officeUser(AdminRole.MANAGER)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.error.message").value("forbidden"));
     }
 
     @Test
@@ -68,7 +90,7 @@ class PublicThemeApiTest {
                         LocalDateTime.of(2026, 4, 7, 10, 0)));
 
         mockMvc.perform(put("/api/admin/public-theme/draft")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN))
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 {
@@ -93,7 +115,7 @@ class PublicThemeApiTest {
                         LocalDateTime.of(2026, 4, 7, 11, 0)));
 
         mockMvc.perform(post("/api/admin/public-theme/rollback")
-                        .with(user("admin").roles("ADMIN")))
+                        .with(officeUser(AdminRole.SYSTEM_ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.activeThemeId").value("classic"))
                 .andExpect(jsonPath("$.data.previousThemeId").value("harbor"));

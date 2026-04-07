@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { EmptyState, PageSection } from '../../admin/ui'
-import { sanitizeAdminRedirect } from '../../app/router'
+import { buildAdminRegisterPath, sanitizeAdminRedirect } from '../../app/router'
 
-const INITIAL_AUTH_FORM = { username: '', password: '' }
+const INITIAL_AUTH_FORM = { email: '', password: '' }
 
 export function AdminLoginPage({
   authPending,
   onLogin,
+  onNavigate,
   redirectPath,
   session,
   sessionChecked,
@@ -15,9 +16,9 @@ export function AdminLoginPage({
 
   return (
     <PageSection
-      label="Admin Login"
-      title="운영 콘솔 로그인"
-      description="관리자 메뉴는 로그인 후 접근할 수 있습니다."
+      label="Office Login"
+      title="GSO 업무 시스템 로그인"
+      description="승인된 운영 계정만 office 업무 메뉴에 접근할 수 있습니다."
     >
       {sessionChecked && session.authenticated ? (
         <EmptyState
@@ -33,15 +34,15 @@ export function AdminLoginPage({
           }}
         >
           <label className="field">
-            <span className="field__label">아이디</span>
+            <span className="field__label">이메일</span>
             <input
-              autoComplete="username"
-              placeholder="admin"
-              value={authForm.username}
+              autoComplete="email"
+              placeholder="staff@aakorea.org"
+              value={authForm.email}
               onChange={(event) =>
                 setAuthForm((previous) => ({
                   ...previous,
-                  username: event.target.value,
+                  email: event.target.value,
                 }))
               }
             />
@@ -70,6 +71,14 @@ export function AdminLoginPage({
               disabled={authPending}
             >
               {authPending ? '로그인 중...' : '로그인'}
+            </button>
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={() => onNavigate(buildAdminRegisterPath())}
+              disabled={authPending}
+            >
+              GSO Staff 등록
             </button>
           </div>
         </form>

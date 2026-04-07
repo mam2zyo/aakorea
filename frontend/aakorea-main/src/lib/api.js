@@ -1,5 +1,6 @@
 export { ApiError } from '../shared/lib/request'
 export { authApi } from '../features/auth/api'
+export { adminUserApi } from '../features/auth/api/adminUsers'
 export { adminContentApi } from '../features/content/api/admin'
 export { publicContentApi } from '../features/content/api/public'
 export { adminDistrictApi } from '../features/districts/api/admin'

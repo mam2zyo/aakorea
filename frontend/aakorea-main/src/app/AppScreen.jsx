@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent } from 'react'
 import { AdminAppScreen } from '../admin/app/AdminAppScreen'
+import { resolveAdminHomePath } from '../admin/app/adminAuthorization'
 import { renderAdminPage } from '../admin/app/renderAdminPage'
 import { useAdminTheme } from '../admin/app/useAdminTheme'
 import {
@@ -10,7 +11,6 @@ import { PublicAppScreen } from '../public/app/PublicAppScreen'
 import { renderPublicPage } from '../public/app/renderPublicPage'
 import {
   buildAdminLoginPath,
-  DEFAULT_ADMIN_PATH,
   requiresAdminSession,
 } from './router'
 import { navigate } from './router'
@@ -20,6 +20,7 @@ export function AppScreen({
   flash,
   onError,
   onLogin,
+  onRegister,
   onLogout,
   onNavigate,
   onSuccess,
@@ -29,12 +30,9 @@ export function AppScreen({
   sessionChecked,
 }) {
   const syncRouteAccess = useEffectEvent(() => {
-    if (!sessionChecked) {
-      return
-    }
+    const adminHomePath = resolveAdminHomePath(session)
 
-    if (route.name === 'admin-root') {
-      navigate(DEFAULT_ADMIN_PATH, { replace: true })
+    if (!sessionChecked) {
       return
     }
 
@@ -43,14 +41,31 @@ export function AppScreen({
       return
     }
 
-    if (route.name === 'admin-login' && session.authenticated) {
-      navigate(DEFAULT_ADMIN_PATH, { replace: true })
+    if (session.authenticated && session.status === 'PENDING_APPROVAL') {
+      if (route.name !== 'admin-pending' && route.name !== 'admin-root') {
+        navigate('/admin/pending', { replace: true })
+        return
+      }
+    }
+
+    if (session.authenticated && session.status !== 'PENDING_APPROVAL' && route.name === 'admin-pending') {
+      navigate(adminHomePath, { replace: true })
+      return
+    }
+
+    if (route.name === 'admin-root' && session.authenticated) {
+      navigate(adminHomePath, { replace: true })
+      return
+    }
+
+    if ((route.name === 'admin-login' || route.name === 'admin-register') && session.authenticated) {
+      navigate(adminHomePath, { replace: true })
     }
   })
 
   useEffect(() => {
     syncRouteAccess()
-  }, [route.currentPath, route.name, session.authenticated, sessionChecked])
+  }, [route.currentPath, route.name, session.authenticated, session.status, sessionChecked])
 
   const adminTheme = useAdminTheme()
   const publicTheme = resolvePublicTheme(route.search, {
@@ -58,21 +73,25 @@ export function AppScreen({
   })
   const publicOnNavigate = (to) => onNavigate(applyPublicThemePreview(to, publicTheme))
   const isProtectedAdminRoute = requiresAdminSession(route)
-  const isLoginScreen = route.name === 'admin-login'
+  const isStandaloneAdminScreen = route.name === 'admin-login'
+    || route.name === 'admin-register'
+    || route.name === 'admin-pending'
 
   if (route.section === 'admin') {
     return (
       <AdminAppScreen
         currentPath={route.currentPath}
         flash={flash}
-        isLoginScreen={isLoginScreen}
+        isStandaloneAdminScreen={isStandaloneAdminScreen}
         onLogout={onLogout}
         onNavigate={onNavigate}
         page={renderAdminPage({
           authPending,
           onError,
           onLogin,
+          onRegister,
           onNavigate,
+          onLogout,
           onSuccess,
           publicThemeState,
           route,
@@ -90,9 +109,9 @@ export function AppScreen({
 
   return (
     <PublicAppScreen
-      currentPath={route.currentPath}
-      flash={flash}
-      onNavigate={publicOnNavigate}
+        currentPath={route.currentPath}
+        flash={flash}
+        onNavigate={publicOnNavigate}
       page={renderPublicPage({
         onError,
         onNavigate: publicOnNavigate,

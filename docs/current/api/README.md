@@ -25,6 +25,9 @@
 - `AUTH.md`
   운영 인증 API 계약
 
+- `ADMIN_AUTHORIZATION.md`
+  운영 권한 규칙, 관리자 메뉴/API permission 매핑, 운영자 승인 관리 API 계약
+
 - `PUBLIC_THEME.md`
   공개 사이트 theme 조회와 운영 theme 관리 API 계약
 
@@ -60,14 +63,15 @@
 
 1. `COMMON.md`
 2. `AUTH.md`
-3. `PUBLIC_THEME.md`
-4. `PUBLIC_CONTENT.md`
-5. `PUBLIC_MEETINGS.md`
-6. `ADMIN_GENERAL_SERVICES.md`
-7. `ADMIN_GROUPS.md`
-8. `ADMIN_MEETINGS.md`
-9. `ADMIN_MEETING_IMPORTS.md`
-10. `ADMIN_CONTENT.md`
+3. `ADMIN_AUTHORIZATION.md`
+4. `PUBLIC_THEME.md`
+5. `PUBLIC_CONTENT.md`
+6. `PUBLIC_MEETINGS.md`
+7. `ADMIN_GENERAL_SERVICES.md`
+8. `ADMIN_GROUPS.md`
+9. `ADMIN_MEETINGS.md`
+10. `ADMIN_MEETING_IMPORTS.md`
+11. `ADMIN_CONTENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -124,6 +128,9 @@
 - `PUT /api/admin/public-theme/draft`
 - `POST /api/admin/public-theme/publish`
 - `POST /api/admin/public-theme/rollback`
+- `GET /api/admin/admin-users`
+- `POST /api/admin/admin-users`
+- `PUT /api/admin/admin-users/{id}`
 - `GET /api/admin/content-pages`
 - `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`
@@ -143,6 +150,7 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 
 - 공통 규약을 확인할 때: `COMMON.md`
 - 인증 API를 확인할 때: `AUTH.md`
+- 운영 권한과 관리자 승인 API를 확인할 때: `ADMIN_AUTHORIZATION.md`
 - 공개 사이트 theme API를 확인할 때: `PUBLIC_THEME.md`
 - 공개 콘텐츠 API를 확인할 때: `PUBLIC_CONTENT.md`
 - 공개 모임 API를 확인할 때: `PUBLIC_MEETINGS.md`

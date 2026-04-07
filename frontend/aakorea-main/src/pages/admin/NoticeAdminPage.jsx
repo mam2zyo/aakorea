@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react'
+import { ADMIN_PERMISSION, hasPermission } from '../../admin/app/adminAuthorization'
 import {
   AdminPageHeader,
   EmptyState,
@@ -14,7 +15,7 @@ const NOTICE_SORT_MODES = {
 const EMPTY_NOTICE_FORM = createEmptyNoticeForm()
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
-export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
+export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
   const [notices, setNotices] = useState([])
   const [noticeForm, setNoticeForm] = useState(EMPTY_NOTICE_FORM)
   const [noticeErrors, setNoticeErrors] = useState({})
@@ -48,6 +49,10 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
   }, [])
 
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko')
+  const canPublish = hasPermission(session, ADMIN_PERMISSION.CONTENT_PUBLISH)
+  const publishedContentLocked = !canPublish && (noticeForm.originalPublished || noticeForm.published)
+  const formBusy = saving || deleting
+  const formReadOnly = formBusy || publishedContentLocked
   const filteredNotices = sortNotices(
     notices.filter((notice) => notice.title.toLocaleLowerCase('ko').includes(normalizedQuery)),
     sortMode,
@@ -177,13 +182,18 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
                 <p className="admin-form-note">
                   공지는 최신순 흐름으로 보여지며, 게시 상태일 때만 공개 페이지에서 바로 확인할 수 있습니다.
                 </p>
+                {!canPublish ? (
+                  <p className="admin-form-note">
+                    게시 상태 변경과 게시 중 공지 수정은 `content.publish` 권한이 필요합니다.
+                  </p>
+                ) : null}
               </div>
 
               <button
                 className="ghost-button ghost-button--small"
                 type="button"
                 onClick={closeEditor}
-                disabled={saving || deleting}
+                disabled={formBusy}
               >
                 닫기
               </button>
@@ -199,6 +209,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
               <Field label="제목" error={readFieldError(noticeErrors, 'title')}>
                 <input
                   value={noticeForm.title}
+                  disabled={formReadOnly}
                   onChange={(event) => {
                     setNoticeForm((previous) => ({
                       ...previous,
@@ -213,6 +224,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
                 <textarea
                   rows={10}
                   value={noticeForm.body}
+                  disabled={formReadOnly}
                   onChange={(event) => {
                     setNoticeForm((previous) => ({
                       ...previous,
@@ -227,6 +239,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
                 <input
                   type="datetime-local"
                   value={noticeForm.publishedAt}
+                  disabled={formReadOnly || !canPublish}
                   onChange={(event) => {
                     setNoticeForm((previous) => ({
                       ...previous,
@@ -240,6 +253,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
               <label className="toggle-field">
                 <input
                   checked={noticeForm.published}
+                  disabled={formReadOnly || !canPublish}
                   type="checkbox"
                   onChange={(event) => {
                     setNoticeForm((previous) => ({
@@ -253,7 +267,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
               </label>
 
               <div className="button-row button-row--compact">
-                <button className="primary-button" type="submit" disabled={saving || deleting}>
+                <button className="primary-button" type="submit" disabled={formReadOnly}>
                   {saving ? '저장 중...' : noticeForm.id ? '공지 저장' : '공지 생성'}
                 </button>
 
@@ -262,7 +276,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
                     className="ghost-button"
                     type="button"
                     onClick={() => onNavigate(`/notices/${noticeForm.id}`)}
-                    disabled={saving || deleting}
+                    disabled={formBusy}
                   >
                     공개 미리 보기
                   </button>
@@ -273,7 +287,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
                     className="ghost-button ghost-button--danger"
                     type="button"
                     onClick={() => void deleteNotice()}
-                    disabled={saving || deleting}
+                    disabled={formReadOnly}
                   >
                     {deleting ? '삭제 중...' : '공지 삭제'}
                   </button>
@@ -305,6 +319,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess }) {
         id: data.id,
         title: data.title,
         body: data.body,
+        originalPublished: data.published,
         published: data.published,
         publishedAt: toInputDateTimeValue(data.publishedAt),
       })
@@ -415,6 +430,7 @@ function createEmptyNoticeForm() {
     id: null,
     title: '',
     body: '',
+    originalPublished: false,
     published: false,
     publishedAt: createCurrentDateTimeValue(),
   }

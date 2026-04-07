@@ -353,7 +353,7 @@
 }
 
 .admin-overlay__dialog--wide {
-  width: min(100%, 720px);
+  width: min(100%, 760px);
 }
 
 .admin-overlay__dialog--editor {
@@ -379,6 +379,13 @@
   justify-content: space-between;
   gap: var(--space-4);
   margin-bottom: var(--space-5);
+}
+
+.admin-user-editor__header {
+  margin-bottom: 0;
+  padding-bottom: var(--space-5);
+  padding-inline: var(--space-2);
+  border-bottom: 1px solid var(--admin-section-border-strong);
 }
 
 .admin-overlay__heading {
@@ -423,6 +430,22 @@
 .admin-table--content .admin-table__header,
 .admin-table--content .admin-table__row {
   grid-template-columns: 64px minmax(170px, 0.85fr) minmax(0, 1fr) 96px 96px;
+}
+
+.admin-table--admin-users .admin-table__header,
+.admin-table--admin-users .admin-table__row {
+  grid-template-columns:
+    minmax(180px, 1.28fr)
+    minmax(110px, 0.78fr)
+    minmax(122px, 0.84fr)
+    minmax(96px, 0.65fr)
+    minmax(96px, 0.7fr)
+    minmax(112px, 0.8fr)
+    110px;
+}
+
+.admin-table--admin-users .admin-table__cell--action {
+  text-align: left;
 }
 
 .admin-table__header,

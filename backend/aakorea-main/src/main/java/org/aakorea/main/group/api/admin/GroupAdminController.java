@@ -9,6 +9,7 @@ import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.GroupAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class GroupAdminController {
 
     private final GroupAdminService groupAdminService;
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @GetMapping("/groups")
     public ApiResponse<List<GroupAdminService.GroupData>> getGroups(
             @RequestParam(required = false) Long districtId
@@ -33,6 +35,7 @@ public class GroupAdminController {
         return ApiResponse.success(groupAdminService.getGroups(districtId));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PostMapping("/groups")
     public ResponseEntity<ApiResponse<GroupAdminService.GroupData>> createGroup(
             @Valid @RequestBody GroupRequest request
@@ -44,6 +47,7 @@ public class GroupAdminController {
                         request.notice())));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PutMapping("/groups/{id}")
     public ApiResponse<GroupAdminService.GroupData> updateGroup(
             @PathVariable Long id,
@@ -56,12 +60,14 @@ public class GroupAdminController {
                 request.notice()));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @DeleteMapping("/groups/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
         groupAdminService.deleteGroup(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @GetMapping("/group-contacts")
     public ApiResponse<List<GroupAdminService.GroupContactData>> getGroupContacts(
             @RequestParam(required = false) Long groupId
@@ -69,6 +75,7 @@ public class GroupAdminController {
         return ApiResponse.success(groupAdminService.getGroupContacts(groupId));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PostMapping("/group-contacts")
     public ResponseEntity<ApiResponse<GroupAdminService.GroupContactData>> createGroupContact(
             @Valid @RequestBody CreateGroupContactRequest request
@@ -81,6 +88,7 @@ public class GroupAdminController {
                         toPostalContactInput(request.postalContact()))));
     }
 
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PutMapping("/group-contacts/{id}")
     public ApiResponse<GroupAdminService.GroupContactData> updateGroupContact(
             @PathVariable Long id,

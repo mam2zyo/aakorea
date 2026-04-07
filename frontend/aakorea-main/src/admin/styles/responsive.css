@@ -62,7 +62,8 @@
   .admin-table--district .admin-table__row,
   .admin-table--group .admin-table__row,
   .admin-table--notice .admin-table__row,
-  .admin-table--content .admin-table__row {
+  .admin-table--content .admin-table__row,
+  .admin-table--admin-users .admin-table__row {
     grid-template-columns: 1fr;
   }
 
@@ -112,6 +113,12 @@
   .admin-group-modal__footer {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .admin-user-editor__history-row,
+  .admin-user-editor__history-meta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .address-search-field__feedback,

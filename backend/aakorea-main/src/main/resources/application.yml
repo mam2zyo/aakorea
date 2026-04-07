@@ -16,7 +16,7 @@ server:
 app:
   auth:
     admin:
-      username: ${AAKOREA_ADMIN_USERNAME}
+      email: ${AAKOREA_ADMIN_EMAIL:${AAKOREA_ADMIN_USERNAME}}
       password: ${AAKOREA_ADMIN_PASSWORD}
   cors:
     allowed-origins:

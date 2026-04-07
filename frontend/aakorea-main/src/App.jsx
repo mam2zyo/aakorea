@@ -9,9 +9,10 @@ import { usePublicSiteTheme } from './public/app/usePublicSiteTheme'
 function App() {
   const route = useAppRoute()
   const { flash, showError, showSuccess } = useFlashState()
-  const { authPending, handleLogin, handleLogout, session, sessionChecked } =
+  const { authPending, handleLogin, handleRegister, handleLogout, session, sessionChecked } =
     useAdminSession(route, {
       onError: showError,
+      onSuccess: showSuccess,
     })
   const publicThemeState = usePublicSiteTheme()
 
@@ -21,6 +22,7 @@ function App() {
       flash={flash}
       onError={showError}
       onLogin={handleLogin}
+      onRegister={handleRegister}
       onLogout={handleLogout}
       onNavigate={navigate}
       onSuccess={showSuccess}

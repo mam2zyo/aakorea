@@ -1,19 +1,24 @@
+import { canAccessAdminRoute, resolveAdminHomePath } from './adminAuthorization'
 import { EmptyState, PageSection } from '../ui'
 import { AdminAccountPage } from '../../pages/admin/AdminAccountPage'
 import { AdminLoginPage } from '../../pages/admin/AdminLoginPage'
+import { AdminPendingApprovalPage } from '../../pages/admin/AdminPendingApprovalPage'
+import { AdminRegisterPage } from '../../pages/admin/AdminRegisterPage'
 import { AdminOverviewPage } from '../../pages/admin/AdminOverviewPage'
 import { AdminPublicThemePage } from '../../pages/admin/AdminPublicThemePage'
+import { AdminUsersPage } from '../../pages/admin/AdminUsersPage'
 import { ContentPageAdminPage } from '../../pages/admin/ContentPageAdminPage'
 import { DistrictAdminPage } from '../../pages/admin/DistrictAdminPage'
 import { GroupListPage } from '../../pages/admin/GroupListPage'
 import { NoticeAdminPage } from '../../pages/admin/NoticeAdminPage'
-import { DEFAULT_ADMIN_PATH } from '../../app/router'
 
 export function renderAdminPage({
   authPending,
   onError,
   onLogin,
   onNavigate,
+  onLogout,
+  onRegister,
   onSuccess,
   publicThemeState,
   route,
@@ -21,15 +26,65 @@ export function renderAdminPage({
   sessionChecked,
   theme,
 }) {
+  const fallbackAdminPath = resolveAdminHomePath(session)
+
+  if (
+    session.authenticated
+    && route.name !== 'admin-login'
+    && route.name !== 'admin-root'
+    && !canAccessAdminRoute(session, route.name)
+  ) {
+    return (
+      <PageSection
+        label="Access Restricted"
+        title="이 메뉴에 접근할 권한이 없습니다."
+        description="계정에 부여된 역할과 permission 범위 안에서만 운영 기능을 사용할 수 있습니다."
+      >
+        <EmptyState
+          title="권한이 없는 화면입니다."
+          description="다른 운영 메뉴로 이동하거나 System Admin 또는 Manager에게 권한 부여를 요청해 주세요."
+        />
+        <div className="button-row">
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() => onNavigate(fallbackAdminPath)}
+          >
+            사용 가능한 운영 화면으로 이동
+          </button>
+        </div>
+      </PageSection>
+    )
+  }
+
   switch (route.name) {
     case 'admin-login':
       return (
         <AdminLoginPage
           authPending={authPending}
           onLogin={onLogin}
+          onNavigate={onNavigate}
           redirectPath={route.redirectPath}
           session={session}
           sessionChecked={sessionChecked}
+        />
+      )
+    case 'admin-register':
+      return (
+        <AdminRegisterPage
+          authPending={authPending}
+          onNavigate={onNavigate}
+          onError={onError}
+          onRegister={onRegister}
+          session={session}
+          sessionChecked={sessionChecked}
+        />
+      )
+    case 'admin-pending':
+      return (
+        <AdminPendingApprovalPage
+          onLogout={onLogout}
+          session={session}
         />
       )
     case 'admin-root':
@@ -59,6 +114,14 @@ export function renderAdminPage({
           systemTheme={theme.systemTheme}
           themePreference={theme.themePreference}
           onThemePreferenceChange={theme.setThemePreference}
+        />
+      )
+    case 'admin-admin-users':
+      return (
+        <AdminUsersPage
+          onError={onError}
+          onSuccess={onSuccess}
+          session={session}
         />
       )
     case 'admin-public-theme':
@@ -92,6 +155,7 @@ export function renderAdminPage({
           onError={onError}
           onNavigate={onNavigate}
           onSuccess={onSuccess}
+          session={session}
         />
       )
     case 'admin-notices':
@@ -100,6 +164,7 @@ export function renderAdminPage({
           onError={onError}
           onNavigate={onNavigate}
           onSuccess={onSuccess}
+          session={session}
         />
       )
     default:
@@ -117,7 +182,7 @@ export function renderAdminPage({
             <button
               className="ghost-button"
               type="button"
-              onClick={() => onNavigate(DEFAULT_ADMIN_PATH)}
+              onClick={() => onNavigate(fallbackAdminPath)}
             >
               운영 기본 화면으로 이동
             </button>
