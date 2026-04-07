@@ -4,8 +4,8 @@ import {
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
 import { lookupLabel } from '../../../../lib/view'
-import kakaoMapIcon from '../assets/kakao-map-icon.svg'
-import tmapIcon from '../assets/tmap-icon.svg'
+import kakaoMapIcon from '../assets/kakaomap100.png'
+import tmapIcon from '../assets/tmap100.png'
 import { KakaoMeetingMap } from './KakaoMeetingMap'
 import {
   buildKakaoMapUrl,
@@ -141,7 +141,6 @@ export function MeetingFocusDialog({
                             className="meeting-focus-location-action__icon"
                             src={kakaoMapIcon}
                           />
-                          <span className="meeting-focus-location-action__label">카카오맵 위치 보기</span>
                         </a>
                       ) : null}
                       {tmapRouteUrl ? (
@@ -158,7 +157,6 @@ export function MeetingFocusDialog({
                             className="meeting-focus-location-action__icon"
                             src={tmapIcon}
                           />
-                          <span className="meeting-focus-location-action__label">T map 길안내</span>
                         </a>
                       ) : null}
                     </div>

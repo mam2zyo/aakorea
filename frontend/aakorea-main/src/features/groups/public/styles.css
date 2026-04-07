@@ -435,42 +435,44 @@
 .meeting-focus-location-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  margin-top: 0.55rem;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
   padding-inline-start: 0.9rem;
 }
 
 .meeting-focus-location-action {
-  display: inline-flex;
+  display: inline-grid;
+  place-items: center;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.58rem 0.82rem;
-  border: 1px solid var(--public-card-border-strong);
-  border-radius: 999px;
-  background: var(--public-card-background);
-  color: var(--color-text);
-  font-size: 0.88rem;
-  font-weight: 600;
+  width: 2.9rem;
+  height: 2.9rem;
+  padding: 0;
+  border: 0;
+  border-radius: 1rem;
+  background: transparent;
   line-height: 1;
-  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
 .meeting-focus-location-action:hover {
   transform: translateY(-1px);
-  border-color: var(--public-dialog-close-hover-border);
   background: var(--public-card-background-soft);
+}
+
+.meeting-focus-location-action:focus-visible {
+  outline: none;
+  background: var(--public-card-background-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .meeting-focus-location-action__icon {
   display: block;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2.15rem;
+  height: 2.15rem;
   flex-shrink: 0;
-  border-radius: 0.65rem;
-}
-
-.meeting-focus-location-action__label {
-  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  object-fit: cover;
 }
 
 .meeting-focus-location-card__title {
