@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { EmptyState } from '../../../../components/ui'
+import { EmptyState } from '../../../../admin/ui'
 import { formatPostalContact } from '../../../../lib/address'
 import {
   DAY_OF_WEEK_OPTIONS,

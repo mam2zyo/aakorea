@@ -83,8 +83,8 @@ AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
 - `src/app/providers/`
   `useAdminSession`, `useFlashState`로 인증/플래시 상태를 분리
 
-- `src/layouts/`
-  공개 셸과 운영 셸 레이아웃, 관리자 사이드바 메뉴를 담당
+- `src/public/`, `src/admin/`
+  surface별 app screen, layout, UI entry, theme token을 나눠 관리
 
 - `src/pages/public/`
   홈, 안내 페이지, 공지, 모임 찾기 화면 entrypoint를 둠
@@ -98,9 +98,6 @@ AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
 - `src/features/`
   `auth`, `districts`, `groups`, `content`, `home` 기준으로 API/하위 컴포넌트/스타일을 분리
 
-- `src/components/ui.jsx`
-  공통 패널, 폼, 리스트 UI
-
 - `src/shared/lib/request.js`
   공통 `request`, `ApiError` 유틸
 
@@ -110,8 +107,8 @@ AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
 - `src/lib/`
   `formErrors`, `options`, `view` 같은 화면 보조 유틸
 
-- `src/index.css`, `src/App.css`
-  공통 토큰/base와 shared/feature 스타일 import를 나눔
+- `src/index.css`, `src/public/styles/`, `src/admin/styles/`
+  전역 reset/base와 surface별 token/shell/forms/responsive import를 담당
 
 ---
 

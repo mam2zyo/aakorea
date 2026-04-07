@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EmptyState, PageSection } from '../../components/ui'
+import { EmptyState, PageSection } from '../../admin/ui'
 import { sanitizeAdminRedirect } from '../../app/router'
 
 const INITIAL_AUTH_FORM = { username: '', password: '' }

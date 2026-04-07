@@ -1,8 +1,10 @@
-import './App.css'
+import './public/styles/index.css'
+import './admin/styles/index.css'
 import { AppScreen } from './app/AppScreen'
 import { navigate, useAppRoute } from './app/router'
 import { useAdminSession } from './app/providers/useAdminSession'
 import { useFlashState } from './app/providers/useFlashState'
+import { usePublicSiteTheme } from './public/app/usePublicSiteTheme'
 
 function App() {
   const route = useAppRoute()
@@ -11,6 +13,7 @@ function App() {
     useAdminSession(route, {
       onError: showError,
     })
+  const publicThemeState = usePublicSiteTheme()
 
   return (
     <AppScreen
@@ -21,6 +24,7 @@ function App() {
       onLogout={handleLogout}
       onNavigate={navigate}
       onSuccess={showSuccess}
+      publicThemeState={publicThemeState}
       route={route}
       session={session}
       sessionChecked={sessionChecked}

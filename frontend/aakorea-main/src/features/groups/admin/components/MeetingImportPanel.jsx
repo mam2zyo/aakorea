@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { DetailItem } from '../../../../components/ui'
+import { DetailItem } from '../../../../admin/ui'
 import { adminMeetingImportApi } from '../../../../lib/api'
 
 const IMPORT_PREVIEW_GROUP_LIMIT = 5

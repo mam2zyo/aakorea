@@ -1,15 +1,20 @@
 export const DEFAULT_ADMIN_PATH = '/admin/groups'
+const IS_DEV = Boolean(import.meta.env?.DEV)
 
 export function parseRoute(pathname, search = '') {
   const params = new URLSearchParams(search)
   const normalizedPath = normalizePath(pathname)
+  const create = (name, currentPath, extra = {}) => createRoute(name, currentPath, {
+    search,
+    ...extra,
+  })
 
   if (normalizedPath === '/') {
-    return createRoute('home', normalizedPath, { section: 'public' })
+    return create('home', normalizedPath, { section: 'public' })
   }
 
   if (normalizedPath === '/meetings') {
-    return createRoute('meetings', normalizedPath, {
+    return create('meetings', normalizedPath, {
       section: 'public',
       groupId: optionalNumber(params.get('groupId')),
       meetingId: optionalNumber(params.get('meetingId')),
@@ -18,15 +23,15 @@ export function parseRoute(pathname, search = '') {
     })
   }
 
-  if (import.meta.env.DEV && normalizedPath === '/__preview/meeting-focus') {
-    return createRoute('meeting-focus-preview', normalizedPath, {
+  if (IS_DEV && normalizedPath === '/__preview/meeting-focus') {
+    return create('meeting-focus-preview', normalizedPath, {
       section: 'public',
     })
   }
 
   const groupMatch = normalizedPath.match(/^\/groups\/(\d+)$/)
   if (groupMatch) {
-    return createRoute('meetings', normalizedPath, {
+    return create('meetings', normalizedPath, {
       section: 'public',
       groupId: Number(groupMatch[1]),
       meetingId: optionalNumber(params.get('meetingId')),
@@ -36,12 +41,12 @@ export function parseRoute(pathname, search = '') {
   }
 
   if (normalizedPath === '/notices') {
-    return createRoute('notices', normalizedPath, { section: 'public', noticeId: null })
+    return create('notices', normalizedPath, { section: 'public', noticeId: null })
   }
 
   const noticeMatch = normalizedPath.match(/^\/notices\/(\d+)$/)
   if (noticeMatch) {
-    return createRoute('notices', normalizedPath, {
+    return create('notices', normalizedPath, {
       section: 'public',
       noticeId: Number(noticeMatch[1]),
     })
@@ -49,60 +54,64 @@ export function parseRoute(pathname, search = '') {
 
   const contentPageMatch = normalizedPath.match(/^\/content-pages\/([^/]+)$/)
   if (contentPageMatch) {
-    return createRoute('content-page', normalizedPath, {
+    return create('content-page', normalizedPath, {
       section: 'public',
       pageKey: decodeURIComponent(contentPageMatch[1]),
     })
   }
 
   if (normalizedPath === '/admin/login') {
-    return createRoute('admin-login', normalizedPath, {
+    return create('admin-login', normalizedPath, {
       section: 'admin',
       redirectPath: sanitizeAdminRedirect(params.get('redirect')),
     })
   }
 
   if (normalizedPath === '/admin') {
-    return createRoute('admin-root', normalizedPath, { section: 'admin' })
+    return create('admin-root', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/districts') {
-    return createRoute('admin-districts', normalizedPath, { section: 'admin' })
+    return create('admin-districts', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/overview') {
-    return createRoute('admin-overview', normalizedPath, { section: 'admin' })
+    return create('admin-overview', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/account') {
-    return createRoute('admin-account', normalizedPath, { section: 'admin' })
+    return create('admin-account', normalizedPath, { section: 'admin' })
+  }
+
+  if (normalizedPath === '/admin/public-theme') {
+    return create('admin-public-theme', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/groups') {
-    return createRoute('admin-groups', normalizedPath, { section: 'admin', groupId: null })
+    return create('admin-groups', normalizedPath, { section: 'admin', groupId: null })
   }
 
   const adminGroupMatch = normalizedPath.match(/^\/admin\/groups\/(\d+)$/)
   if (adminGroupMatch) {
-    return createRoute('admin-groups', normalizedPath, {
+    return create('admin-groups', normalizedPath, {
       section: 'admin',
       groupId: Number(adminGroupMatch[1]),
     })
   }
 
   if (normalizedPath === '/admin/content-pages') {
-    return createRoute('admin-content-pages', normalizedPath, { section: 'admin' })
+    return create('admin-content-pages', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath === '/admin/notices') {
-    return createRoute('admin-notices', normalizedPath, { section: 'admin' })
+    return create('admin-notices', normalizedPath, { section: 'admin' })
   }
 
   if (normalizedPath.startsWith('/admin')) {
-    return createRoute('not-found', normalizedPath, { section: 'admin' })
+    return create('not-found', normalizedPath, { section: 'admin' })
   }
 
-  return createRoute('not-found', normalizedPath, { section: 'public' })
+  return create('not-found', normalizedPath, { section: 'public' })
 }
 
 export function requiresAdminSession(route) {

@@ -12,13 +12,13 @@
 .home-reassurance-card,
 .home-choice-card {
   border-radius: var(--radius-md);
-  background: #fff;
-  border: 1px solid rgba(216, 203, 184, 0.8);
+  background: var(--public-card-background);
+  border: 1px solid var(--public-card-border);
   padding: var(--space-5);
 }
 
 .home-hero-card--accent {
-  background: linear-gradient(180deg, #f1ece0 0%, #fff 100%);
+  background: var(--public-home-accent-background);
 }
 
 .home-chip,
@@ -79,11 +79,13 @@
   height: 2rem;
   border-radius: 999px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--public-button-primary-text);
   font-weight: 700;
 }
 
 .feature-grid,
 .home-reassurance-grid {
+  display: grid;
+  gap: var(--space-5);
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }

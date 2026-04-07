@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { AddressSearchField } from '../../../../components/AddressSearchField'
-import { Field } from '../../../../components/ui'
+import { AddressSearchField } from '../../../../admin/components/AddressSearchField'
+import { Field } from '../../../../admin/ui'
 import { omitFieldErrors, readFieldError } from '../../../../lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,

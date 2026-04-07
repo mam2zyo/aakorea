@@ -4,7 +4,7 @@ import {
   EmptyState,
   PageIntro,
   PageSection,
-} from '../../components/ui'
+} from '../../public/ui'
 import { publicContentApi } from '../../features/content/api/public'
 import { ApiError } from '../../shared/lib/request'
 

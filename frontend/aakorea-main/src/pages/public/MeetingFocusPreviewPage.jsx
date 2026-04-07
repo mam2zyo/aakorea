@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { PageSection } from '../../components/ui'
+import { PageSection } from '../../public/ui'
 import { MeetingFocusDialog } from '../../features/groups/public/components/MeetingFocusDialog'
 
 const PREVIEW_FILTERS = {

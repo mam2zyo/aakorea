@@ -31,6 +31,11 @@ const ADMIN_NAV_GROUPS = [
       href: "/admin/content-pages",
       match: (path) => path === "/admin/content-pages",
     },
+    {
+      label: "공개 사이트 테마",
+      href: "/admin/public-theme",
+      match: (path) => path === "/admin/public-theme",
+    },
   ],
   [
     {
@@ -65,11 +70,17 @@ function AdminNavLink({ active, children, href, onNavigate }) {
 export function AdminLayout({
   children,
   currentPath,
-  flash,
   onLogout,
   onNavigate,
   session,
+  theme,
 }) {
+  const themeLabel = {
+    dark: '다크',
+    light: '라이트',
+    system: '시스템',
+  }[theme.themePreference]
+
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -141,6 +152,9 @@ export function AdminLayout({
           <span className="shell-badge">
             {session.authenticated ? session.username : "비인증"}
           </span>
+          <span className="shell-badge shell-badge--muted">
+            테마 {themeLabel}
+          </span>
           {session.authenticated ? (
             <AdminNavLink
               active={ADMIN_UTILITY_ITEM.match(currentPath)}
@@ -174,12 +188,6 @@ export function AdminLayout({
         </header>
 
         <div className="admin-main__content">
-          {flash ? (
-            <div className={`status-banner status-banner--${flash.tone}`}>
-              {flash.message}
-            </div>
-          ) : null}
-
           <main className="page-stack page-stack--admin">{children}</main>
         </div>
       </div>

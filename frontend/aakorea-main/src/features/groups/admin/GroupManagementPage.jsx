@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import {
   AdminPageHeader,
   EmptyState,
-} from '../../../components/ui'
+} from '../../../admin/ui'
 import { adminDistrictApi } from '../../districts/api/admin'
 import {
   adminGroupApi,

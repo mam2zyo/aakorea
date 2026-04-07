@@ -1,0 +1,385 @@
+.admin-theme .brand-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary-strong);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.admin-theme .shell-badge {
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
+.admin-theme .shell-badge--muted {
+  background: transparent;
+  border: 1px solid var(--color-border);
+}
+
+.admin-theme .page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5) var(--space-12);
+}
+
+.admin-theme .page-stack--admin {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-theme .panel {
+  border: 1px solid var(--admin-panel-border);
+  border-radius: var(--radius-lg);
+  background: var(--admin-panel-background);
+  box-shadow: var(--admin-panel-shadow);
+  padding: var(--space-8);
+}
+
+.admin-theme .panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.admin-theme .panel__description,
+.admin-theme .section-note,
+.admin-theme .empty-state p,
+.admin-theme .content-note p,
+.admin-theme .entity-item__meta {
+  color: var(--color-text-muted);
+}
+
+.admin-theme .eyebrow {
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-theme .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.admin-theme .button-row--compact {
+  gap: var(--space-2);
+}
+
+.admin-theme .primary-button,
+.admin-theme .ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.admin-theme .primary-button {
+  background: var(--color-primary);
+  color: var(--admin-button-primary-text);
+}
+
+.admin-theme .primary-button:hover,
+.admin-theme .ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.admin-theme .primary-button--small {
+  padding: 0.62rem 1rem;
+  font-size: 0.94rem;
+  box-shadow: var(--admin-button-primary-shadow);
+}
+
+.admin-theme .primary-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.admin-theme .primary-button--placeholder:disabled {
+  cursor: not-allowed;
+}
+
+.admin-theme .ghost-button:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.admin-theme .ghost-button--placeholder {
+  border-color: var(--admin-ghost-placeholder-border);
+  background: var(--admin-ghost-placeholder-background);
+  color: var(--color-primary-strong);
+}
+
+.admin-theme .ghost-button {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.admin-theme .ghost-button--danger {
+  border-color: var(--admin-ghost-danger-border);
+  color: var(--color-danger);
+}
+
+.admin-theme .ghost-button--small {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.92rem;
+}
+
+.admin-theme .field-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-theme .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.admin-theme .field__label {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.admin-theme .field--invalid input,
+.admin-theme .field--invalid select,
+.admin-theme .field--invalid textarea {
+  border-color: var(--color-danger);
+}
+
+.admin-theme .field__error {
+  color: var(--color-danger);
+  font-size: 0.84rem;
+}
+
+.admin-theme .detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-theme .detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-theme .detail-item dt {
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+}
+
+.admin-theme .detail-item dd {
+  font-weight: 600;
+}
+
+.admin-theme .entity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-theme .entity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--admin-entity-border);
+  padding: var(--space-4);
+}
+
+.admin-theme .entity-item__body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.admin-theme .content-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 1px solid var(--admin-entity-border);
+  padding-top: var(--space-4);
+}
+
+.admin-theme .toggle-field {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: var(--space-3) 0;
+}
+
+.admin-theme .toggle-field input {
+  width: auto;
+}
+
+.admin-theme .auth-note {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
+.admin-theme .status-banner {
+  max-width: 1180px;
+  margin: var(--space-4) auto 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+}
+
+.admin-theme .status-banner--floating {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 60;
+  max-width: min(420px, calc(100vw - (var(--space-5) * 2)));
+  margin: 0;
+  border: 1px solid var(--admin-floating-border);
+  box-shadow: var(--admin-floating-shadow);
+  pointer-events: none;
+}
+
+.admin-theme .status-banner--success {
+  background: var(--color-success);
+  color: var(--color-success-text);
+}
+
+.admin-theme .status-banner--error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.admin-theme .empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--admin-empty-state-background);
+  padding: var(--space-5);
+}
+
+.admin-theme .status-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.admin-theme .status-pill--active {
+  background: var(--color-success);
+  color: var(--color-success-text);
+}
+
+.admin-theme .status-pill--inactive {
+  background: var(--admin-status-inactive-background);
+  color: var(--color-text-muted);
+}
+
+.admin-theme .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.admin-theme .editor-card {
+  border-radius: var(--radius-md);
+  background: var(--admin-card-background);
+  border: 1px solid var(--admin-card-border);
+  padding: var(--space-5);
+}
+
+.admin-theme .editor-card--wide {
+  min-width: 0;
+}
+
+.admin-theme .theme-choice-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-theme .theme-choice-button {
+  display: flex;
+  min-height: 120px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  border-color: var(--color-border);
+  text-align: left;
+}
+
+.admin-theme .theme-choice-button:hover {
+  background: var(--admin-theme-choice-hover-background);
+}
+
+.admin-theme .theme-choice-button strong {
+  font-size: 1rem;
+}
+
+.admin-theme .theme-choice-button span {
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.admin-theme .theme-choice-button--active {
+  border-color: var(--color-primary);
+  background: var(--color-surface-strong);
+  color: var(--color-primary-strong);
+}
+
+.admin-theme .theme-choice-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 920px) {
+  .admin-theme .page-stack {
+    padding-inline: var(--space-4);
+  }
+
+  .admin-theme .page-stack--admin {
+    padding-inline: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-theme .admin-auth-shell,
+  .admin-theme .panel,
+  .admin-theme .editor-card {
+    padding: var(--space-5);
+  }
+
+  .admin-theme .button-row {
+    width: 100%;
+  }
+
+  .admin-theme .status-banner--floating {
+    right: var(--space-4);
+    bottom: var(--space-4);
+    left: var(--space-4);
+    max-width: none;
+  }
+}

@@ -10,3 +10,5 @@ export {
   adminMeetingImportApi,
 } from '../features/groups/api/admin'
 export { publicGroupApi, publicMeetingApi } from '../features/groups/api/public'
+export { adminSiteThemeApi } from '../features/theme/api/admin'
+export { publicSiteThemeApi } from '../features/theme/api/public'

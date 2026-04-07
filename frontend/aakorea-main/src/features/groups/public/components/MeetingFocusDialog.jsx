@@ -1,4 +1,4 @@
-import { EmptyState } from '../../../../components/ui'
+import { EmptyState } from '../../../../public/ui'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,

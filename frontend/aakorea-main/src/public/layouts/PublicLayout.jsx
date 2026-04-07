@@ -1,3 +1,5 @@
+import { applyPublicThemePreview } from '../app/publicTheme'
+
 function NavLink({ active, children, href, onNavigate }) {
   return (
     <a
@@ -13,51 +15,52 @@ function NavLink({ active, children, href, onNavigate }) {
   )
 }
 
-export function PublicLayout({ children, currentPath, flash, onNavigate }) {
+export function PublicLayout({ children, currentPath, onNavigate, theme }) {
+  const previewAwarePath = (path) => applyPublicThemePreview(path, theme)
+
   return (
     <div className="app-shell">
       <header className="shell-bar">
         <button
           className="brand-button"
           type="button"
-          onClick={() => onNavigate('/')}
+          onClick={() => onNavigate(previewAwarePath('/'))}
         >
           AAKorea Main
         </button>
 
         <nav className="shell-nav">
-          <NavLink active={currentPath === '/'} href="/" onNavigate={onNavigate}>
+          {theme.isPreview ? (
+            <span className="public-theme-preview">
+              테마 미리보기 · {theme.label}
+            </span>
+          ) : null}
+          <NavLink active={currentPath === '/'} href={previewAwarePath('/')} onNavigate={onNavigate}>
             홈
           </NavLink>
           <NavLink
             active={currentPath === '/content-pages/first-visitor-guide'}
-            href="/content-pages/first-visitor-guide"
+            href={previewAwarePath('/content-pages/first-visitor-guide')}
             onNavigate={onNavigate}
           >
             처음 안내
           </NavLink>
           <NavLink
             active={currentPath === '/meetings' || currentPath.startsWith('/groups/')}
-            href="/meetings"
+            href={previewAwarePath('/meetings')}
             onNavigate={onNavigate}
           >
             모임 찾기
           </NavLink>
           <NavLink
             active={currentPath === '/notices' || currentPath.startsWith('/notices/')}
-            href="/notices"
+            href={previewAwarePath('/notices')}
             onNavigate={onNavigate}
           >
             공지
           </NavLink>
         </nav>
       </header>
-
-      {flash ? (
-        <div className={`status-banner status-banner--${flash.tone}`}>
-          {flash.message}
-        </div>
-      ) : null}
 
       <main className="page-stack">{children}</main>
     </div>

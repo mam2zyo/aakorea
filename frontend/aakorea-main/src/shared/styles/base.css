@@ -9,12 +9,9 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 30%),
-    linear-gradient(180deg, #f7f2e8 0%, #efe4d2 100%);
-  color: var(--color-text);
-  font-family: var(--font-body);
   line-height: 1.5;
+  background: var(--boot-body-background, #fff);
+  color: var(--boot-body-color, inherit);
 }
 
 a {
@@ -37,11 +34,16 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-input-border, var(--color-border));
   border-radius: var(--radius-sm);
-  background: #fff;
-  color: var(--color-text);
+  background: var(--color-input-bg, #fff);
+  color: var(--color-input-text, var(--color-text));
   padding: 0.85rem 1rem;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-input-placeholder, var(--color-text-muted));
 }
 
 textarea {

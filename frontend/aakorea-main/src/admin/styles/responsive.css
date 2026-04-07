@@ -7,7 +7,7 @@
     position: static;
     height: auto;
     border-right: 0;
-    border-bottom: 1px solid rgba(216, 203, 184, 0.9);
+    border-bottom: 1px solid var(--admin-sidebar-border);
   }
 
   .admin-nav-list {
@@ -18,12 +18,7 @@
 
 @media (max-width: 920px) {
   .admin-page-header,
-  .admin-index-grid,
-  .admin-main__bar,
-  .page-intro,
-  .feature-grid,
-  .editor-grid,
-  .public-layout {
+  .admin-index-grid {
     grid-template-columns: 1fr;
   }
 
@@ -38,18 +33,6 @@
     padding: var(--space-5);
   }
 
-  .shell-bar {
-    padding-inline: var(--space-4);
-  }
-
-  .page-stack {
-    padding-inline: var(--space-4);
-  }
-
-  .page-stack--admin {
-    padding-inline: 0;
-  }
-
   .admin-list-toolbar__cluster {
     width: 100%;
     justify-content: flex-start;
@@ -58,14 +41,8 @@
 }
 
 @media (max-width: 640px) {
-  .admin-auth-shell,
   .admin-main__content,
-  .admin-sidebar,
-  .admin-workspace-panel,
-  .panel,
-  .page-intro,
-  .resource-panel,
-  .editor-card {
+  .admin-sidebar {
     padding: var(--space-5);
   }
 
@@ -108,15 +85,9 @@
     text-align: left;
   }
 
-  .entity-item,
-  .shell-bar {
+  .entity-item {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .button-row,
-  .shell-nav {
-    width: 100%;
   }
 
   .admin-overlay {
@@ -225,13 +196,6 @@
 
   .admin-group-wizard__map-card {
     right: var(--space-4);
-    left: var(--space-4);
-    max-width: none;
-  }
-
-  .status-banner--floating {
-    right: var(--space-4);
-    bottom: var(--space-4);
     left: var(--space-4);
     max-width: none;
   }

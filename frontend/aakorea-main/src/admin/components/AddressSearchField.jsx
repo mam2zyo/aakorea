@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Postcode as KakaoPostcode } from '@clroot/react-kakao-postcode'
-import { normalizeAddressSelection } from '../lib/address'
-import { Field } from './ui'
+import { normalizeAddressSelection } from '../../lib/address'
+import { Field } from '../ui'
 
 export function AddressSearchField({
   addressError,

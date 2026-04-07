@@ -3,7 +3,7 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
-} from '../../components/ui'
+} from '../../admin/ui'
 import { adminDistrictApi } from '../../features/districts/api/admin'
 import { adminGroupApi } from '../../features/groups/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'

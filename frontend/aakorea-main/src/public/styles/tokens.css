@@ -1,0 +1,204 @@
+.public-theme:not([data-theme]),
+.public-theme[data-theme='classic'] {
+  color-scheme: light;
+  --color-bg: #f5f1e8;
+  --color-surface: #fffdf8;
+  --color-surface-strong: #f0e7d8;
+  --color-text: #241d16;
+  --color-text-muted: #6d6155;
+  --color-border: #d8cbb8;
+  --color-primary: #2c6a4b;
+  --color-primary-strong: #1d4d35;
+  --color-danger: #9f3b2f;
+  --color-danger-soft: #f7d9d4;
+  --color-success: #e0f0e7;
+  --color-success-text: #1d5f3c;
+  --color-shadow: rgba(36, 29, 22, 0.08);
+  --color-input-bg: #fff;
+  --color-input-border: var(--color-border);
+  --color-input-text: var(--color-text);
+  --color-input-placeholder: rgba(109, 97, 85, 0.72);
+  --public-shell-background: rgba(255, 252, 246, 0.88);
+  --public-shell-border: rgba(216, 203, 184, 0.8);
+  --public-preview-chip-background: rgba(44, 106, 75, 0.1);
+  --public-panel-background: rgba(255, 253, 248, 0.9);
+  --public-panel-border: rgba(216, 203, 184, 0.9);
+  --public-panel-shadow: 0 20px 60px var(--color-shadow);
+  --public-card-background: #fff;
+  --public-card-border: rgba(216, 203, 184, 0.8);
+  --public-card-border-strong: rgba(216, 203, 184, 0.85);
+  --public-card-border-soft: rgba(216, 203, 184, 0.65);
+  --public-card-background-soft: rgba(255, 252, 247, 0.82);
+  --public-card-background-soft-strong: rgba(255, 252, 247, 0.94);
+  --public-home-accent-background: linear-gradient(180deg, #f1ece0 0%, #fff 100%);
+  --public-button-primary-text: #fff;
+  --public-button-primary-shadow: 0 10px 24px rgba(44, 106, 75, 0.14);
+  --public-ghost-placeholder-border: rgba(44, 106, 75, 0.24);
+  --public-ghost-placeholder-background: rgba(44, 106, 75, 0.08);
+  --public-ghost-danger-border: rgba(159, 59, 47, 0.28);
+  --public-floating-border: rgba(44, 106, 75, 0.18);
+  --public-floating-shadow: 0 24px 70px rgba(39, 28, 16, 0.18);
+  --public-empty-state-background: rgba(240, 231, 216, 0.55);
+  --public-meeting-card-selected-background: rgba(44, 106, 75, 0.06);
+  --public-meeting-card-hover-border: rgba(44, 106, 75, 0.45);
+  --public-schedule-item-background: rgba(240, 231, 216, 0.5);
+  --public-list-row-border: rgba(216, 203, 184, 0.82);
+  --public-list-row-active-background:
+    linear-gradient(90deg, rgba(44, 106, 75, 0.11), rgba(44, 106, 75, 0.02)),
+    rgba(255, 253, 248, 0.92);
+  --public-overlay-background: rgba(20, 15, 10, 0.26);
+  --public-dialog-background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.98) 0%, rgba(248, 242, 232, 0.98) 100%);
+  --public-dialog-border: rgba(216, 203, 184, 0.95);
+  --public-dialog-shadow: 0 28px 90px rgba(34, 24, 14, 0.24);
+  --public-dialog-title-color: rgba(36, 29, 22, 0.92);
+  --public-dialog-close-border: rgba(216, 203, 184, 0.7);
+  --public-dialog-close-background: rgba(255, 251, 244, 0.58);
+  --public-dialog-close-hover-border: rgba(44, 106, 75, 0.28);
+  --public-dialog-close-hover-background: rgba(255, 251, 244, 0.76);
+  --public-section-border: rgba(216, 203, 184, 0.72);
+  --public-focus-list-item-background: rgba(255, 255, 255, 0.5);
+  --public-focus-list-item-hover-border: rgba(44, 106, 75, 0.3);
+  --public-focus-list-item-selected-border: rgba(44, 106, 75, 0.62);
+  --public-focus-list-item-selected-background:
+    linear-gradient(90deg, rgba(44, 106, 75, 0.14), rgba(44, 106, 75, 0.04)),
+    rgba(255, 252, 247, 0.94);
+  --public-focus-list-item-selected-shadow: inset 0 0 0 1px rgba(44, 106, 75, 0.08);
+  --public-type-badge-background: rgba(90, 76, 58, 0.1);
+  --public-type-badge-text: rgba(74, 60, 45, 0.88);
+  --public-type-badge-open-background: rgba(44, 106, 75, 0.12);
+  --public-type-badge-closed-background: rgba(114, 94, 70, 0.14);
+  --public-type-badge-closed-text: rgba(95, 69, 37, 0.92);
+  --public-type-badge-notfixed-background: rgba(73, 101, 136, 0.12);
+  --public-type-badge-notfixed-text: rgba(52, 77, 109, 0.92);
+  --public-map-background: linear-gradient(135deg, rgba(44, 106, 75, 0.08), rgba(255, 255, 255, 0.78));
+  --public-map-border: rgba(216, 203, 184, 0.82);
+  --public-map-error-background: rgba(255, 252, 247, 0.92);
+  --public-location-card-shadow: 0 14px 26px rgba(34, 24, 14, 0.09);
+  --public-contact-fab-background: linear-gradient(180deg, #3f845e 0%, #2c6a4b 100%);
+  --public-contact-fab-shadow: 0 14px 28px rgba(44, 106, 75, 0.28);
+  --public-contact-fab-shadow-hover: 0 18px 32px rgba(44, 106, 75, 0.3);
+  --public-mobile-footer-background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.08) 0%, rgba(255, 252, 246, 0.72) 36%, rgba(248, 242, 232, 0.9) 100%);
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 30%),
+    linear-gradient(180deg, #f7f2e8 0%, #efe4d2 100%);
+}
+
+.public-theme[data-theme='harbor'] {
+  color-scheme: light;
+  --color-bg: #eef6f7;
+  --color-surface: #fbfeff;
+  --color-surface-strong: #d8ebee;
+  --color-text: #1f2c33;
+  --color-text-muted: #60747f;
+  --color-border: #bdd3d8;
+  --color-primary: #1f6b72;
+  --color-primary-strong: #11484f;
+  --color-danger: #9f4a3e;
+  --color-danger-soft: #f6ddd8;
+  --color-success: #ddefe7;
+  --color-success-text: #1f5b45;
+  --color-shadow: rgba(26, 42, 48, 0.09);
+  --color-input-bg: #fff;
+  --color-input-border: var(--color-border);
+  --color-input-text: var(--color-text);
+  --color-input-placeholder: rgba(96, 116, 127, 0.78);
+  --public-shell-background: rgba(248, 252, 253, 0.9);
+  --public-shell-border: rgba(189, 211, 216, 0.82);
+  --public-preview-chip-background: rgba(31, 107, 114, 0.12);
+  --public-panel-background: rgba(251, 254, 255, 0.92);
+  --public-panel-border: rgba(189, 211, 216, 0.88);
+  --public-panel-shadow: 0 24px 72px rgba(19, 31, 37, 0.14);
+  --public-card-background: #fff;
+  --public-card-border: rgba(189, 211, 216, 0.8);
+  --public-card-border-strong: rgba(189, 211, 216, 0.86);
+  --public-card-border-soft: rgba(189, 211, 216, 0.68);
+  --public-card-background-soft: rgba(250, 253, 255, 0.82);
+  --public-card-background-soft-strong: rgba(250, 253, 255, 0.94);
+  --public-home-accent-background: linear-gradient(180deg, #e5f0f2 0%, #fff 100%);
+  --public-button-primary-text: #fff;
+  --public-button-primary-shadow: 0 10px 24px rgba(31, 107, 114, 0.18);
+  --public-ghost-placeholder-border: rgba(31, 107, 114, 0.26);
+  --public-ghost-placeholder-background: rgba(31, 107, 114, 0.09);
+  --public-ghost-danger-border: rgba(159, 74, 62, 0.3);
+  --public-floating-border: rgba(31, 107, 114, 0.22);
+  --public-floating-shadow: 0 24px 70px rgba(19, 31, 37, 0.18);
+  --public-empty-state-background: rgba(216, 235, 238, 0.58);
+  --public-meeting-card-selected-background: rgba(31, 107, 114, 0.08);
+  --public-meeting-card-hover-border: rgba(31, 107, 114, 0.42);
+  --public-schedule-item-background: rgba(216, 235, 238, 0.55);
+  --public-list-row-border: rgba(189, 211, 216, 0.82);
+  --public-list-row-active-background:
+    linear-gradient(90deg, rgba(31, 107, 114, 0.14), rgba(31, 107, 114, 0.04)),
+    rgba(251, 254, 255, 0.94);
+  --public-overlay-background: rgba(14, 26, 30, 0.24);
+  --public-dialog-background:
+    linear-gradient(180deg, rgba(251, 254, 255, 0.98) 0%, rgba(237, 247, 248, 0.98) 100%);
+  --public-dialog-border: rgba(189, 211, 216, 0.92);
+  --public-dialog-shadow: 0 28px 90px rgba(19, 31, 37, 0.24);
+  --public-dialog-title-color: rgba(31, 44, 51, 0.94);
+  --public-dialog-close-border: rgba(189, 211, 216, 0.72);
+  --public-dialog-close-background: rgba(248, 252, 253, 0.72);
+  --public-dialog-close-hover-border: rgba(31, 107, 114, 0.3);
+  --public-dialog-close-hover-background: rgba(248, 252, 253, 0.88);
+  --public-section-border: rgba(189, 211, 216, 0.72);
+  --public-focus-list-item-background: rgba(255, 255, 255, 0.68);
+  --public-focus-list-item-hover-border: rgba(31, 107, 114, 0.28);
+  --public-focus-list-item-selected-border: rgba(31, 107, 114, 0.58);
+  --public-focus-list-item-selected-background:
+    linear-gradient(90deg, rgba(31, 107, 114, 0.16), rgba(31, 107, 114, 0.05)),
+    rgba(250, 253, 255, 0.96);
+  --public-focus-list-item-selected-shadow: inset 0 0 0 1px rgba(31, 107, 114, 0.1);
+  --public-type-badge-background: rgba(96, 116, 127, 0.14);
+  --public-type-badge-text: rgba(63, 79, 88, 0.9);
+  --public-type-badge-open-background: rgba(31, 107, 114, 0.12);
+  --public-type-badge-closed-background: rgba(159, 74, 62, 0.14);
+  --public-type-badge-closed-text: rgba(123, 66, 58, 0.92);
+  --public-type-badge-notfixed-background: rgba(74, 115, 163, 0.14);
+  --public-type-badge-notfixed-text: rgba(55, 84, 118, 0.92);
+  --public-map-background: linear-gradient(135deg, rgba(31, 107, 114, 0.08), rgba(255, 255, 255, 0.82));
+  --public-map-border: rgba(189, 211, 216, 0.82);
+  --public-map-error-background: rgba(250, 253, 255, 0.94);
+  --public-location-card-shadow: 0 14px 26px rgba(19, 31, 37, 0.1);
+  --public-contact-fab-background: linear-gradient(180deg, #2a7d84 0%, #1f6b72 100%);
+  --public-contact-fab-shadow: 0 14px 28px rgba(31, 107, 114, 0.26);
+  --public-contact-fab-shadow-hover: 0 18px 32px rgba(31, 107, 114, 0.3);
+  --public-mobile-footer-background:
+    linear-gradient(180deg, rgba(251, 254, 255, 0.08) 0%, rgba(251, 254, 255, 0.72) 36%, rgba(237, 247, 248, 0.92) 100%);
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
+    linear-gradient(180deg, #eef7f7 0%, #d8eaeb 100%);
+}

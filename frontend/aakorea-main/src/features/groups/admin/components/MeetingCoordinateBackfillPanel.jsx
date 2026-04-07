@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DetailItem } from '../../../../components/ui'
+import { DetailItem } from '../../../../admin/ui'
 import { adminMeetingApi } from '../../../../lib/api'
 
 const BACKFILL_ITEM_LIMIT = 12

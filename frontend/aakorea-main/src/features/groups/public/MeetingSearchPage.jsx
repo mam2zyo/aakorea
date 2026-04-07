@@ -3,7 +3,7 @@ import {
   Field,
   PageIntro,
   PageSection,
-} from '../../../components/ui'
+} from '../../../public/ui'
 import {
   PROVINCE_OPTIONS,
   SEARCH_DAY_OF_WEEK_OPTIONS,

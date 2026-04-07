@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { EmptyState, PageIntro, PageSection } from '../../components/ui'
+import { EmptyState, PageIntro, PageSection } from '../../public/ui'
 import { publicContentApi } from '../../features/content/api/public'
 import { ApiError } from '../../shared/lib/request'
 
