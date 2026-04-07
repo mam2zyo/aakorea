@@ -1,10 +1,10 @@
-<!--docs/current/IMPLEMENTATION_PLAN.md -->
+<!-- docs/current/IMPLEMENTATION_PLAN.md -->
 
 # IMPLEMENTATION_PLAN
 
 ## 이 문서의 역할
 
-이 문서는 초기 계획 문서라기보다, **현재까지 정리된 구현 상태와 다음 작업 메모**를 기록한다.
+이 문서는 초기 계획서라기보다, **현재 구현 상태와 가까운 후속 작업 후보**를 기록한다.
 
 ---
 
@@ -12,95 +12,91 @@
 
 ### 1. 기반 구조
 
-- 공통 응답 형식
-- 운영 인증
+- 공통 `ApiResponse` / `ErrorResponse`
+- 세션 기반 운영 인증
 - 공개 / 운영 라우트 분리
+- admin / public surface 분리와 document theme runtime 동기화
 
 ### 2. 공개 흐름
 
-- 홈 / 안내 / 공지 조회
-- 지역 기준 모임 검색
-- `/meetings` 안에서 같은 페이지 모달 상세
+- 홈 / 안내 페이지 / 공지 조회
+- 지역 / 요일 기준 모임 검색
+- `/meetings` 안의 같은 페이지 모달 상세
+- `/groups/:id` 직접 진입으로 같은 상세 흐름 재사용
 - 그룹 문맥 + 선택된 모임 포커스 표시
-- 그룹 공지 표시
-- 전화 걸기 연결
+- 그룹 공지 / 전화 걸기 연결
+- 대화면 카카오 지도 표시
+- active public theme 조회와 `themePreview` 기반 미리보기 링크 유지
 
-### 3. 운영 조직/그룹 흐름
+### 3. 운영 조직 / 그룹 / 모임 흐름
 
-- 지역연합 목록/생성/수정/삭제
-- 그룹 목록/생성/수정/삭제
+- 지역연합 목록 / 생성 / 수정 / 삭제
+- 그룹 목록 / 생성 / 수정 / 삭제
 - 그룹당 대표 연락처 1건 관리
-- 그룹 삭제 시 연결 모임/연락처 함께 삭제
+- 이메일 / 우편수신주소 관리
+- 카카오 우편번호 기반 주소 검색 입력
+- 그룹 삭제 시 연결 모임 / 연락처 함께 삭제
+- 모임 생성 / 수정 / 삭제 / 상태 토글
+- 주소 기반 `province` 자동 판별
+- 저장 시 카카오 REST API 지오코딩과 좌표 일괄 보정
 
-### 4. 운영 모임 흐름
+### 4. 운영 콘텐츠 / 테마 / 도구 흐름
 
-- 그룹 안에서 모임 생성
-- 모임 수정
-- 모임 삭제
-- 모임 상태 토글
-
-### 5. 운영 UI 정리
-
-- 그룹 메인 진입은 목록
-- 그룹 생성은 2단계 모달
-- 그룹 수정은 읽기 중심 시트
-- 기본 정보 / 연락처 / 모임 정보는 서브 모달 편집
+- `ContentPage`, `Notice` CRUD
+- 공개 사이트 theme draft / publish / rollback
+- 운영 콘솔 theme preference 로컬 저장
+- 정제 JSON import preview / apply / reset
+- 좌표 backfill dry-run / apply
 
 ---
 
 ## 현재 구현 기준 상세 상태
 
-### 그룹 생성
+### 로컬 / 배포 실행 기준
 
-- 1단계: 그룹 이름, 지역연합, 그룹 공지, 연락처
-- 2단계: 첫 모임 등록
-- 우편수신 정보는 1단계에서 펼쳐서 입력
-- 새 모임 생성 기본 상태는 `active=true`
+- `application-local.yml`, `application-nginx.yml` 모두 현재 백엔드를 `8081`에 띄운다
+- Vite dev proxy 기본 대상은 `http://localhost:8081`이다
+- `nginx`는 `8080`에서 정적 앱을 서빙하고 `/api`를 `8081`로 프록시한다
 
-### 그룹 수정
+### 공개 테마
 
-- 메인 편집 화면은 읽기 중심 시트
-- 기본 정보 / 연락처 / 모임 정보를 섹션으로 구분
-- 각 섹션의 `수정`은 서브 모달로 분리
+- 지원 preset theme id: `classic`, `harbor`, `breeze`
+- `GET /api/public/theme`로 active theme를 불러온다
+- 공개 라우트는 `themePreview` query param으로 미리보기 상태를 유지할 수 있다
+- 운영 페이지에서 draft 저장, 게시, 직전 테마 롤백을 수행한다
 
-### 모임 수정
+### 모임 입력 / 지도
 
-- 상단 필드 순서 통일:
-  - 요일 / 시작 시간 / 모임 유형
-  - 주소
-  - 상세 위치
-- 상태는 수정 모달에서만 토글
-- 새 모임 추가에서는 상태 UI를 숨기고 기본값 `true`
-- 상태 토글 표기는 `공개 중 / 비공개`
+- `Meeting` 저장 시 주소에서 `province`를 자동 판별한다
+- `latitude`, `longitude`가 비어 있으면 서버가 카카오 REST API로 좌표를 계산한다
+- 대화면 공개 모달은 저장된 좌표와 프론트 env key가 있으면 카카오 지도를 렌더링한다
+- backfill API는 기존 데이터의 빈 좌표만 찾아 재계산한다
 
-### 프론트 구조 정리
+### import 도구
 
-- `pages/admin/GroupListPage.jsx`는 route wrapper만 담당
-- 실제 admin group 구현은 `features/groups/admin/GroupManagementPage.jsx`에 둔다
-- 단일 그룹 편집 상태는 `useGroupEditor`가 담당한다
-- 공개 모임 화면은 `useMeetingSearch`, 결과 리스트, 상세 모달 컴포넌트로 분리했다
-- group/contact/meeting API client를 나누고 query helper를 공용화했다
+- 현재 관리자 UI는 **정제된 JSON**을 붙여넣거나 업로드한 뒤 `preview / apply / reset`을 사용한다
+- raw HTML을 정제 JSON으로 바꾸는 `normalize` API는 별도로 존재한다
+- reset은 테스트용 import 데이터 정리에만 사용한다
 
 ---
 
-## 다음 우선 작업
+## 다음 작업 후보
 
-### 1. 지도 API 연동
+### 1. normalize HTML 단계의 관리자 UI 연결 여부 결정
 
-- 공개 모달 지도 영역
-- 운영 모임 편집 지도 미리보기
-- 저장된 `latitude`, `longitude` 활용
+- 현재 API는 존재하지만 UI는 pre-generated JSON 업로드만 지원한다
 
-### 2. 좌표 저장 구조 정리
+### 2. 공개 모임 UX의 지도 / 외부 길찾기 CTA 정리
 
-- `latitude`
-- `longitude`
-- 주소 변경 시 지오코딩 재시도 정책
+- 현재는 데스크톱 내장 지도까지 제공하고, 모바일 deep link CTA는 제외한 상태다
 
-### 3. 공개 상세 정교화
+### 3. 운영자 개인 설정의 서버 저장 여부 결정
 
-- 현재 `/meetings` 모달 흐름 유지
-- 필요 시 `GET /api/public/meetings/{id}` 사용 위치 재정리
+- `admin/account`의 theme preference는 현재 localStorage에만 저장한다
+
+### 4. 운영 문서 구조 분리
+
+- 배포, import, backfill 같은 절차 문서를 `runbooks/`로 분리할 준비가 필요하다
 
 ---
 
@@ -108,8 +104,8 @@
 
 현재는 아래가 안정적으로 동작하면 핵심 흐름이 성립한다고 본다.
 
-- 방문자가 지역별로 모임을 찾을 수 있다
+- 방문자가 지역 / 요일 기준으로 모임을 찾을 수 있다
 - 방문자가 모달에서 장소와 연락처를 확인할 수 있다
-- 운영자가 그룹과 모임을 생성/수정/삭제할 수 있다
-- 운영자가 모임 상태를 비공개로 전환할 수 있다
-- 그룹 삭제 시 고아 데이터가 남지 않는다
+- 운영자가 그룹과 모임을 생성 / 수정 / 삭제할 수 있다
+- 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다
+- 운영자가 필요 시 import / 좌표 보정 도구를 사용할 수 있다

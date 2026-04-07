@@ -11,13 +11,13 @@
 
 문서는 아래 세 영역으로 구분한다.
 
-- `current/`  
+- `current/`
   현재 MVP 기준으로 **실제로 따를 문서**를 둔다.
 
-- `reference/`  
+- `reference/`
   배경 분석, 참고 자료, 비교 검토 등 **참고용 문서**를 둔다.
 
-- `deferred/`  
+- `deferred/`
   현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 주제를 둔다.
   아직 디렉토리가 없더라도, 필요 시 이 원칙에 따라 추가한다.
 
@@ -31,24 +31,20 @@
 
 1. `current/PRODUCT_SCOPE.md`
 2. `current/ACTORS_AND_USE_CASES.md`
-3. `current/DOMAIN_MODEL.md`
-4. `current/CONTENT_MODEL.md`
-5. `current/MVP_FIELDS.md`
-6. `current/api/README.md`
-7. `current/IMPLEMENTATION_PLAN.md`
-8. `current/FRONTEND_STRUCTURE.md`
-9. `current/NGINX_DEPLOYMENT.md`
+3. `current/domain/README.md`
+4. `current/api/README.md`
+5. `current/IMPLEMENTATION_PLAN.md`
+6. `current/FRONTEND_STRUCTURE.md`
+7. `current/NGINX_DEPLOYMENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
 - 무엇을 만들지 정하고
 - 누가 무엇을 하는지 확인하고
-- 어떤 개체를 쓸지 정하고
-- 콘텐츠 구분 기준을 확인하고
-- 최소 필드를 확정하고
+- 어떤 도메인과 필드를 쓰는지 확인하고
 - API 계약을 정리하고
-- 구현 순서를 정한다
-- 프론트 구조와 남은 정리 포인트를 확인한다
+- 구현 상태와 다음 작업을 본다
+- 프론트 구조와 운영 절차를 확인한다
 
 ---
 
@@ -65,26 +61,24 @@
 
 다른 문서에서 사용자 시나리오를 상세히 반복하지 않는다.
 
-### 3. 개체 의미는 `DOMAIN_MODEL.md`에만 둔다
+### 3. 도메인 의미와 필드는 `current/domain/` 아래 각 문서를 기준으로 한다
 
-다른 문서에서 도메인 채택 이유를 장문으로 반복하지 않는다.
+`District`, `Group`, `Meeting` 같은 개체의 의미와 필드 목록은
+각 도메인 문서 한 곳에서 관리한다.
 
-### 4. 콘텐츠 구분 기준은 `CONTENT_MODEL.md`에만 둔다
+### 4. 콘텐츠 구분 기준은 `current/domain/README.md`에 둔다
 
-`ContentPage`와 `Notice`의 차이를 다른 문서에서 길게 다시 쓰지 않는다.
+`ContentPage`와 `Notice`의 차이는
+각 문서에 반복하지 말고 도메인 허브에서 비교 기준으로 관리한다.
 
-### 5. 필드는 `MVP_FIELDS.md`를 기준으로 한다
+### 5. API 계약은 `current/api/`를 기준으로 한다
 
-다른 문서에서 필드 목록을 완전히 다시 적지 않는다.
-
-### 6. API 계약은 `current/api/`를 기준으로 한다
-
-공통 규약은 `current/api/COMMON.md`에 두고,  
+공통 규약은 `current/api/COMMON.md`에 두고,
 상세 엔드포인트 계약은 `current/api/` 아래 책임별 문서로 나눈다.
 
 다른 문서에서는 필요한 경우 API 이름만 언급하고, 상세 형식은 반복하지 않는다.
 
-### 7. 구현 순서는 `IMPLEMENTATION_PLAN.md`에만 둔다
+### 6. 구현 순서는 `IMPLEMENTATION_PLAN.md`에만 둔다
 
 다른 문서에서 단계별 작업 순서를 자세히 반복하지 않는다.
 
@@ -118,7 +112,7 @@
 가능하면 다음 방식으로 쓴다.
 
 - 자세한 범위 판단은 `PRODUCT_SCOPE.md`를 따른다
-- 필드 정의는 `MVP_FIELDS.md`를 따른다
+- 도메인 의미와 필드는 `current/domain/README.md`와 해당 세부 문서를 따른다
 - API 계약은 `current/api/README.md`와 해당 세부 문서를 따른다
 
 즉, **반복해서 다시 쓰기보다 기준 문서를 가리키는 방식**을 우선한다.
@@ -133,16 +127,24 @@ docs/
 ├─ current/
 │  ├─ PRODUCT_SCOPE.md
 │  ├─ ACTORS_AND_USE_CASES.md
-│  ├─ DOMAIN_MODEL.md
-│  ├─ CONTENT_MODEL.md
-│  ├─ MVP_FIELDS.md
 │  ├─ IMPLEMENTATION_PLAN.md
 │  ├─ FRONTEND_STRUCTURE.md
 │  ├─ NGINX_DEPLOYMENT.md
+│  ├─ domain/
+│  │  ├─ README.md
+│  │  ├─ SharedTypes.md
+│  │  ├─ District.md
+│  │  ├─ Group.md
+│  │  ├─ GroupContact.md
+│  │  ├─ Meeting.md
+│  │  ├─ ContentPage.md
+│  │  ├─ Notice.md
+│  │  └─ PublicThemeSetting.md
 │  └─ api/
 │     ├─ README.md
 │     ├─ COMMON.md
 │     ├─ AUTH.md
+│     ├─ PUBLIC_THEME.md
 │     ├─ PUBLIC_CONTENT.md
 │     ├─ PUBLIC_MEETINGS.md
 │     ├─ ADMIN_GENERAL_SERVICES.md
@@ -151,16 +153,38 @@ docs/
 │     ├─ ADMIN_MEETING_IMPORTS.md
 │     └─ ADMIN_CONTENT.md
 └─ reference/
-   ├─ AA_ORG_DESIGN_ANALYSIS.md
-   ├─ ADMIN_PUBLIC_LOOK_AND_FEEL_SPLIT_PROPOSAL.md
-   ├─ FRONTEND_SCREEN_SPLIT_PROPOSAL.md
-   └─ GROUP_PUBLIC_API_DTO_REFACTOR.md
+   └─ AA_ORG_DESIGN_ANALYSIS.md
 ```
 
-필요 시 이후에 다음과 같은 구조를 추가할 수 있다.
+## 다음 단계 구조 제안
 
-- `deferred/`
+현재 문서 수가 아직 많지는 않지만, 실제 코드와 운영 기능이 늘면서
+설계 기준, 운영 절차, 과거 제안서를 같은 층에 두면 다시 섞이기 쉽다.
+
+다음 단계에서는 아래 구조를 권장한다.
+
+- `current/`
+  제품 범위, 도메인, 프론트 구조처럼 **지금 따를 기준**만 둔다.
+
+- `current/api/`
+  현재 HTTP 계약만 둔다.
+
+- `runbooks/`
+  배포, env 설정, import, backfill 같은 **운영 절차 문서**를 둔다.
+
 - `adr/`
+  `Meeting` 위치 ownership, 공개 테마 운영 정책 같은 **짧은 결정 기록**을 둔다.
 
-다만 현재 단계에서는 문서 수를 늘리기보다,
-기존 문서의 책임을 분명히 유지하는 것을 우선한다.
+- `reference/`
+  외부 사이트 분석, 디자인 레퍼런스, 배경 조사처럼
+  **현재 구현 기준이 아닌 참고 자료**만 둔다.
+
+- `archive/`
+  구현에 흡수된 proposal, 일회성 메모, 과거 검토안 중
+  **보존 가치가 있는 기록**만 둔다.
+
+권장 운영 규칙은 아래와 같다.
+
+- 구현이 끝난 proposal 문서는 `reference/`에 계속 두지 않는다.
+- 현재 기준이 되면 `current/`에 흡수하고, 기록만 남길 가치가 있으면 `archive/`로 보낸다.
+- 배포 / 운영 절차는 `current/` 설명 문서와 섞지 않고 `runbooks/`로 분리한다.

@@ -13,7 +13,7 @@
 - 운영 `Group` 목록 및 생성
 - 운영 `Group` 편집 화면에서 `GroupContact`, `Meeting` 동시 관리
 - 운영 `ContentPage`, `Notice` 관리
-- 운영 셸의 `테스트 도구`, `계정 설정` 라우트 제공
+- 운영 셸의 `테스트 도구`, `계정 설정`, `공개 사이트 테마` 라우트 제공
 
 ---
 
@@ -54,7 +54,7 @@ npm run lint
 ## 백엔드 연결 방식
 
 - 기본 API 경로는 `/api`
-- 개발 서버에서는 Vite proxy가 `/api` 요청을 `http://localhost:8080`으로 전달
+- 개발 서버에서는 Vite proxy가 `/api` 요청을 기본적으로 `http://localhost:8081`로 전달
 - 필요 시 `VITE_PROXY_TARGET` 환경 변수로 프록시 대상을 바꿀 수 있음
 - 세션 인증 API를 사용하므로 요청은 cookie credential을 포함함
 
@@ -86,11 +86,14 @@ AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
 - `src/public/`, `src/admin/`
   surface별 app screen, layout, UI entry, theme token을 나눠 관리
 
+- `src/public/app/publicTheme.js`
+  공개 사이트 active theme, `themePreview` 미리보기 query, preset theme registry를 담당
+
 - `src/pages/public/`
   홈, 안내 페이지, 공지, 모임 찾기 화면 entrypoint를 둠
 
 - `src/pages/admin/`
-  로그인, District 관리, Group 목록, Group 작업공간, 콘텐츠 관리 화면을 둠
+  로그인, District 관리, Group 목록/편집, 콘텐츠 관리, 계정 설정, 공개 사이트 테마 화면을 둠
 
 - `src/pages/admin/AdminOverviewPage.jsx`
   테스트 도구 화면 entrypoint를 두고 정제 JSON import와 좌표 보정 패널을 조합
@@ -121,12 +124,14 @@ AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
 - `/notices`
 - `/notices/:id`
 - `/meetings`
+- `/groups/:id`
 
 ### 운영
 
 - `/admin/login`
 - `/admin/overview`
 - `/admin/account`
+- `/admin/public-theme`
 - `/admin/districts`
 - `/admin/groups`
 - `/admin/groups/:id`

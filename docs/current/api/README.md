@@ -13,13 +13,6 @@
 - 어떤 순서로 API 문서를 읽으면 되는가?
 - 현재 MVP에서 우선 필요한 API는 무엇인가?
 
-이 문서에 포함하지 않는 내용:
-
-- 각 엔드포인트의 상세 요청/응답 형식
-- 공통 응답 형식과 상태 코드의 상세 정의
-- 필드 채택 이유나 도메인 배경 설명
-- 구현 단계별 작업 순서
-
 ---
 
 ## 현재 API 문서 구조
@@ -31,6 +24,9 @@
 
 - `AUTH.md`
   운영 인증 API 계약
+
+- `PUBLIC_THEME.md`
+  공개 사이트 theme 조회와 운영 theme 관리 API 계약
 
 - `PUBLIC_CONTENT.md`
   공개 `ContentPage`, `Notice` 조회 API 계약
@@ -53,7 +49,7 @@
 - `ADMIN_CONTENT.md`
   운영 `ContentPage`, `Notice` API 계약
 
-즉, 공통 규칙은 한 문서에 두고,  
+즉, 공통 규칙은 한 문서에 두고,
 엔드포인트 계약은 책임별 문서로 분리한다.
 
 ---
@@ -64,13 +60,14 @@
 
 1. `COMMON.md`
 2. `AUTH.md`
-3. `PUBLIC_CONTENT.md`
-4. `PUBLIC_MEETINGS.md`
-5. `ADMIN_GENERAL_SERVICES.md`
-6. `ADMIN_GROUPS.md`
-7. `ADMIN_MEETINGS.md`
-8. `ADMIN_MEETING_IMPORTS.md`
-9. `ADMIN_CONTENT.md`
+3. `PUBLIC_THEME.md`
+4. `PUBLIC_CONTENT.md`
+5. `PUBLIC_MEETINGS.md`
+6. `ADMIN_GENERAL_SERVICES.md`
+7. `ADMIN_GROUPS.md`
+8. `ADMIN_MEETINGS.md`
+9. `ADMIN_MEETING_IMPORTS.md`
+10. `ADMIN_CONTENT.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -85,10 +82,9 @@
 
 현재 MVP에서 우선 필요한 API를 요약하면 아래와 같다.
 
-현재 운영 화면은 일부 엔티티에 대해 생성/수정뿐 아니라 삭제까지 사용한다.
-
 ### 공개
 
+- `GET /api/public/theme`
 - `GET /api/public/content-pages/{key}`
 - `GET /api/public/notices`
 - `GET /api/public/notices/{id}`
@@ -120,6 +116,14 @@
 - `PUT /api/admin/meetings/{id}`
 - `DELETE /api/admin/meetings/{id}`
 - `POST /api/admin/meetings/backfill-coordinates`
+- `POST /api/admin/meeting-imports/normalize`
+- `POST /api/admin/meeting-imports/preview`
+- `POST /api/admin/meeting-imports/apply`
+- `POST /api/admin/meeting-imports/reset`
+- `GET /api/admin/public-theme`
+- `PUT /api/admin/public-theme/draft`
+- `POST /api/admin/public-theme/publish`
+- `POST /api/admin/public-theme/rollback`
 - `GET /api/admin/content-pages`
 - `GET /api/admin/content-pages/{id}`
 - `POST /api/admin/content-pages`
@@ -139,6 +143,7 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 
 - 공통 규약을 확인할 때: `COMMON.md`
 - 인증 API를 확인할 때: `AUTH.md`
+- 공개 사이트 theme API를 확인할 때: `PUBLIC_THEME.md`
 - 공개 콘텐츠 API를 확인할 때: `PUBLIC_CONTENT.md`
 - 공개 모임 API를 확인할 때: `PUBLIC_MEETINGS.md`
 - 운영 `District` API를 확인할 때: `ADMIN_GENERAL_SERVICES.md`
@@ -147,8 +152,5 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 운영 테스트 도구용 import API를 확인할 때: `ADMIN_MEETING_IMPORTS.md`
 - 운영 콘텐츠 API를 확인할 때: `ADMIN_CONTENT.md`
 
-범위 포함/제외 판단은 `../PRODUCT_SCOPE.md`를 따른다.  
-이 문서는 현재 계약이 정의된 API만 안내한다.
-
-필드 의미의 원본은 여전히 `../MVP_FIELDS.md`를 따른다.  
-도메인 배경은 `../DOMAIN_MODEL.md`를 따른다.
+범위 포함 / 제외 판단은 `../PRODUCT_SCOPE.md`를 따른다.
+도메인 의미와 필드 정의의 원본은 `../domain/README.md`와 해당 세부 문서를 따른다.

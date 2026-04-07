@@ -36,13 +36,14 @@
 - Vite
 
 프론트엔드 앱은 `frontend/aakorea-main` 아래에 있으며,  
-공개 홈/안내 페이지/공지/모임 조회와 운영 `District`/`Group`/콘텐츠 관리 화면을 React + Vite로 구성한다.
+공개 홈/안내 페이지/공지/모임 조회와 운영 `District`/`Group`/콘텐츠 관리, 공개 사이트 테마 관리 화면을 React + Vite로 구성한다.
 
 최근 추가된 주요 흐름:
 
 - 운영 `Meeting` 저장 시 주소만으로 카카오 REST API 지오코딩을 수행할 수 있다
 - 공개 모임 상세 모달은 모바일에서는 텍스트 중심, 대화면에서는 카카오 지도를 함께 표시한다
 - 관리자 `/admin/overview`는 `테스트 도구` 화면으로 사용하며, 정제 JSON import와 좌표 일괄 보정 도구를 함께 제공한다
+- 관리자 `/admin/public-theme`는 공개 사이트 테마를 `classic` / `harbor` / `breeze` preset 기준으로 draft / publish / rollback 한다
 
 ---
 
@@ -132,9 +133,10 @@ npm run build
 ```
 
 프론트엔드는 기본적으로 `/api` 상대 경로를 사용하고,  
-로컬 개발에서는 Vite proxy가 백엔드로 `/api` 요청을 전달한다.
-백엔드를 `local` 프로필로 `8080`에 직접 띄우면 기본값 그대로 동작하고,
-`nginx` 프로필로 `8081`에 띄우면 `VITE_PROXY_TARGET=http://localhost:8081 npm run dev` 로 맞춘다.
+로컬 개발에서는 Vite proxy가 기본적으로 `http://localhost:8081` 로 `/api` 요청을 전달한다.
+현재 저장소의 `local`, `nginx` 프로필은 모두 백엔드를 `8081`에 띄우므로
+대부분의 경우 `npm run dev`만으로 바로 동작한다.
+프록시 대상을 바꿔야 할 때만 `VITE_PROXY_TARGET=http://localhost:8081 npm run dev` 같은 방식으로 덮어쓴다.
 
 ---
 
@@ -156,7 +158,7 @@ npm run build
 
 예시 DB 설정:
 
-- URL: `jdbc:postgresql://localhost:5432/aakorea`
+- URL: `jdbc:postgresql://localhost:5432/aakorea_main`
 - Username: `<local username>`
 - Password: `<local password>`
 
@@ -165,9 +167,9 @@ npm run build
 ## 개발 메모
 
 - 프론트엔드는 API 호출을 상대 경로 기반으로 구성합니다
-- 로컬 개발 시 프론트엔드는 Vite proxy로 `/api` 요청을 백엔드로 전달합니다
+- 로컬 개발 시 프론트엔드는 Vite proxy로 `/api` 요청을 기본적으로 `http://localhost:8081` 백엔드로 전달합니다
 - 현재는 최소 필드 기준으로 빠르게 CRUD와 조회 흐름을 검증하는 것이 우선입니다
-- 현재 프론트엔드는 공개 홈과 안내 페이지, 공지, 모임 찾기, 운영 로그인, `District` 관리, `Group` 중심 작업공간, 콘텐츠 관리, 테스트 도구 화면을 제공합니다
+- 현재 프론트엔드는 공개 홈과 안내 페이지, 공지, 모임 찾기, 운영 로그인, `District` 관리, `Group` 관리, 콘텐츠 관리, 테스트 도구 화면, 공개 사이트 테마 화면을 제공합니다
 
 현재 가장 먼저 검증할 핵심 흐름:
 

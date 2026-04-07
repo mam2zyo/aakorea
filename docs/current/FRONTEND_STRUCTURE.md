@@ -9,8 +9,8 @@
 이 문서가 답하는 질문:
 
 - 공개 화면은 어떤 흐름으로 동작하는가?
-- 관리자 화면은 어떤 구성으로 바뀌었는가?
-- 최근 논의가 실제 프론트 구조에 어떻게 반영되었는가?
+- 관리자 화면은 어떤 구성으로 나뉘는가?
+- theme / route / feature ownership은 어디에 있는가?
 
 ---
 
@@ -23,6 +23,8 @@
 - `/notices`
 - `/notices/:id`
 - `/meetings`
+- `/groups/:id`
+- `/__preview/meeting-focus` (dev 전용)
 
 ### 모임 찾기 흐름
 
@@ -31,12 +33,15 @@
 사용 방식:
 
 - `/meetings?province=seoul`
+- `/meetings?province=seoul&dayOfWeek=MONDAY`
 - `/meetings?province=seoul&groupId=20&meetingId=100`
+- `/groups/20?meetingId=100`
 
 즉,
 
 - `province`, `dayOfWeek`는 검색 조건
 - `groupId`, `meetingId`는 상세 모달 상태
+- `/groups/:id`는 같은 상세 흐름의 직접 진입 alias다
 
 ### 공개 상세 모달 구조
 
@@ -47,25 +52,26 @@
 1. 그룹명
 2. 지역연합
 3. 그룹 공지
-4. 모임 정보
-5. 모임 장소
+4. 같은 그룹의 모임 리스트
+5. 선택된 모임의 장소 정보
 6. 대화면 지도
 7. 연락처 / 전화 걸기 footer
 
-`모임 정보` 안에서는 아래가 함께 움직인다.
+핵심은 **그룹 문맥 안에서, 선택된 모임에 따라 장소와 연락처가 함께 바뀌는 구조**다.
 
-- 같은 그룹의 모임 리스트
-- 선택된 모임의 `locationDetail`
-- 선택된 모임의 `locationAddress`
-
-핵심은 **그룹 문맥 안에서, 선택된 모임에 따라 장소가 바뀌는 구조**다.
-
-### 공개 상세 모달의 현재 지도/CTA 규칙
+### 공개 상세의 현재 지도 / CTA 규칙
 
 - 모바일에서는 본문 지도 영역을 숨긴다
-- 태블릿/데스크톱에서는 `latitude`, `longitude`가 있을 때 카카오 지도를 표시한다
-- 모바일 하단 액션은 중앙 원형 `전화하기` 버튼 1개만 유지한다
-- 카카오맵 / 티맵 아이콘 CTA는 아직 후속 과제로 남겨 두었다
+- 태블릿 / 데스크톱에서는 `latitude`, `longitude`가 있을 때 카카오 지도를 표시한다
+- 모바일 하단 액션은 `전화하기` CTA를 우선한다
+- 카카오맵 / 티맵 deep link CTA는 아직 후속 과제로 남겨 둔다
+
+### 공개 테마 런타임
+
+- active public theme는 `GET /api/public/theme`로 불러온다
+- 공개 preset theme id는 `classic`, `harbor`, `breeze`다
+- `themePreview` query param으로 게시 전 theme를 미리 볼 수 있다
+- 공개 레이아웃의 네비게이션 링크는 preview query를 유지한다
 
 ---
 
@@ -76,6 +82,7 @@
 - `/admin/login`
 - `/admin/overview`
 - `/admin/account`
+- `/admin/public-theme`
 - `/admin/districts`
 - `/admin/groups`
 - `/admin/groups/:id`
@@ -93,24 +100,28 @@
 
 둘 다 현재는 placeholder다.
 
-`/admin/overview`는 더 이상 단순 placeholder가 아니라, 운영 검증성 작업을 모아 둔 `테스트 도구` 화면으로 사용한다.
-현재 포함된 도구:
+현재 운영 보조 화면은 아래처럼 나뉜다.
 
-- 정제 JSON import
-- 모임 좌표 일괄 보정
+- `/admin/account`
+  브라우저 로컬 admin theme preference 관리
+
+- `/admin/public-theme`
+  공개 사이트 theme의 draft / publish / rollback
+
+- `/admin/overview`
+  정제 JSON import와 모임 좌표 일괄 보정 도구
 
 ---
 
 ## 관리자 그룹 화면
 
-최근 변경으로 그룹 관리는 **목록 중심 + 대형 모달** 구조로 정리되었다.
+그룹 관리는 **목록 중심 + 대형 모달** 구조로 정리되어 있다.
 
-현재 Group 관련 프론트는 아래처럼 나뉜다.
+현재 Group 관련 프론트 ownership:
 
 - route wrapper: `pages/admin/GroupListPage.jsx`
 - 실제 feature page: `features/groups/admin/GroupManagementPage.jsx`
-- 편집 상태 훅: `features/groups/admin/hooks/useGroupEditor.js`
-- 생성/편집 UI: `features/groups/admin/components/*`
+- 생성 / 편집 UI: `features/groups/admin/components/*`
 
 ### 목록 화면
 
@@ -141,7 +152,7 @@
 - 그룹 공지
 - 연락처
 - 이메일
-- 우편수신 정보(접힘)
+- 우편수신 정보
 
 #### 2단계
 
@@ -151,13 +162,12 @@
 - 주소
 - 상세 위치
 
-현재 새 모임 생성 기본값은 `active=true`이며, 생성 단계에서는 상태 토글을 노출하지 않는다.
+새 모임 생성 기본값은 `active=true`이며,
+생성 단계에서는 상태 토글을 노출하지 않는다.
 
 ### 그룹 수정
 
 그룹 수정은 **읽기 중심 시트 + 섹션별 서브 모달** 구조다.
-
-메인 모달은 읽기 중심이다.
 
 섹션:
 
@@ -165,97 +175,48 @@
 - 연락처
 - 모임 정보
 
-각 섹션은 카드처럼 구분되며, 메인 모달 안에서는 요약만 보여 준다.
+각 섹션은 메인 시트 안에서는 요약만 보여 주고,
+실제 입력은 별도 서브 모달에서 처리한다.
 
-#### 기본 정보 / 연락처
-
-- 섹션 헤더의 `수정` 버튼으로 서브 모달을 연다
-- 메인 화면에서는 입력 폼이 아니라 문서처럼 보이는 읽기 정보만 보여 준다
-
-#### 모임 정보
-
-- 메인 화면에서는 각 모임을 `요일 + 시간 + 상세 위치`만 보여 준다
-- 각 모임 옆에 `수정`, `삭제` 버튼이 있다
-- `새 모임 추가`는 별도 서브 모달로 열린다
-- 실제 필드 수정은 서브 모달에서만 수행한다
-
-#### 모임 수정 서브 모달
-
-필드 순서:
+모임 수정 서브 모달 필드 순서:
 
 1. 요일 / 시작 시간 / 모임 유형
 2. 주소
 3. 상세 위치
 4. 모임 상태 토글
 
-모임 상태는 체크박스가 아니라 토글 버튼으로 표현되며,
-오른쪽 텍스트로 `공개 중 / 비공개`를 표시한다.
+상태 표기는 `공개 중 / 비공개`다.
 
 ---
 
-## 현재 프론트 구조 판단
+## 현재 소스 구조 판단
 
-현재 프론트는 예전의 “작업공간” 개념보다 아래 방향에 더 가깝다.
+현재 프론트는 예전의 “단일 App + 전역 스타일”보다 아래 방향에 가깝다.
 
-- 공개: 목록 + 같은 페이지 모달
-- 관리자: 목록 + 읽기 중심 편집 시트 + 서브 모달
+- 공개: 목록 + 같은 페이지 모달 + 공개 테마 preview 유지
+- 관리자: 목록 + 읽기 중심 편집 시트 + 서브 모달 + 별도 보조 관리 화면
 
-이 구조의 장점:
+현재 ownership은 아래처럼 나뉜다.
 
-- 사용자가 항상 원래 목록 문맥을 잃지 않는다
-- 메인 편집 화면이 과한 폼처럼 보이지 않는다
-- 수정 범위가 섹션별로 분리돼 직관성이 좋아진다
+- `AppScreen`
+  공통 route / session / navigation bridge
 
-추가로 최근 리팩터링으로, Group/Meeting 관련 페이지는
-`pages`가 route 진입점만 담당하고 실제 구현은 `features/groups/*` 아래에 두는 방향으로 정리했다.
+- `public/app/*`, `admin/app/*`
+  surface별 app screen과 document theme sync
+
+- `pages/*`
+  route 진입점
+
+- `features/*`
+  실제 화면 로직, API client, 하위 컴포넌트
+
+- `shared/lib/request.js`, `src/lib/api.js`
+  공통 request와 compatibility export
 
 ---
 
 ## 현재 남아 있는 프론트 메모
 
-아래 항목은 구현 또는 논의가 끝났지만 아직 후속 작업이 남아 있다.
-
-- `/meetings/{id}` 단건 상세 API는 남아 있지만, 현재 메인 공개 UI는 `/meetings` 모달 흐름을 사용한다
-
----
-
-## 현재 주요 파일
-
-- [frontend/aakorea-main/src/pages/admin/GroupListPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/pages/admin/GroupListPage.jsx)
-  관리자 그룹 화면 route wrapper
-
-- [frontend/aakorea-main/src/features/groups/admin/GroupManagementPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/GroupManagementPage.jsx)
-  그룹 목록, 생성 모달 진입, 편집 시트 orchestration
-
-- [frontend/aakorea-main/src/features/groups/admin/hooks/useGroupEditor.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/hooks/useGroupEditor.js)
-  단일 그룹 편집용 상태/저장 로직
-
-- [frontend/aakorea-main/src/features/groups/admin/components/CreateGroupWizard.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/components/CreateGroupWizard.jsx)
-  2단계 그룹 생성 위저드
-
-- [frontend/aakorea-main/src/features/groups/admin/components/EditGroupSheet.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/admin/components/EditGroupSheet.jsx)
-  읽기 중심 그룹 편집 시트와 섹션별 서브 모달 연결
-
-- [frontend/aakorea-main/src/pages/public/MeetingSearchPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/pages/public/MeetingSearchPage.jsx)
-  공개 모임 화면 route wrapper
-
-- [frontend/aakorea-main/src/features/groups/public/MeetingSearchPage.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/MeetingSearchPage.jsx)
-  공개 모임 검색 화면 orchestration
-
-- [frontend/aakorea-main/src/features/groups/public/hooks/useMeetingSearch.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/hooks/useMeetingSearch.js)
-  공개 모임 검색/상세 로드 상태
-
-- [frontend/aakorea-main/src/features/groups/public/components/MeetingFocusDialog.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/public/components/MeetingFocusDialog.jsx)
-  공개 모달 상세 렌더링
-
-- [frontend/aakorea-main/src/features/groups/api/admin/index.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/api/admin/index.js)
-  admin group / contact / meeting API export entry
-
-- [frontend/aakorea-main/src/features/groups/api/public/index.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/features/groups/api/public/index.js)
-  public group / meeting API export entry
-
-- [frontend/aakorea-main/src/layouts/AdminLayout.jsx](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/layouts/AdminLayout.jsx)
-  관리자 사이드바와 운영 셸
-
-- [frontend/aakorea-main/src/app/routeDefinitions.js](/home/mam2z/apps/aakorea-main/frontend/aakorea-main/src/app/routeDefinitions.js)
-  공개/운영 라우트 파싱
+- 공개 사이트 theme는 아직 code-backed preset만 지원하며 원격 theme editor는 없다
+- `admin/account`의 theme preference는 현재 localStorage만 사용하고 서버 저장은 없다
+- `GET /api/public/meetings/{id}` 단건 상세 API는 남아 있지만, 메인 공개 UI는 `/meetings` / `/groups/:id`의 그룹 상세 흐름을 우선 사용한다
