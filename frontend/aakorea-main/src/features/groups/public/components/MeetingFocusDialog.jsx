@@ -4,12 +4,13 @@ import {
   MEETING_TYPE_OPTIONS,
 } from '../../../../lib/options'
 import { lookupLabel } from '../../../../lib/view'
+import kakaoMapIcon from '../assets/kakao-map-icon.svg'
+import tmapIcon from '../assets/tmap-icon.svg'
 import { KakaoMeetingMap } from './KakaoMeetingMap'
 import {
   buildKakaoMapUrl,
   buildMeetingsPath,
   buildTmapRouteUrl,
-  formatDistanceLabel,
   hasGroupNotice,
   readGroupNotice,
 } from '../utils'
@@ -22,7 +23,6 @@ export function MeetingFocusDialog({
   onClose,
   onNavigate,
   selectedMeeting,
-  selectedSearchMeetingSummary,
 }) {
   const contactPhone = selectedMeeting?.contactPhone || groupDetails?.contactPhone || ''
   const hasNotice = Boolean(hasGroupNotice(groupDetails))
@@ -125,11 +125,6 @@ export function MeetingFocusDialog({
                   <p className="meeting-focus-location-block__address">
                     {selectedMeeting.locationAddress || '공개 주소 없음'}
                   </p>
-                  {Number.isFinite(selectedSearchMeetingSummary?.distanceKm) ? (
-                    <p className="meeting-focus-location-block__distance">
-                      현재 위치에서 {formatDistanceLabel(selectedSearchMeetingSummary.distanceKm)}
-                    </p>
-                  ) : null}
                   {kakaoMapUrl || tmapRouteUrl ? (
                     <div className="meeting-focus-location-actions">
                       {kakaoMapUrl ? (
@@ -140,7 +135,12 @@ export function MeetingFocusDialog({
                           rel="noreferrer"
                           target="_blank"
                         >
-                          <span className="meeting-focus-location-action__icon" aria-hidden="true">K</span>
+                          <img
+                            alt=""
+                            aria-hidden="true"
+                            className="meeting-focus-location-action__icon"
+                            src={kakaoMapIcon}
+                          />
                           <span className="meeting-focus-location-action__label">카카오맵 위치 보기</span>
                         </a>
                       ) : null}
@@ -152,7 +152,12 @@ export function MeetingFocusDialog({
                           rel="noreferrer"
                           target="_blank"
                         >
-                          <span className="meeting-focus-location-action__icon" aria-hidden="true">T</span>
+                          <img
+                            alt=""
+                            aria-hidden="true"
+                            className="meeting-focus-location-action__icon"
+                            src={tmapIcon}
+                          />
                           <span className="meeting-focus-location-action__label">T map 길안내</span>
                         </a>
                       ) : null}

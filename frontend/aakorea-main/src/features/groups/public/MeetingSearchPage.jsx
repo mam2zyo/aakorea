@@ -44,7 +44,6 @@ export function MeetingSearchPage({
     searchMeta,
     selectedMeeting,
     selectedSearchMeetingId,
-    selectedSearchMeetingSummary,
     setFilters,
   } = useMeetingSearch({
     dayOfWeek,
@@ -217,7 +216,6 @@ export function MeetingSearchPage({
           onClose={() => onNavigate(closePath)}
           onNavigate={onNavigate}
           selectedMeeting={selectedMeeting}
-          selectedSearchMeetingSummary={selectedSearchMeetingSummary}
         />
       ) : null}
     </>

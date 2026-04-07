@@ -88,9 +88,6 @@ export function MeetingFocusPreviewPage({ onNavigate }) {
         onClose={() => onNavigate('/meetings')}
         onNavigate={handlePreviewNavigate}
         selectedMeeting={selectedMeeting}
-        selectedSearchMeetingSummary={{
-          distanceKm: 2.4,
-        }}
       />
     </>
   )

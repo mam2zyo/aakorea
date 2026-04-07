@@ -199,14 +199,6 @@ export function useMeetingSearch({
     return groupDetails.meetings[0] ?? null
   }, [groupDetails, meetingId])
 
-  const selectedSearchMeetingSummary = useMemo(() => {
-    const activeMeetingId = Number.isFinite(meetingId) ? meetingId : selectedMeeting?.id ?? null
-    if (!Number.isFinite(activeMeetingId)) {
-      return null
-    }
-
-    return meetings.find((meeting) => meeting.id === activeMeetingId) ?? null
-  }, [meetingId, meetings, selectedMeeting])
   const activeFilters = useMemo(() => {
     if (routeFilters.searchMode !== MEETING_SEARCH_MODE.NEARBY) {
       return routeFilters
@@ -237,7 +229,6 @@ export function useMeetingSearch({
     searchMeta,
     selectedMeeting,
     selectedSearchMeetingId,
-    selectedSearchMeetingSummary,
     setFilters,
   }
 }

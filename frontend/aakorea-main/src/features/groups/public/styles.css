@@ -432,14 +432,6 @@
   line-height: 1.45;
 }
 
-.meeting-focus-location-block__distance {
-  margin: 0;
-  padding-inline-start: 0.9rem;
-  color: var(--color-primary-strong);
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
 .meeting-focus-location-actions {
   display: flex;
   flex-wrap: wrap;
@@ -470,16 +462,11 @@
 }
 
 .meeting-focus-location-action__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.4rem;
-  height: 1.4rem;
-  border-radius: 999px;
-  background: var(--public-focus-list-item-selected-background);
-  color: var(--color-primary-strong);
-  font-size: 0.8rem;
-  font-weight: 800;
+  display: block;
+  width: 1.8rem;
+  height: 1.8rem;
+  flex-shrink: 0;
+  border-radius: 0.65rem;
 }
 
 .meeting-focus-location-action__label {
