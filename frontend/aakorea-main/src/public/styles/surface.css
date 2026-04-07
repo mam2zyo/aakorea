@@ -1,4 +1,6 @@
 .public-theme .app-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -6,15 +8,71 @@
   position: sticky;
   top: 0;
   z-index: 20;
+  background: var(--public-shell-background);
+  border-bottom: 1px solid var(--public-shell-border);
+}
+
+.public-theme .shell-main-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  background: var(--public-shell-background);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--public-shell-border);
+  width: min(1180px, calc(100% - (var(--space-5) * 2)));
+  margin: 0 auto;
+  padding: 0.95rem 0;
+}
+
+.public-theme .brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--public-shell-text);
+  text-align: left;
+}
+
+.public-theme .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--public-brand-mark-border);
+  background: var(--public-brand-mark-background);
+  color: var(--public-brand-mark-text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.public-theme .brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.public-theme .brand-copy strong {
+  color: var(--public-shell-text);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.public-theme .brand-copy span {
+  color: var(--public-shell-subtitle);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.public-theme .shell-main-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .public-theme .shell-nav {
@@ -30,40 +88,101 @@
   border-radius: 999px;
   padding: 0.42rem 0.82rem;
   background: var(--public-preview-chip-background);
-  color: var(--color-primary-strong);
+  color: var(--public-shell-utility-text);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.public-theme .brand-button {
-  border: 0;
-  background: transparent;
-  color: var(--color-primary-strong);
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
 .public-theme .nav-link {
   border-radius: 999px;
   padding: 0.55rem 0.95rem;
-  color: var(--color-text-muted);
+  color: var(--public-shell-nav-text);
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.public-theme .nav-link:hover {
+  background: var(--public-shell-nav-hover-background);
 }
 
 .public-theme .nav-link--active {
-  background: var(--color-surface-strong);
-  color: var(--color-text);
+  background: var(--public-shell-nav-active-background);
+  color: var(--public-shell-nav-active-text);
 }
 
 .public-theme .page-stack {
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
   max-width: 1180px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-5) var(--space-12);
+}
+
+.public-theme .public-footer {
+  margin-top: var(--space-12);
+  border-top: 1px solid var(--public-footer-border);
+  background: var(--public-footer-background);
+  color: var(--public-footer-text);
+}
+
+.public-theme .public-footer__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.85fr);
+  gap: var(--space-8);
+  width: min(1180px, calc(100% - (var(--space-5) * 2)));
+  margin: 0 auto;
+  padding: var(--space-8) 0;
+}
+
+.public-theme .public-footer__primary,
+.public-theme .public-footer__secondary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.public-theme .public-footer__brand {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--public-footer-heading);
+}
+
+.public-theme .public-footer__primary p {
+  color: inherit;
+}
+
+.public-theme .public-footer__divider {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  background: var(--public-footer-divider);
+  margin: var(--space-2) 0;
+}
+
+.public-theme .public-footer a {
+  color: var(--public-footer-link);
+}
+
+.public-theme .public-footer__secondary {
+  align-items: flex-start;
+}
+
+.public-theme .public-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--public-footer-link-border);
+  padding: 0.48rem 0.9rem;
+  transition: background 140ms ease, transform 140ms ease;
+}
+
+.public-theme .public-footer__link:hover {
+  background: var(--public-footer-link-hover-background);
+  transform: translateY(-1px);
 }
 
 .public-theme .page-intro,
@@ -310,16 +429,21 @@
 @media (max-width: 920px) {
   .public-theme .page-intro,
   .public-theme .feature-grid,
-  .public-theme .public-layout {
+  .public-theme .public-layout,
+  .public-theme .public-footer__inner {
     grid-template-columns: 1fr;
   }
 
-  .public-theme .shell-bar {
-    padding-inline: var(--space-4);
+  .public-theme .shell-main-row {
+    width: min(100%, calc(100% - (var(--space-4) * 2)));
   }
 
   .public-theme .page-stack {
     padding-inline: var(--space-4);
+  }
+
+  .public-theme .public-footer__inner {
+    width: min(100%, calc(100% - (var(--space-4) * 2)));
   }
 }
 
@@ -331,17 +455,42 @@
   }
 
   .public-theme .shell-bar {
-    align-items: flex-start;
-    flex-direction: column;
+    padding-inline: 0;
   }
 
+  .public-theme .shell-main-row,
+  .public-theme .shell-main-actions,
   .public-theme .button-row,
   .public-theme .shell-nav {
     width: 100%;
   }
 
-  .public-theme .public-theme-preview {
-    justify-content: center;
+  .public-theme .shell-main-row,
+  .public-theme .shell-main-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .public-theme .shell-main-row {
+    gap: var(--space-3);
+    padding: 0.8rem 0;
+  }
+
+  .public-theme .brand-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .public-theme .brand-copy strong {
+    font-size: 1.08rem;
+  }
+
+  .public-theme .brand-copy span {
+    display: none;
+  }
+
+  .public-theme .nav-link {
+    padding: 0.46rem 0.78rem;
   }
 
   .public-theme .status-banner--floating {
@@ -349,5 +498,10 @@
     bottom: var(--space-4);
     left: var(--space-4);
     max-width: none;
+  }
+
+  .public-theme .public-footer__inner {
+    padding: var(--space-6) 0;
+    gap: var(--space-5);
   }
 }

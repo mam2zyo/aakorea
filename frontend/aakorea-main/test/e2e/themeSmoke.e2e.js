@@ -9,6 +9,11 @@ const APP_URL = `http://127.0.0.1:${APP_PORT}`
 const EDGE_EXECUTABLE_PATH = '/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
 const WINDOWS_TEMP_DIR = 'C:\\Users\\mam2z\\AppData\\Local\\Temp'
 const PROJECT_ROOT = process.cwd()
+const PUBLIC_THEME_LABELS = Object.freeze({
+  breeze: 'Breeze',
+  classic: '기본형',
+  harbor: 'Harbor',
+})
 
 let previewServer
 
@@ -21,21 +26,35 @@ test.after(async () => {
   await stopProcess(previewServer)
 })
 
-test('home route renders with the classic public theme', async () => {
+test('home route renders with the active public theme when preview is absent', async () => {
   const html = await dumpDom(APP_URL)
+  const activeThemeMatch = html.match(/data-public-active-theme="([^"]+)"/)
+  const renderedThemeMatch = html.match(/data-public-theme="([^"]+)"/)
 
   assert.match(html, /data-route-surface="public"/)
-  assert.match(html, /data-public-theme="classic"/)
+  assert.ok(activeThemeMatch)
+  assert.ok(renderedThemeMatch)
+  assert.equal(renderedThemeMatch[1], activeThemeMatch[1])
   assert.match(html, /처음 오셨나요\? 안내를 읽고 가까운 AA 모임을 찾을 수 있습니다\./)
 })
 
 test('public preview routes keep the requested preview theme in navigation links', async () => {
-  const html = await dumpDom(`${APP_URL}/meetings?themePreview=harbor`)
+  const activeThemeId = await getActivePublicThemeId()
+  const previewThemeId = Object.keys(PUBLIC_THEME_LABELS).find((themeId) => themeId !== activeThemeId) ?? 'breeze'
+  const html = await dumpDom(`${APP_URL}/meetings?themePreview=${previewThemeId}`)
 
   assert.match(html, /data-route-surface="public"/)
-  assert.match(html, /data-public-theme="harbor"/)
-  assert.match(html, /테마 미리보기 · Harbor/)
-  assert.match(html, /href="\/notices\?themePreview=harbor"/)
+  assert.match(html, new RegExp(`data-public-theme="${previewThemeId}"`))
+  assert.match(html, new RegExp(`테마 미리보기 · ${PUBLIC_THEME_LABELS[previewThemeId]}`))
+  assert.match(html, new RegExp(`href="/notices\\?themePreview=${previewThemeId}"`))
+})
+
+test('breeze route applies the new soft-blue theme metadata', async () => {
+  const html = await dumpDom(`${APP_URL}/?themePreview=breeze`)
+
+  assert.match(html, /data-route-surface="public"/)
+  assert.match(html, /data-public-theme="breeze"/)
+  assert.match(html, /--boot-body-background:[^;]*#dbe8fb/i)
 })
 
 test('admin login honors the stored dark theme preference before React boot', async () => {
@@ -65,6 +84,17 @@ async function dumpDom(url) {
   }
 
   return edgeResult.stdout
+}
+
+async function getActivePublicThemeId() {
+  const html = await dumpDom(APP_URL)
+  const match = html.match(/data-public-active-theme="([^"]+)"/)
+
+  if (!match) {
+    throw new Error('active public theme metadata was not found in the home route')
+  }
+
+  return match[1]
 }
 
 function startPreviewServer() {

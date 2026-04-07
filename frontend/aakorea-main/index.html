@@ -14,7 +14,27 @@
         const adminThemeStorageKey = 'aakorea-admin-theme-preference'
         const publicActiveThemeStorageKey = 'aakorea-public-active-theme'
         const validAdminThemePreferences = ['system', 'light', 'dark']
-        const validPublicThemeIds = ['classic', 'harbor']
+        const publicBootstrapThemes = {
+          classic: {
+            background:
+              'radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 30%), linear-gradient(180deg, #f7f2e8 0%, #efe4d2 100%)',
+            color: '#241d16',
+            colorScheme: 'light',
+          },
+          harbor: {
+            background:
+              'radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%), linear-gradient(180deg, #eef7f7 0%, #d8eaeb 100%)',
+            color: '#1f2c33',
+            colorScheme: 'light',
+          },
+          breeze: {
+            background:
+              'radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%), linear-gradient(180deg, #eff5fd 0%, #dbe8fb 100%)',
+            color: '#1f2a38',
+            colorScheme: 'light',
+          },
+        }
+        const validPublicThemeIds = Object.keys(publicBootstrapThemes)
 
         function applyBootstrapSurface({ background, color, colorScheme }) {
           root.style.setProperty('--boot-body-background', background)
@@ -77,14 +97,7 @@
         root.removeAttribute('data-admin-theme')
         root.removeAttribute('data-admin-theme-preference')
 
-        applyBootstrapSurface({
-          background:
-            publicThemeId === 'harbor'
-              ? 'radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%), linear-gradient(180deg, #eef7f7 0%, #d8eaeb 100%)'
-              : 'radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 30%), linear-gradient(180deg, #f7f2e8 0%, #efe4d2 100%)',
-          color: publicThemeId === 'harbor' ? '#1f2c33' : '#241d16',
-          colorScheme: 'light',
-        })
+        applyBootstrapSurface(publicBootstrapThemes[publicThemeId] ?? publicBootstrapThemes.classic)
       })()
     </script>
   </head>

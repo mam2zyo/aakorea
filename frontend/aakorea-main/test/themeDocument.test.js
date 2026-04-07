@@ -79,6 +79,18 @@ test('resolvePublicDocumentState reflects preview themes while keeping active th
   assert.equal(state.colorScheme, 'light')
 })
 
+test('resolvePublicDocumentState supports the breeze public theme palette', () => {
+  const state = resolvePublicDocumentState({
+    activeThemeId: 'classic',
+    search: '?themePreview=breeze',
+  })
+
+  assert.equal(state.publicTheme.themeId, 'breeze')
+  assert.equal(state.publicTheme.activeThemeId, 'classic')
+  assert.equal(state.publicTheme.isPreview, true)
+  assert.match(state.theme.background, /#eff5fd/i)
+})
+
 test('resolveDocumentThemeState switches between admin and public surfaces', () => {
   const adminState = resolveDocumentThemeState({
     pathname: '/admin/account',

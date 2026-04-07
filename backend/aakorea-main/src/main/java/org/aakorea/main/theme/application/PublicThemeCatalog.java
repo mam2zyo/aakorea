@@ -11,7 +11,8 @@ public final class PublicThemeCatalog {
 
     private static final List<ThemeOption> THEMES = List.of(
             new ThemeOption("classic", "기본형", "현재 공개 사이트의 기본 look and feel입니다."),
-            new ThemeOption("harbor", "Harbor", "차분한 청록 계열과 밝은 바탕을 쓰는 대안 테마입니다.")
+            new ThemeOption("harbor", "Harbor", "차분한 청록 계열과 밝은 바탕을 쓰는 대안 테마입니다."),
+            new ThemeOption("breeze", "Breeze", "부드러운 블루 계열 바탕에 선명한 CTA 대비를 주는 테마입니다.")
     );
 
     private static final Map<String, ThemeOption> THEME_MAP = THEMES.stream()

@@ -36,6 +36,12 @@ export const PUBLIC_DOCUMENT_THEMES = Object.freeze({
     color: '#1f2c33',
     colorScheme: 'light',
   }),
+  breeze: Object.freeze({
+    background:
+      'radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%), linear-gradient(180deg, #eff5fd 0%, #dbe8fb 100%)',
+    color: '#1f2a38',
+    colorScheme: 'light',
+  }),
 })
 
 export function isAdminRoutePath(pathname = '') {

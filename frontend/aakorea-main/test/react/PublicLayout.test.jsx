@@ -23,6 +23,8 @@ describe('PublicLayout', () => {
     )
 
     expect(screen.getByText('테마 미리보기 · Harbor')).toBeTruthy()
+    expect(screen.getByText('에이에이한국연합')).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'About G.S.O.' }).getAttribute('href')).toBe('http://aakorea.org/aboutgso.html')
 
     const meetingsLink = screen.getByRole('link', { name: '모임 찾기' })
     expect(meetingsLink.getAttribute('href')).toBe('/meetings?themePreview=harbor')

@@ -12,6 +12,11 @@ export const PUBLIC_THEME_REGISTRY = Object.freeze([
     label: 'Harbor',
     description: '차분한 청록 계열과 밝은 바탕을 쓰는 대안 테마입니다.',
   }),
+  Object.freeze({
+    themeId: 'breeze',
+    label: 'Breeze',
+    description: '부드러운 블루 계열 바탕에 선명한 CTA 대비를 주는 테마입니다.',
+  }),
 ])
 
 const PUBLIC_THEME_MAP = new Map(

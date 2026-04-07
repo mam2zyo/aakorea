@@ -16,9 +16,10 @@ test('public theme registry exposes the supported themes', () => {
   assert.ok(Array.isArray(themes))
   assert.deepEqual(
     themes.map((theme) => theme.themeId),
-    [DEFAULT_PUBLIC_THEME_ID, 'harbor'],
+    [DEFAULT_PUBLIC_THEME_ID, 'harbor', 'breeze'],
   )
   assert.equal(getPublicTheme('harbor').label, 'Harbor')
+  assert.equal(getPublicTheme('breeze').label, 'Breeze')
 })
 
 test('resolvePublicTheme returns the default public theme when preview is absent', () => {
