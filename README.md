@@ -70,6 +70,7 @@ docs/
 문서 허브:
 
 - [docs/README.md](./docs/README.md)
+- [docs/runbooks/README.md](./docs/runbooks/README.md)
 
 ---
 
@@ -99,6 +100,9 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 백엔드 로컬 실행 시 카카오 주소 지오코딩을 쓰려면 아래 환경 변수가 필요하다.
 
 - `AAKOREA_KAKAO_REST_API_KEY`
+
+자세한 로컬 env 설정과 포트 기준은
+[docs/runbooks/LOCAL_DEVELOPMENT.md](./docs/runbooks/LOCAL_DEVELOPMENT.md)를 따른다.
 
 테스트 실행:
 
@@ -138,6 +142,9 @@ npm run build
 대부분의 경우 `npm run dev`만으로 바로 동작한다.
 프록시 대상을 바꿔야 할 때만 `VITE_PROXY_TARGET=http://localhost:8081 npm run dev` 같은 방식으로 덮어쓴다.
 
+자세한 프론트 env와 로컬 실행 절차는
+[docs/runbooks/LOCAL_DEVELOPMENT.md](./docs/runbooks/LOCAL_DEVELOPMENT.md)를 따른다.
+
 ---
 
 ## 로컬 개발 환경
@@ -149,18 +156,8 @@ npm run build
 - npm
 - PostgreSQL
 
-백엔드는 기본적으로 로컬 PostgreSQL을 사용하도록 구성합니다.
-
-권장 설정 파일:
-
-- `application-local.yml`
-- `application-test.yml`
-
-예시 DB 설정:
-
-- URL: `jdbc:postgresql://localhost:5432/aakorea_main`
-- Username: `<local username>`
-- Password: `<local password>`
+상세 DB 설정, env 파일, Vite proxy 기준은
+[docs/runbooks/LOCAL_DEVELOPMENT.md](./docs/runbooks/LOCAL_DEVELOPMENT.md)에 정리한다.
 
 ---
 
@@ -184,6 +181,7 @@ npm run build
 
 ---
 
-## 라이선스 / 운영 참고
+## 운영 참고
 
-라이선스 정책, 배포 전략, 운영 환경 구성 등은 프로젝트가 더 안정화된 뒤 별도 문서로 정리합니다.
+- 로컬 실행 / env 설정: [docs/runbooks/LOCAL_DEVELOPMENT.md](./docs/runbooks/LOCAL_DEVELOPMENT.md)
+- `nginx` 정적 서빙 / Termux 배포: [docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md](./docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md)

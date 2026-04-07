@@ -57,6 +57,7 @@
 - `application-local.yml`, `application-nginx.yml` 모두 현재 백엔드를 `8081`에 띄운다
 - Vite dev proxy 기본 대상은 `http://localhost:8081`이다
 - `nginx`는 `8080`에서 정적 앱을 서빙하고 `/api`를 `8081`로 프록시한다
+- 상세 절차는 `docs/runbooks/LOCAL_DEVELOPMENT.md`, `docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md`를 따른다
 
 ### 공개 테마
 
@@ -94,9 +95,10 @@
 
 - `admin/account`의 theme preference는 현재 localStorage에만 저장한다
 
-### 4. 운영 문서 구조 분리
+### 4. 운영 runbook 확장
 
-- 배포, import, backfill 같은 절차 문서를 `runbooks/`로 분리할 준비가 필요하다
+- 배포와 환경 설정 문서는 `runbooks/`로 분리했다
+- import, backfill, theme publish 같은 운영 절차도 같은 위치로 확장할 수 있다
 
 ---
 

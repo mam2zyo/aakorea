@@ -37,6 +37,9 @@ npm run dev
 VITE_KAKAO_MAP_JAVASCRIPT_KEY=your-kakao-javascript-key
 ```
 
+로컬 env와 프록시 기준은
+[`../../docs/runbooks/LOCAL_DEVELOPMENT.md`](../../docs/runbooks/LOCAL_DEVELOPMENT.md)를 따른다.
+
 빌드:
 
 ```bash
@@ -58,11 +61,8 @@ npm run lint
 - 필요 시 `VITE_PROXY_TARGET` 환경 변수로 프록시 대상을 바꿀 수 있음
 - 세션 인증 API를 사용하므로 요청은 cookie credential을 포함함
 
-백엔드가 주소 기반 좌표 계산을 수행하려면 실행 환경에 아래 값이 있어야 한다.
-
-```env
-AAKOREA_KAKAO_REST_API_KEY=your-kakao-rest-api-key
-```
+백엔드 local profile과 주소 기반 좌표 계산용 env는
+[`../../docs/runbooks/LOCAL_DEVELOPMENT.md`](../../docs/runbooks/LOCAL_DEVELOPMENT.md)에서 함께 관리한다.
 
 ---
 

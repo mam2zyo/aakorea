@@ -9,10 +9,13 @@
 
 ## 문서 운영 원칙
 
-문서는 아래 세 영역으로 구분한다.
+문서는 아래 네 영역으로 구분한다.
 
 - `current/`
   현재 MVP 기준으로 **실제로 따를 문서**를 둔다.
+
+- `runbooks/`
+  로컬 실행, env 설정, 배포, 재시작처럼 **운영 절차 문서**를 둔다.
 
 - `reference/`
   배경 분석, 참고 자료, 비교 검토 등 **참고용 문서**를 둔다.
@@ -21,7 +24,8 @@
   현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 주제를 둔다.
   아직 디렉토리가 없더라도, 필요 시 이 원칙에 따라 추가한다.
 
-현재 구현과 설계 판단의 기준은 항상 `current/` 아래 문서다.
+현재 구현과 설계 판단의 기준은 항상 `current/` 아래 문서고,
+실행 및 운영 절차의 기준은 `runbooks/` 아래 문서다.
 
 ---
 
@@ -35,7 +39,7 @@
 4. `current/api/README.md`
 5. `current/IMPLEMENTATION_PLAN.md`
 6. `current/FRONTEND_STRUCTURE.md`
-7. `current/NGINX_DEPLOYMENT.md`
+7. `runbooks/README.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -81,6 +85,11 @@
 ### 6. 구현 순서는 `IMPLEMENTATION_PLAN.md`에만 둔다
 
 다른 문서에서 단계별 작업 순서를 자세히 반복하지 않는다.
+
+### 7. 운영 절차는 `runbooks/`를 기준으로 한다
+
+배포, env 설정, 재시작, import/backfill 같은 실행 절차는
+설계 문서와 섞지 않고 `runbooks/` 아래에서 관리한다.
 
 ---
 
@@ -129,7 +138,6 @@ docs/
 │  ├─ ACTORS_AND_USE_CASES.md
 │  ├─ IMPLEMENTATION_PLAN.md
 │  ├─ FRONTEND_STRUCTURE.md
-│  ├─ NGINX_DEPLOYMENT.md
 │  ├─ domain/
 │  │  ├─ README.md
 │  │  ├─ SharedTypes.md
@@ -152,14 +160,18 @@ docs/
 │     ├─ ADMIN_MEETINGS.md
 │     ├─ ADMIN_MEETING_IMPORTS.md
 │     └─ ADMIN_CONTENT.md
+├─ runbooks/
+│  ├─ README.md
+│  ├─ LOCAL_DEVELOPMENT.md
+│  └─ NGINX_TERMUX_DEPLOYMENT.md
 └─ reference/
    └─ AA_ORG_DESIGN_ANALYSIS.md
 ```
 
-## 다음 단계 구조 제안
+## 추가 확장 제안
 
-현재 문서 수가 아직 많지는 않지만, 실제 코드와 운영 기능이 늘면서
-설계 기준, 운영 절차, 과거 제안서를 같은 층에 두면 다시 섞이기 쉽다.
+`runbooks/` 분리까지는 반영했지만, 실제 코드와 운영 기능이 더 늘면
+결정 기록과 보관 문서도 분리하는 편이 좋다.
 
 다음 단계에서는 아래 구조를 권장한다.
 
