@@ -1,4 +1,4 @@
-import { PROVINCE_OPTIONS } from '../../../lib/options'
+import { PROVINCE_OPTIONS } from '../../../lib/options.js'
 
 export const DEFAULT_PROVINCE = PROVINCE_OPTIONS[0]?.value ?? 'seoul'
 export const MEETING_SEARCH_MODE = {
@@ -9,7 +9,7 @@ export const DEFAULT_NEARBY_RADIUS_KM = 5
 export const MAX_NEARBY_RADIUS_KM = 50
 export const NEARBY_RADIUS_STEPS = [5, 10, 20, 30, 50]
 
-const TMAP_APP_KEY = import.meta.env.VITE_TMAP_APP_KEY?.trim() ?? ''
+const TMAP_APP_KEY = import.meta.env?.VITE_TMAP_APP_KEY?.trim() ?? ''
 
 export function buildMeetingsPath(filters, groupId = null, meetingId = null) {
   const searchParams = new URLSearchParams()
@@ -97,6 +97,83 @@ export function buildKakaoMapUrl(locationName, latitude, longitude) {
 
   const label = encodeURIComponent(locationName || 'AA 모임 장소')
   return `https://map.kakao.com/link/map/${label},${latitude},${longitude}`
+}
+
+export function buildKakaoMapAppUrl(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null
+  }
+
+  return `kakaomap://look?p=${latitude},${longitude}`
+}
+
+export function buildKakaoMapMobileWebUrl(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null
+  }
+
+  return `http://m.map.kakao.com/scheme/look?p=${latitude},${longitude}`
+}
+
+export function shouldOpenKakaoMapAppFirst(userAgent = '') {
+  return /android|iphone|ipad|ipod/i.test(userAgent)
+}
+
+export function openKakaoMapWithFallback(event, latitude, longitude) {
+  if (
+    typeof window === 'undefined'
+    || typeof document === 'undefined'
+    || !shouldOpenKakaoMapAppFirst(window.navigator?.userAgent)
+  ) {
+    return
+  }
+
+  const appUrl = buildKakaoMapAppUrl(latitude, longitude)
+  const mobileWebUrl = buildKakaoMapMobileWebUrl(latitude, longitude)
+  if (!appUrl || !mobileWebUrl) {
+    return
+  }
+
+  event.preventDefault()
+
+  let fallbackPending = true
+  let fallbackTimeoutId = null
+
+  function cleanup() {
+    fallbackPending = false
+
+    if (fallbackTimeoutId !== null) {
+      window.clearTimeout(fallbackTimeoutId)
+      fallbackTimeoutId = null
+    }
+
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+    window.removeEventListener('pagehide', handlePageHide)
+  }
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      cleanup()
+    }
+  }
+
+  function handlePageHide() {
+    cleanup()
+  }
+
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('pagehide', handlePageHide, { once: true })
+
+  fallbackTimeoutId = window.setTimeout(() => {
+    if (!fallbackPending) {
+      return
+    }
+
+    cleanup()
+    window.location.assign(mobileWebUrl)
+  }, 900)
+
+  window.location.assign(appUrl)
 }
 
 export function buildTmapRouteUrl(locationName, latitude, longitude) {

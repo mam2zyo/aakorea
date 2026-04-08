@@ -8,6 +8,7 @@ import kakaoMapIcon from '../assets/kakaomap100.png'
 import tmapIcon from '../assets/tmap100.png'
 import { KakaoMeetingMap } from './KakaoMeetingMap'
 import {
+  openKakaoMapWithFallback,
   buildKakaoMapUrl,
   buildMeetingsPath,
   buildTmapRouteUrl,
@@ -132,6 +133,11 @@ export function MeetingFocusDialog({
                           aria-label="카카오맵에서 위치 보기"
                           className="meeting-focus-location-action"
                           href={kakaoMapUrl}
+                          onClick={(event) => openKakaoMapWithFallback(
+                            event,
+                            selectedMeeting?.latitude,
+                            selectedMeeting?.longitude,
+                          )}
                           rel="noreferrer"
                           target="_blank"
                         >
