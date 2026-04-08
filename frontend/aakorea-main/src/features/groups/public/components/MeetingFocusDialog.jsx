@@ -177,10 +177,7 @@ export function MeetingFocusDialog({
                   {kakaoFallbackOptions?.meetingId === activeMeetingId ? (
                     <div className="meeting-focus-location-fallback" role="alert">
                       <p className="meeting-focus-location-fallback__title">
-                        카카오맵 앱이 열리지 않았습니다.
-                      </p>
-                      <p className="meeting-focus-location-fallback__body">
-                        앱이 없거나 열리지 않으면 웹에서 지도를 보거나 앱을 설치할 수 있습니다.
+                        카카오맵이 설치되지 않았습니다.
                       </p>
                       <div className="button-row button-row--compact meeting-focus-location-fallback__actions">
                         {kakaoFallbackOptions.mobileWebUrl ? (
@@ -196,7 +193,7 @@ export function MeetingFocusDialog({
                         ) : null}
                         {kakaoFallbackOptions.installUrl ? (
                           <a
-                            className="ghost-button ghost-button--small"
+                            className="primary-button primary-button--small"
                             href={kakaoFallbackOptions.installUrl}
                             onClick={() => setKakaoFallbackOptions(null)}
                             rel="noreferrer"
