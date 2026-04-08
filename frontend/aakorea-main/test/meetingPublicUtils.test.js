@@ -3,19 +3,14 @@ import test from 'node:test'
 
 import {
   buildKakaoMapAppUrl,
-  buildKakaoMapMobileWebUrl,
   buildKakaoMapUrl,
   shouldOpenKakaoMapAppFirst,
 } from '../src/features/groups/public/utils.js'
 
-test('kakao map URLs are built for app, mobile web, and desktop web targets', () => {
+test('kakao map URLs are built for app and desktop web targets', () => {
   assert.equal(
     buildKakaoMapAppUrl(37.5665, 126.978),
     'kakaomap://look?p=37.5665,126.978',
-  )
-  assert.equal(
-    buildKakaoMapMobileWebUrl(37.5665, 126.978),
-    'http://m.map.kakao.com/scheme/look?p=37.5665,126.978',
   )
   assert.equal(
     buildKakaoMapUrl('서울 시청', 37.5665, 126.978),

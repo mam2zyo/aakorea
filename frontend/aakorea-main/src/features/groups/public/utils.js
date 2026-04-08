@@ -107,72 +107,21 @@ export function buildKakaoMapAppUrl(latitude, longitude) {
   return `kakaomap://look?p=${latitude},${longitude}`
 }
 
-export function buildKakaoMapMobileWebUrl(latitude, longitude) {
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    return null
-  }
-
-  return `http://m.map.kakao.com/scheme/look?p=${latitude},${longitude}`
-}
-
 export function shouldOpenKakaoMapAppFirst(userAgent = '') {
   return /android|iphone|ipad|ipod/i.test(userAgent)
 }
 
 export function openKakaoMapWithFallback(event, latitude, longitude) {
-  if (
-    typeof window === 'undefined'
-    || typeof document === 'undefined'
-    || !shouldOpenKakaoMapAppFirst(window.navigator?.userAgent)
-  ) {
+  if (typeof window === 'undefined' || !shouldOpenKakaoMapAppFirst(window.navigator?.userAgent)) {
     return
   }
 
   const appUrl = buildKakaoMapAppUrl(latitude, longitude)
-  const mobileWebUrl = buildKakaoMapMobileWebUrl(latitude, longitude)
-  if (!appUrl || !mobileWebUrl) {
+  if (!appUrl) {
     return
   }
 
   event.preventDefault()
-
-  let fallbackPending = true
-  let fallbackTimeoutId = null
-
-  function cleanup() {
-    fallbackPending = false
-
-    if (fallbackTimeoutId !== null) {
-      window.clearTimeout(fallbackTimeoutId)
-      fallbackTimeoutId = null
-    }
-
-    document.removeEventListener('visibilitychange', handleVisibilityChange)
-    window.removeEventListener('pagehide', handlePageHide)
-  }
-
-  function handleVisibilityChange() {
-    if (document.visibilityState === 'hidden') {
-      cleanup()
-    }
-  }
-
-  function handlePageHide() {
-    cleanup()
-  }
-
-  document.addEventListener('visibilitychange', handleVisibilityChange)
-  window.addEventListener('pagehide', handlePageHide, { once: true })
-
-  fallbackTimeoutId = window.setTimeout(() => {
-    if (!fallbackPending) {
-      return
-    }
-
-    cleanup()
-    window.location.assign(mobileWebUrl)
-  }, 900)
-
   window.location.assign(appUrl)
 }
 
