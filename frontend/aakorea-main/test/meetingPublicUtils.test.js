@@ -3,14 +3,20 @@ import test from 'node:test'
 
 import {
   buildKakaoMapAppUrl,
+  buildKakaoMapInstallUrl,
+  buildKakaoMapMobileWebUrl,
   buildKakaoMapUrl,
   shouldOpenKakaoMapAppFirst,
 } from '../src/features/groups/public/utils.js'
 
-test('kakao map URLs are built for app and desktop web targets', () => {
+test('kakao map URLs are built for app, mobile web, and desktop web targets', () => {
   assert.equal(
     buildKakaoMapAppUrl(37.5665, 126.978),
     'kakaomap://look?p=37.5665,126.978',
+  )
+  assert.equal(
+    buildKakaoMapMobileWebUrl(37.5665, 126.978),
+    'http://m.map.kakao.com/scheme/look?p=37.5665,126.978',
   )
   assert.equal(
     buildKakaoMapUrl('서울 시청', 37.5665, 126.978),
@@ -36,5 +42,26 @@ test('kakao map app-first detection only enables mobile user agents', () => {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0 Safari/537.36',
     ),
     false,
+  )
+})
+
+test('kakao map install URLs follow the current mobile platform', () => {
+  assert.equal(
+    buildKakaoMapInstallUrl(
+      'Mozilla/5.0 (Linux; Android 14; SM-S918N) AppleWebKit/537.36 Chrome/123.0 Mobile Safari/537.36',
+    ),
+    'https://play.google.com/store/apps/details?id=net.daum.android.map',
+  )
+  assert.equal(
+    buildKakaoMapInstallUrl(
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 Version/17.4 Mobile/15E148 Safari/604.1',
+    ),
+    'https://apps.apple.com/us/app/304608425',
+  )
+  assert.equal(
+    buildKakaoMapInstallUrl(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0 Safari/537.36',
+    ),
+    null,
   )
 })

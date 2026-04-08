@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { EmptyState } from '../../../../public/ui'
 import {
   DAY_OF_WEEK_OPTIONS,
@@ -25,6 +26,8 @@ export function MeetingFocusDialog({
   onNavigate,
   selectedMeeting,
 }) {
+  const [kakaoFallbackOptions, setKakaoFallbackOptions] = useState(null)
+  const activeMeetingId = selectedMeeting?.id ?? null
   const contactPhone = selectedMeeting?.contactPhone || groupDetails?.contactPhone || ''
   const hasNotice = Boolean(hasGroupNotice(groupDetails))
   const kakaoMapUrl = buildKakaoMapUrl(
@@ -137,6 +140,10 @@ export function MeetingFocusDialog({
                             event,
                             selectedMeeting?.latitude,
                             selectedMeeting?.longitude,
+                            (fallbackOptions) => setKakaoFallbackOptions({
+                              ...fallbackOptions,
+                              meetingId: activeMeetingId,
+                            }),
                           )}
                           rel="noreferrer"
                           target="_blank"
@@ -165,6 +172,47 @@ export function MeetingFocusDialog({
                           />
                         </a>
                       ) : null}
+                    </div>
+                  ) : null}
+                  {kakaoFallbackOptions?.meetingId === activeMeetingId ? (
+                    <div className="meeting-focus-location-fallback" role="alert">
+                      <p className="meeting-focus-location-fallback__title">
+                        카카오맵 앱이 열리지 않았습니다.
+                      </p>
+                      <p className="meeting-focus-location-fallback__body">
+                        앱이 없거나 열리지 않으면 웹에서 지도를 보거나 앱을 설치할 수 있습니다.
+                      </p>
+                      <div className="button-row button-row--compact meeting-focus-location-fallback__actions">
+                        {kakaoFallbackOptions.mobileWebUrl ? (
+                          <a
+                            className="ghost-button ghost-button--small"
+                            href={kakaoFallbackOptions.mobileWebUrl}
+                            onClick={() => setKakaoFallbackOptions(null)}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            웹에서 보기
+                          </a>
+                        ) : null}
+                        {kakaoFallbackOptions.installUrl ? (
+                          <a
+                            className="ghost-button ghost-button--small"
+                            href={kakaoFallbackOptions.installUrl}
+                            onClick={() => setKakaoFallbackOptions(null)}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            앱 설치
+                          </a>
+                        ) : null}
+                        <button
+                          className="ghost-button ghost-button--small"
+                          type="button"
+                          onClick={() => setKakaoFallbackOptions(null)}
+                        >
+                          닫기
+                        </button>
+                      </div>
                     </div>
                   ) : null}
                 </div>

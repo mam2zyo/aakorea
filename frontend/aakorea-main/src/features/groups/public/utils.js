@@ -107,21 +107,88 @@ export function buildKakaoMapAppUrl(latitude, longitude) {
   return `kakaomap://look?p=${latitude},${longitude}`
 }
 
+export function buildKakaoMapMobileWebUrl(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null
+  }
+
+  return `http://m.map.kakao.com/scheme/look?p=${latitude},${longitude}`
+}
+
 export function shouldOpenKakaoMapAppFirst(userAgent = '') {
   return /android|iphone|ipad|ipod/i.test(userAgent)
 }
 
-export function openKakaoMapWithFallback(event, latitude, longitude) {
-  if (typeof window === 'undefined' || !shouldOpenKakaoMapAppFirst(window.navigator?.userAgent)) {
+export function buildKakaoMapInstallUrl(userAgent = '') {
+  if (/android/i.test(userAgent)) {
+    return 'https://play.google.com/store/apps/details?id=net.daum.android.map'
+  }
+
+  if (/iphone|ipad|ipod/i.test(userAgent)) {
+    return 'https://apps.apple.com/us/app/304608425'
+  }
+
+  return null
+}
+
+export function openKakaoMapWithFallback(event, latitude, longitude, onFallbackNeeded) {
+  if (
+    typeof window === 'undefined'
+    || typeof document === 'undefined'
+    || !shouldOpenKakaoMapAppFirst(window.navigator?.userAgent)
+  ) {
     return
   }
 
   const appUrl = buildKakaoMapAppUrl(latitude, longitude)
+  const mobileWebUrl = buildKakaoMapMobileWebUrl(latitude, longitude)
+  const installUrl = buildKakaoMapInstallUrl(window.navigator?.userAgent)
   if (!appUrl) {
     return
   }
 
   event.preventDefault()
+
+  let fallbackPending = true
+  let fallbackTimeoutId = null
+
+  function cleanup() {
+    fallbackPending = false
+
+    if (fallbackTimeoutId !== null) {
+      window.clearTimeout(fallbackTimeoutId)
+      fallbackTimeoutId = null
+    }
+
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+    window.removeEventListener('pagehide', handlePageHide)
+  }
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      cleanup()
+    }
+  }
+
+  function handlePageHide() {
+    cleanup()
+  }
+
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('pagehide', handlePageHide, { once: true })
+
+  fallbackTimeoutId = window.setTimeout(() => {
+    if (!fallbackPending) {
+      return
+    }
+
+    cleanup()
+    onFallbackNeeded?.({
+      installUrl,
+      mobileWebUrl,
+    })
+  }, 900)
+
   window.location.assign(appUrl)
 }
 
