@@ -85,6 +85,9 @@
 - `PublicThemeSetting`
   공개 사이트 테마의 active / draft / rollback 상태
 
+- `Attachment`
+  공지 및 콘텐츠에 사용되는 범용 첨부파일 및 미디어 자산
+
 ---
 
 ## `ContentPage`와 `Notice` 구분 기준
@@ -136,10 +139,15 @@
 - 범용 `Board` / `Post`
 - FAQ 전용 모델
 - 카테고리형 CMS 구조
-- `Attachment` / `MediaAsset`
 - `Event` / `Campaign`
 - 그룹 소개 / 그룹 변경 이력
-- 운영자 서버 저장 개인 설정
+
+---
+
+## 곧 구현 예정인 모델 (Upcoming)
+
+- **도메인 변경 이력 (Audit Log)**: 엔티티 수정자 및 주요 변경 필드 추적 모델
+- **운영자 서버 저장 개인 설정**: 계정별 UI/UX 테마 및 선호 설정 저장 모델
 
 ---
 
