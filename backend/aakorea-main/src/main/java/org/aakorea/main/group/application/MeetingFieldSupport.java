@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Locale;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.group.domain.MeetingType;
@@ -23,6 +24,16 @@ final class MeetingFieldSupport {
         }
 
         return normalizeProvince(province);
+    }
+
+    static List<Province> requireProvinces(List<String> provinces) {
+        if (provinces == null || provinces.isEmpty()) {
+            throw badRequest("province", "province is required");
+        }
+
+        return provinces.stream()
+                .map(MeetingFieldSupport::normalizeProvince)
+                .toList();
     }
 
     static Province optionalProvince(String province) {

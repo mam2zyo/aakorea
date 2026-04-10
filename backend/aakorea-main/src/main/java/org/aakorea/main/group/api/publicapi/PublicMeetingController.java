@@ -19,7 +19,7 @@ public class PublicMeetingController {
 
     @GetMapping
     public ApiResponse<List<PublicMeetingResponses.MeetingSummary>> getMeetings(
-            @RequestParam(required = false) String province,
+            @RequestParam(required = false) List<String> province,
             @RequestParam(required = false) String dayOfWeek,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,

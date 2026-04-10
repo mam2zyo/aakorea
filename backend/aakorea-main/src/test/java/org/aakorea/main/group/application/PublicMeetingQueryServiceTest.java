@@ -45,7 +45,7 @@ class PublicMeetingQueryServiceTest {
 
     @Test
     void getMeetingsRequiresProvince() {
-        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings(null, null, null, null, null))
+        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings((List<String>) null, null, null, null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -81,7 +81,7 @@ class PublicMeetingQueryServiceTest {
                 .willReturn(List.of(meeting));
 
         List<PublicMeetingQueryService.PublicMeetingSummary> result =
-                publicMeetingQueryService.getMeetings("Seoul", "monday", null, null, null);
+                publicMeetingQueryService.getMeetings(List.of("Seoul"), "monday", null, null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().groupName()).isEqualTo("강남그룹");

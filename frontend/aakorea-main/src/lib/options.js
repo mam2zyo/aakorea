@@ -18,6 +18,18 @@ export const PROVINCE_OPTIONS = [
   { value: 'jeju', label: '제주' },
 ]
 
+export const SEARCH_PROVINCE_OPTIONS = [
+  { value: 'gangwon', label: '강원' },
+  { value: 'gyeonggi', label: '경기' },
+  { value: 'gwangju,jeonnam,jeonbuk', label: '광주·전남·전북' },
+  { value: 'daegu,gyeongbuk', label: '대구·경북' },
+  { value: 'daejeon,sejong,chungnam,chungbuk', label: '대전·세종·충남·충북' },
+  { value: 'busan,ulsan,gyeongnam', label: '부산·울산·경남' },
+  { value: 'seoul', label: '서울' },
+  { value: 'incheon', label: '인천' },
+  { value: 'jeju', label: '제주' },
+]
+
 export const DAY_OF_WEEK_OPTIONS = [
   { value: 'MONDAY', label: '월요일' },
   { value: 'TUESDAY', label: '화요일' },

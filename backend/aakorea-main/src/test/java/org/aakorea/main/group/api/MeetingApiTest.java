@@ -193,7 +193,7 @@ class MeetingApiTest {
 
     @Test
     void publicMeetingListReturnsMeetingSummaries() throws Exception {
-        given(publicMeetingQueryService.getMeetings("seoul", "MONDAY", null, null, null))
+        given(publicMeetingQueryService.getMeetings(List.of("seoul"), "MONDAY", null, null, null))
                 .willReturn(List.of(new PublicMeetingQueryService.PublicMeetingSummary(
                         100L,
                         20L,

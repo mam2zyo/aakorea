@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Field,
   PageIntro,
@@ -7,6 +7,7 @@ import {
 import {
   PROVINCE_OPTIONS,
   SEARCH_DAY_OF_WEEK_OPTIONS,
+  SEARCH_PROVINCE_OPTIONS,
 } from '../../../lib/options'
 import { MeetingFocusDialog } from './components/MeetingFocusDialog'
 import { MeetingResultsSection } from './components/MeetingResultsSection'
@@ -57,6 +58,7 @@ export function MeetingSearchPage({
     searchMode,
   })
   const nearbySearchActive = readMeetingSearchMode(activeFilters.searchMode) === MEETING_SEARCH_MODE.NEARBY
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -121,7 +123,7 @@ export function MeetingSearchPage({
         ) : null}
 
         <form
-          className="meeting-filter-grid"
+          className="meeting-search-form"
           onSubmit={(event) => {
             event.preventDefault()
             onNavigate(buildMeetingsPath({
@@ -131,69 +133,96 @@ export function MeetingSearchPage({
             }))
           }}
         >
-          <Field label="지역">
-            <select
-              value={filters.province}
-              onChange={(event) =>
-                setFilters((previous) => ({
-                  ...previous,
-                  province: event.target.value,
-                  searchMode: MEETING_SEARCH_MODE.REGION,
-                }))
-              }
-            >
-              {PROVINCE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <div className="meeting-filter-primary-row">
+            <Field label="지역">
+              <select
+                value={filters.province}
+                onChange={(event) =>
+                  setFilters((previous) => ({
+                    ...previous,
+                    province: event.target.value,
+                    searchMode: MEETING_SEARCH_MODE.REGION,
+                  }))
+                }
+              >
+                {SEARCH_PROVINCE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
 
-          <Field label="요일">
-            <select
-              value={filters.dayOfWeek}
-              onChange={(event) =>
-                setFilters((previous) => ({
-                  ...previous,
-                  dayOfWeek: event.target.value,
-                }))
-              }
-            >
-              {SEARCH_DAY_OF_WEEK_OPTIONS.map((option) => (
-                <option key={option.value || 'all'} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          <div className="button-row button-row--compact">
-            <button className="primary-button" type="submit" disabled={loading}>
-              지역으로 조회
-            </button>
-            <button
-              className="ghost-button"
-              type="button"
-              disabled={loading}
-              onClick={() => void requestNearbyMeetings()}
-            >
-              {loading && nearbySearchActive ? '내 주변 확인 중...' : '내 주변 찾기'}
-            </button>
-            {nearbySearchActive ? (
+            <div className="meeting-search-actions">
               <button
                 className="ghost-button"
                 type="button"
                 disabled={loading}
-                onClick={() => onNavigate(buildMeetingsPath({
-                  province: filters.province || DEFAULT_PROVINCE,
-                  dayOfWeek: filters.dayOfWeek,
-                  searchMode: MEETING_SEARCH_MODE.REGION,
-                }))}
+                onClick={() => void requestNearbyMeetings()}
               >
-                지역 검색으로 전환
+                {loading && nearbySearchActive ? '확인 중...' : '📍 내 주변 찾기'}
               </button>
-            ) : null}
+              {nearbySearchActive ? (
+                <button
+                  className="ghost-button"
+                  type="button"
+                  disabled={loading}
+                  onClick={() => onNavigate(buildMeetingsPath({
+                    province: filters.province || DEFAULT_PROVINCE,
+                    dayOfWeek: filters.dayOfWeek,
+                    searchMode: MEETING_SEARCH_MODE.REGION,
+                  }))}
+                >
+                  지역 검색 전환
+                </button>
+              ) : (
+                <button className="primary-button" type="submit" disabled={loading}>
+                  지역으로 조회
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="meeting-filter-toggle-row">
+            <button
+              type="button"
+              className="meeting-filter-toggle ghost-button btn-sm"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              {showAdvancedFilters ? '상세 조건 접기 ▲' : '상세 조건 펼치기 ▼'}
+            </button>
+          </div>
+
+          <div className={`meeting-filter-advanced ${showAdvancedFilters ? 'is-open' : ''}`}>
+            <div className="meeting-filter-advanced-inner">
+              <Field label="요일">
+                <select
+                  value={filters.dayOfWeek}
+                  onChange={(event) =>
+                    setFilters((previous) => ({
+                      ...previous,
+                      dayOfWeek: event.target.value,
+                    }))
+                  }
+                >
+                  {SEARCH_DAY_OF_WEEK_OPTIONS.map((option) => (
+                    <option key={option.value || 'all'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="모임 유형">
+                <select disabled>
+                  <option>추후 제공 예정입니다</option>
+                </select>
+              </Field>
+
+              <Field label="모임명 등 키워드">
+                <input type="text" placeholder="추후 제공 예정입니다" disabled />
+              </Field>
+            </div>
           </div>
         </form>
 

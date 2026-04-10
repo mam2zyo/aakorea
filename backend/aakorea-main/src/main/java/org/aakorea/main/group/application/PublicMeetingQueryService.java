@@ -34,7 +34,7 @@ public class PublicMeetingQueryService {
     private final GroupContactRepository groupContactRepository;
 
     public List<PublicMeetingSummary> getMeetings(
-            String province,
+            List<String> province,
             String dayOfWeek,
             Double latitude,
             Double longitude,
@@ -49,18 +49,22 @@ public class PublicMeetingQueryService {
             return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, normalizeRadiusKm(radiusKm));
         }
 
-        Province normalizedProvince = MeetingFieldSupport.requireProvince(province);
+        List<Province> normalizedProvinces = MeetingFieldSupport.requireProvinces(province);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 criteriaBuilder.isTrue(root.get("active")),
-                criteriaBuilder.equal(root.get("location").get("province"), normalizedProvince));
+                root.get("location").get("province").in(normalizedProvinces));
 
         if (normalizedDayOfWeek != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("dayOfWeek"), normalizedDayOfWeek));
         }
 
-        return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
+        return meetingRepository.findAll(specification).stream()
+                .sorted(Comparator
+                        .comparingInt((Meeting m) -> m.getDayOfWeek().getValue())
+                        .thenComparing(Meeting::getStartTime)
+                        .thenComparing(Meeting::getId))
                 .map(meeting -> toSummary(meeting, null))
                 .toList();
     }
