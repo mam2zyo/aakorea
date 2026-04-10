@@ -20,7 +20,7 @@
 - 권한 모델 검토 초안과 장기 roadmap
 
 인증 API 계약은 `AUTH.md`를 따르고,
-장기 초안은 `../../deferred/OFFICE_AUTHORIZATION_DRAFT.md`를 참고한다.
+상세 정책은 `../auth/AUTHORIZATION_POLICY.md`를 참고한다.
 
 ---
 

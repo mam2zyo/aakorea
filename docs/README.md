@@ -141,9 +141,13 @@ docs/
 │  ├─ ACTORS_AND_USE_CASES.md
 │  ├─ IMPLEMENTATION_PLAN.md
 │  ├─ FRONTEND_STRUCTURE.md
+│  ├─ auth/
+│  │  ├─ AUTHENTICATION_MODEL.md
+│  │  └─ AUTHORIZATION_POLICY.md
 │  ├─ domain/
 │  │  ├─ README.md
 │  │  ├─ SharedTypes.md
+│  │  ├─ Attachment.md
 │  │  ├─ District.md
 │  │  ├─ Group.md
 │  │  ├─ GroupContact.md
@@ -158,16 +162,16 @@ docs/
 │     ├─ ADMIN_AUTHORIZATION.md
 │     ├─ PUBLIC_THEME.md
 │     ├─ PUBLIC_CONTENT.md
+│     ├─ PUBLIC_ATTACHMENT.md
 │     ├─ PUBLIC_MEETINGS.md
 │     ├─ ADMIN_GENERAL_SERVICES.md
 │     ├─ ADMIN_GROUPS.md
 │     ├─ ADMIN_MEETINGS.md
 │     ├─ ADMIN_MEETING_IMPORTS.md
-│     └─ ADMIN_CONTENT.md
+│     ├─ ADMIN_CONTENT.md
+│     └─ ADMIN_ATTACHMENT.md
 ├─ deferred/
-│  ├─ FUTURE_IMPLEMENTATION_GOALS.md
-│  ├─ OFFICE_AUTH_MODEL_DRAFT.md
-│  └─ OFFICE_AUTHORIZATION_DRAFT.md
+│  └─ FUTURE_IMPLEMENTATION_GOALS.md
 ├─ runbooks/
 │  ├─ README.md
 │  ├─ LOCAL_DEVELOPMENT.md
