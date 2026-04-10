@@ -5,6 +5,7 @@ export const adminAttachmentApi = {
 
     const response = await fetch('/api/admin/attachments', {
       method: 'POST',
+      credentials: 'include',
       body: formData,
     })
 

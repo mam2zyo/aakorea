@@ -72,7 +72,7 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
         if (data && data.url) {
           editor.chain().focus().setImage({ src: data.url }).run()
         }
-      } catch (err) {
+      } catch {
         window.alert('이미지 업로드에 실패했습니다.')
       }
     }
@@ -104,51 +104,18 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
       <div className="rich-text-editor__toolbar">
         <div className="rich-text-editor__toolbar-group">
           <ToolbarButton
-            editor={editor}
-            icon={Heading2}
-            title="제목 2"
-            isActive={editor.isActive('heading', { level: 2 })}
-            action={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            icon={<Heading2 size={18} />}
+            label="제목 2"
+            active={editor.isActive('heading', { level: 2 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            disabled={!editor.isEditable}
           />
           <ToolbarButton
-            editor={editor}
-            icon={Heading3}
-            title="제목 3"
-            isActive={editor.isActive('heading', { level: 3 })}
-            action={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          />
-        </div>
-
-        <div className="rich-text-editor__toolbar-divider" />
-
-        <div className="rich-text-editor__toolbar-group">
-          <ToolbarButton
-            editor={editor}
-            icon={Bold}
-            title="굵게"
-            isActive={editor.isActive('bold')}
-            action={() => editor.chain().focus().toggleBold().run()}
-          />
-          <ToolbarButton
-            editor={editor}
-            icon={Italic}
-            title="기울임"
-            isActive={editor.isActive('italic')}
-            action={() => editor.chain().focus().toggleItalic().run()}
-          />
-          <ToolbarButton
-            editor={editor}
-            icon={Strikethrough}
-            title="취소선"
-            isActive={editor.isActive('strike')}
-            action={() => editor.chain().focus().toggleStrike().run()}
-          />
-          <ToolbarButton
-            editor={editor}
-            icon={LinkIcon}
-            title="링크"
-            isActive={editor.isActive('link')}
-            action={setLink}
+            icon={<Heading3 size={18} />}
+            label="제목 3"
+            active={editor.isActive('heading', { level: 3 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            disabled={!editor.isEditable}
           />
         </div>
 
@@ -156,51 +123,32 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
 
         <div className="rich-text-editor__toolbar-group">
           <ToolbarButton
-            editor={editor}
-            icon={AlignLeft}
-            title="왼쪽 정렬"
-            isActive={editor.isActive({ textAlign: 'left' })}
-            action={() => editor.chain().focus().setTextAlign('left').run()}
+            icon={<Bold size={18} />}
+            label="굵게"
+            active={editor.isActive('bold')}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            disabled={!editor.isEditable}
           />
           <ToolbarButton
-            editor={editor}
-            icon={AlignCenter}
-            title="가운데 정렬"
-            isActive={editor.isActive({ textAlign: 'center' })}
-            action={() => editor.chain().focus().setTextAlign('center').run()}
+            icon={<Italic size={18} />}
+            label="기울임"
+            active={editor.isActive('italic')}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            disabled={!editor.isEditable}
           />
           <ToolbarButton
-            editor={editor}
-            icon={AlignRight}
-            title="오른쪽 정렬"
-            isActive={editor.isActive({ textAlign: 'right' })}
-            action={() => editor.chain().focus().setTextAlign('right').run()}
-          />
-        </div>
-
-        <div className="rich-text-editor__toolbar-divider" />
-
-        <div className="rich-text-editor__toolbar-group">
-          <ToolbarButton
-            editor={editor}
-            icon={List}
-            title="글머리 기호"
-            isActive={editor.isActive('bulletList')}
-            action={() => editor.chain().focus().toggleBulletList().run()}
+            icon={<Strikethrough size={18} />}
+            label="취소선"
+            active={editor.isActive('strike')}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            disabled={!editor.isEditable}
           />
           <ToolbarButton
-            editor={editor}
-            icon={ListOrdered}
-            title="번호 매기기"
-            isActive={editor.isActive('orderedList')}
-            action={() => editor.chain().focus().toggleOrderedList().run()}
-          />
-          <ToolbarButton
-            editor={editor}
-            icon={Quote}
-            title="인용구"
-            isActive={editor.isActive('blockquote')}
-            action={() => editor.chain().focus().toggleBlockquote().run()}
+            icon={<LinkIcon size={18} />}
+            label="링크"
+            active={editor.isActive('link')}
+            onClick={setLink}
+            disabled={!editor.isEditable}
           />
         </div>
 
@@ -208,10 +156,62 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
 
         <div className="rich-text-editor__toolbar-group">
           <ToolbarButton
-            editor={editor}
-            icon={ImageIcon}
-            title="이미지 삽입"
-            action={addImage}
+            icon={<AlignLeft size={18} />}
+            label="왼쪽 정렬"
+            active={editor.isActive({ textAlign: 'left' })}
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            disabled={!editor.isEditable}
+          />
+          <ToolbarButton
+            icon={<AlignCenter size={18} />}
+            label="가운데 정렬"
+            active={editor.isActive({ textAlign: 'center' })}
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            disabled={!editor.isEditable}
+          />
+          <ToolbarButton
+            icon={<AlignRight size={18} />}
+            label="오른쪽 정렬"
+            active={editor.isActive({ textAlign: 'right' })}
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+            disabled={!editor.isEditable}
+          />
+        </div>
+
+        <div className="rich-text-editor__toolbar-divider" />
+
+        <div className="rich-text-editor__toolbar-group">
+          <ToolbarButton
+            icon={<List size={18} />}
+            label="글머리 기호"
+            active={editor.isActive('bulletList')}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            disabled={!editor.isEditable}
+          />
+          <ToolbarButton
+            icon={<ListOrdered size={18} />}
+            label="번호 매기기"
+            active={editor.isActive('orderedList')}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            disabled={!editor.isEditable}
+          />
+          <ToolbarButton
+            icon={<Quote size={18} />}
+            label="인용구"
+            active={editor.isActive('blockquote')}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            disabled={!editor.isEditable}
+          />
+        </div>
+
+        <div className="rich-text-editor__toolbar-divider" />
+
+        <div className="rich-text-editor__toolbar-group">
+          <ToolbarButton
+            icon={<ImageIcon size={18} />}
+            label="이미지 삽입"
+            onClick={addImage}
+            disabled={!editor.isEditable}
           />
         </div>
       </div>
@@ -221,16 +221,16 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
   )
 }
 
-function ToolbarButton({ editor, icon: Icon, title, action, isActive }) {
+function ToolbarButton({ onClick, active, icon, label, disabled }) {
   return (
     <button
       type="button"
-      className={`rich-text-editor__toolbar-btn ${isActive ? 'rich-text-editor__toolbar-btn--active' : ''}`}
-      onClick={action}
-      title={title}
-      disabled={!editor.isEditable}
+      className={`rich-text-editor__toolbar-btn ${active ? 'rich-text-editor__toolbar-btn--active' : ''}`}
+      onClick={onClick}
+      title={label}
+      disabled={disabled}
     >
-      <Icon size={18} />
+      {icon}
     </button>
   )
 }

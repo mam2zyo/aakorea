@@ -18,7 +18,7 @@ export function PublicAttachmentList({ attachments }) {
         {attachments.map((attachment) => (
           <a
             key={attachment.id}
-            href={`/api/public/attachments/${attachment.id}`}
+            href={`/api/public/attachments/${attachment.id}/download`}
             className="public-attachment-item"
             download={attachment.originalName}
           >

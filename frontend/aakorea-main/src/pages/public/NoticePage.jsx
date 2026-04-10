@@ -7,6 +7,7 @@ import {
 } from '../../public/ui'
 import { publicContentApi } from '../../features/content/api/public'
 import { ApiError } from '../../shared/lib/request'
+import { PublicAttachmentList } from '../../ui/PublicAttachmentList'
 
 export function NoticePage({ noticeId, onError, onNavigate }) {
   const [notices, setNotices] = useState([])
@@ -173,6 +174,8 @@ export function NoticePage({ noticeId, onError, onNavigate }) {
                 </dl>
 
                 <div className="content-body" dangerouslySetInnerHTML={{ __html: selectedNotice.bodyHtml }} />
+
+                <PublicAttachmentList attachments={selectedNotice.attachments} />
               </div>
             ) : notices.length > 0 && !missingNotice ? (
               <EmptyState

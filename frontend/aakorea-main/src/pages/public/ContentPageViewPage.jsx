@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useState } from 'react'
 import { EmptyState, PageIntro, PageSection } from '../../public/ui'
 import { publicContentApi } from '../../features/content/api/public'
 import { ApiError } from '../../shared/lib/request'
+import { PublicAttachmentList } from '../../ui/PublicAttachmentList'
 
 export function ContentPageViewPage({ onError, onNavigate, pageKey }) {
   const [contentPage, setContentPage] = useState(null)
@@ -77,7 +78,12 @@ export function ContentPageViewPage({ onError, onNavigate, pageKey }) {
           />
         ) : null}
 
-        {contentPage ? <div className="content-body" dangerouslySetInnerHTML={{ __html: contentPage.bodyHtml }} /> : null}
+        {contentPage ? (
+          <>
+            <div className="content-body" dangerouslySetInnerHTML={{ __html: contentPage.bodyHtml }} />
+            <PublicAttachmentList attachments={contentPage.attachments} />
+          </>
+        ) : null}
       </PageSection>
     </>
   )

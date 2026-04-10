@@ -17,10 +17,14 @@ export const adminAssetApi = {
     let text, json
     try {
       text = await response.text()
-    } catch {}
+    } catch {
+      // Failed to read response text, likely network error
+    }
     try {
       if (text) json = JSON.parse(text)
-    } catch {}
+    } catch {
+      // Failed to parse response, might be non-JSON error page
+    }
 
     if (!response.ok) {
       const error = json?.error

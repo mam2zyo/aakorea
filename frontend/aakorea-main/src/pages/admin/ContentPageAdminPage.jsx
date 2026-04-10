@@ -5,6 +5,7 @@ import {
   EmptyState,
   Field,
   RichTextEditor,
+  AttachmentField,
 } from '../../admin/ui'
 import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
@@ -258,6 +259,20 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
                 />
               </Field>
 
+              <Field label="첨부파일">
+                <AttachmentField
+                  attachments={contentPageForm.attachments}
+                  disabled={formReadOnly}
+                  onChange={(newAttachments) => {
+                    setContentPageForm((previous) => ({
+                      ...previous,
+                      attachments: newAttachments,
+                    }))
+                    setContentPageErrors((previous) => omitFieldErrors(previous, 'attachments'))
+                  }}
+                />
+              </Field>
+
               <label className="toggle-field">
                 <input
                   checked={contentPageForm.published}
@@ -327,13 +342,13 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
     try {
       const data = await adminContentApi.getContentPage(contentPageId)
       setContentPageForm({
-        id: data.id,
+                id: data.id,
         key: data.key,
         title: data.title,
         bodyHtml: data.bodyHtml,
         bodyJson: data.bodyJson,
-        originalPublished: data.published,
         published: data.published,
+        attachments: data.attachments || [],
       })
       setContentPageErrors({})
       setEditorOpen(true)
@@ -364,6 +379,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
         bodyHtml: contentPageForm.bodyHtml,
         bodyJson: contentPageForm.bodyJson,
         published: contentPageForm.published,
+        attachmentIds: contentPageForm.attachments.map((a) => a.id),
       }
 
       await (contentPageForm.id
@@ -453,7 +469,7 @@ function createEmptyContentPageForm() {
     title: '',
     bodyHtml: '',
     bodyJson: '',
-    originalPublished: false,
     published: false,
+    attachments: [],
   }
 }

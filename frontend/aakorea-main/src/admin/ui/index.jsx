@@ -37,13 +37,14 @@ export function AdminPageHeader({
   )
 }
 
-export function Field({ label, className = '', error, as: Component = 'label', children }) {
+export function Field({ label, children, error, description }) {
   return (
-    <Component className={`field${error ? ' field--invalid' : ''} ${className}`.trim()}>
+    <div className="admin-field">
       <span className="field__label">{label}</span>
       {children}
       {error ? <span className="field__error">{error}</span> : null}
-    </Component>
+      {description ? <p className="field__description">{description}</p> : null}
+    </div>
   )
 }
 
@@ -65,4 +66,5 @@ export function DetailItem({ label, value }) {
   )
 }
 
-export * from './RichTextEditor'
+export { RichTextEditor } from './RichTextEditor'
+export { AttachmentField } from './AttachmentField'

@@ -5,6 +5,7 @@ import {
   EmptyState,
   Field,
   RichTextEditor,
+  AttachmentField,
 } from '../../admin/ui'
 import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
@@ -251,6 +252,20 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
                 />
               </Field>
 
+              <Field label="첨부파일">
+                <AttachmentField
+                  attachments={noticeForm.attachments}
+                  disabled={formReadOnly}
+                  onChange={(newAttachments) => {
+                    setNoticeForm((previous) => ({
+                      ...previous,
+                      attachments: newAttachments,
+                    }))
+                    setNoticeErrors((previous) => omitFieldErrors(previous, 'attachments'))
+                  }}
+                />
+              </Field>
+
               <label className="toggle-field">
                 <input
                   checked={noticeForm.published}
@@ -324,6 +339,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
         originalPublished: data.published,
         published: data.published,
         publishedAt: toInputDateTimeValue(data.publishedAt),
+        attachments: data.attachments || [],
       })
       setNoticeErrors({})
       setEditorOpen(true)
@@ -354,6 +370,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
         bodyJson: noticeForm.bodyJson,
         published: noticeForm.published,
         publishedAt: noticeForm.published ? toApiDateTimeValue(noticeForm.publishedAt) : null,
+        attachmentIds: noticeForm.attachments.map((a) => a.id),
       }
 
       await (noticeForm.id
@@ -437,6 +454,7 @@ function createEmptyNoticeForm() {
     originalPublished: false,
     published: false,
     publishedAt: createCurrentDateTimeValue(),
+    attachments: [],
   }
 }
 
