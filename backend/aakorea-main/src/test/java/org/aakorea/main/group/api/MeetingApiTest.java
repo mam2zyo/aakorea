@@ -193,7 +193,7 @@ class MeetingApiTest {
 
     @Test
     void publicMeetingListReturnsMeetingSummaries() throws Exception {
-        given(publicMeetingQueryService.getMeetings("seoul", "MONDAY", null, null, null))
+        given(publicMeetingQueryService.getMeetings(List.of("seoul"), "MONDAY", null, null, null, null, null, null))
                 .willReturn(List.of(new PublicMeetingQueryService.PublicMeetingSummary(
                         100L,
                         20L,
@@ -226,7 +226,7 @@ class MeetingApiTest {
 
     @Test
     void publicNearbyMeetingListReturnsDistance() throws Exception {
-        given(publicMeetingQueryService.getMeetings(null, "MONDAY", 37.4979, 127.0276, 10))
+        given(publicMeetingQueryService.getMeetings(null, "MONDAY", null, null, null, 37.4979, 127.0276, 10))
                 .willReturn(List.of(new PublicMeetingQueryService.PublicMeetingSummary(
                         100L,
                         20L,

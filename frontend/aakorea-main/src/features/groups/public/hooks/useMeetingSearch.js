@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { ApiError } from '../../../../shared/lib/request'
-import { publicGroupApi, publicMeetingApi } from '../../../../lib/api'
+import { publicDistrictApi, publicGroupApi, publicMeetingApi } from '../../../../lib/api'
 import {
   buildMeetingsPath,
   buildNearbyRadiusSteps,
@@ -13,17 +13,23 @@ import {
 
 function createSearchFilters({
   dayOfWeek,
+  districtId,
+  keyword,
   latitude,
   longitude,
   province,
   radiusKm,
   searchMode,
+  type,
 }) {
   const normalizedSearchMode = readMeetingSearchMode(searchMode)
 
   return {
     province: province || DEFAULT_PROVINCE,
     dayOfWeek: dayOfWeek || '',
+    type: type || '',
+    districtId: districtId || '',
+    keyword: keyword || '',
     searchMode: normalizedSearchMode,
     latitude: normalizedSearchMode === MEETING_SEARCH_MODE.NEARBY && Number.isFinite(latitude)
       ? latitude
@@ -39,7 +45,9 @@ function createSearchFilters({
 
 export function useMeetingSearch({
   dayOfWeek,
+  districtId,
   groupId,
+  keyword,
   latitude,
   longitude,
   meetingId,
@@ -47,15 +55,19 @@ export function useMeetingSearch({
   province,
   radiusKm,
   searchMode,
+  type,
 }) {
   const routeFilters = useMemo(() => createSearchFilters({
     dayOfWeek,
+    districtId,
+    keyword,
     latitude,
     longitude,
     province,
     radiusKm,
     searchMode,
-  }), [dayOfWeek, latitude, longitude, province, radiusKm, searchMode])
+    type,
+  }), [dayOfWeek, districtId, keyword, latitude, longitude, province, radiusKm, searchMode, type])
   const [filters, setFilters] = useState(routeFilters)
   const [meetings, setMeetings] = useState([])
   const [loading, setLoading] = useState(false)
@@ -63,6 +75,7 @@ export function useMeetingSearch({
     appliedRadiusKm: null,
     mode: routeFilters.searchMode,
   })
+  const [districts, setDistricts] = useState([])
   const [groupDetails, setGroupDetails] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [missingGroup, setMissingGroup] = useState(false)
@@ -74,10 +87,29 @@ export function useMeetingSearch({
     setFilters(routeFilters)
   }, [routeFilters])
 
+  useEffect(() => {
+    async function loadDistricts() {
+      try {
+        const result = await publicDistrictApi.getDistricts()
+        setDistricts(result)
+      } catch (error) {
+        console.error('Failed to load districts:', error)
+      }
+    }
+    void loadDistricts()
+  }, [])
+
   async function loadMeetings(activeFilters) {
     setLoading(true)
 
     try {
+      const searchParams = {
+        dayOfWeek: activeFilters.dayOfWeek,
+        type: activeFilters.type,
+        districtId: activeFilters.districtId,
+        keyword: activeFilters.keyword,
+      }
+
       if (activeFilters.searchMode === MEETING_SEARCH_MODE.NEARBY) {
         const radiusSteps = buildNearbyRadiusSteps(activeFilters.radiusKm)
         let appliedRadiusKm = radiusSteps.at(-1) ?? activeFilters.radiusKm
@@ -85,7 +117,7 @@ export function useMeetingSearch({
 
         for (const candidateRadiusKm of radiusSteps) {
           const candidateSummaries = await publicMeetingApi.getMeetings({
-            dayOfWeek: activeFilters.dayOfWeek,
+            ...searchParams,
             latitude: activeFilters.latitude,
             longitude: activeFilters.longitude,
             radiusKm: candidateRadiusKm,
@@ -124,8 +156,8 @@ export function useMeetingSearch({
       }
 
       const summaries = await publicMeetingApi.getMeetings({
+        ...searchParams,
         province: activeFilters.province || DEFAULT_PROVINCE,
-        dayOfWeek: activeFilters.dayOfWeek,
       })
 
       setMeetings(summaries)
@@ -230,5 +262,6 @@ export function useMeetingSearch({
     selectedMeeting,
     selectedSearchMeetingId,
     setFilters,
+    districts,
   }
 }

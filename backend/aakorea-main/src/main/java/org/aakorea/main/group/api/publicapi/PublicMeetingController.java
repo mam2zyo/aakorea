@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
+import org.aakorea.main.group.domain.MeetingType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,14 +20,17 @@ public class PublicMeetingController {
 
     @GetMapping
     public ApiResponse<List<PublicMeetingResponses.MeetingSummary>> getMeetings(
-            @RequestParam(required = false) String province,
+            @RequestParam(required = false) List<String> province,
             @RequestParam(required = false) String dayOfWeek,
+            @RequestParam(required = false) MeetingType type,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Integer radiusKm
     ) {
         return ApiResponse.success(PublicMeetingResponseMapper.toMeetingSummaries(
-                publicMeetingQueryService.getMeetings(province, dayOfWeek, latitude, longitude, radiusKm)));
+                publicMeetingQueryService.getMeetings(province, dayOfWeek, type, districtId, keyword, latitude, longitude, radiusKm)));
     }
 
     @GetMapping("/{id}")

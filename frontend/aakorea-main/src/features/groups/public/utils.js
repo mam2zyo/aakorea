@@ -36,6 +36,18 @@ export function buildMeetingsPath(filters, groupId = null, meetingId = null) {
     searchParams.set('dayOfWeek', filters.dayOfWeek)
   }
 
+  if (filters?.type) {
+    searchParams.set('type', filters.type)
+  }
+
+  if (filters?.districtId && (Number.isFinite(filters.districtId) || (typeof filters.districtId === 'string' && filters.districtId !== ''))) {
+    searchParams.set('districtId', String(filters.districtId))
+  }
+
+  if (filters?.keyword) {
+    searchParams.set('keyword', filters.keyword)
+  }
+
   if (Number.isFinite(groupId)) {
     searchParams.set('groupId', String(groupId))
   }

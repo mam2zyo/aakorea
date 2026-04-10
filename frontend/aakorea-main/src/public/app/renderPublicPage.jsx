@@ -26,6 +26,9 @@ export function renderPublicPage({
           province={route.province}
           radiusKm={route.radiusKm}
           searchMode={route.searchMode}
+          type={route.type}
+          districtId={route.districtId}
+          keyword={route.keyword}
         />
       )
     case 'meeting-focus-preview':

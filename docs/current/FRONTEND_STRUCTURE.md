@@ -83,8 +83,11 @@
 ### 핵심 라우트
 
 - `/admin/login`
+- `/admin/register`
+- `/admin/pending`
 - `/admin/overview`
 - `/admin/account`
+- `/admin/admin-users`
 - `/admin/public-theme`
 - `/admin/districts`
 - `/admin/groups`
@@ -105,8 +108,11 @@
 
 현재 운영 보조 화면은 아래처럼 나뉜다.
 
+- `/admin/admin-users`
+  운영자 계정 승인 및 역할/권한 관리
+
 - `/admin/account`
-  브라우저 로컬 admin theme preference 관리
+  브라우저 로컬 admin theme preference 관리 및 내 계정 정보
 
 - `/admin/public-theme`
   공개 사이트 theme의 draft / publish / rollback

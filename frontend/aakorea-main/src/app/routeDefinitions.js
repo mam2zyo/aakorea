@@ -24,6 +24,9 @@ export function parseRoute(pathname, search = '') {
       radiusKm: optionalInteger(params.get('radiusKm')),
       province: params.get('province') ?? '',
       dayOfWeek: params.get('dayOfWeek') ?? '',
+      type: params.get('type') ?? '',
+      districtId: optionalInteger(params.get('districtId')),
+      keyword: params.get('keyword') ?? '',
     })
   }
 
@@ -45,6 +48,9 @@ export function parseRoute(pathname, search = '') {
       radiusKm: optionalInteger(params.get('radiusKm')),
       province: params.get('province') ?? '',
       dayOfWeek: params.get('dayOfWeek') ?? '',
+      type: params.get('type') ?? '',
+      districtId: optionalInteger(params.get('districtId')),
+      keyword: params.get('keyword') ?? '',
     })
   }
 
