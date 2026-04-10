@@ -26,24 +26,27 @@
 - `/groups/:id`
 - `/__preview/meeting-focus` (dev 전용)
 
-### 모임 찾기 흐름
+### 모임 찾기 흐름 (상태 머신 기반)
 
-현재 공개 모임 상세는 별도 페이지가 아니라 **`/meetings` 안의 모달 흐름**으로 구현되어 있다.
+현재 공개 모임 검색은 상태 머신(`useMeetingSearch`)에 의해 명시적으로 관리된다.
 
-사용 방식:
+#### 검색 상태
+- `IDLE`: 초기 상태. 결과 목록이 비어 있고 검색 가이드가 노출된다.
+- `LOADING`: 백엔드로부터 데이터를 불러오는 중.
+- `REGION_ACTIVE`: 지역 검색 결과가 캐싱된 상태.
+- `NEARBY_ACTIVE`: 내 위치 기준 거리 검색 결과가 캐싱된 상태.
 
-- `/meetings?province=seoul`
-- `/meetings?province=seoul&dayOfWeek=MONDAY`
-- `/meetings?searchMode=nearby&dayOfWeek=MONDAY&latitude=37.4979&longitude=127.0276&radiusKm=20`
-- `/meetings?province=seoul&groupId=20&meetingId=100`
-- `/groups/20?meetingId=100`
+#### 동작 방식
+1. **데이터 페치**: 사용자가 "지역 검색" 또는 "가까운 모임" 버튼을 클릭할 때만 백엔드 API(`#PUBLIC-MEETINGS`)를 호출한다.
+2. **클라이언트 캐싱**: 불러온 대량의 데이터(최대 500건)를 `rawMeetings`에 저장한다.
+3. **실시간 필터링**: 이후 상세 조건(요일, 유형, 지역연합, 키워드) 변경 시에는 백엔드 재요청 없이 메모리상의 데이터를 즉시 필터링하여 보여준다.
+4. **상태 잠금**: 검색이 완료된 상태(`ACTIVE`)에서는 "검색 초기화"를 하기 전까지 지역 드롭다운 등 메인 파라미터가 비활성화되어 조작 실수를 방지한다.
+5. **URL 단순화**: 기존의 복잡한 쿼리 파라미터 기반 검색 대신, 명시적인 사용자 액션과 상태 기반으로 흐름이 변경되었다. URL은 상세 모달 상태(`groupId`, `meetingId`)만 주로 관리한다.
 
-즉,
-
-- `province`, `dayOfWeek`는 검색 조건
-- nearby search에서는 `searchMode`, `latitude`, `longitude`, `radiusKm`를 함께 사용한다
-- `groupId`, `meetingId`는 상세 모달 상태
-- `/groups/:id`는 같은 상세 흐름의 직접 진입 alias다
+### 디자인 및 인터페이스
+- **아이콘**: 이모지 대신 `currentColor`를 상속받는 간결한 SVG 라인 아이콘을 사용하여 UI 톤앤매너를 통일했다.
+- **버튼 피드백**: 검색/초기화 버튼에 그라디언트와 그림자 효과를 적용하고, 로딩 시 스피너 애니메이션을 제공한다.
+- **레이아웃**: 섹션 헤더가 비어 있을 경우 자동으로 공간을 제거하여 깔끔한 화면 구성을 유지한다.
 
 ### 공개 상세 모달 구조
 
