@@ -19,6 +19,7 @@ export const PROVINCE_OPTIONS = [
 ]
 
 export const SEARCH_PROVINCE_OPTIONS = [
+  { value: 'all', label: '전국' },
   { value: 'gangwon', label: '강원' },
   { value: 'gyeonggi', label: '경기' },
   { value: 'gwangju,jeonnam,jeonbuk', label: '광주·전남·전북' },
@@ -48,7 +49,7 @@ export const SEARCH_DAY_OF_WEEK_OPTIONS = [
 export const MEETING_TYPE_OPTIONS = [
   { value: 'OPEN', label: '공개' },
   { value: 'CLOSED', label: '비공개' },
-  { value: 'NOTFIXED', label: '미정' },
+  { value: 'NOTFIXED', label: '가변' },
 ]
 
 export const SEARCH_MEETING_TYPE_OPTIONS = [

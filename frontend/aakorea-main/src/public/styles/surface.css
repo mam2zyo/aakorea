@@ -258,13 +258,19 @@
 }
 
 .public-theme .primary-button {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 75%, #1a1aff) 100%);
   color: var(--public-button-primary-text);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  font-weight: 700;
 }
 
 .public-theme .primary-button:hover,
 .public-theme .ghost-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+
+.public-theme .primary-button:hover {
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
 .public-theme .primary-button--small {

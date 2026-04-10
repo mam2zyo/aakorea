@@ -16,19 +16,10 @@ export function renderPublicPage({
     case 'meetings':
       return (
         <MeetingSearchPage
-          dayOfWeek={route.dayOfWeek}
           groupId={route.groupId}
-          latitude={route.latitude}
-          longitude={route.longitude}
           meetingId={route.meetingId}
           onError={onError}
           onNavigate={onNavigate}
-          province={route.province}
-          radiusKm={route.radiusKm}
-          searchMode={route.searchMode}
-          type={route.type}
-          districtId={route.districtId}
-          keyword={route.keyword}
         />
       )
     case 'meeting-focus-preview':

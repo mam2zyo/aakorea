@@ -1,11 +1,14 @@
 export function PageSection({ label, title, description, children }) {
+  const hasHeader = label || title || description
   return (
     <section className="panel">
-      <div className="panel__header">
-        <p className="eyebrow">{label}</p>
-        <h2>{title}</h2>
-        <p className="panel__description">{description}</p>
-      </div>
+      {hasHeader && (
+        <div className="panel__header">
+          {label && <p className="eyebrow">{label}</p>}
+          {title && <h2>{title}</h2>}
+          {description && <p className="panel__description">{description}</p>}
+        </div>
+      )}
       {children}
     </section>
   )

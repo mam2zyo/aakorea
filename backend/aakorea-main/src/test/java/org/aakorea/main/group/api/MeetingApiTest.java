@@ -206,6 +206,7 @@ class MeetingApiTest {
                         "서울특별시 강남구 테헤란로 123",
                         37.4979,
                         127.0276,
+                        15L,
                         null)));
 
         mockMvc.perform(get("/api/public/meetings")
@@ -239,6 +240,7 @@ class MeetingApiTest {
                         "서울특별시 강남구 테헤란로 123",
                         37.4979,
                         127.0276,
+                        15L,
                         0.2)));
 
         mockMvc.perform(get("/api/public/meetings")

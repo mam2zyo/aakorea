@@ -24,9 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional(readOnly = true)
 public class PublicMeetingQueryService {
 
-    private static final int MAX_NEARBY_MEETING_COUNT = 20;
-    private static final int DEFAULT_NEARBY_RADIUS_KM = 5;
-    private static final int MAX_NEARBY_RADIUS_KM = 50;
+    private static final int MAX_NEARBY_MEETING_COUNT = 500;
+    private static final int DEFAULT_NEARBY_RADIUS_KM = 100;
+    private static final int MAX_NEARBY_RADIUS_KM = 100;
     private static final double EARTH_RADIUS_KM = 6371.0088;
 
     private final MeetingRepository meetingRepository;
@@ -52,11 +52,15 @@ public class PublicMeetingQueryService {
             return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId, keyword, normalizeRadiusKm(radiusKm));
         }
 
-        List<Province> normalizedProvinces = MeetingFieldSupport.requireProvinces(province);
+        boolean isAllProvinces = province != null && province.contains("all");
+        Specification<Meeting> specification = (root, query, criteriaBuilder) ->
+                criteriaBuilder.isTrue(root.get("active"));
 
-        Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.isTrue(root.get("active")),
-                root.get("location").get("province").in(normalizedProvinces));
+        if (!isAllProvinces) {
+            List<Province> normalizedProvinces = MeetingFieldSupport.requireProvinces(province);
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    root.get("location").get("province").in(normalizedProvinces));
+        }
 
         if (normalizedDayOfWeek != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
@@ -203,6 +207,7 @@ public class PublicMeetingQueryService {
                 meeting.getLocationAddress(),
                 meeting.getLatitude(),
                 meeting.getLongitude(),
+                meeting.getGroup().getDistrict().getId(),
                 distanceKm == null ? null : roundDistanceKm(distanceKm));
     }
 
@@ -293,6 +298,7 @@ public class PublicMeetingQueryService {
             String locationAddress,
             Double latitude,
             Double longitude,
+            Long districtId,
             Double distanceKm
     ) {
     }

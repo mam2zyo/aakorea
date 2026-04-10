@@ -48,7 +48,7 @@ export function MeetingResultsSection({
                   selectedSearchMeetingId === meeting.id ? ' meeting-search-item--active' : ''
                 }`}
                 type="button"
-                onClick={() => onNavigate(buildMeetingsPath(filters, meeting.groupId, meeting.id))}
+                onClick={() => onNavigate(buildMeetingsPath(meeting.groupId, meeting.id))}
               >
                 <div className="meeting-search-item__body">
                   <span className="meeting-search-item__group">{meeting.groupName}</span>

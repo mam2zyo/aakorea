@@ -55,9 +55,35 @@ class PublicMeetingQueryServiceTest {
     }
 
     @Test
+    void getMeetingsWithAllProvinceReturnsEverything() {
+        District district = new District("전국");
+        Meeting meeting = new Meeting(
+                new Group(district, "전국그룹"),
+                new Location(Province.BUSAN, "장소", "주소", 35.0, 129.0),
+                DayOfWeek.MONDAY,
+                LocalTime.of(10, 0),
+                MeetingType.OPEN,
+                null,
+                true);
+        ReflectionTestUtils.setField(district, "id", 15L);
+        ReflectionTestUtils.setField(meeting, "id", 1L);
+
+        given(meetingRepository.findAll(
+                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any()))
+                .willReturn(List.of(meeting));
+
+        List<PublicMeetingQueryService.PublicMeetingSummary> result =
+                publicMeetingQueryService.getMeetings(List.of("all"), null, null, null, null, null, null, null);
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
     void getMeetingsMapsPublicSummaryResponse() {
         District district = new District("서울");
+        ReflectionTestUtils.setField(district, "id", 15L);
         Group group = new Group(district, "강남그룹", "첫 방문자는 10분 전에 와 주세요.");
+        ReflectionTestUtils.setField(group, "id", 20L);
         Meeting meeting = new Meeting(
                 group,
                 new Location(
@@ -96,7 +122,9 @@ class PublicMeetingQueryServiceTest {
     @Test
     void getMeetingsSupportsNearbySearchAndSortsByDistance() {
         District district = new District("서울");
+        ReflectionTestUtils.setField(district, "id", 15L);
         Group group = new Group(district, "강남그룹");
+        ReflectionTestUtils.setField(group, "id", 20L);
         Meeting nearestMeeting = new Meeting(
                 group,
                 new Location(

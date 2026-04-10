@@ -18,15 +18,6 @@ export function parseRoute(pathname, search = '') {
       section: 'public',
       groupId: optionalNumber(params.get('groupId')),
       meetingId: optionalNumber(params.get('meetingId')),
-      searchMode: params.get('searchMode') ?? '',
-      latitude: optionalFloat(params.get('latitude')),
-      longitude: optionalFloat(params.get('longitude')),
-      radiusKm: optionalInteger(params.get('radiusKm')),
-      province: params.get('province') ?? '',
-      dayOfWeek: params.get('dayOfWeek') ?? '',
-      type: params.get('type') ?? '',
-      districtId: optionalInteger(params.get('districtId')),
-      keyword: params.get('keyword') ?? '',
     })
   }
 
@@ -42,15 +33,6 @@ export function parseRoute(pathname, search = '') {
       section: 'public',
       groupId: Number(groupMatch[1]),
       meetingId: optionalNumber(params.get('meetingId')),
-      searchMode: params.get('searchMode') ?? '',
-      latitude: optionalFloat(params.get('latitude')),
-      longitude: optionalFloat(params.get('longitude')),
-      radiusKm: optionalInteger(params.get('radiusKm')),
-      province: params.get('province') ?? '',
-      dayOfWeek: params.get('dayOfWeek') ?? '',
-      type: params.get('type') ?? '',
-      districtId: optionalInteger(params.get('districtId')),
-      keyword: params.get('keyword') ?? '',
     })
   }
 

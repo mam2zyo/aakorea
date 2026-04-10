@@ -65,6 +65,7 @@ final class PublicMeetingResponseMapper {
                 meetingSummary.locationAddress(),
                 meetingSummary.latitude(),
                 meetingSummary.longitude(),
+                meetingSummary.districtId(),
                 meetingSummary.distanceKm());
     }
 

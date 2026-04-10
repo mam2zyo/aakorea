@@ -1,52 +1,18 @@
-import { PROVINCE_OPTIONS } from '../../../lib/options.js'
+import { SEARCH_PROVINCE_OPTIONS } from '../../../lib/options.js'
 
-export const DEFAULT_PROVINCE = PROVINCE_OPTIONS[0]?.value ?? 'seoul'
+export const DEFAULT_PROVINCE = SEARCH_PROVINCE_OPTIONS[0]?.value ?? 'all'
 export const MEETING_SEARCH_MODE = {
   REGION: 'region',
   NEARBY: 'nearby',
 }
-export const DEFAULT_NEARBY_RADIUS_KM = 5
-export const MAX_NEARBY_RADIUS_KM = 50
-export const NEARBY_RADIUS_STEPS = [5, 10, 20, 30, 50]
+export const DEFAULT_NEARBY_RADIUS_KM = 100
+export const MAX_NEARBY_RADIUS_KM = 100
+export const NEARBY_RADIUS_STEPS = [100]
 
 const TMAP_APP_KEY = import.meta.env?.VITE_TMAP_APP_KEY?.trim() ?? ''
 
-export function buildMeetingsPath(filters, groupId = null, meetingId = null) {
+export function buildMeetingsPath(groupId = null, meetingId = null) {
   const searchParams = new URLSearchParams()
-
-  const searchMode = readMeetingSearchMode(filters?.searchMode)
-
-  if (searchMode === MEETING_SEARCH_MODE.NEARBY) {
-    searchParams.set('searchMode', MEETING_SEARCH_MODE.NEARBY)
-
-    if (Number.isFinite(filters?.latitude)) {
-      searchParams.set('latitude', String(filters.latitude))
-    }
-    if (Number.isFinite(filters?.longitude)) {
-      searchParams.set('longitude', String(filters.longitude))
-    }
-    if (Number.isFinite(filters?.radiusKm)) {
-      searchParams.set('radiusKm', String(filters.radiusKm))
-    }
-  } else if (filters?.province) {
-    searchParams.set('province', filters.province)
-  }
-
-  if (filters?.dayOfWeek) {
-    searchParams.set('dayOfWeek', filters.dayOfWeek)
-  }
-
-  if (filters?.type) {
-    searchParams.set('type', filters.type)
-  }
-
-  if (filters?.districtId && (Number.isFinite(filters.districtId) || (typeof filters.districtId === 'string' && filters.districtId !== ''))) {
-    searchParams.set('districtId', String(filters.districtId))
-  }
-
-  if (filters?.keyword) {
-    searchParams.set('keyword', filters.keyword)
-  }
 
   if (Number.isFinite(groupId)) {
     searchParams.set('groupId', String(groupId))
@@ -229,4 +195,74 @@ export function readGroupNotice(groupDetails) {
   }
 
   return '등록된 그룹 공지가 없습니다.'
+}
+
+const EARTH_RADIUS_KM = 6371.01
+
+export function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+  if (!Number.isFinite(lat1) || !Number.isFinite(lon1) || !Number.isFinite(lat2) || !Number.isFinite(lon2)) {
+    return null
+  }
+
+  const toRad = (value) => (value * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+  return EARTH_RADIUS_KM * c
+}
+
+export function roundDistanceKm(distanceKm) {
+  if (!Number.isFinite(distanceKm)) {
+    return null
+  }
+  return Math.round(distanceKm * 10) / 10
+}
+
+const DAY_ORDER = {
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6,
+  SUNDAY: 7,
+}
+
+export function sortMeetings(meetings, searchMode = MEETING_SEARCH_MODE.REGION) {
+  if (searchMode === MEETING_SEARCH_MODE.NEARBY) {
+    return [...meetings].sort((a, b) => {
+      // 1. Distance (ASC)
+      const distA = a.distanceKm ?? Infinity
+      const distB = b.distanceKm ?? Infinity
+      if (distA !== distB) return distA - distB
+
+      // 2. DayOfWeek (MONDAY -> SUNDAY)
+      const dayA = DAY_ORDER[a.dayOfWeek] || 0
+      const dayB = DAY_ORDER[b.dayOfWeek] || 0
+      if (dayA !== dayB) return dayA - dayB
+
+      // 3. StartTime (ASC)
+      if (a.startTime !== b.startTime) return a.startTime.localeCompare(b.startTime)
+
+      // 4. ID (ASC)
+      return a.id - b.id
+    })
+  }
+
+  return [...meetings].sort((a, b) => {
+    // 1. DayOfWeek
+    const dayA = DAY_ORDER[a.dayOfWeek] || 0
+    const dayB = DAY_ORDER[b.dayOfWeek] || 0
+    if (dayA !== dayB) return dayA - dayB
+
+    // 2. StartTime
+    if (a.startTime !== b.startTime) return a.startTime.localeCompare(b.startTime)
+
+    // 3. ID
+    return a.id - b.id
+  })
 }

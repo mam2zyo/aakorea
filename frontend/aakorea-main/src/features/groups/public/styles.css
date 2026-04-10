@@ -1,3 +1,19 @@
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 버튼 내 SVG 아이콘 세로 정렬 */
+.meeting-search-reset svg,
+.meeting-search-nearby svg,
+.primary-button svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* primary-button 내 아이콘 ↔ 텍스트 간격 */
+.primary-button {
+  gap: 0.55rem;
+}
 .meeting-search-form {
   display: flex;
   flex-direction: column;
@@ -10,11 +26,69 @@
   gap: var(--space-4);
 }
 
+.meeting-search-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .meeting-search-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
   width: 100%;
+}
+
+/* 검색 초기화 버튼 – 앰버 계열로 눈에 띄게 */
+.meeting-search-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.82rem 1rem;
+  border: 2px solid hsl(38 95% 52%);
+  background: hsl(38 95% 52% / 0.1);
+  color: hsl(32 90% 38%);
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.meeting-search-reset:hover {
+  background: hsl(38 95% 52% / 0.18);
+  border-color: hsl(38 95% 42%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px hsl(38 95% 52% / 0.25);
+}
+
+/* 가까운 모임 버튼 - 컬러 아웃라인 스타일 */
+.meeting-search-nearby {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.82rem 1rem;
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.meeting-search-nearby:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.meeting-search-nearby:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .meeting-filter-toggle-row {
