@@ -1,15 +1,26 @@
 .rich-text-editor {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 6px;
-  background-color: var(--background-color, #ffffff);
+  border: 1px solid var(--color-input-border, var(--color-border));
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--color-input-bg, #fff);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.rich-text-editor:focus-within {
+  border-color: var(--color-primary, #2c6a4b);
+  box-shadow: 0 0 0 2px var(--admin-focus-outline, rgba(44, 106, 75, 0.28));
 }
 
 .rich-text-editor--disabled {
   opacity: 0.7;
   background-color: var(--disabled-background-color, #f9fafb);
+}
+
+.rich-text-editor--disabled:focus-within {
+  border-color: var(--color-input-border, var(--color-border));
+  box-shadow: none;
 }
 
 .rich-text-editor__toolbar {
@@ -18,8 +29,8 @@
   align-items: center;
   padding: 8px;
   gap: 4px;
-  background-color: var(--toolbar-background-color, #f3f4f6);
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  background-color: var(--color-surface, #f3f4f6);
+  border-bottom: 1px solid var(--color-input-border, var(--color-border));
 }
 
 .rich-text-editor__toolbar-group {
@@ -31,7 +42,7 @@
 .rich-text-editor__toolbar-divider {
   width: 1px;
   height: 20px;
-  background-color: var(--border-color, #d1d5db);
+  background-color: var(--color-input-border, var(--color-border));
   margin: 0 4px;
 }
 
@@ -44,19 +55,19 @@
   border-radius: 4px;
   border: none;
   background: transparent;
-  color: var(--text-color, #374151);
+  color: var(--color-text, #374151);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .rich-text-editor__toolbar-btn:hover:not(:disabled) {
-  background-color: var(--hover-background-color, #e5e7eb);
-  color: var(--hover-text-color, #111827);
+  background-color: var(--color-border, #e5e7eb);
+  color: var(--color-text, #111827);
 }
 
 .rich-text-editor__toolbar-btn--active {
-  background-color: var(--active-background-color, #d1d5db);
-  color: var(--active-text-color, #111827);
+  background-color: var(--color-primary, #2c6a4b);
+  color: #fff;
 }
 
 .rich-text-editor__toolbar-btn:disabled {
@@ -66,7 +77,7 @@
 
 .rich-text-editor__content {
   flex: 1;
-  padding: 16px;
+  padding: 0.85rem 1rem;
   min-height: 200px;
   overflow-y: auto;
   cursor: text;
@@ -89,16 +100,16 @@
 }
 
 .rich-text-editor__content .tiptap a {
-  color: var(--primary-color, #2563eb);
+  color: var(--color-primary, #2563eb);
   text-decoration: underline;
   cursor: pointer;
 }
 
 .rich-text-editor__content .tiptap blockquote {
-  border-left: 3px solid var(--border-color, #e5e7eb);
+  border-left: 3px solid var(--color-border, #e5e7eb);
   padding-left: 1rem;
   margin-left: 0;
-  color: var(--text-muted-color, #6b7280);
+  color: var(--color-text-muted, #6b7280);
 }
 
 .rich-text-editor__content .tiptap ul,
@@ -106,3 +117,4 @@
   padding-left: 1.5rem;
   margin-bottom: 1rem;
 }
+

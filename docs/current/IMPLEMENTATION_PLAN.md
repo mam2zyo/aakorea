@@ -42,7 +42,8 @@
 
 ### 4. 운영 콘텐츠 / 테마 / 도구 흐름
 
-- `ContentPage`, `Notice` CRUD
+- `ContentPage`, `Notice` CRUD (Rich Text 에디터 통합)
+- 첨부파일 및 에디터 이미지 자산 업로드/관리
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장
 - HTML normalize + 정제 JSON import preview / apply / reset
@@ -104,8 +105,6 @@
 
 현재 추후 구현 목표로 유지하는 항목:
 
-- 모임 검색기능 고도화
-- 공지 / 콘텐츠 페이지 에디터 도입과 파일 첨부 기능 추가
 - 관리자 페이지 메뉴 구성 기능 도입
 - SEO를 위한 공개 프론트 Next.js 전환
 - 관리자 페이지의 공개 사이트 메뉴 편집 기능 추가
@@ -126,5 +125,7 @@
 - 방문자가 현재 위치 기준 가까운 모임을 찾을 수 있다
 - 방문자가 모달에서 장소와 연락처를 확인할 수 있다
 - 운영자가 그룹과 모임을 생성 / 수정 / 삭제할 수 있다
+- 운영자가 Rich Text 에디터와 첨부파일을 사용해 콘텐츠를 편집할 수 있다
+- 방문자가 공개 페이지에서 공지사항의 첨부파일을 다운로드할 수 있다
 - 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다
 - 운영자가 필요 시 import / 좌표 보정 도구를 사용할 수 있다

@@ -30,15 +30,21 @@
 
 ## 현재 핵심 필드
 
-- `id`
-- `title`
-- `body`
-- `published`
-- `publishedAt`
+| 필드명 | 타입 | 설명 |
+| :--- | :--- | :--- |
+| `id` | `Long` | 고유 식별자 |
+| `title` | `String` | 공지 제목 |
+| `body` | `String` | 공지 본문 (Rich Text HTML) |
+| `attachments` | `List<Attachment>` | 공지 하단 첨부파일 리스트 (선택) |
+| `published` | `boolean` | 공개 여부 |
+| `publishedAt` | `DateTime` | 게시 일시 |
 
 ### 필드 메모
 
 - `title`, `body`는 필수다
+- 본문(`body`)은 에디터 통합을 위해 Rich Text HTML 형식을 사용한다.
+- 하나의 공지는 여러 개의 첨부파일을 가질 수 있으며, 공개 화면 하단에 순서대로 노출된다.
+- 게시 시점(`publishedAt`)은 실제 공지 목록의 정렬 기준이 된다.
 - `published=true`이면 `publishedAt`이 필수다
 - 목록 정렬은 `publishedAt desc`, `id desc`다
 

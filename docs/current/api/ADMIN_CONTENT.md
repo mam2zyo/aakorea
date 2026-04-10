@@ -63,6 +63,7 @@ ContentPage를 생성한다.
   "key": "first-visitor-guide",
   "title": "처음 오신 분 안내",
   "body": "페이지 본문",
+  "attachmentIds": [1, 2, 3],
   "published": true
 }
 ```
@@ -76,6 +77,9 @@ ContentPage를 생성한다.
     "key": "first-visitor-guide",
     "title": "처음 오신 분 안내",
     "body": "페이지 본문",
+    "attachments": [
+       { "id": 1, "originalName": "file1.pdf", "fileSize": 1024, "contentType": "application/pdf" }
+    ],
     "published": true
   }
 }
@@ -218,6 +222,7 @@ Notice를 생성한다.
 {
   "title": "공지 제목",
   "body": "공지 본문",
+  "attachmentIds": [10, 11],
   "published": true,
   "publishedAt": "2026-03-30T09:00:00"
 }
@@ -231,6 +236,9 @@ Notice를 생성한다.
     "id": 10,
     "title": "공지 제목",
     "body": "공지 본문",
+    "attachments": [
+       { "id": 10, "originalName": "news.pdf", "fileSize": 2048, "contentType": "application/pdf" }
+    ],
     "published": true,
     "publishedAt": "2026-03-30T09:00:00"
   }
