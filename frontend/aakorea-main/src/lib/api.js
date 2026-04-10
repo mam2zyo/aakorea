@@ -4,6 +4,7 @@ export { adminUserApi } from '../features/auth/api/adminUsers'
 export { adminContentApi } from '../features/content/api/admin'
 export { publicContentApi } from '../features/content/api/public'
 export { adminDistrictApi } from '../features/districts/api/admin'
+export { publicDistrictApi } from '../features/districts/api/public'
 export {
   adminGroupApi,
   adminGroupContactApi,

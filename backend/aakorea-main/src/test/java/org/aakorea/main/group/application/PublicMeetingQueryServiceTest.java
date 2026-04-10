@@ -45,7 +45,7 @@ class PublicMeetingQueryServiceTest {
 
     @Test
     void getMeetingsRequiresProvince() {
-        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings((List<String>) null, null, null, null, null))
+        assertThatThrownBy(() -> publicMeetingQueryService.getMeetings((List<String>) null, null, null, null, null, null, null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -76,12 +76,11 @@ class PublicMeetingQueryServiceTest {
         ReflectionTestUtils.setField(meeting, "id", 100L);
 
         given(meetingRepository.findAll(
-                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any(),
-                any(org.springframework.data.domain.Sort.class)))
+                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any()))
                 .willReturn(List.of(meeting));
 
         List<PublicMeetingQueryService.PublicMeetingSummary> result =
-                publicMeetingQueryService.getMeetings(List.of("Seoul"), "monday", null, null, null);
+                publicMeetingQueryService.getMeetings(List.of("Seoul"), "monday", null, null, null, null, null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().groupName()).isEqualTo("강남그룹");
@@ -135,7 +134,7 @@ class PublicMeetingQueryServiceTest {
                 .willReturn(List.of(fartherMeeting, nearestMeeting));
 
         List<PublicMeetingQueryService.PublicMeetingSummary> result =
-                publicMeetingQueryService.getMeetings(null, "MONDAY", 37.4980, 127.0280, 10);
+                publicMeetingQueryService.getMeetings(null, "MONDAY", null, null, null, 37.4980, 127.0280, 10);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().id()).isEqualTo(100L);

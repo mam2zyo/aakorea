@@ -36,6 +36,9 @@ public class PublicMeetingQueryService {
     public List<PublicMeetingSummary> getMeetings(
             List<String> province,
             String dayOfWeek,
+            MeetingType type,
+            Long districtId,
+            String keyword,
             Double latitude,
             Double longitude,
             Integer radiusKm
@@ -46,7 +49,7 @@ public class PublicMeetingQueryService {
 
         if (normalizedLatitude != null || normalizedLongitude != null) {
             MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
-            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, normalizeRadiusKm(radiusKm));
+            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId, keyword, normalizeRadiusKm(radiusKm));
         }
 
         List<Province> normalizedProvinces = MeetingFieldSupport.requireProvinces(province);
@@ -58,6 +61,24 @@ public class PublicMeetingQueryService {
         if (normalizedDayOfWeek != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("dayOfWeek"), normalizedDayOfWeek));
+        }
+
+        if (type != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("type"), type));
+        }
+
+        if (districtId != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("group").get("district").get("id"), districtId));
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            String pattern = "%" + keyword.trim() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.like(root.get("group").get("name"), pattern),
+                            criteriaBuilder.like(root.get("location").get("detail"), pattern)));
         }
 
         return meetingRepository.findAll(specification).stream()
@@ -119,6 +140,9 @@ public class PublicMeetingQueryService {
             Double latitude,
             Double longitude,
             DayOfWeek dayOfWeek,
+            MeetingType type,
+            Long districtId,
+            String keyword,
             int radiusKm
     ) {
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
@@ -129,6 +153,24 @@ public class PublicMeetingQueryService {
         if (dayOfWeek != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("dayOfWeek"), dayOfWeek));
+        }
+
+        if (type != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("type"), type));
+        }
+
+        if (districtId != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("group").get("district").get("id"), districtId));
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            String pattern = "%" + keyword.trim() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.like(root.get("group").get("name"), pattern),
+                            criteriaBuilder.like(root.get("location").get("detail"), pattern)));
         }
 
         return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()

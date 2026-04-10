@@ -8,6 +8,7 @@ import {
   PROVINCE_OPTIONS,
   SEARCH_DAY_OF_WEEK_OPTIONS,
   SEARCH_PROVINCE_OPTIONS,
+  SEARCH_MEETING_TYPE_OPTIONS,
 } from '../../../lib/options'
 import { MeetingFocusDialog } from './components/MeetingFocusDialog'
 import { MeetingResultsSection } from './components/MeetingResultsSection'
@@ -31,6 +32,9 @@ export function MeetingSearchPage({
   province,
   radiusKm,
   searchMode,
+  type,
+  districtId,
+  keyword,
 }) {
   const {
     activeFilters,
@@ -46,6 +50,7 @@ export function MeetingSearchPage({
     selectedMeeting,
     selectedSearchMeetingId,
     setFilters,
+    districts,
   } = useMeetingSearch({
     dayOfWeek,
     groupId,
@@ -56,6 +61,9 @@ export function MeetingSearchPage({
     province,
     radiusKm,
     searchMode,
+    type,
+    districtId,
+    keyword,
   })
   const nearbySearchActive = readMeetingSearchMode(activeFilters.searchMode) === MEETING_SEARCH_MODE.NEARBY
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
@@ -214,13 +222,54 @@ export function MeetingSearchPage({
               </Field>
 
               <Field label="모임 유형">
-                <select disabled>
-                  <option>추후 제공 예정입니다</option>
+                <select
+                  value={filters.type}
+                  onChange={(event) =>
+                    setFilters((previous) => ({
+                      ...previous,
+                      type: event.target.value,
+                    }))
+                  }
+                >
+                  {SEARCH_MEETING_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value || 'all'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="지역연합">
+                <select
+                  value={filters.districtId}
+                  onChange={(event) =>
+                    setFilters((previous) => ({
+                      ...previous,
+                      districtId: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="">연합 전체</option>
+                  {districts.map((district) => (
+                    <option key={district.id} value={district.id}>
+                      {district.name}
+                    </option>
+                  ))}
                 </select>
               </Field>
 
               <Field label="모임명 등 키워드">
-                <input type="text" placeholder="추후 제공 예정입니다" disabled />
+                <input
+                  type="text"
+                  placeholder="그룹명, 장소명 등으로 검색"
+                  value={filters.keyword}
+                  onChange={(event) =>
+                    setFilters((previous) => ({
+                      ...previous,
+                      keyword: event.target.value,
+                    }))
+                  }
+                />
               </Field>
             </div>
           </div>

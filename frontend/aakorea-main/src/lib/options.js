@@ -48,5 +48,10 @@ export const SEARCH_DAY_OF_WEEK_OPTIONS = [
 export const MEETING_TYPE_OPTIONS = [
   { value: 'OPEN', label: '공개' },
   { value: 'CLOSED', label: '비공개' },
-  { value: 'NOTFIXED', label: '가변' },
+  { value: 'NOTFIXED', label: '미정' },
+]
+
+export const SEARCH_MEETING_TYPE_OPTIONS = [
+  { value: '', label: '유형 전체' },
+  ...MEETING_TYPE_OPTIONS,
 ]
