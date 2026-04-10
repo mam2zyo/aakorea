@@ -80,13 +80,15 @@ class ContentApiTest {
         given(contentAdminService.createContentPage(
                 "first-visitor-guide",
                 "처음 오신 분 안내",
-                "페이지 본문",
+                "페이지 본문 HTML",
+                "페이지 본문 JSON",
                 true))
                 .willReturn(new ContentAdminService.ContentPageData(
                         1L,
                         "first-visitor-guide",
                         "처음 오신 분 안내",
-                        "페이지 본문",
+                        "페이지 본문 HTML",
+                        "페이지 본문 JSON",
                         true));
 
         mockMvc.perform(post("/api/admin/content-pages")
@@ -99,7 +101,8 @@ class ContentApiTest {
                                 {
                                   "key": "first-visitor-guide",
                                   "title": "처음 오신 분 안내",
-                                  "body": "페이지 본문",
+                                  "bodyHtml": "페이지 본문 HTML",
+                                  "bodyJson": "페이지 본문 JSON",
                                   "published": true
                                 }
                                 """))
@@ -119,7 +122,8 @@ class ContentApiTest {
                                 {
                                   "key": "first-visitor-guide",
                                   "title": "처음 오신 분 안내",
-                                  "body": "페이지 본문",
+                                  "bodyHtml": "페이지 본문 HTML",
+                                  "bodyJson": "페이지 본문 JSON",
                                   "published": true
                                 }
                                 """))
@@ -135,13 +139,13 @@ class ContentApiTest {
                         1L,
                         "first-visitor-guide",
                         "처음 오신 분 안내",
-                        "페이지 본문"));
+                        "페이지 본문 HTML"));
 
         mockMvc.perform(get("/api/public/content-pages/first-visitor-guide"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.key").value("first-visitor-guide"))
-                .andExpect(jsonPath("$.data.body").value("페이지 본문"));
+                .andExpect(jsonPath("$.data.bodyHtml").value("페이지 본문 HTML"));
     }
 
     @Test
@@ -165,14 +169,14 @@ class ContentApiTest {
                 .willReturn(new PublicContentQueryService.PublicNoticeData(
                         10L,
                         "공지 제목",
-                        "공지 본문",
+                        "공지 본문 HTML",
                         LocalDateTime.of(2026, 3, 30, 9, 0)));
 
         mockMvc.perform(get("/api/public/notices/10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(10))
                 .andExpect(jsonPath("$.data.title").value("공지 제목"))
-                .andExpect(jsonPath("$.data.body").value("공지 본문"));
+                .andExpect(jsonPath("$.data.bodyHtml").value("공지 본문 HTML"));
     }
 
     @Test
@@ -180,7 +184,8 @@ class ContentApiTest {
         given(contentAdminService.createContentPage(
                 "first-visitor-guide",
                 "처음 오신 분 안내",
-                "페이지 본문",
+                "페이지 본문 HTML",
+                "페이지 본문 JSON",
                 true))
                 .willThrow(FieldValidationException.conflict("key", "content page key already exists"));
 
@@ -194,7 +199,8 @@ class ContentApiTest {
                                 {
                                   "key": "first-visitor-guide",
                                   "title": "처음 오신 분 안내",
-                                  "body": "페이지 본문",
+                                  "bodyHtml": "페이지 본문 HTML",
+                                  "bodyJson": "페이지 본문 JSON",
                                   "published": true
                                 }
                                 """))

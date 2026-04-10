@@ -49,7 +49,8 @@ class PublicContentQueryServiceTest {
     void getNoticesMapsPublishedSummaries() {
         Notice notice = new Notice(
                 "공지 제목",
-                "공지 본문",
+                "공지 본문 HTML",
+                "공지 본문 JSON",
                 true,
                 LocalDateTime.of(2026, 3, 30, 9, 0));
         ReflectionTestUtils.setField(notice, "id", 10L);
@@ -68,7 +69,8 @@ class PublicContentQueryServiceTest {
     void getNoticeReturnsPublishedDetail() {
         Notice notice = new Notice(
                 "공지 제목",
-                "공지 본문",
+                "공지 본문 HTML",
+                "공지 본문 JSON",
                 true,
                 LocalDateTime.of(2026, 3, 30, 9, 0));
         ReflectionTestUtils.setField(notice, "id", 10L);
@@ -79,6 +81,6 @@ class PublicContentQueryServiceTest {
 
         assertThat(result.id()).isEqualTo(10L);
         assertThat(result.title()).isEqualTo("공지 제목");
-        assertThat(result.body()).isEqualTo("공지 본문");
+        assertThat(result.bodyHtml()).isEqualTo("공지 본문 HTML");
     }
 }

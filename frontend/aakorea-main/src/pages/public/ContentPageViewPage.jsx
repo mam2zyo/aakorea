@@ -77,7 +77,7 @@ export function ContentPageViewPage({ onError, onNavigate, pageKey }) {
           />
         ) : null}
 
-        {contentPage ? <div className="content-body">{contentPage.body}</div> : null}
+        {contentPage ? <div className="content-body" dangerouslySetInnerHTML={{ __html: contentPage.bodyHtml }} /> : null}
       </PageSection>
     </>
   )

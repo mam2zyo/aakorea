@@ -172,7 +172,7 @@ export function NoticePage({ noticeId, onError, onNavigate }) {
                   />
                 </dl>
 
-                <div className="content-body">{selectedNotice.body}</div>
+                <div className="content-body" dangerouslySetInnerHTML={{ __html: selectedNotice.bodyHtml }} />
               </div>
             ) : notices.length > 0 && !missingNotice ? (
               <EmptyState

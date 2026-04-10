@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,24 +27,28 @@ public class ContentPage {
     @Column(nullable = false)
     private String title;
 
-    @Lob
-    @Column(nullable = false)
-    private String body;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String bodyHtml;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String bodyJson;
 
     @Column(nullable = false)
     private boolean published;
 
-    public ContentPage(String key, String title, String body, boolean published) {
+    public ContentPage(String key, String title, String bodyHtml, String bodyJson, boolean published) {
         this.key = key;
         this.title = title;
-        this.body = body;
+        this.bodyHtml = bodyHtml;
+        this.bodyJson = bodyJson;
         this.published = published;
     }
 
-    public void update(String key, String title, String body, boolean published) {
+    public void update(String key, String title, String bodyHtml, String bodyJson, boolean published) {
         this.key = key;
         this.title = title;
-        this.body = body;
+        this.bodyHtml = bodyHtml;
+        this.bodyJson = bodyJson;
         this.published = published;
     }
 }

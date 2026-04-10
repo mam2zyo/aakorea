@@ -4,6 +4,7 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
+  RichTextEditor,
 } from '../../admin/ui'
 import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
@@ -173,13 +174,12 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
       </div>
 
       {editorOpen ? (
-        <div className="admin-overlay" role="presentation" onClick={closeEditor}>
+        <div className="admin-overlay" role="presentation">
           <div
             aria-labelledby="content-page-editor-title"
             aria-modal="true"
             className="admin-overlay__dialog admin-overlay__dialog--wide"
             role="dialog"
-            onClick={(event) => event.stopPropagation()}
           >
             <div className="admin-overlay__header">
               <div className="admin-overlay__heading">
@@ -242,17 +242,18 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
                 />
               </Field>
 
-              <Field label="본문" error={readFieldError(contentPageErrors, 'body')}>
-                <textarea
-                  rows={10}
-                  value={contentPageForm.body}
+              <Field as="div" label="본문" error={readFieldError(contentPageErrors, 'bodyHtml')}>
+                <RichTextEditor
+                  valueHtml={contentPageForm.bodyHtml}
+                  valueJson={contentPageForm.bodyJson}
                   disabled={formReadOnly}
-                  onChange={(event) => {
+                  onChange={({ html, json }) => {
                     setContentPageForm((previous) => ({
                       ...previous,
-                      body: event.target.value,
+                      bodyHtml: html,
+                      bodyJson: json,
                     }))
-                    setContentPageErrors((previous) => omitFieldErrors(previous, 'body'))
+                    setContentPageErrors((previous) => omitFieldErrors(previous, 'bodyHtml'))
                   }}
                 />
               </Field>
@@ -329,7 +330,8 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
         id: data.id,
         key: data.key,
         title: data.title,
-        body: data.body,
+        bodyHtml: data.bodyHtml,
+        bodyJson: data.bodyJson,
         originalPublished: data.published,
         published: data.published,
       })
@@ -359,7 +361,8 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
       const payload = {
         key: contentPageForm.key,
         title: contentPageForm.title,
-        body: contentPageForm.body,
+        bodyHtml: contentPageForm.bodyHtml,
+        bodyJson: contentPageForm.bodyJson,
         published: contentPageForm.published,
       }
 
@@ -448,7 +451,8 @@ function createEmptyContentPageForm() {
     id: null,
     key: '',
     title: '',
-    body: '',
+    bodyHtml: '',
+    bodyJson: '',
     originalPublished: false,
     published: false,
   }

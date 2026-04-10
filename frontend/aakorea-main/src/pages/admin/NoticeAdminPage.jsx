@@ -4,6 +4,7 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
+  RichTextEditor,
 } from '../../admin/ui'
 import { adminContentApi } from '../../features/content/api/admin'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
@@ -168,13 +169,12 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
       </div>
 
       {editorOpen ? (
-        <div className="admin-overlay" role="presentation" onClick={closeEditor}>
+        <div className="admin-overlay" role="presentation">
           <div
             aria-labelledby="notice-editor-title"
             aria-modal="true"
             className="admin-overlay__dialog admin-overlay__dialog--wide"
             role="dialog"
-            onClick={(event) => event.stopPropagation()}
           >
             <div className="admin-overlay__header">
               <div className="admin-overlay__heading">
@@ -220,17 +220,18 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
                 />
               </Field>
 
-              <Field label="본문" error={readFieldError(noticeErrors, 'body')}>
-                <textarea
-                  rows={10}
-                  value={noticeForm.body}
+              <Field as="div" label="본문" error={readFieldError(noticeErrors, 'bodyHtml')}>
+                <RichTextEditor
+                  valueHtml={noticeForm.bodyHtml}
+                  valueJson={noticeForm.bodyJson}
                   disabled={formReadOnly}
-                  onChange={(event) => {
+                  onChange={({ html, json }) => {
                     setNoticeForm((previous) => ({
                       ...previous,
-                      body: event.target.value,
+                      bodyHtml: html,
+                      bodyJson: json,
                     }))
-                    setNoticeErrors((previous) => omitFieldErrors(previous, 'body'))
+                    setNoticeErrors((previous) => omitFieldErrors(previous, 'bodyHtml'))
                   }}
                 />
               </Field>
@@ -318,7 +319,8 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
       setNoticeForm({
         id: data.id,
         title: data.title,
-        body: data.body,
+        bodyHtml: data.bodyHtml,
+        bodyJson: data.bodyJson,
         originalPublished: data.published,
         published: data.published,
         publishedAt: toInputDateTimeValue(data.publishedAt),
@@ -348,7 +350,8 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
     try {
       const payload = {
         title: noticeForm.title,
-        body: noticeForm.body,
+        bodyHtml: noticeForm.bodyHtml,
+        bodyJson: noticeForm.bodyJson,
         published: noticeForm.published,
         publishedAt: noticeForm.published ? toApiDateTimeValue(noticeForm.publishedAt) : null,
       }
@@ -429,7 +432,8 @@ function createEmptyNoticeForm() {
   return {
     id: null,
     title: '',
-    body: '',
+    bodyHtml: '',
+    bodyJson: '',
     originalPublished: false,
     published: false,
     publishedAt: createCurrentDateTimeValue(),

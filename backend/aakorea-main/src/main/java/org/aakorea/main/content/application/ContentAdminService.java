@@ -33,21 +33,22 @@ public class ContentAdminService {
     }
 
     @Transactional
-    public ContentPageData createContentPage(String key, String title, String body, boolean published) {
+    public ContentPageData createContentPage(String key, String title, String bodyHtml, String bodyJson, boolean published) {
         String normalizedKey = normalizeKey(key);
         ensureUniqueContentPageKey(normalizedKey, null);
 
         ContentPage contentPage = contentPageRepository.save(new ContentPage(
                 normalizedKey,
                 normalizeText(title, "title"),
-                normalizeText(body, "body"),
+                normalizeText(bodyHtml, "bodyHtml"),
+                normalizeText(bodyJson, "bodyJson"),
                 published));
 
         return toContentPageData(contentPage);
     }
 
     @Transactional
-    public ContentPageData updateContentPage(Long id, String key, String title, String body, boolean published) {
+    public ContentPageData updateContentPage(Long id, String key, String title, String bodyHtml, String bodyJson, boolean published) {
         ContentPage contentPage = getContentPageEntity(id);
         String normalizedKey = normalizeKey(key);
         ensureUniqueContentPageKey(normalizedKey, id);
@@ -55,7 +56,8 @@ public class ContentAdminService {
         contentPage.update(
                 normalizedKey,
                 normalizeText(title, "title"),
-                normalizeText(body, "body"),
+                normalizeText(bodyHtml, "bodyHtml"),
+                normalizeText(bodyJson, "bodyJson"),
                 published);
 
         return toContentPageData(contentPage);
@@ -77,10 +79,11 @@ public class ContentAdminService {
     }
 
     @Transactional
-    public NoticeData createNotice(String title, String body, boolean published, LocalDateTime publishedAt) {
+    public NoticeData createNotice(String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt) {
         Notice notice = noticeRepository.save(new Notice(
                 normalizeText(title, "title"),
-                normalizeText(body, "body"),
+                normalizeText(bodyHtml, "bodyHtml"),
+                normalizeText(bodyJson, "bodyJson"),
                 published,
                 normalizePublishedAt(published, publishedAt)));
 
@@ -88,11 +91,12 @@ public class ContentAdminService {
     }
 
     @Transactional
-    public NoticeData updateNotice(Long id, String title, String body, boolean published, LocalDateTime publishedAt) {
+    public NoticeData updateNotice(Long id, String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt) {
         Notice notice = getNoticeEntity(id);
         notice.update(
                 normalizeText(title, "title"),
-                normalizeText(body, "body"),
+                normalizeText(bodyHtml, "bodyHtml"),
+                normalizeText(bodyJson, "bodyJson"),
                 published,
                 normalizePublishedAt(published, publishedAt));
 
@@ -161,7 +165,8 @@ public class ContentAdminService {
                 contentPage.getId(),
                 contentPage.getKey(),
                 contentPage.getTitle(),
-                contentPage.getBody(),
+                contentPage.getBodyHtml(),
+                contentPage.getBodyJson(),
                 contentPage.isPublished());
     }
 
@@ -177,7 +182,8 @@ public class ContentAdminService {
         return new NoticeData(
                 notice.getId(),
                 notice.getTitle(),
-                notice.getBody(),
+                notice.getBodyHtml(),
+                notice.getBodyJson(),
                 notice.isPublished(),
                 notice.getPublishedAt());
     }
@@ -185,12 +191,12 @@ public class ContentAdminService {
     public record ContentPageSummaryData(Long id, String key, String title, boolean published) {
     }
 
-    public record ContentPageData(Long id, String key, String title, String body, boolean published) {
+    public record ContentPageData(Long id, String key, String title, String bodyHtml, String bodyJson, boolean published) {
     }
 
     public record NoticeSummaryData(Long id, String title, boolean published, LocalDateTime publishedAt) {
     }
 
-    public record NoticeData(Long id, String title, String body, boolean published, LocalDateTime publishedAt) {
+    public record NoticeData(Long id, String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt) {
     }
 }

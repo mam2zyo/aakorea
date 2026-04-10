@@ -345,6 +345,8 @@
 
 .admin-overlay__dialog {
   width: min(100%, 480px);
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
   border: 1px solid var(--admin-dialog-border);
   border-radius: var(--radius-lg);
   background: var(--admin-dialog-background);

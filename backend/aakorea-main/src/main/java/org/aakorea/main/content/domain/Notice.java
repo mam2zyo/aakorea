@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -25,25 +25,29 @@ public class Notice {
     @Column(nullable = false)
     private String title;
 
-    @Lob
-    @Column(nullable = false)
-    private String body;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String bodyHtml;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String bodyJson;
 
     @Column(nullable = false)
     private boolean published;
 
     private LocalDateTime publishedAt;
 
-    public Notice(String title, String body, boolean published, LocalDateTime publishedAt) {
+    public Notice(String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt) {
         this.title = title;
-        this.body = body;
+        this.bodyHtml = bodyHtml;
+        this.bodyJson = bodyJson;
         this.published = published;
         this.publishedAt = publishedAt;
     }
 
-    public void update(String title, String body, boolean published, LocalDateTime publishedAt) {
+    public void update(String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt) {
         this.title = title;
-        this.body = body;
+        this.bodyHtml = bodyHtml;
+        this.bodyJson = bodyJson;
         this.published = published;
         this.publishedAt = publishedAt;
     }

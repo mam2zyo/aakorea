@@ -28,7 +28,7 @@ public class PublicContentQueryService {
                 contentPage.getId(),
                 contentPage.getKey(),
                 contentPage.getTitle(),
-                contentPage.getBody());
+                contentPage.getBodyHtml());
     }
 
     public List<PublicNoticeSummary> getNotices() {
@@ -47,7 +47,7 @@ public class PublicContentQueryService {
         return new PublicNoticeData(
                 notice.getId(),
                 notice.getTitle(),
-                notice.getBody(),
+                notice.getBodyHtml(),
                 notice.getPublishedAt());
     }
 
@@ -59,12 +59,12 @@ public class PublicContentQueryService {
         return key.trim();
     }
 
-    public record PublicContentPageData(Long id, String key, String title, String body) {
+    public record PublicContentPageData(Long id, String key, String title, String bodyHtml) {
     }
 
     public record PublicNoticeSummary(Long id, String title, LocalDateTime publishedAt) {
     }
 
-    public record PublicNoticeData(Long id, String title, String body, LocalDateTime publishedAt) {
+    public record PublicNoticeData(Long id, String title, String bodyHtml, LocalDateTime publishedAt) {
     }
 }

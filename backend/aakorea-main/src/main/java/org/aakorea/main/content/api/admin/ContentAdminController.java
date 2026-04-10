@@ -50,7 +50,8 @@ public class ContentAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(contentAdminService.createContentPage(
                 request.key(),
                 request.title(),
-                request.body(),
+                request.bodyHtml(),
+                request.bodyJson(),
                 request.published())));
     }
 
@@ -65,7 +66,8 @@ public class ContentAdminController {
                 id,
                 request.key(),
                 request.title(),
-                request.body(),
+                request.bodyHtml(),
+                request.bodyJson(),
                 request.published()));
     }
 
@@ -97,7 +99,8 @@ public class ContentAdminController {
         officeAuthorizationService.assertCanSaveNotice(null, request.published());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(contentAdminService.createNotice(
                 request.title(),
-                request.body(),
+                request.bodyHtml(),
+                request.bodyJson(),
                 request.published(),
                 request.publishedAt())));
     }
@@ -112,7 +115,8 @@ public class ContentAdminController {
         return ApiResponse.success(contentAdminService.updateNotice(
                 id,
                 request.title(),
-                request.body(),
+                request.bodyHtml(),
+                request.bodyJson(),
                 request.published(),
                 request.publishedAt()));
     }
@@ -128,14 +132,16 @@ public class ContentAdminController {
     public record ContentPageRequest(
             @NotBlank(message = "key is required") String key,
             @NotBlank(message = "title is required") String title,
-            @NotBlank(message = "body is required") String body,
+            @NotBlank(message = "bodyHtml is required") String bodyHtml,
+            @NotBlank(message = "bodyJson is required") String bodyJson,
             @NotNull(message = "published is required") Boolean published
     ) {
     }
 
     public record NoticeRequest(
             @NotBlank(message = "title is required") String title,
-            @NotBlank(message = "body is required") String body,
+            @NotBlank(message = "bodyHtml is required") String bodyHtml,
+            @NotBlank(message = "bodyJson is required") String bodyJson,
             @NotNull(message = "published is required") Boolean published,
             LocalDateTime publishedAt
     ) {
