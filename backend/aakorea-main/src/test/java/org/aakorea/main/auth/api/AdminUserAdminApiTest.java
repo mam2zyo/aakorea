@@ -14,7 +14,6 @@ import org.aakorea.main.auth.domain.AdminPermission;
 import org.aakorea.main.auth.domain.AdminRole;
 import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
 import org.aakorea.main.auth.infrastructure.AdminUserRepository;
-import org.aakorea.main.auth.support.OfficeAdminSessionRefreshFilter;
 import org.aakorea.main.common.error.GlobalExceptionHandler;
 import org.aakorea.main.common.security.RestAccessDeniedHandler;
 import org.aakorea.main.common.security.RestAuthenticationEntryPoint;
@@ -31,7 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
         GlobalExceptionHandler.class,
         RestAccessDeniedHandler.class,
         RestAuthenticationEntryPoint.class,
-        OfficeAdminSessionRefreshFilter.class,
         SecurityConfig.class
 })
 class AdminUserAdminApiTest {

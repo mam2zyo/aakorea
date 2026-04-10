@@ -1,5 +1,6 @@
 package org.aakorea.main;
 
+import org.aakorea.main.attachment.application.AttachmentService;
 import org.aakorea.main.content.application.ContentAdminService;
 import org.aakorea.main.content.application.PublicContentQueryService;
 import org.aakorea.main.group.application.GroupAdminService;
@@ -40,6 +41,9 @@ class AakoreaMainApplicationTests {
 
     @MockitoBean
     private PublicThemeService publicThemeService;
+
+    @MockitoBean
+    private AttachmentService attachmentService;
 
     @Test
     void contextLoads() {

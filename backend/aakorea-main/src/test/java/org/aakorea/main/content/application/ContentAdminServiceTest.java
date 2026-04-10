@@ -11,6 +11,9 @@ import org.aakorea.main.content.domain.ContentPage;
 import org.aakorea.main.content.domain.Notice;
 import org.aakorea.main.content.infrastructure.ContentPageRepository;
 import org.aakorea.main.content.infrastructure.NoticeRepository;
+import org.aakorea.main.attachment.infrastructure.AttachmentRepository;
+import org.aakorea.main.attachment.infrastructure.ContentAttachmentRepository;
+import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,6 +33,15 @@ class ContentAdminServiceTest {
     @Mock
     private NoticeRepository noticeRepository;
 
+    @Mock
+    private AttachmentRepository attachmentRepository;
+
+    @Mock
+    private NoticeAttachmentRepository noticeAttachmentRepository;
+
+    @Mock
+    private ContentAttachmentRepository contentAttachmentRepository;
+
     @InjectMocks
     private ContentAdminService contentAdminService;
 
@@ -48,10 +60,12 @@ class ContentAdminServiceTest {
                 " 처음 오신 분 안내 ",
                 " 페이지 본문 HTML ",
                 " 페이지 본문 JSON ",
-                true);
+                true,
+                null);
 
         ArgumentCaptor<ContentPage> captor = ArgumentCaptor.forClass(ContentPage.class);
         verify(contentPageRepository).save(captor.capture());
+        verify(contentAttachmentRepository).deleteAllByContentPage_Id(1L);
 
         assertThat(captor.getValue().getKey()).isEqualTo("first-visitor-guide");
         assertThat(captor.getValue().getTitle()).isEqualTo("처음 오신 분 안내");
@@ -69,7 +83,8 @@ class ContentAdminServiceTest {
                 "처음 오신 분 안내",
                 "본문 HTML",
                 "본문 JSON",
-                true))
+                true,
+                null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -83,7 +98,7 @@ class ContentAdminServiceTest {
         Notice notice = new Notice("기존 공지", "기존 본문 HTML", "기존 본문 JSON", false, null);
         given(noticeRepository.findById(10L)).willReturn(Optional.of(notice));
 
-        assertThatThrownBy(() -> contentAdminService.updateNotice(10L, "새 공지", "본문 HTML", "본문 JSON", true, null))
+        assertThatThrownBy(() -> contentAdminService.updateNotice(10L, "새 공지", "본문 HTML", "본문 JSON", true, null, null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -103,7 +118,8 @@ class ContentAdminServiceTest {
                 " 수정된 본문 HTML ",
                 " 수정된 본문 JSON ",
                 true,
-                LocalDateTime.of(2026, 3, 31, 9, 0, 5, 123_000_000));
+                LocalDateTime.of(2026, 3, 31, 9, 0, 5, 123_000_000),
+                null);
 
         assertThat(notice.getTitle()).isEqualTo("수정된 공지");
         assertThat(notice.getBodyHtml()).isEqualTo("수정된 본문 HTML");
@@ -130,6 +146,7 @@ class ContentAdminServiceTest {
 
         contentAdminService.deleteNotice(4L);
 
+        verify(noticeAttachmentRepository).deleteAllByNotice_Id(4L);
         verify(noticeRepository).delete(notice);
     }
 }

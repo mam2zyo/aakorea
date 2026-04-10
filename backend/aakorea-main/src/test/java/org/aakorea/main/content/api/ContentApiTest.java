@@ -82,14 +82,16 @@ class ContentApiTest {
                 "처음 오신 분 안내",
                 "페이지 본문 HTML",
                 "페이지 본문 JSON",
-                true))
+                true,
+                null))
                 .willReturn(new ContentAdminService.ContentPageData(
                         1L,
                         "first-visitor-guide",
                         "처음 오신 분 안내",
                         "페이지 본문 HTML",
                         "페이지 본문 JSON",
-                        true));
+                        true,
+                        List.of()));
 
         mockMvc.perform(post("/api/admin/content-pages")
                         .with(officeUser(
@@ -139,7 +141,8 @@ class ContentApiTest {
                         1L,
                         "first-visitor-guide",
                         "처음 오신 분 안내",
-                        "페이지 본문 HTML"));
+                        "페이지 본문 HTML",
+                        List.of()));
 
         mockMvc.perform(get("/api/public/content-pages/first-visitor-guide"))
                 .andExpect(status().isOk())
@@ -170,7 +173,8 @@ class ContentApiTest {
                         10L,
                         "공지 제목",
                         "공지 본문 HTML",
-                        LocalDateTime.of(2026, 3, 30, 9, 0)));
+                        LocalDateTime.of(2026, 3, 30, 9, 0),
+                        List.of()));
 
         mockMvc.perform(get("/api/public/notices/10"))
                 .andExpect(status().isOk())
@@ -186,7 +190,8 @@ class ContentApiTest {
                 "처음 오신 분 안내",
                 "페이지 본문 HTML",
                 "페이지 본문 JSON",
-                true))
+                true,
+                null))
                 .willThrow(FieldValidationException.conflict("key", "content page key already exists"));
 
         mockMvc.perform(post("/api/admin/content-pages")

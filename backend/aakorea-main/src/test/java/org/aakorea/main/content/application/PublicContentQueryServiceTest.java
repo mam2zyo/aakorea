@@ -7,6 +7,8 @@ import static org.mockito.BDDMockito.given;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.aakorea.main.attachment.infrastructure.ContentAttachmentRepository;
+import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
 import org.aakorea.main.content.domain.ContentPage;
 import org.aakorea.main.content.domain.Notice;
 import org.aakorea.main.content.infrastructure.ContentPageRepository;
@@ -28,6 +30,12 @@ class PublicContentQueryServiceTest {
 
     @Mock
     private NoticeRepository noticeRepository;
+    
+    @Mock
+    private NoticeAttachmentRepository noticeAttachmentRepository;
+    
+    @Mock
+    private ContentAttachmentRepository contentAttachmentRepository;
 
     @InjectMocks
     private PublicContentQueryService publicContentQueryService;
@@ -76,11 +84,13 @@ class PublicContentQueryServiceTest {
         ReflectionTestUtils.setField(notice, "id", 10L);
 
         given(noticeRepository.findByIdAndPublishedTrue(10L)).willReturn(Optional.of(notice));
-
+        given(noticeAttachmentRepository.findAllByNotice_IdOrderByOrderIndexAsc(10L)).willReturn(List.of());
+        
         PublicContentQueryService.PublicNoticeData result = publicContentQueryService.getNotice(10L);
 
         assertThat(result.id()).isEqualTo(10L);
         assertThat(result.title()).isEqualTo("공지 제목");
         assertThat(result.bodyHtml()).isEqualTo("공지 본문 HTML");
+        assertThat(result.attachments()).isEmpty();
     }
 }

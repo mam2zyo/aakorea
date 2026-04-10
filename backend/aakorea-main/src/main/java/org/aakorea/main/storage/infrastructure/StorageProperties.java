@@ -1,9 +1,7 @@
 package org.aakorea.main.storage.infrastructure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties("app.storage")
 public class StorageProperties {
     /**

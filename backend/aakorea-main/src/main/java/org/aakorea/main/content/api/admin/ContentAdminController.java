@@ -52,7 +52,8 @@ public class ContentAdminController {
                 request.title(),
                 request.bodyHtml(),
                 request.bodyJson(),
-                request.published())));
+                request.published(),
+                request.attachmentIds())));
     }
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
@@ -68,7 +69,8 @@ public class ContentAdminController {
                 request.title(),
                 request.bodyHtml(),
                 request.bodyJson(),
-                request.published()));
+                request.published(),
+                request.attachmentIds()));
     }
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
@@ -102,7 +104,8 @@ public class ContentAdminController {
                 request.bodyHtml(),
                 request.bodyJson(),
                 request.published(),
-                request.publishedAt())));
+                request.publishedAt(),
+                request.attachmentIds())));
     }
 
     @PreAuthorize("hasAuthority('PERM_notice.manage')")
@@ -118,7 +121,8 @@ public class ContentAdminController {
                 request.bodyHtml(),
                 request.bodyJson(),
                 request.published(),
-                request.publishedAt()));
+                request.publishedAt(),
+                request.attachmentIds()));
     }
 
     @PreAuthorize("hasAuthority('PERM_notice.manage')")
@@ -134,7 +138,8 @@ public class ContentAdminController {
             @NotBlank(message = "title is required") String title,
             @NotBlank(message = "bodyHtml is required") String bodyHtml,
             @NotBlank(message = "bodyJson is required") String bodyJson,
-            @NotNull(message = "published is required") Boolean published
+            @NotNull(message = "published is required") Boolean published,
+            List<Long> attachmentIds
     ) {
     }
 
@@ -143,7 +148,8 @@ public class ContentAdminController {
             @NotBlank(message = "bodyHtml is required") String bodyHtml,
             @NotBlank(message = "bodyJson is required") String bodyJson,
             @NotNull(message = "published is required") Boolean published,
-            LocalDateTime publishedAt
+            LocalDateTime publishedAt,
+            List<Long> attachmentIds
     ) {
     }
 }

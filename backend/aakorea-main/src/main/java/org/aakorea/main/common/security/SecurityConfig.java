@@ -8,6 +8,7 @@ import org.aakorea.main.auth.support.OfficeAdminPrincipal;
 import org.aakorea.main.auth.support.OfficeAdminSessionRefreshFilter;
 import org.aakorea.main.common.config.AdminAuthProperties;
 import org.aakorea.main.common.config.AppCorsProperties;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +43,7 @@ public class SecurityConfig {
             CorsConfigurationSource corsConfigurationSource,
             RestAuthenticationEntryPoint authenticationEntryPoint,
             RestAccessDeniedHandler accessDeniedHandler,
-            OfficeAdminSessionRefreshFilter officeAdminSessionRefreshFilter
+            ObjectProvider<OfficeAdminSessionRefreshFilter> officeAdminSessionRefreshFilterProvider
     ) throws Exception {
         // 이 프로젝트는 서버 렌더링 화면이 아니라 JSON API 중심이므로,
         // 기본 로그인 폼/HTTP Basic 대신 세션 기반 API 인증만 남겨 둔다.
@@ -68,8 +69,10 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
-                .addFilterAfter(officeAdminSessionRefreshFilter, SecurityContextHolderFilter.class)
                 .anonymous(Customizer.withDefaults());
+
+        officeAdminSessionRefreshFilterProvider.ifAvailable(filter ->
+                http.addFilterAfter(filter, SecurityContextHolderFilter.class));
 
         return http.build();
     }
