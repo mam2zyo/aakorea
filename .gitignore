@@ -46,6 +46,8 @@ backend/bin/
 backend/.env
 backend/.env.*
 !backend/.env.example
+backend/aakorea-main/uploads/
+uploads/
 
 # =========================
 # Java
