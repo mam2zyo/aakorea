@@ -94,32 +94,6 @@ public class PublicMeetingQueryService {
                 .toList();
     }
 
-    public PublicMeetingDetail getMeeting(Long id) {
-        Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "meeting not found"));
-
-        if (!meeting.isActive()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "meeting not found");
-        }
-
-        String representativeContactPhone = findRepresentativeContactPhone(meeting.getGroup().getId());
-
-        return new PublicMeetingDetail(
-                meeting.getId(),
-                meeting.getGroup().getId(),
-                meeting.getGroup().getName(),
-                toDistrictData(meeting.getGroup()),
-                resolveMeetingContactPhone(meeting, representativeContactPhone),
-                meeting.getProvince().getCode(),
-                meeting.getDayOfWeek(),
-                MeetingFieldSupport.formatTime(meeting.getStartTime()),
-                meeting.getType(),
-                meeting.getLocationDetail(),
-                meeting.getLocationAddress(),
-                meeting.getLatitude(),
-                meeting.getLongitude(),
-                getActiveGroupMeetings(meeting.getGroup().getId(), representativeContactPhone));
-    }
 
     public PublicGroupDetail getGroup(Long id) {
         Group group = groupRepository.findById(id)
@@ -303,23 +277,6 @@ public class PublicMeetingQueryService {
     ) {
     }
 
-    public record PublicMeetingDetail(
-            Long id,
-            Long groupId,
-            String groupName,
-            DistrictData district,
-            String contactPhone,
-            String province,
-            DayOfWeek dayOfWeek,
-            String startTime,
-            MeetingType type,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            List<GroupMeetingData> groupMeetings
-    ) {
-    }
 
     public record PublicGroupDetail(
             Long id,

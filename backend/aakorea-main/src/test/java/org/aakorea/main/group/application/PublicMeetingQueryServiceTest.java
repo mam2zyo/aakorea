@@ -170,46 +170,6 @@ class PublicMeetingQueryServiceTest {
         assertThat(result.getFirst().distanceKm()).isLessThan(1.0);
     }
 
-    @Test
-    void getMeetingReturnsMeetingSpecificContactWhenOverrideExists() {
-        District district = new District("서울");
-        ReflectionTestUtils.setField(district, "id", 1L);
-        Group group = new Group(district, "강남그룹", "첫 방문자는 10분 전에 와 주세요.");
-        Meeting meeting = new Meeting(
-                group,
-                new Location(
-                        Province.SEOUL,
-                        "강남역 인근",
-                        "서울특별시 강남구 테헤란로 123",
-                        37.4979,
-                        127.0276),
-                DayOfWeek.MONDAY,
-                LocalTime.of(19, 30),
-                MeetingType.OPEN,
-                "010-9999-0000",
-                true);
-        GroupContact groupContact = new GroupContact(group, "02-1234-5678", null, null);
-
-        ReflectionTestUtils.setField(group, "id", 20L);
-        ReflectionTestUtils.setField(meeting, "id", 100L);
-
-        given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
-        given(meetingRepository.findAllByGroup_IdAndActiveTrueOrderByIdAsc(20L))
-                .willReturn(List.of(meeting));
-        given(groupContactRepository.findFirstByGroup_IdOrderByIdAsc(20L))
-                .willReturn(Optional.of(groupContact));
-
-        PublicMeetingQueryService.PublicMeetingDetail result = publicMeetingQueryService.getMeeting(100L);
-
-        assertThat(result.groupName()).isEqualTo("강남그룹");
-        assertThat(result.contactPhone()).isEqualTo("010-9999-0000");
-        assertThat(result.district().name()).isEqualTo("서울");
-        assertThat(result.locationDetail()).isEqualTo("강남역 인근");
-        assertThat(result.latitude()).isEqualTo(37.4979);
-        assertThat(result.longitude()).isEqualTo(127.0276);
-        assertThat(result.groupMeetings()).hasSize(1);
-        assertThat(result.groupMeetings().getFirst().contactPhone()).isEqualTo("010-9999-0000");
-    }
 
     @Test
     void getGroupReturnsGroupDetailsForActiveMeetings() {

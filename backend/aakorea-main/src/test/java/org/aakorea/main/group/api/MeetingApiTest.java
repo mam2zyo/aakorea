@@ -253,46 +253,6 @@ class MeetingApiTest {
                 .andExpect(jsonPath("$.data[0].distanceKm").value(0.2));
     }
 
-    @Test
-    void publicMeetingDetailReturnsMeetingSpecificContactPhoneWhenOverrideExists() throws Exception {
-        given(publicMeetingQueryService.getMeeting(100L))
-                .willReturn(new PublicMeetingQueryService.PublicMeetingDetail(
-                        100L,
-                        20L,
-                        "강남그룹",
-                        new PublicMeetingQueryService.DistrictData(1L, "서울지역연합"),
-                        "010-9999-0000",
-                        "seoul",
-                        DayOfWeek.MONDAY,
-                        "19:30",
-                        MeetingType.OPEN,
-                        "강남역 인근",
-                        "서울특별시 강남구 테헤란로 123",
-                        37.4979,
-                        127.0276,
-                        List.of(new PublicMeetingQueryService.GroupMeetingData(
-                                100L,
-                                "010-9999-0000",
-                                "seoul",
-                                DayOfWeek.MONDAY,
-                                "19:30",
-                                MeetingType.OPEN,
-                                "강남역 인근",
-                                "서울특별시 강남구 테헤란로 123",
-                                37.4979,
-                                127.0276))));
-
-        mockMvc.perform(get("/api/public/meetings/100"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(100))
-                .andExpect(jsonPath("$.data.groupName").value("강남그룹"))
-                .andExpect(jsonPath("$.data.contactPhone").value("010-9999-0000"))
-                .andExpect(jsonPath("$.data.locationDetail").value("강남역 인근"))
-                .andExpect(jsonPath("$.data.latitude").value(37.4979))
-                .andExpect(jsonPath("$.data.longitude").value(127.0276))
-                .andExpect(jsonPath("$.data.groupMeetings[0].id").value(100))
-                .andExpect(jsonPath("$.data.groupMeetings[0].contactPhone").value("010-9999-0000"));
-    }
 
     @Test
     void publicGroupDetailReturnsMeetingsAndDistrict() throws Exception {

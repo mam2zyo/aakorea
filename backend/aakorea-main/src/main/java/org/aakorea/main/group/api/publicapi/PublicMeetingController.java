@@ -6,7 +6,6 @@ import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
 import org.aakorea.main.group.domain.MeetingType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +32,4 @@ public class PublicMeetingController {
                 publicMeetingQueryService.getMeetings(province, dayOfWeek, type, districtId, keyword, latitude, longitude, radiusKm)));
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<PublicMeetingResponses.MeetingDetail> getMeeting(@PathVariable Long id) {
-        return ApiResponse.success(PublicMeetingResponseMapper.toMeetingDetail(
-                publicMeetingQueryService.getMeeting(id)));
-    }
 }

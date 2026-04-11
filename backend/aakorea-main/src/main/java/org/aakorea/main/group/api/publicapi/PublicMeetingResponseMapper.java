@@ -4,7 +4,6 @@ import java.util.List;
 import org.aakorea.main.group.application.PublicMeetingQueryService.DistrictData;
 import org.aakorea.main.group.application.PublicMeetingQueryService.GroupMeetingData;
 import org.aakorea.main.group.application.PublicMeetingQueryService.PublicGroupDetail;
-import org.aakorea.main.group.application.PublicMeetingQueryService.PublicMeetingDetail;
 import org.aakorea.main.group.application.PublicMeetingQueryService.PublicMeetingSummary;
 
 /**
@@ -23,24 +22,6 @@ final class PublicMeetingResponseMapper {
                 .toList();
     }
 
-    // This mapper is the boundary between internal service data and the public HTTP contract.
-    static PublicMeetingResponses.MeetingDetail toMeetingDetail(PublicMeetingDetail meetingDetail) {
-        return new PublicMeetingResponses.MeetingDetail(
-                meetingDetail.id(),
-                meetingDetail.groupId(),
-                meetingDetail.groupName(),
-                toDistrict(meetingDetail.district()),
-                meetingDetail.contactPhone(),
-                meetingDetail.province(),
-                meetingDetail.dayOfWeek(),
-                meetingDetail.startTime(),
-                meetingDetail.type(),
-                meetingDetail.locationDetail(),
-                meetingDetail.locationAddress(),
-                meetingDetail.latitude(),
-                meetingDetail.longitude(),
-                toGroupMeetings(meetingDetail.groupMeetings()));
-    }
 
     static PublicMeetingResponses.GroupDetail toGroupDetail(PublicGroupDetail groupDetail) {
         return new PublicMeetingResponses.GroupDetail(

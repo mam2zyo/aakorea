@@ -32,23 +32,6 @@ public final class PublicMeetingResponses {
     ) {
     }
 
-    public record MeetingDetail(
-            Long id,
-            Long groupId,
-            String groupName,
-            District district,
-            String contactPhone,
-            String province,
-            DayOfWeek dayOfWeek,
-            String startTime,
-            MeetingType type,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            List<GroupMeeting> groupMeetings
-    ) {
-    }
 
     public record GroupDetail(
             Long id,
