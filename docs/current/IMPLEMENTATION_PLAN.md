@@ -52,67 +52,14 @@
 
 ---
 
-## 현재 구현 기준 상세 상태
-
-### 로컬 / 배포 실행 기준
-
-- `application-local.yml`, `application-nginx.yml` 모두 현재 백엔드를 `8081`에 띄운다
-- Vite dev proxy 기본 대상은 `http://localhost:8081`이다
-- `nginx`는 `8080`에서 정적 앱을 서빙하고 `/api`를 `8081`로 프록시한다
-- 상세 절차는 `docs/runbooks/LOCAL_DEVELOPMENT.md`, `docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md`를 따른다
-
-### 공개 테마
-
-- 지원 preset theme id: `classic`, `harbor`, `breeze`
-- `GET /api/public/theme`로 active theme를 불러온다
-- 공개 라우트는 `themePreview` query param으로 미리보기 상태를 유지할 수 있다
-- 운영 페이지에서 draft 저장, 게시, 직전 테마 롤백을 수행한다
-
-### 모임 입력 / 지도
-
-- `Meeting` 저장 시 주소에서 `province`를 자동 판별한다
-- `latitude`, `longitude`가 비어 있으면 서버가 카카오 REST API로 좌표를 계산한다
-- 대화면 공개 모달은 저장된 좌표와 프론트 env key가 있으면 카카오 지도를 렌더링한다
-- backfill API는 기존 데이터의 빈 좌표만 찾아 재계산한다
-
-### import 도구
-
-- 현재 관리자 UI는 원본 HTML을 붙여넣거나 업로드해 `normalize`한 뒤, 정제 JSON 기준으로 `preview / apply / reset`을 사용한다
-- 이미 준비된 정제 JSON을 바로 붙여넣거나 업로드해 같은 흐름으로 이어갈 수도 있다
-- reset은 테스트용 import 데이터 정리에만 사용한다
-
----
-
-## 다음 작업 후보
-
-### 1. 공개 모임의 상세 검색 조건 UI 정리
-
-- 현재는 지역 / 요일 / nearby search까지 제공하고, 상세 필터 UI는 아직 최소 상태다
-
-### 2. 운영자 개인 설정의 서버 저장 여부 결정
-
-- `admin/account`의 theme preference는 현재 localStorage에만 저장한다
-
-### 3. 운영 runbook 확장
-
-- 배포와 환경 설정 문서는 `runbooks/`로 분리했다
-- import, backfill, theme publish 같은 운영 절차도 같은 위치로 확장할 수 있다
-
----
-
 ## 추후 구현 목표
 
-현재 MVP 범위를 넘어서는 중장기 확장 목표는 `../deferred/FUTURE_IMPLEMENTATION_GOALS.md`에서 관리한다.
+확장 목표는 `../deferred/FUTURE_IMPLEMENTATION_GOALS.md`에서 관리한다.
 
 현재 추후 구현 목표로 유지하는 항목:
 
-- 주요 도메인 변경점의 수정자 추적 기능
-- 관리자 페이지의 공개 사이트 메뉴 편집 기능 추가
-- SEO를 위한 공개 프론트 Next.js 전환
-
-아래 항목은 위 문서에 포함하지 않고, 안정화 이후 별도 기술 업그레이드 트랙으로 분리한다.
-
-- `Java 25`, `Spring Boot 4.x`, virtual thread, JVM tuning
+- 주요 도메인 변경 이력 추적 기능 (Audit Log)
+- 번들 최적화 (관리자 및 공개 사이트 분리)
 
 ---
 
