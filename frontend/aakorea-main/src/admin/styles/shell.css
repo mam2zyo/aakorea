@@ -89,7 +89,7 @@
   display: block;
   border-radius: var(--radius-sm);
   padding: 0.9rem 1rem;
-  color: var(--color-text-muted);
+  color: var(--admin-sidebar-text-muted);
   transition: background 140ms ease, color 140ms ease, transform 140ms ease;
 }
 
@@ -102,7 +102,7 @@
 .admin-nav-link--active {
   background: var(--admin-nav-active-background);
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-nav-link--active::before {
@@ -146,7 +146,7 @@
   background: var(--admin-nav-status-background);
   color: var(--color-text-muted);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-main {
@@ -184,7 +184,7 @@
 .admin-main__heading h1 {
   font-family: var(--font-body);
   font-size: clamp(1.05rem, 1.2vw, 1.2rem);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-main__actions {
@@ -467,7 +467,7 @@
 .admin-table__heading {
   color: var(--color-text-muted);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -504,18 +504,19 @@
 .admin-table__cell--index {
   color: var(--color-text-muted);
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-table__cell--primary strong {
   display: block;
   color: var(--color-text);
   font-size: 1rem;
+  font-weight: 500;
 }
 
 .admin-table__cell--action {
   color: var(--color-primary-strong);
-  font-weight: 700;
+  font-weight: 500;
   text-align: right;
 }
 
@@ -547,7 +548,7 @@
 .admin-group-modal__header .admin-overlay__heading h2 {
   font-family: var(--font-body);
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
 }
 
@@ -570,7 +571,7 @@
   background: transparent;
   color: var(--color-text-muted);
   padding: 0.2rem 0.1rem 0.7rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-group-modal__tab--active {
@@ -987,7 +988,7 @@
 
 .admin-group-edit-sheet__title {
   font-size: 1.9rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.03em;
 }
 
@@ -1025,7 +1026,7 @@
 .admin-group-edit-sheet__rowlabel {
   color: var(--color-text);
   font-size: 0.98rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-group-edit-sheet__rowcontrol {
@@ -1048,7 +1049,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .admin-group-edit-sheet__rowvalue--muted {
@@ -1181,7 +1182,7 @@
   padding: 0.9rem 0;
   color: var(--color-text-muted);
   font-size: 0.84rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-group-edit-sheet__meeting-meta-head-action {
@@ -1234,7 +1235,7 @@
 
 .admin-group-edit-sheet__meeting-inline-label {
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-group-edit-sheet__meeting-inline-label--secondary {
@@ -1338,7 +1339,7 @@
 
 .admin-group-edit-sheet__status-label {
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .admin-group-edit-sheet__switch {
@@ -1392,7 +1393,7 @@
 
 .admin-group-edit-sheet__switch-text {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   transition: color 160ms ease;
 }
 
@@ -1480,4 +1481,67 @@
 .admin-import-panel__preview-item,
 .admin-ops-panel__result-item {
   justify-content: flex-start;
+}
+.admin-theme-dashboard {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.admin-theme-dashboard__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.admin-theme-dashboard__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.admin-theme-status-card {
+  padding: var(--space-5);
+  background: var(--admin-panel-background);
+  border: 1px solid var(--admin-panel-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--admin-panel-shadow);
+}
+
+.admin-theme-status-card__header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--admin-section-border);
+}
+
+.admin-theme-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.theme-choice-button__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  pointer-events: none;
+}
+
+.admin-workflow-card {
+  padding: var(--space-5);
+  background: var(--admin-soft-surface-background-strong);
+  border: 1px solid var(--admin-floating-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-workflow-card .button-row button {
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.4;
+  height: auto;
+  min-height: 2.8rem;
 }

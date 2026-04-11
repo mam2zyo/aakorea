@@ -229,14 +229,6 @@ export function DistrictAdminPage({ onError, onSuccess }) {
               </Field>
 
               <div className="button-row button-row--compact">
-                <button className="primary-button" type="submit" disabled={saving || deleting}>
-                  {saving
-                    ? '저장 중...'
-                    : districtForm.id
-                      ? '지역연합 저장'
-                      : '지역연합 생성'}
-                </button>
-
                 {districtForm.id ? (
                   <button
                     className="ghost-button ghost-button--danger"
@@ -247,6 +239,14 @@ export function DistrictAdminPage({ onError, onSuccess }) {
                     {deleting ? '삭제 중...' : '지역연합 삭제'}
                   </button>
                 ) : null}
+
+                <button className="primary-button" type="submit" disabled={saving || deleting}>
+                  {saving
+                    ? '저장 중...'
+                    : districtForm.id
+                      ? '지역연합 저장'
+                      : '지역연합 생성'}
+                </button>
               </div>
             </form>
           </div>

@@ -289,14 +289,6 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
               </label>
 
               <div className="button-row button-row--compact">
-                <button className="primary-button" type="submit" disabled={formReadOnly}>
-                  {saving
-                    ? '저장 중...'
-                    : contentPageForm.id
-                      ? '안내 페이지 저장'
-                      : '안내 페이지 생성'}
-                </button>
-
                 {contentPageForm.key ? (
                   <button
                     className="ghost-button"
@@ -318,6 +310,14 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
                     {deleting ? '삭제 중...' : '안내 페이지 삭제'}
                   </button>
                 ) : null}
+
+                <button className="primary-button" type="submit" disabled={formReadOnly}>
+                  {saving
+                    ? '저장 중...'
+                    : contentPageForm.id
+                      ? '안내 페이지 저장'
+                      : '안내 페이지 생성'}
+                </button>
               </div>
             </form>
           </div>

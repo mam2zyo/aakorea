@@ -126,137 +126,143 @@ export function AdminPublicThemePage({
     <div className="admin-flat-page">
       <AdminPageHeader
         title="공개 사이트 테마"
-        description="공개 화면의 활성 테마와 드래프트 테마를 분리해 관리합니다. 지금은 코드에 포함된 preset theme id를 기준으로 draft, publish, rollback만 제공합니다."
+        description="공개 사이트의 디자인 테마를 관리합니다. 드래프트를 미리보고 게시하거나 이전 버전으로 롤백할 수 있습니다."
       />
 
-      <PageSection
-        label="Published Theme"
-        title="현재 공개 중인 테마 상태"
-        description="활성 테마, 드래프트, 마지막 롤백 대상 여부를 한 번에 확인할 수 있습니다."
-      >
-        {loading ? <div className="section-note">공개 사이트 테마 설정을 불러오는 중입니다...</div> : null}
+      {loading && !themeState ? (
+        <section className="panel">
+          <div className="section-note">테마 설정을 불러오는 중입니다...</div>
+        </section>
+      ) : null}
 
-        {!loading && !themeState ? (
-          <EmptyState
-            title="테마 설정을 아직 표시하지 못했습니다."
-            description="잠시 후 다시 시도하거나 새로고침해 주세요."
-          />
-        ) : null}
+      {!loading && !themeState ? (
+        <EmptyState
+          title="테마 설정을 불러오지 못했습니다."
+          description="네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요."
+        />
+      ) : null}
 
-        {themeState ? (
-          <>
-            <div className="button-row button-row--compact">
-              <span className="status-pill status-pill--active">
-                활성 {activeTheme?.label ?? themeState.activeThemeId}
-              </span>
-              <span className={`status-pill${
-                themeState.hasUnpublishedDraft ? ' status-pill--inactive' : ' status-pill--active'
-              }`}
-              >
-                드래프트 {draftTheme?.label ?? themeState.draftThemeId}
-              </span>
-              {previousTheme ? (
-                <span className="shell-badge shell-badge--muted">
-                  롤백 대상 {previousTheme.label}
-                </span>
-              ) : (
-                <span className="shell-badge shell-badge--muted">
-                  롤백 대상 없음
-                </span>
-              )}
-            </div>
+      {themeState ? (
+        <div className="admin-theme-dashboard">
+          {/* Left Column: Live Status & Actions */}
+          <aside className="admin-theme-dashboard__side">
+            <section className="admin-theme-status-card">
+              <header className="admin-theme-status-card__header">
+                <span className="eyebrow">LIVE STATUS</span>
+                <h3>현재 공개 중인 상태</h3>
+              </header>
 
-            <dl className="detail-grid">
-              <DetailItem
-                label="활성 테마"
-                value={activeTheme?.label ?? themeState.activeThemeId}
-              />
-              <DetailItem
-                label="드래프트"
-                value={draftTheme?.label ?? themeState.draftThemeId}
-              />
-              <DetailItem
-                label="이전 활성 테마"
-                value={previousTheme?.label ?? '없음'}
-              />
-              <DetailItem
-                label="마지막 게시 시각"
-                value={formatDateTimeLabel(themeState.publishedAt)}
-              />
-              <DetailItem
-                label="마지막 수정 시각"
-                value={formatDateTimeLabel(themeState.updatedAt)}
-              />
-            </dl>
-          </>
-        ) : null}
-      </PageSection>
+              <dl className="detail-grid">
+                <DetailItem
+                  label="라이브 테마"
+                  value={activeTheme?.label ?? themeState.activeThemeId}
+                />
+                <DetailItem
+                  label="마지막 게시"
+                  value={formatDateTimeLabel(themeState.publishedAt)}
+                />
+              </dl>
 
-      <PageSection
-        label="Draft Theme"
-        title="드래프트를 바꾸고 public 화면에서 미리보기"
-        description="드래프트를 저장한 뒤, 필요하면 공개 홈으로 이동해 즉시 미리보기하고 게시할 수 있습니다."
-      >
-        {themeState ? (
-          <>
-            <div className="theme-choice-list" role="list" aria-label="공개 사이트 테마 선택">
-              {PUBLIC_THEME_OPTIONS.map((option) => (
+              <div className="button-row" style={{ marginTop: 'var(--space-6)' }}>
                 <button
-                  key={option.themeId}
-                  aria-pressed={themeState.draftThemeId === option.themeId}
-                  className={`ghost-button theme-choice-button${
-                    themeState.draftThemeId === option.themeId ? ' theme-choice-button--active' : ''
-                  }`}
-                  disabled={draftSavingThemeId === option.themeId || publishing || rollingBack}
+                  className="ghost-button ghost-button--small"
                   type="button"
-                  onClick={() => void handleSaveDraft(option.themeId)}
+                  onClick={() => onNavigate('/')}
                 >
-                  <strong>{option.label}</strong>
-                  <span>{option.description}</span>
+                  라이브 홈 열기
                 </button>
-              ))}
-            </div>
+              </div>
+            </section>
 
-            <div className="theme-choice-meta">
-              <p className="section-note">
-                현재 active theme cache: {getPublicTheme(publicThemeState.activeThemeId).label}
-              </p>
-              <p className="section-note">
-                {themeState.hasUnpublishedDraft
-                  ? '드래프트가 현재 공개 테마와 다릅니다. 미리보기 후 게시할 수 있습니다.'
-                  : '드래프트와 현재 공개 테마가 동일합니다.'}
-              </p>
-            </div>
+            <section className="admin-workflow-card">
+              <header className="admin-theme-status-card__header">
+                <span className="eyebrow">PUBLICATION</span>
+                <h3>공개 및 배포 도구</h3>
+              </header>
 
-            <div className="button-row">
-              <button
-                className="ghost-button"
-                disabled={publishing || rollingBack}
-                type="button"
-                onClick={() => onNavigate(previewPath)}
-              >
-                {themeState.hasUnpublishedDraft ? '공개 홈에서 드래프트 미리보기' : '현재 공개 홈 열기'}
-              </button>
-              <button
-                className="primary-button"
-                disabled={!themeState.hasUnpublishedDraft || publishing || rollingBack}
-                type="button"
-                onClick={() => void handlePublish()}
-              >
-                {publishing ? '게시 중...' : '드래프트 게시'}
-              </button>
-              <button
-                className="ghost-button ghost-button--danger"
-                disabled={!themeState.previousThemeId || publishing || rollingBack}
-                type="button"
-                onClick={() => void handleRollback()}
-              >
-                {rollingBack ? '롤백 중...' : '직전 테마로 롤백'}
-              </button>
-            </div>
-          </>
-        ) : null}
-      </PageSection>
+              {themeState.hasUnpublishedDraft ? (
+                <div className="admin-form-note" style={{ fontSize: '0.88rem', marginBottom: 'var(--space-2)' }}>
+                  드래프트가 현재 라이브와 다릅니다. 미리보기 후 게시할 수 있습니다.
+                </div>
+              ) : null}
+
+              <div className="button-row" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                <button
+                  className="primary-button"
+                  disabled={!themeState.hasUnpublishedDraft || publishing || rollingBack}
+                  type="button"
+                  onClick={() => void handlePublish()}
+                >
+                  {publishing ? '게시 중...' : '드래프트 게시'}
+                </button>
+
+                <button
+                  className="ghost-button"
+                  disabled={publishing || rollingBack}
+                  type="button"
+                  onClick={() => onNavigate(previewPath)}
+                >
+                  {themeState.hasUnpublishedDraft ? '드래프트 미리보기' : '라이브 미리보기'}
+                </button>
+
+                {themeState.previousThemeId ? (
+                  <button
+                    className="ghost-button ghost-button--danger"
+                    disabled={!themeState.previousThemeId || publishing || rollingBack}
+                    type="button"
+                    onClick={() => void handleRollback()}
+                  >
+                    {rollingBack ? '롤백 중...' : '직전 테마로 롤백'}
+                  </button>
+                ) : null}
+              </div>
+            </section>
+          </aside>
+
+          {/* Right Column: Theme Library */}
+          <main className="admin-theme-dashboard__main">
+            <PageSection
+              label="THEME LIBRARY"
+              title="사이트 테마 라이브러리"
+              description="공개 사이트에 적용할 테마를 선택하세요. 선택 시 드래프트로 즉시 저장됩니다."
+            >
+              <div className="admin-theme-choice-grid">
+                {PUBLIC_THEME_OPTIONS.map((option) => {
+                  const isLive = themeState.activeThemeId === option.themeId
+                  const isDraft = themeState.draftThemeId === option.themeId
+
+                  return (
+                    <button
+                      key={option.themeId}
+                      aria-pressed={isDraft}
+                      className={`ghost-button theme-choice-button${
+                        isDraft ? ' theme-choice-button--active' : ''
+                      }`}
+                      disabled={draftSavingThemeId === option.themeId || publishing || rollingBack}
+                      type="button"
+                      onClick={() => void handleSaveDraft(option.themeId)}
+                    >
+                      <div className="theme-choice-button__badge">
+                        {isLive ? (
+                          <span className="status-pill status-pill--active" style={{ fontSize: '0.68rem', padding: '0.2rem 0.5rem' }}>
+                            LIVE
+                          </span>
+                        ) : isDraft ? (
+                          <span className="status-pill status-pill--inactive" style={{ fontSize: '0.68rem', padding: '0.2rem 0.5rem' }}>
+                            DRAFT
+                          </span>
+                        ) : null}
+                      </div>
+                      <strong>{option.label}</strong>
+                      <span style={{ fontSize: '0.88rem' }}>{option.description}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </PageSection>
+          </main>
+        </div>
+      ) : null}
     </div>
   )
 }

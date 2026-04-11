@@ -10,15 +10,13 @@ export const VALID_ADMIN_THEME_PREFERENCES = new Set(['system', 'light', 'dark']
 
 export const ADMIN_DOCUMENT_THEMES = Object.freeze({
   dark: Object.freeze({
-    background:
-      'radial-gradient(circle at top left, rgba(63, 169, 120, 0.16), transparent 30%), linear-gradient(180deg, #0f151c 0%, #121a23 100%)',
-    color: '#edf3f7',
+    background: '#1e1e1e',
+    color: '#d4d4d4',
     colorScheme: 'dark',
   }),
   light: Object.freeze({
-    background:
-      'radial-gradient(circle at top left, rgba(44, 106, 75, 0.08), transparent 28%), linear-gradient(180deg, #f6f1e6 0%, #f2ece1 100%)',
-    color: '#241d16',
+    background: '#fdf6e3',
+    color: '#073642',
     colorScheme: 'light',
   }),
 })

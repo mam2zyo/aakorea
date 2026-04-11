@@ -5,6 +5,8 @@ import {
   hasPermission,
   resolveAdminHomePath,
 } from '../app/adminAuthorization'
+import { AccountSettingsModal } from '../components/AccountSettingsModal'
+import { useState } from 'react'
 
 const ADMIN_NAV_GROUPS = [
   [
@@ -98,16 +100,11 @@ export function AdminLayout({
   session,
   theme,
 }) {
-  const themeLabel = {
-    dark: '다크',
-    light: '라이트',
-    system: '시스템',
-  }[theme.themePreference]
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const adminHomePath = resolveAdminHomePath(session)
   const visibleNavGroups = ADMIN_NAV_GROUPS
     .map((group) => group.filter((item) => item.canAccess?.(session) ?? true))
     .filter((group) => group.length > 0)
-  const displayName = session.displayName ?? session.email ?? session.username ?? '비인증'
 
   return (
     <div className="admin-shell">
@@ -177,23 +174,27 @@ export function AdminLayout({
 
         <div className="admin-sidebar__utility">
           <div className="admin-nav-divider" aria-hidden="true" />
-          <span className="shell-badge">
-            {session.authenticated ? displayName : "비인증"}
-          </span>
-          <span className="shell-badge shell-badge--muted">
-            테마 {themeLabel}
-          </span>
           {session.authenticated && ADMIN_UTILITY_ITEM.canAccess(session) ? (
             <AdminNavLink
-              active={ADMIN_UTILITY_ITEM.match(currentPath)}
+              active={isAccountModalOpen || ADMIN_UTILITY_ITEM.match(currentPath)}
               href={ADMIN_UTILITY_ITEM.href}
-              onNavigate={onNavigate}
+              onNavigate={() => setIsAccountModalOpen(true)}
             >
               {ADMIN_UTILITY_ITEM.label}
             </AdminNavLink>
           ) : null}
         </div>
       </aside>
+
+      <AccountSettingsModal
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+        resolvedTheme={theme.resolvedTheme}
+        systemTheme={theme.systemTheme}
+        themePreference={theme.themePreference}
+        onThemePreferenceChange={theme.setThemePreference}
+        session={session}
+      />
 
       <div className="admin-main">
         <header className="admin-main__bar">

@@ -9,17 +9,17 @@
 }
 
 .rich-text-editor:focus-within {
-  border-color: var(--color-primary, #2c6a4b);
-  box-shadow: 0 0 0 2px var(--admin-focus-outline, rgba(44, 106, 75, 0.28));
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--admin-focus-outline);
 }
 
 .rich-text-editor--disabled {
   opacity: 0.7;
-  background-color: var(--disabled-background-color, #f9fafb);
+  background-color: var(--admin-nav-disabled-background);
 }
 
 .rich-text-editor--disabled:focus-within {
-  border-color: var(--color-input-border, var(--color-border));
+  border-color: var(--color-input-border);
   box-shadow: none;
 }
 
@@ -29,8 +29,8 @@
   align-items: center;
   padding: 8px;
   gap: 4px;
-  background-color: var(--color-surface, #f3f4f6);
-  border-bottom: 1px solid var(--color-input-border, var(--color-border));
+  background-color: var(--admin-table-header-background);
+  border-bottom: 1px solid var(--color-input-border);
 }
 
 .rich-text-editor__toolbar-group {
@@ -42,7 +42,7 @@
 .rich-text-editor__toolbar-divider {
   width: 1px;
   height: 20px;
-  background-color: var(--color-input-border, var(--color-border));
+  background-color: var(--color-input-border);
   margin: 0 4px;
 }
 
@@ -55,19 +55,19 @@
   border-radius: 4px;
   border: none;
   background: transparent;
-  color: var(--color-text, #374151);
+  color: var(--color-text);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .rich-text-editor__toolbar-btn:hover:not(:disabled) {
-  background-color: var(--color-border, #e5e7eb);
-  color: var(--color-text, #111827);
+  background-color: var(--admin-nav-hover-background);
+  color: var(--color-text);
 }
 
 .rich-text-editor__toolbar-btn--active {
-  background-color: var(--color-primary, #2c6a4b);
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--admin-button-primary-text);
 }
 
 .rich-text-editor__toolbar-btn:disabled {
@@ -100,16 +100,16 @@
 }
 
 .rich-text-editor__content .tiptap a {
-  color: var(--color-primary, #2563eb);
+  color: var(--color-primary);
   text-decoration: underline;
   cursor: pointer;
 }
 
 .rich-text-editor__content .tiptap blockquote {
-  border-left: 3px solid var(--color-border, #e5e7eb);
+  border-left: 3px solid var(--color-primary);
   padding-left: 1rem;
   margin-left: 0;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted);
 }
 
 .rich-text-editor__content .tiptap ul,

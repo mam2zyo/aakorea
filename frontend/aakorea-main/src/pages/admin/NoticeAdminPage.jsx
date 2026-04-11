@@ -283,10 +283,6 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
               </label>
 
               <div className="button-row button-row--compact">
-                <button className="primary-button" type="submit" disabled={formReadOnly}>
-                  {saving ? '저장 중...' : noticeForm.id ? '공지 저장' : '공지 생성'}
-                </button>
-
                 {noticeForm.id ? (
                   <button
                     className="ghost-button"
@@ -308,6 +304,10 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
                     {deleting ? '삭제 중...' : '공지 삭제'}
                   </button>
                 ) : null}
+
+                <button className="primary-button" type="submit" disabled={formReadOnly}>
+                  {saving ? '저장 중...' : noticeForm.id ? '공지 저장' : '공지 생성'}
+                </button>
               </div>
             </form>
           </div>
