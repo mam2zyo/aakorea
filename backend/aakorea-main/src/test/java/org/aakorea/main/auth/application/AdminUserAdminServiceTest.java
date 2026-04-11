@@ -256,7 +256,7 @@ class AdminUserAdminServiceTest {
 
         @SuppressWarnings("unchecked")
         org.mockito.ArgumentCaptor<List<AdminUserManagementEvent>> captor =
-                org.mockito.ArgumentCaptor.forClass((Class) List.class);
+                org.mockito.ArgumentCaptor.forClass(List.class);
         verify(adminUserManagementEventRepository).saveAll(captor.capture());
 
         List<AdminUserManagementEventType> eventTypes = captor.getValue().stream()

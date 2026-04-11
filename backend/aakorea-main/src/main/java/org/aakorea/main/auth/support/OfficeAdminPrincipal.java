@@ -1,7 +1,6 @@
 package org.aakorea.main.auth.support;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public final class OfficeAdminPrincipal implements UserDetails, Serializable {
+public final class OfficeAdminPrincipal implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;

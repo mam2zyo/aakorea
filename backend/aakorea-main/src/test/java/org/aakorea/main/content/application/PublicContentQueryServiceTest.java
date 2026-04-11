@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import org.aakorea.main.attachment.infrastructure.ContentAttachmentRepository;
 import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
-import org.aakorea.main.content.domain.ContentPage;
 import org.aakorea.main.content.domain.Notice;
 import org.aakorea.main.content.infrastructure.ContentPageRepository;
 import org.aakorea.main.content.infrastructure.NoticeRepository;
