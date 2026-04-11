@@ -426,12 +426,12 @@
 
 .admin-table--notice .admin-table__header,
 .admin-table--notice .admin-table__row {
-  grid-template-columns: 64px minmax(0, 1fr) 168px 96px 96px;
+  grid-template-columns: 64px minmax(0, 1fr) 168px 96px 140px;
 }
 
 .admin-table--content .admin-table__header,
 .admin-table--content .admin-table__row {
-  grid-template-columns: 64px minmax(170px, 0.85fr) minmax(0, 1fr) 96px 96px;
+  grid-template-columns: 64px minmax(170px, 0.85fr) minmax(0, 1fr) 96px 140px;
 }
 
 .admin-table--admin-users .admin-table__header,
@@ -518,6 +518,13 @@
   color: var(--color-primary-strong);
   font-weight: 500;
   text-align: right;
+}
+
+.admin-table__action-cluster {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  white-space: nowrap;
 }
 
 .admin-table__cell--actions {
