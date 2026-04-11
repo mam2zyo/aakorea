@@ -22,8 +22,20 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
   const [uploadTitle, setUploadTitle] = useState('')
   const [uploadPublished, setUploadPublished] = useState(true)
   const [uploadFile, setUploadFile] = useState(null)
+  const [uploadId, setUploadId] = useState(null)
+  const [currentFileName, setCurrentFileName] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortMode, setSortMode] = useState('key')
+
+  function resetForm() {
+    setUploadKey('')
+    setUploadTitle('')
+    setUploadPublished(true)
+    setUploadFile(null)
+    setUploadId(null)
+    setCurrentFileName(null)
+    setIsEditMode(false)
+  }
 
   async function loadContentPageWorkspace() {
     setLoading(true)
@@ -57,13 +69,15 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
     setUploading(true)
 
     try {
-      if (isEditMode && !uploadFile) {
-        await adminContentApi.updateContentMetadata(uploadKey, {
+      if (isEditMode) {
+        await adminContentApi.updateContentPage(uploadId, {
+          key: uploadKey,
           title: uploadTitle,
           published: uploadPublished,
+          file: uploadFile,
         })
       } else {
-        if (!uploadFile && !isEditMode) {
+        if (!uploadFile) {
           throw new Error('새 페이지 등록 시 HTML 파일은 필수입니다.')
         }
         await adminContentApi.uploadContentPage({
@@ -76,11 +90,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
 
       await loadContentPageWorkspace()
       setUploadOpen(false)
-      setUploadKey('')
-      setUploadTitle('')
-      setUploadPublished(true)
-      setUploadFile(null)
-      setIsEditMode(false)
+      resetForm()
       onSuccess?.(isEditMode ? '페이지 정보를 수정했습니다.' : '페이지를 성공적으로 업로드했습니다.')
     } catch (error) {
       onError(error, '저장에 실패했습니다.')
@@ -89,13 +99,13 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
     }
   }
 
-  async function handleDelete(key) {
-    if (!window.confirm(`'${key}' 페이지와 관련된 물리적 파일을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
+  async function handleDelete(contentPage) {
+    if (!window.confirm(`'${contentPage.key}' 페이지와 관련된 데이터를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
       return
     }
 
     try {
-      await adminContentApi.deleteContentPage(key)
+      await adminContentApi.deleteContentPage(contentPage.id)
       await loadContentPageWorkspace()
       onSuccess?.('페이지가 삭제되었습니다.')
     } catch (error) {
@@ -103,14 +113,14 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
     }
   }
 
-  async function handlePublish(key, published) {
+  async function handlePublish(contentPage, published) {
     const action = published ? '게시' : '게시 취소'
-    if (!window.confirm(`'${key}' 페이지를 ${action}하시겠습니까?`)) {
+    if (!window.confirm(`'${contentPage.key}' 페이지를 ${action}하시겠습니까?`)) {
       return
     }
 
     try {
-      await adminContentApi.publishContentPage(key, { published })
+      await adminContentApi.publishContentPage(contentPage.id, { published })
       await loadContentPageWorkspace()
       onSuccess?.(`페이지가 ${action}되었습니다.`)
     } catch (error) {
@@ -165,13 +175,8 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
           <div className="admin-list-toolbar__divider" aria-hidden="true" />
           <button
             className="primary-button primary-button--small"
-            type="button"
             onClick={() => {
-              setUploadKey('')
-              setUploadTitle('')
-              setUploadPublished(true)
-              setUploadFile(null)
-              setIsEditMode(false)
+              resetForm()
               setUploadOpen(true)
             }}
           >
@@ -203,7 +208,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
 
             {filteredContentPages.map((contentPage, index) => (
               <div
-                key={contentPage.id || contentPage.key}
+                key={contentPage.id}
                 className="admin-table__row admin-table__row--static"
                 role="row"
               >
@@ -242,9 +247,11 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                       className="ghost-button ghost-button--small"
                       type="button"
                       onClick={() => {
+                        setUploadId(contentPage.id)
                         setUploadKey(contentPage.key || '')
                         setUploadTitle(contentPage.title || '')
                         setUploadPublished(contentPage.published || false)
+                        setCurrentFileName(contentPage.originalFileName || null)
                         setUploadFile(null)
                         setIsEditMode(true)
                         setUploadOpen(true)
@@ -255,7 +262,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                     <button
                       className="ghost-button ghost-button--small ghost-button--danger"
                       type="button"
-                      onClick={() => handleDelete(contentPage.key)}
+                      onClick={() => handleDelete(contentPage)}
                     >
                       삭제
                     </button>
@@ -327,6 +334,11 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                   onChange={(e) => setUploadFile(e.target.files?.[0])}
                   disabled={uploading}
                 />
+                {isEditMode && currentFileName && (
+                   <p className="field__description" style={{ fontSize: '0.84rem' }}>
+                     현재 파일: <strong>{currentFileName}</strong> (변경하려면 새 파일을 선택하세요)
+                   </p>
+                )}
               </Field>
 
               <div className="admin-group-edit-sheet__status-toggle">
@@ -357,9 +369,9 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                 <button
                   className="primary-button"
                   type="submit"
-                  disabled={uploading || !uploadKey || !uploadTitle || !uploadFile}
+                  disabled={uploading || !uploadKey || !uploadTitle || (!isEditMode && !uploadFile)}
                 >
-                  {uploading ? '업로드 중...' : '확인 및 업로드'}
+                  {uploading ? '저장 중...' : isEditMode ? '수정 및 업데이트' : '확인 및 업로드'}
                 </button>
               </div>
             </form>

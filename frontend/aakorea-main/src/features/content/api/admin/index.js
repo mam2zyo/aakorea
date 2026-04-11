@@ -4,9 +4,6 @@ export const adminContentApi = {
   getContentPages() {
     return request(`/api/admin/content-pages?_t=${Date.now()}`)
   },
-  getContentPage(id) {
-    return request(`/api/admin/content-pages/${id}`)
-  },
   uploadContentPage(data) {
     const formData = new FormData()
     formData.append('key', data.key)
@@ -20,19 +17,32 @@ export const adminContentApi = {
       body: formData,
     })
   },
-  updateContentMetadata(key, data) {
-    return request(`/api/admin/content-pages/${key}/metadata`, {
+  updateContentPage(id, data) {
+    const formData = new FormData()
+    formData.append('key', data.key)
+    formData.append('title', data.title)
+    formData.append('published', data.published)
+    if (data.file) {
+      formData.append('file', data.file)
+    }
+    return request(`/api/admin/content-pages/${id}`, {
+      method: 'POST',
+      body: formData,
+    })
+  },
+  updateContentMetadata(id, data) {
+    return request(`/api/admin/content-pages/${id}/metadata`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
   },
-  deleteContentPage(key) {
-    return request(`/api/admin/content-pages/${key}`, {
+  deleteContentPage(id) {
+    return request(`/api/admin/content-pages/${id}`, {
       method: 'DELETE',
     })
   },
-  publishContentPage(key) {
-    return request(`/api/admin/content-pages/${key}/publish`, {
+  publishContentPage(id, data) {
+    return request(`/api/admin/content-pages/${id}/publish?published=${data.published}`, {
       method: 'PUT',
     })
   },

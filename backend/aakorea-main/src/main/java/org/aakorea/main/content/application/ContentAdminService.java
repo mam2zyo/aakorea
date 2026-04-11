@@ -18,6 +18,7 @@ import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -30,6 +31,7 @@ public class ContentAdminService {
     private final AttachmentRepository attachmentRepository;
     private final NoticeAttachmentRepository noticeAttachmentRepository;
     private final ContentAttachmentRepository contentAttachmentRepository;
+    private final FileSystemContentService fileSystemContentService;
 
     public List<ContentPageSummaryData> getContentPages() {
         return contentPageRepository.findAllByOrderByIdAsc().stream()
@@ -42,16 +44,20 @@ public class ContentAdminService {
     }
 
     @Transactional
-    public ContentPageData createContentPage(String key, String title, String bodyHtml, String bodyJson, boolean published, List<Long> attachmentIds) {
+    public ContentPageData createContentPage(String key, String title, boolean published, MultipartFile file, List<Long> attachmentIds) {
         String normalizedKey = normalizeKey(key);
         ensureUniqueContentPageKey(normalizedKey, null);
 
+        String originalFileName = file != null ? file.getOriginalFilename() : null;
         ContentPage contentPage = contentPageRepository.save(new ContentPage(
                 normalizedKey,
                 normalizeText(title, "title"),
-                normalizeText(bodyHtml, "bodyHtml"),
-                normalizeText(bodyJson, "bodyJson"),
-                published));
+                published,
+                originalFileName));
+
+        if (file != null) {
+            fileSystemContentService.uploadContentFile(normalizedKey, file);
+        }
 
         syncContentAttachments(contentPage, attachmentIds);
 
@@ -59,17 +65,21 @@ public class ContentAdminService {
     }
 
     @Transactional
-    public ContentPageData updateContentPage(Long id, String key, String title, String bodyHtml, String bodyJson, boolean published, List<Long> attachmentIds) {
+    public ContentPageData updateContentPage(Long id, String key, String title, boolean published, MultipartFile file, List<Long> attachmentIds) {
         ContentPage contentPage = getContentPageEntity(id);
         String normalizedKey = normalizeKey(key);
         ensureUniqueContentPageKey(normalizedKey, id);
 
+        String originalFileName = file != null ? file.getOriginalFilename() : null;
         contentPage.update(
                 normalizedKey,
                 normalizeText(title, "title"),
-                normalizeText(bodyHtml, "bodyHtml"),
-                normalizeText(bodyJson, "bodyJson"),
-                published);
+                published,
+                originalFileName);
+
+        if (file != null) {
+            fileSystemContentService.uploadContentFile(normalizedKey, file);
+        }
 
         syncContentAttachments(contentPage, attachmentIds);
 
@@ -125,8 +135,10 @@ public class ContentAdminService {
 
     @Transactional
     public void deleteContentPage(Long id) {
+        ContentPage contentPage = getContentPageEntity(id);
+        fileSystemContentService.deleteContentFile(contentPage.getKey());
         contentAttachmentRepository.deleteAllByContentPage_Id(id);
-        contentPageRepository.delete(getContentPageEntity(id));
+        contentPageRepository.delete(contentPage);
     }
 
     private void syncNoticeAttachments(Notice notice, List<Long> attachmentIds) {
@@ -204,7 +216,8 @@ public class ContentAdminService {
                 contentPage.getId(),
                 contentPage.getKey(),
                 contentPage.getTitle(),
-                contentPage.isPublished());
+                contentPage.isPublished(),
+                contentPage.getOriginalFileName());
     }
 
     private ContentPageData toContentPageData(ContentPage contentPage) {
@@ -217,9 +230,8 @@ public class ContentAdminService {
                 contentPage.getId(),
                 contentPage.getKey(),
                 contentPage.getTitle(),
-                contentPage.getBodyHtml(),
-                contentPage.getBodyJson(),
                 contentPage.isPublished(),
+                contentPage.getOriginalFileName(),
                 attachments);
     }
 
@@ -255,10 +267,10 @@ public class ContentAdminService {
                 attachment.getFileSize());
     }
 
-    public record ContentPageSummaryData(Long id, String key, String title, boolean published) {
+    public record ContentPageSummaryData(Long id, String key, String title, boolean published, String originalFileName) {
     }
 
-    public record ContentPageData(Long id, String key, String title, String bodyHtml, String bodyJson, boolean published, List<AttachmentSummaryData> attachments) {
+    public record ContentPageData(Long id, String key, String title, boolean published, String originalFileName, List<AttachmentSummaryData> attachments) {
     }
 
     public record NoticeSummaryData(Long id, String title, boolean published, LocalDateTime publishedAt) {

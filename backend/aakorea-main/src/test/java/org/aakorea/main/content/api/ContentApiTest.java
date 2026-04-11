@@ -1,10 +1,8 @@
 package org.aakorea.main.content.api;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.aakorea.main.support.AdminSecurityTestSupport.officeUser;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,37 +76,26 @@ class ContentApiTest {
     @Test
     void createContentPageReturnsCreatedResponse() throws Exception {
         given(contentAdminService.createContentPage(
-                "first-visitor-guide",
-                "처음 오신 분 안내",
-                "페이지 본문 HTML",
-                "페이지 본문 JSON",
-                true,
-                null))
+                org.mockito.ArgumentMatchers.eq("first-visitor-guide"),
+                org.mockito.ArgumentMatchers.eq("처음 오신 분 안내"),
+                org.mockito.ArgumentMatchers.eq(true),
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.anyList()))
                 .willReturn(new ContentAdminService.ContentPageData(
                         1L,
                         "first-visitor-guide",
                         "처음 오신 분 안내",
-                        "페이지 본문 HTML",
-                        "페이지 본문 JSON",
                         true,
+                        "test.html",
                         List.of()));
 
-        mockMvc.perform(post("/api/admin/content-pages")
-                        .with(officeUser(
-                                AdminRole.MANAGER,
-                                AdminPermission.CONTENT_PAGE_MANAGE,
-                                AdminPermission.CONTENT_PUBLISH))
-                        .contentType(APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "key": "first-visitor-guide",
-                                  "title": "처음 오신 분 안내",
-                                  "bodyHtml": "페이지 본문 HTML",
-                                  "bodyJson": "페이지 본문 JSON",
-                                  "published": true
-                                }
-                                """))
-                .andExpect(status().isCreated())
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/admin/content-pages/upload")
+                        .file("file", "test-content".getBytes())
+                        .param("key", "first-visitor-guide")
+                        .param("title", "처음 오신 분 안내")
+                        .param("published", "true")
+                        .with(officeUser(AdminRole.MANAGER, AdminPermission.CONTENT_PUBLISH)))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.key").value("first-visitor-guide"))
                 .andExpect(jsonPath("$.data.title").value("처음 오신 분 안내"))
@@ -117,18 +104,12 @@ class ContentApiTest {
 
     @Test
     void createPublishedContentPageRequiresPublishPermission() throws Exception {
-        mockMvc.perform(post("/api/admin/content-pages")
-                        .with(officeUser(AdminRole.STAFF, AdminPermission.CONTENT_PAGE_MANAGE))
-                        .contentType(APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "key": "first-visitor-guide",
-                                  "title": "처음 오신 분 안내",
-                                  "bodyHtml": "페이지 본문 HTML",
-                                  "bodyJson": "페이지 본문 JSON",
-                                  "published": true
-                                }
-                                """))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/admin/content-pages/upload")
+                        .file("file", "test-content".getBytes())
+                        .param("key", "first-visitor-guide")
+                        .param("title", "처음 오신 분 안내")
+                        .param("published", "true")
+                        .with(officeUser(AdminRole.STAFF, AdminPermission.CONTENT_PAGE_MANAGE)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.code").value("FORBIDDEN"))
                 .andExpect(jsonPath("$.error.message").value("forbidden"));
@@ -186,29 +167,22 @@ class ContentApiTest {
     @Test
     void duplicateContentPageKeyReturnsFieldError() throws Exception {
         given(contentAdminService.createContentPage(
-                "first-visitor-guide",
-                "처음 오신 분 안내",
-                "페이지 본문 HTML",
-                "페이지 본문 JSON",
-                true,
-                null))
+                org.mockito.ArgumentMatchers.eq("first-visitor-guide"),
+                org.mockito.ArgumentMatchers.eq("처음 오신 분 안내"),
+                org.mockito.ArgumentMatchers.eq(true),
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.anyList()))
                 .willThrow(FieldValidationException.conflict("key", "content page key already exists"));
 
-        mockMvc.perform(post("/api/admin/content-pages")
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart("/api/admin/content-pages/upload")
+                        .file("file", "test-content".getBytes())
+                        .param("key", "first-visitor-guide")
+                        .param("title", "처음 오신 분 안내")
+                        .param("published", "true")
                         .with(officeUser(
                                 AdminRole.MANAGER,
                                 AdminPermission.CONTENT_PAGE_MANAGE,
-                                AdminPermission.CONTENT_PUBLISH))
-                        .contentType(APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "key": "first-visitor-guide",
-                                  "title": "처음 오신 분 안내",
-                                  "bodyHtml": "페이지 본문 HTML",
-                                  "bodyJson": "페이지 본문 JSON",
-                                  "published": true
-                                }
-                                """))
+                                AdminPermission.CONTENT_PUBLISH)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("CONFLICT"))
                 .andExpect(jsonPath("$.error.fields.key").value("content page key already exists"));

@@ -27,28 +27,25 @@ public class ContentPage {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String bodyHtml;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String bodyJson;
-
     @Column(nullable = false)
     private boolean published;
 
-    public ContentPage(String key, String title, String bodyHtml, String bodyJson, boolean published) {
+    @Column(name = "original_file_name")
+    private String originalFileName;
+
+    public ContentPage(String key, String title, boolean published, String originalFileName) {
         this.key = key;
         this.title = title;
-        this.bodyHtml = bodyHtml;
-        this.bodyJson = bodyJson;
         this.published = published;
+        this.originalFileName = originalFileName;
     }
 
-    public void update(String key, String title, String bodyHtml, String bodyJson, boolean published) {
+    public void update(String key, String title, boolean published, String originalFileName) {
         this.key = key;
         this.title = title;
-        this.bodyHtml = bodyHtml;
-        this.bodyJson = bodyJson;
         this.published = published;
+        if (originalFileName != null) {
+            this.originalFileName = originalFileName;
+        }
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.aakorea.main.attachment.infrastructure.ContentAttachmentRepository;
 import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
+import org.aakorea.main.content.domain.ContentPage;
 import org.aakorea.main.content.domain.Notice;
 import org.aakorea.main.content.infrastructure.ContentPageRepository;
 import org.aakorea.main.content.infrastructure.NoticeRepository;
@@ -36,8 +37,26 @@ class PublicContentQueryServiceTest {
     @Mock
     private ContentAttachmentRepository contentAttachmentRepository;
 
+    @Mock
+    private FileSystemContentService fileSystemContentService;
+
     @InjectMocks
     private PublicContentQueryService publicContentQueryService;
+
+    @Test
+    void getContentPageReturnsPublishedData() {
+        ContentPage contentPage = new ContentPage("first-visitor-guide", "처음 오신 분 안내", true, "guide.html");
+        ReflectionTestUtils.setField(contentPage, "id", 1L);
+
+        given(contentPageRepository.findByKeyAndPublishedTrue("first-visitor-guide")).willReturn(Optional.of(contentPage));
+        given(fileSystemContentService.getContentPage("first-visitor-guide")).willReturn("<h1>안내 본문</h1>");
+
+        PublicContentQueryService.PublicContentPageData result = publicContentQueryService.getContentPage("first-visitor-guide");
+
+        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.title()).isEqualTo("처음 오신 분 안내");
+        assertThat(result.bodyHtml()).isEqualTo("<h1>안내 본문</h1>");
+    }
 
     @Test
     void getContentPageRequiresExistingPublishedPage() {

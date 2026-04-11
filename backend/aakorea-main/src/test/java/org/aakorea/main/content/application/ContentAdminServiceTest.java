@@ -42,6 +42,9 @@ class ContentAdminServiceTest {
     @Mock
     private ContentAttachmentRepository contentAttachmentRepository;
 
+    @Mock
+    private FileSystemContentService fileSystemContentService;
+
     @InjectMocks
     private ContentAdminService contentAdminService;
 
@@ -58,9 +61,8 @@ class ContentAdminServiceTest {
         ContentAdminService.ContentPageData result = contentAdminService.createContentPage(
                 " first-visitor-guide ",
                 " 처음 오신 분 안내 ",
-                " 페이지 본문 HTML ",
-                " 페이지 본문 JSON ",
                 true,
+                null,
                 null);
 
         ArgumentCaptor<ContentPage> captor = ArgumentCaptor.forClass(ContentPage.class);
@@ -69,8 +71,6 @@ class ContentAdminServiceTest {
 
         assertThat(captor.getValue().getKey()).isEqualTo("first-visitor-guide");
         assertThat(captor.getValue().getTitle()).isEqualTo("처음 오신 분 안내");
-        assertThat(captor.getValue().getBodyHtml()).isEqualTo("페이지 본문 HTML");
-        assertThat(captor.getValue().getBodyJson()).isEqualTo("페이지 본문 JSON");
         assertThat(result.id()).isEqualTo(1L);
     }
 
@@ -81,9 +81,8 @@ class ContentAdminServiceTest {
         assertThatThrownBy(() -> contentAdminService.createContentPage(
                 "first-visitor-guide",
                 "처음 오신 분 안내",
-                "본문 HTML",
-                "본문 JSON",
                 true,
+                null,
                 null))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
@@ -131,7 +130,7 @@ class ContentAdminServiceTest {
 
     @Test
     void deleteContentPageRemovesExistingPage() {
-        ContentPage contentPage = new ContentPage("first-visitor-guide", "처음 오신 분 안내", "본문 HTML", "본문 JSON", true);
+        ContentPage contentPage = new ContentPage("first-visitor-guide", "처음 오신 분 안내", true, "test.html");
         given(contentPageRepository.findById(3L)).willReturn(Optional.of(contentPage));
 
         contentAdminService.deleteContentPage(3L);

@@ -24,6 +24,7 @@ public class PublicContentQueryService {
     private final NoticeRepository noticeRepository;
     private final NoticeAttachmentRepository noticeAttachmentRepository;
     private final ContentAttachmentRepository contentAttachmentRepository;
+    private final FileSystemContentService fileSystemContentService;
 
     public PublicContentPageData getContentPage(String key) {
         ContentPage contentPage = contentPageRepository.findByKeyAndPublishedTrue(normalizeKey(key))
@@ -38,11 +39,14 @@ public class PublicContentQueryService {
                 .map(ca -> toAttachmentSummary(ca.getAttachment()))
                 .toList();
 
+        // Get content from file system
+        String bodyHtml = fileSystemContentService.getContentPage(contentPage.getKey());
+
         return new PublicContentPageData(
                 contentPage.getId(),
                 contentPage.getKey(),
                 contentPage.getTitle(),
-                contentPage.getBodyHtml(),
+                bodyHtml,
                 attachments);
     }
 
