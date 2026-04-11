@@ -43,8 +43,6 @@
 
 ### 4. 운영 콘텐츠 / 테마 / 도구 흐름
 
-- `ContentPage`, `Notice` CRUD (Rich Text 에디터 통합)
-- 첨부파일 및 에디터 이미지 자산 업로드/관리
 - 운영자 권한 세분화 (AdminUser / Role / Permission)
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장

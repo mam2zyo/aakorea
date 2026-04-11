@@ -30,15 +30,6 @@
 
 ## 현재 핵심 필드
 
-- `id`
-- `key`
-- `title`
-- 본문(`body`)은 에디터 통합을 위해 Rich Text HTML 형식을 사용한다.
-- 하나의 콘텐츠 페이지는 여러 개의 첨부파일을 가질 수 있으며, 공개 화면 하단에 순서대로 노출된다.
-- `key`는 슬러그 역할을 하며, 중복될 수 없다.
-- `title`,| `body` | `String` | 페이지 본문 (Rich Text HTML) |
-| `attachments` | `List<Attachment>` | 페이지 하단 첨부파일 리스트 (선택) |
-| `published` | `boolean` | 공개 여부 |API에 노출되지 않는다
 
 ---
 

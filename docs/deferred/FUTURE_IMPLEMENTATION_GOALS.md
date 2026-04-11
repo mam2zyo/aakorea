@@ -24,7 +24,6 @@
 
 - 공개 모임 검색은 지역 / 요일 / 현재 위치 nearby search를 제공한다
 - `Meeting`에는 주소와 `latitude`, `longitude`가 저장되며, 자동 지오코딩이 지원된다
-- `ContentPage`, `Notice` 본문은 Rich Text 에디터(TipTap) 기반으로 관리된다
 - 범용 첨부파일(`Attachment`) 엔티티와 로컬 스토리지 기반 관리 체계가 구축되어 있다
 - 권한 모델(AdminUser, Role, Permission)이 구축되어 운영자별 접근 제어가 가능하다
 - 공개 사이트 테마는 draft / publish / rollback 구조를 가진다

@@ -35,18 +35,6 @@ ContentPage 목록을 조회한다.
 
 ### Response 200
 
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "key": "first-visitor-guide",
-      "title": "처음 오신 분 안내",
-      "published": true
-    }
-  ]
-}
-```
 
 ---
 

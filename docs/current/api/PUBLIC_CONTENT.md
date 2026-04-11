@@ -37,18 +37,6 @@
 
 - `key`: 페이지 고정 식별 키
 
-### Response 200
-
-```json
-{
-  "data": {
-    "id": 1,
-    "key": "first-visitor-guide",
-    "title": "처음 오신 분 안내",
-    "body": "페이지 본문"
-  }
-}
-```
 
 ### 기본 검증
 
