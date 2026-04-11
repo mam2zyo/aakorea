@@ -16,6 +16,7 @@
 - 세션 기반 운영 인증
 - 공개 / 운영 라우트 분리
 - admin / public surface 분리와 document theme runtime 동기화
+- 3계층(Primitives, Semantic, Component) 디자인 토큰 아키텍처 수립 및 적용
 
 ### 2. 공개 흐름
 
@@ -47,6 +48,7 @@
 - 운영자 권한 세분화 (AdminUser / Role / Permission)
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장
+- 디자인 토큰 시스템 구축 (색상 리터럴 완전 제거 및 시맨틱 변수화)
 - HTML normalize + 정제 JSON import preview / apply / reset
 - 좌표 backfill dry-run / apply
 

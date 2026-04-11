@@ -44,9 +44,25 @@
 5. **URL 단순화**: 기존의 복잡한 쿼리 파라미터 기반 검색 대신, 명시적인 사용자 액션과 상태 기반으로 흐름이 변경되었다. URL은 상세 모달 상태(`groupId`, `meetingId`)만 주로 관리한다.
 
 ### 디자인 및 인터페이스
-- **아이콘**: 이모지 대신 `currentColor`를 상속받는 간결한 SVG 라인 아이콘을 사용하여 UI 톤앤매너를 통일했다.
 - **버튼 피드백**: 검색/초기화 버튼에 그라디언트와 그림자 효과를 적용하고, 로딩 시 스피너 애니메이션을 제공한다.
 - **레이아웃**: 섹션 헤더가 비어 있을 경우 자동으로 공간을 제거하여 깔끔한 화면 구성을 유지한다.
+
+### 디자인 시스템 및 CSS 아키텍처
+
+디자인 일관성과 테마 유지보수를 위해 **3계층 디자인 토큰(Design Tokens)** 시스템을 사용한다. 모든 하드코딩된 색상/치수(Literals)는 제거되었으며, 각 레이어는 명확한 역할을 가진다.
+
+1.  **Layer 1: Primitives (기초 팔레트)**
+    *   배경이 되는 원색과 단계를 정의한다 (예: `--palette-blue-500`, `--palette-ink-900`).
+    *   특정 의미를 담지 않으며, 모든 테마의 재료가 된다.
+    *   `:root` 영역에 모든 테마의 Primitives가 합쳐져 관리된다.
+2.  **Layer 2: Semantic (의미적 토큰)**
+    *   "무엇인가"를 정의한다 (예: `--color-primary`, `--color-bg-subtle`, `--color-text`).
+    *   테마에 따라 다른 Primitive를 참조하며, 컴포넌트 개발 시 최우선적으로 참조하는 레이어다.
+3.  **Layer 3: Component (컴포넌트 토큰)**
+    *   특정 UI 요소의 예외 상황이나 정교한 스타일을 정의한다 (예: `--public-dialog-border`, `--public-focus-list-item-selected-background`).
+    *   Semantic 토큰으로 처리가 어려운 복합 스타일(그라데이션 등)을 관리한다.
+
+모든 테마 전환은 `document.documentElement`의 `data-public-theme` 또는 `data-admin-theme` 속성에 따라 해당 변수 셋이 주입되는 방식으로 구현된다.
 
 ### 공개 상세 모달 구조
 

@@ -18,7 +18,7 @@
   로컬 실행, env 설정, 배포, 재시작처럼 **운영 절차 문서**를 둔다.
 
 - `reference/`
-  배경 분석, 참고 자료, 비교 검토 등 **참고용 문서**를 둔다.
+  배경 분석, 디자인 토큰 명세(`THEME_TOKEN_REFINEMENT.md`), 콘텐츠 구조 전략 등 **참조용 문서**를 둔다.
 
 - `deferred/`
   현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 주제를 둔다.
@@ -177,7 +177,11 @@ docs/
 │  ├─ LOCAL_DEVELOPMENT.md
 │  └─ NGINX_TERMUX_DEPLOYMENT.md
 └─ reference/
-   └─ AA_ORG_DESIGN_ANALYSIS.md
+   ├─ THEME_TOKEN_REFINEMENT.md
+   ├─ CONTENT_ARCHITECTURE_STRATEGY.md
+   ├─ PUBLIC_SITE_MENU_PROPOSAL.md
+   ├─ java-null-safety.md
+   └─ old_contents/
 ```
 
 ## 추가 확장 제안
