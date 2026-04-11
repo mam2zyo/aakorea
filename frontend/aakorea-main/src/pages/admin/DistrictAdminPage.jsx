@@ -131,7 +131,7 @@ export function DistrictAdminPage({ onError, onSuccess }) {
               <span className="admin-table__heading" role="columnheader">번호</span>
               <span className="admin-table__heading" role="columnheader">지역연합</span>
               <span className="admin-table__heading" role="columnheader">연결 그룹</span>
-              <span className="admin-table__heading" role="columnheader">편집</span>
+              <span className="admin-table__heading" role="columnheader">관리</span>
             </div>
 
             {filteredDistricts.map((district, index) => (
@@ -157,14 +157,24 @@ export function DistrictAdminPage({ onError, onSuccess }) {
                 <span className="admin-table__cell" data-label="연결 그룹">
                   {groupCountByDistrictId[district.id] ?? 0}개
                 </span>
-                <span className="admin-table__cell admin-table__cell--action" data-label="편집">
-                  <button
-                    className="ghost-button ghost-button--small"
-                    type="button"
-                    onClick={() => startEditingDistrict(district)}
-                  >
-                    수정
-                  </button>
+                <span className="admin-table__cell admin-table__cell--action" data-label="관리">
+                  <div className="admin-table__action-cluster">
+                    <button
+                      className="ghost-button ghost-button--small"
+                      type="button"
+                      onClick={() => void startEditingDistrict(district)}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="ghost-button ghost-button--small ghost-button--danger"
+                      type="button"
+                      onClick={() => void deleteDistrictFromList(district)}
+                      disabled={deleting}
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </span>
               </div>
             ))}
@@ -229,17 +239,6 @@ export function DistrictAdminPage({ onError, onSuccess }) {
               </Field>
 
               <div className="button-row button-row--compact">
-                {districtForm.id ? (
-                  <button
-                    className="ghost-button ghost-button--danger"
-                    type="button"
-                    onClick={() => void deleteDistrict()}
-                    disabled={saving || deleting}
-                  >
-                    {deleting ? '삭제 중...' : '지역연합 삭제'}
-                  </button>
-                ) : null}
-
                 <button className="primary-button" type="submit" disabled={saving || deleting}>
                   {saving
                     ? '저장 중...'
@@ -326,12 +325,18 @@ export function DistrictAdminPage({ onError, onSuccess }) {
     }
   }
 
-  async function deleteDistrict() {
-    if (!districtForm.id) {
+  async function deleteDistrictFromList(district) {
+    if (!district) {
       return
     }
 
-    const confirmed = window.confirm(`"${districtForm.name}" 지역연합을 삭제하시겠습니까?`)
+    const groupCount = groupCountByDistrictId[district.id] ?? 0
+    if (groupCount > 0) {
+      window.alert(`"${district.name}" 지역연합에 연결된 그룹이 ${groupCount}개 있습니다. 먼저 해당 그룹들의 지역연합 정보를 변경한 후 삭제해 주세요.`)
+      return
+    }
+
+    const confirmed = window.confirm(`"${district.name}" 지역연합을 삭제하시겠습니까?`)
     if (!confirmed) {
       return
     }
@@ -339,14 +344,16 @@ export function DistrictAdminPage({ onError, onSuccess }) {
     setDeleting(true)
 
     try {
-      const deletingId = districtForm.id
+      await adminDistrictApi.deleteDistrict(district.id)
 
-      await adminDistrictApi.deleteDistrict(deletingId)
-
-      setDistricts((previous) => previous.filter((district) => district.id !== deletingId))
-      setEditorOpen(false)
-      setDistrictForm(EMPTY_DISTRICT_FORM)
-      setDistrictErrors({})
+      setDistricts((previous) => previous.filter((item) => item.id !== district.id))
+      
+      if (editorOpen && districtForm.id === district.id) {
+        setEditorOpen(false)
+        setDistrictForm(EMPTY_DISTRICT_FORM)
+        setDistrictErrors({})
+      }
+      
       onSuccess('지역연합을 삭제했습니다.')
     } catch (error) {
       setDistrictErrors({})
