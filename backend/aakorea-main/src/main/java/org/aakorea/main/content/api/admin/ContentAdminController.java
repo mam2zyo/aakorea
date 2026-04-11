@@ -9,17 +9,21 @@ import lombok.RequiredArgsConstructor;
 import org.aakorea.main.auth.application.OfficeAuthorizationService;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.content.application.ContentAdminService;
+import org.aakorea.main.content.application.FileSystemContentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -27,59 +31,53 @@ import org.springframework.web.bind.annotation.RestController;
 public class ContentAdminController {
 
     private final ContentAdminService contentAdminService;
+    private final FileSystemContentService fileSystemContentService;
     private final OfficeAuthorizationService officeAuthorizationService;
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
     @GetMapping("/content-pages")
-    public ApiResponse<List<ContentAdminService.ContentPageSummaryData>> getContentPages() {
-        return ApiResponse.success(contentAdminService.getContentPages());
+    public ApiResponse<List<FileSystemContentService.ContentPageSummary>> getContentPages() {
+        return ApiResponse.success(fileSystemContentService.getAllContentPages());
     }
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
-    @GetMapping("/content-pages/{id}")
-    public ApiResponse<ContentAdminService.ContentPageData> getContentPage(@PathVariable Long id) {
-        return ApiResponse.success(contentAdminService.getContentPage(id));
-    }
-
-    @PreAuthorize("hasAuthority('PERM_content_page.manage')")
-    @PostMapping("/content-pages")
-    public ResponseEntity<ApiResponse<ContentAdminService.ContentPageData>> createContentPage(
-            @Valid @RequestBody ContentPageRequest request
+    @PostMapping("/content-pages/upload")
+    public ResponseEntity<ApiResponse<Void>> uploadContentPage(
+            @RequestParam("key") String key,
+            @RequestParam("title") String title,
+            @RequestParam(value = "published", defaultValue = "false") boolean published,
+            @RequestParam("file") MultipartFile file
     ) {
-        officeAuthorizationService.assertCanSaveContentPage(null, request.published());
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(contentAdminService.createContentPage(
-                request.key(),
-                request.title(),
-                request.bodyHtml(),
-                request.bodyJson(),
-                request.published(),
-                request.attachmentIds())));
+        fileSystemContentService.uploadContentFile(key, title, published, file);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
-    @PutMapping("/content-pages/{id}")
-    public ApiResponse<ContentAdminService.ContentPageData> updateContentPage(
-            @PathVariable Long id,
-            @Valid @RequestBody ContentPageRequest request
-    ) {
-        officeAuthorizationService.assertCanSaveContentPage(id, request.published());
-        return ApiResponse.success(contentAdminService.updateContentPage(
-                id,
-                request.key(),
-                request.title(),
-                request.bodyHtml(),
-                request.bodyJson(),
-                request.published(),
-                request.attachmentIds()));
+    @PatchMapping("/content-pages/{key}/metadata")
+    public ResponseEntity<ApiResponse<Void>> updateContentMetadata(
+            @PathVariable String key,
+            @RequestBody MetadataUpdateRequest request) {
+        fileSystemContentService.updateContentMetadata(key, request.title(), request.published());
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
-    @DeleteMapping("/content-pages/{id}")
-    public ResponseEntity<Void> deleteContentPage(@PathVariable Long id) {
-        officeAuthorizationService.assertCanDeleteContentPage(id);
-        contentAdminService.deleteContentPage(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/content-pages/{key}")
+    public ResponseEntity<ApiResponse<Void>> deleteContentPage(@PathVariable String key) {
+        fileSystemContentService.deleteContentFile(key);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    @PreAuthorize("hasAuthority('PERM_content_page.manage')")
+    @PutMapping("/content-pages/{key}/publish")
+    public ResponseEntity<ApiResponse<Void>> togglePublishContentPage(
+            @PathVariable String key,
+            @RequestParam("published") boolean published) {
+        fileSystemContentService.setPublishStatus(key, published);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    public record MetadataUpdateRequest(String title, boolean published) {}
 
     @PreAuthorize("hasAuthority('PERM_notice.manage')")
     @GetMapping("/notices")

@@ -543,6 +543,7 @@
 
   .public-theme .page-stack {
     padding-inline: var(--space-4);
+    gap: var(--space-6);
   }
 
   .public-theme .public-footer__inner {
@@ -554,7 +555,12 @@
   .public-theme .panel,
   .public-theme .page-intro,
   .public-theme .resource-panel {
-    padding: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .public-theme .page-stack {
+    padding: var(--space-5) var(--space-4) var(--space-8);
+    gap: var(--space-5);
   }
 
   .public-theme .shell-bar {
@@ -605,6 +611,112 @@
 
   .public-theme .public-footer__inner {
     padding: var(--space-6) 0;
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
+}
+
+/* --- Content Layout & UX Enhancements --- */
+
+.content-layout-container {
+  display: flex;
+  gap: var(--space-8);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+}
+
+.content-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .content-sidebar {
+    display: none;
+  }
+}
+
+.content-toc {
+  position: sticky;
+  top: var(--space-8);
+  padding: var(--space-4);
+  background: var(--public-card-background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--public-card-border-soft);
+  box-shadow: var(--public-floating-shadow);
+}
+
+.content-toc__title {
+  font-size: var(--text-size-xs);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-4);
+}
+
+.content-toc__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.content-toc__link {
+  display: block;
+  font-size: var(--text-size-sm);
+  color: var(--color-text-description);
+  text-decoration: none;
+  padding: var(--space-1) var(--space-2);
+  border-left: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.content-toc__link:hover {
+  color: var(--color-text);
+  background: var(--color-surface-hover);
+}
+
+.content-toc__link.active {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.content-main {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.content-main--full {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Animations */
+.entry-animation {
+  animation: contentFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes contentFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhancing existing content-body for better spacing */
+.content-body section + section {
+  margin-top: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
 }

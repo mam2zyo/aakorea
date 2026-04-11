@@ -15,15 +15,17 @@ export async function request(path, options = {}) {
     headers = {},
   } = options
 
+  const isFormData = body instanceof FormData
+
   const response = await fetch(path, {
     method,
     credentials: 'include',
     headers: {
       Accept: 'application/json',
-      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(!isFormData && body !== undefined ? { 'Content-Type': 'application/json' } : {}),
       ...headers,
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: isFormData ? body : (body !== undefined ? JSON.stringify(body) : undefined),
   })
 
   const payload = await readJson(response)

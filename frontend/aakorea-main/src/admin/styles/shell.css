@@ -431,7 +431,7 @@
 
 .admin-table--content .admin-table__header,
 .admin-table--content .admin-table__row {
-  grid-template-columns: 64px minmax(170px, 0.85fr) minmax(0, 1fr) 96px 140px;
+  grid-template-columns: 64px 160px minmax(0, 1fr) 96px 220px;
 }
 
 .admin-table--admin-users .admin-table__header,

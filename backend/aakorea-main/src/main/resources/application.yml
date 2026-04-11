@@ -18,6 +18,8 @@ server:
   forward-headers-strategy: framework
 
 app:
+  content:
+    physical-root: src/main/resources/contents
   auth:
     admin:
       email: ${AAKOREA_ADMIN_EMAIL:${AAKOREA_ADMIN_USERNAME}}
