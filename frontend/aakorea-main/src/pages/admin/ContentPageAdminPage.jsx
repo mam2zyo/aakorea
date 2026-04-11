@@ -127,7 +127,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
               <span className="admin-table__heading" role="columnheader">페이지 key</span>
               <span className="admin-table__heading" role="columnheader">제목</span>
               <span className="admin-table__heading" role="columnheader">상태</span>
-              <span className="admin-table__heading" role="columnheader">편집</span>
+              <span className="admin-table__heading" role="columnheader">관리</span>
             </div>
 
             {filteredContentPages.map((contentPage, index) => (
@@ -159,14 +159,24 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
                     {contentPage.published ? '게시' : '비게시'}
                   </span>
                 </span>
-                <span className="admin-table__cell admin-table__cell--action" data-label="편집">
-                  <button
-                    className="ghost-button ghost-button--small"
-                    type="button"
-                    onClick={() => void startEditingContentPage(contentPage.id)}
-                  >
-                    수정
-                  </button>
+                <span className="admin-table__cell admin-table__cell--action" data-label="관리">
+                  <div className="admin-table__action-cluster">
+                    <button
+                      className="ghost-button ghost-button--small"
+                      type="button"
+                      onClick={() => void startEditingContentPage(contentPage.id)}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="ghost-button ghost-button--small ghost-button--danger"
+                      type="button"
+                      onClick={() => void deleteContentPageFromList(contentPage)}
+                      disabled={deleting}
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </span>
               </div>
             ))}
@@ -300,17 +310,6 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
                   </button>
                 ) : null}
 
-                {contentPageForm.id ? (
-                  <button
-                    className="ghost-button ghost-button--danger"
-                    type="button"
-                    onClick={() => void deleteContentPage()}
-                    disabled={formReadOnly}
-                  >
-                    {deleting ? '삭제 중...' : '안내 페이지 삭제'}
-                  </button>
-                ) : null}
-
                 <button className="primary-button" type="submit" disabled={formReadOnly}>
                   {saving
                     ? '저장 중...'
@@ -415,12 +414,12 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
     }
   }
 
-  async function deleteContentPage() {
-    if (!contentPageForm.id) {
+  async function deleteContentPageFromList(contentPage) {
+    if (!contentPage) {
       return
     }
 
-    const confirmed = window.confirm(`"${contentPageForm.title}" 안내 페이지를 삭제하시겠습니까?`)
+    const confirmed = window.confirm(`"${contentPage.title}" 안내 페이지와 연결된 모든 자식 요소(첨부파일, 본문 삽입 이미지 등)를 함께 삭제하시겠습니까?`)
     if (!confirmed) {
       return
     }
@@ -428,12 +427,16 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess, session }
     setDeleting(true)
 
     try {
-      await adminContentApi.deleteContentPage(contentPageForm.id)
+      await adminContentApi.deleteContentPage(contentPage.id)
 
       await loadContentPageWorkspace()
-      setEditorOpen(false)
-      setContentPageForm(EMPTY_CONTENT_PAGE_FORM)
-      setContentPageErrors({})
+      
+      if (editorOpen && contentPageForm.id === contentPage.id) {
+        setEditorOpen(false)
+        setContentPageForm(EMPTY_CONTENT_PAGE_FORM)
+        setContentPageErrors({})
+      }
+      
       onSuccess('안내 페이지를 삭제했습니다.')
     } catch (error) {
       setContentPageErrors({})
