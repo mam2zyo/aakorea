@@ -470,6 +470,10 @@
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-align: right;
+}
+
+.admin-table__header .admin-table__heading:first-child {
   text-align: center;
 }
 
