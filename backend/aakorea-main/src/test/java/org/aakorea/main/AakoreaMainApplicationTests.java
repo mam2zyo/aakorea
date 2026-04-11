@@ -8,9 +8,14 @@ import org.aakorea.main.group.application.MeetingAdminService;
 import org.aakorea.main.group.application.MeetingImportAdminService;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
 import org.aakorea.main.generalservice.application.DistrictAdminService;
+import org.aakorea.main.auth.application.AuthService;
+import org.aakorea.main.auth.application.OfficePermissionService;
+import org.aakorea.main.auth.infrastructure.AdminUserPermissionGrantRepository;
+import org.aakorea.main.auth.infrastructure.AdminUserRepository;
 import org.aakorea.main.theme.application.PublicThemeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -44,6 +49,21 @@ class AakoreaMainApplicationTests {
 
     @MockitoBean
     private AttachmentService attachmentService;
+
+    @MockitoBean
+    private AdminUserRepository adminUserRepository;
+
+    @MockitoBean
+    private AdminUserPermissionGrantRepository adminUserPermissionGrantRepository;
+
+    @MockitoBean
+    private OfficePermissionService officePermissionService;
+
+    @MockitoBean
+    private AuthService authService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     @Test
     void contextLoads() {
