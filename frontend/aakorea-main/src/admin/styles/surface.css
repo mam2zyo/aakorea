@@ -417,8 +417,8 @@
 }
 
 .admin-theme .status-pill--pending {
-  background: color-mix(in srgb, var(--color-success) 35%, #f3d486);
-  color: color-mix(in srgb, var(--color-success-text) 45%, #7a5600);
+  background: color-mix(in srgb, var(--color-success) 35%, var(--palette-admin-pale-gold));
+  color: color-mix(in srgb, var(--color-success-text) 45%, var(--palette-admin-dark-gold));
 }
 
 .admin-theme .status-pill--inactive {

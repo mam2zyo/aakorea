@@ -107,7 +107,7 @@ export function MeetingFocusDialog({
                         selectedMeeting.id === meeting.id ? ' meeting-focus-list__item--selected' : ''
                       }`}
                       type="button"
-                      onClick={() => onNavigate(buildMeetingsPath(filters, groupDetails.id, meeting.id))}
+                      onClick={() => onNavigate(buildMeetingsPath(groupDetails.id, meeting.id))}
                     >
                       <strong>
                         {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}

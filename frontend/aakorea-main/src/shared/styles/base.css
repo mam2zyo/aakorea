@@ -4,19 +4,22 @@
 
 html {
   font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  line-height: 1.5;
-  background: var(--boot-body-background, #fff);
-  color: var(--boot-body-color, inherit);
+  line-height: var(--text-leading-normal, 1.5);
+  background: var(--color-bg, #fff);
+  color: var(--color-text, inherit);
+  font-family: var(--font-body, sans-serif);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 button,
@@ -28,6 +31,9 @@ textarea {
 
 button {
   cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
 }
 
 input,
@@ -35,10 +41,19 @@ select,
 textarea {
   width: 100%;
   border: 1px solid var(--color-input-border, var(--color-border));
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, 8px);
   background: var(--color-input-bg, #fff);
   color: var(--color-input-text, var(--color-text));
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 1rem; /* Slightly normalized padding */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--state-focus-ring, rgba(var(--palette-forest-rgb, 0,0,0), 0.1));
 }
 
 input::placeholder,
@@ -48,6 +63,7 @@ textarea::placeholder {
 
 textarea {
   resize: vertical;
+  min-height: 100px;
 }
 
 h1,

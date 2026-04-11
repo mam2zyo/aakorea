@@ -10,13 +10,13 @@ export const VALID_ADMIN_THEME_PREFERENCES = new Set(['system', 'light', 'dark']
 
 export const ADMIN_DOCUMENT_THEMES = Object.freeze({
   dark: Object.freeze({
-    background: '#1e1e1e',
-    color: '#d4d4d4',
+    background: '#1e1e1e', // palette-dark-bg
+    color: '#d4d4d4',      // palette-dark-text
     colorScheme: 'dark',
   }),
   light: Object.freeze({
-    background: '#fdf6e3',
-    color: '#073642',
+    background: '#fdf6e3', // palette-solar-base3
+    color: '#073642',      // palette-solar-base02
     colorScheme: 'light',
   }),
 })
@@ -30,13 +30,13 @@ export const PUBLIC_DOCUMENT_THEMES = Object.freeze({
   }),
   harbor: Object.freeze({
     background:
-      'radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%), linear-gradient(180deg, #eef7f7 0%, #d8eaeb 100%)',
+      'radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%), linear-gradient(180deg, #eef6f7 0%, #d8ebee 100%)',
     color: '#1f2c33',
     colorScheme: 'light',
   }),
   breeze: Object.freeze({
     background:
-      'radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%), linear-gradient(180deg, #eff5fd 0%, #dbe8fb 100%)',
+      'radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%), linear-gradient(180deg, #edf3fb 0%, #dfe9f8 100%)',
     color: '#1f2a38',
     colorScheme: 'light',
   }),

@@ -287,11 +287,9 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
           loading={detailLoading}
           missingGroup={missingGroup}
           onClose={() => onNavigate(closePath)}
+          onNavigate={onNavigate}
           selectedMeeting={selectedMeeting}
           selectedMeetingId={selectedSearchMeetingId}
-          onMeetingSelect={(nextMeetingId) =>
-            onNavigate(buildMeetingsPath(groupId, nextMeetingId))
-          }
         />
       )}
     </>
