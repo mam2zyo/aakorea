@@ -35,58 +35,34 @@ ContentPage 목록을 조회한다.
 
 ### Response 200
 
-
----
-
-### 2. ContentPage 생성
-
-## POST `/api/admin/content-pages`
-
-ContentPage를 생성한다.
-
-### Request Body
-
 ```json
 {
-  "key": "first-visitor-guide",
-  "title": "처음 오신 분 안내",
-  "body": "페이지 본문",
-  "attachmentIds": [1, 2, 3],
-  "published": true
+  "data": [
+    {
+      "id": 1,
+      "key": "first-visitor-guide",
+      "title": "처음 오신 분 안내",
+      "originalFileName": "guide.html",
+      "published": true
+    }
+  ]
 }
 ```
 
-### Response 201
-
-```json
-{
-  "data": {
-    "id": 1,
-    "key": "first-visitor-guide",
-    "title": "처음 오신 분 안내",
-    "body": "페이지 본문",
-    "attachments": [
-       { "id": 1, "originalName": "file1.pdf", "fileSize": 1024, "contentType": "application/pdf" }
-    ],
-    "published": true
-  }
-}
-```
-
-### 기본 검증
-
-- `key` 필수
-- `title` 필수
-- `body` 필수
-- `key`는 중복 불가
-
 ---
 
-### 3. ContentPage 상세 조회
+### 2. ContentPage 업로드 및 생성
 
-## GET `/api/admin/content-pages/{id}`
+## POST `/api/admin/content-pages/upload`
 
-편집용 ContentPage 단건 상세를 조회한다.
+새로운 ContentPage를 생성하거나 HTML 본문 파일을 업로드한다. (Multipart/FormData 방식)
+
+### Request Parts
+
+- `key`: (String) 페이지 식별 키 (필수)
+- `title`: (String) 페이지 제목 (필수)
+- `published`: (boolean) 공개 여부 (선택, 기본값 false)
+- `file`: (File) HTML 본문 파일 (필수)
 
 ### Response 200
 
@@ -96,7 +72,35 @@ ContentPage를 생성한다.
     "id": 1,
     "key": "first-visitor-guide",
     "title": "처음 오신 분 안내",
-    "body": "페이지 본문",
+    "published": true,
+    "originalFileName": "guide.html",
+    "attachments": []
+  }
+}
+```
+
+### 기본 검증
+
+- `key`, `title`, `file` 필수
+- `key` 중복 불가 (중복 시 CONFLICT 발생)
+
+---
+
+### 3. ContentPage 상세 조회
+
+## GET `/api/admin/content-pages/{id}`
+
+편집용 ContentPage 단건 상세를 조회한다. (본문은 포함되지 않음)
+
+### Response 200
+
+```json
+{
+  "data": {
+    "id": 1,
+    "key": "first-visitor-guide",
+    "title": "처음 오신 분 안내",
+    "originalFileName": "guide.html",
     "published": true
   }
 }
@@ -106,20 +110,16 @@ ContentPage를 생성한다.
 
 ### 4. ContentPage 수정
 
-## PUT `/api/admin/content-pages/{id}`
+## POST `/api/admin/content-pages/{id}`
 
-ContentPage를 수정한다.
+ContentPage의 메타데이터를 수정하거나 파일을 업데이트한다. (Multipart/FormData 방식)
 
-### Request Body
+### Request Parts
 
-```json
-{
-  "key": "first-visitor-guide",
-  "title": "처음 오신 분 안내",
-  "body": "수정된 본문",
-  "published": true
-}
-```
+- `key`: (String) 수정할 키
+- `title`: (String) 수정할 제목
+- `published`: (boolean) 수정할 공개 여부
+- `file`: (File) 교체할 HTML 본문 파일 (선택)
 
 ### Response 200
 
@@ -127,9 +127,9 @@ ContentPage를 수정한다.
 {
   "data": {
     "id": 1,
-    "key": "first-visitor-guide",
-    "title": "처음 오신 분 안내",
-    "body": "수정된 본문",
+    "key": "updated-key",
+    "title": "수정된 제목",
+    "originalFileName": "new-guide.html",
     "published": true
   }
 }
@@ -137,23 +137,37 @@ ContentPage를 수정한다.
 
 ---
 
-### 5. ContentPage 삭제
+### 5. ContentPage 메타데이터 전용 수정
+
+## PATCH `/api/admin/content-pages/{id}/metadata`
+
+파일 업로드 없이 메타데이터(Key, Title, Published)만 수정할 때 사용한다. (JSON 방식)
+
+### Request Body
+
+```json
+{
+  "key": "updated-key",
+  "title": "수정된 제목",
+  "published": true
+}
+```
+
+---
+
+### 6. ContentPage 삭제
 
 ## DELETE `/api/admin/content-pages/{id}`
 
-ContentPage를 삭제한다.
+ContentPage 엔티티와 해당 HTML 파일을 물리적으로 삭제한다.
 
 ### Response 204
 
 응답 본문 없이 종료한다.
 
-### 기본 규칙
-
-- 대상이 없으면 404를 반환한다
-
 ---
 
-### 6. Notice 목록 조회
+### 7. Notice 목록 조회
 
 ## GET `/api/admin/notices`
 
@@ -176,7 +190,7 @@ Notice 목록을 조회한다.
 
 ---
 
-### 7. Notice 상세 조회
+### 8. Notice 상세 조회
 
 ## GET `/api/admin/notices/{id}`
 
@@ -189,7 +203,8 @@ Notice 목록을 조회한다.
   "data": {
     "id": 10,
     "title": "공지 제목",
-    "body": "공지 본문",
+    "bodyHtml": "공지 본문 HTML",
+    "bodyJson": "공지 본문 JSON",
     "published": true,
     "publishedAt": "2026-03-30T09:00:00"
   }
@@ -198,93 +213,37 @@ Notice 목록을 조회한다.
 
 ---
 
-### 8. Notice 생성
+### 9. Notice 생성
 
 ## POST `/api/admin/notices`
 
-Notice를 생성한다.
+Notice를 생성한다. (JSON 방식)
 
 ### Request Body
 
 ```json
 {
   "title": "공지 제목",
-  "body": "공지 본문",
+  "bodyHtml": "공지 본문 HTML",
+  "bodyJson": "공지 본문 JSON",
   "attachmentIds": [10, 11],
   "published": true,
   "publishedAt": "2026-03-30T09:00:00"
 }
 ```
 
-### Response 201
-
-```json
-{
-  "data": {
-    "id": 10,
-    "title": "공지 제목",
-    "body": "공지 본문",
-    "attachments": [
-       { "id": 10, "originalName": "news.pdf", "fileSize": 2048, "contentType": "application/pdf" }
-    ],
-    "published": true,
-    "publishedAt": "2026-03-30T09:00:00"
-  }
-}
-```
-
-### 기본 검증
-
-- `title` 필수
-- `body` 필수
-- `publishedAt`는 게시 시점 정렬에 필요한 값
-- 게시 상태가 `true`인 경우 `publishedAt` 필수
-
 ---
 
-### 9. Notice 수정
+### 10. Notice 수정
 
 ## PUT `/api/admin/notices/{id}`
 
-Notice를 수정한다.
-
-### Request Body
-
-```json
-{
-  "title": "수정된 공지 제목",
-  "body": "수정된 공지 본문",
-  "published": true,
-  "publishedAt": "2026-03-31T09:00:00"
-}
-```
-
-### Response 200
-
-```json
-{
-  "data": {
-    "id": 10,
-    "title": "수정된 공지 제목",
-    "body": "수정된 공지 본문",
-    "published": true,
-    "publishedAt": "2026-03-31T09:00:00"
-  }
-}
-```
+Notice를 수정한다. (JSON 방식)
 
 ---
 
-### 10. Notice 삭제
+### 11. Notice 삭제
 
 ## DELETE `/api/admin/notices/{id}`
 
 Notice를 삭제한다.
-
-### Response 204
-
-응답 본문 없이 종료한다.
-
-### 기본 규칙
-
-- 대상이 없으면 404를 반환한다

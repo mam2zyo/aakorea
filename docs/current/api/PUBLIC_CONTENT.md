@@ -12,15 +12,6 @@
 - 공개 `Notice` 목록과 상세는 어떻게 조회하는가?
 - 공개 콘텐츠는 어떤 조건으로 노출되는가?
 
-이 문서에 포함하지 않는 내용:
-
-- 공통 응답 형식과 상태 코드의 전체 규약
-- 운영용 콘텐츠 관리 API
-- 콘텐츠 모델 채택 이유
-- 구현 단계별 작업 순서
-
-공통 규약은 `COMMON.md`를 따른다.
-
 ---
 
 ## 공개 API
@@ -31,18 +22,34 @@
 
 ## GET `/api/public/content-pages/{key}`
 
-정적 안내성 페이지를 조회한다.
+정적 안내성 페이지를 조회한다. 본문 내용은 서버의 파일 시스템에서 로드된다.
 
 ### Path Params
 
-- `key`: 페이지 고정 식별 키
+- `key`: 페이지 고정 식별 키 (URL 슬러그)
 
+### Response 200
+
+```json
+{
+  "data": {
+    "id": 1,
+    "key": "first-visitor-guide",
+    "title": "처음 오신 분 안내",
+    "bodyHtml": "<h1>페이지 본문 HTML</h1>",
+    "attachments": []
+  }
+}
+```
+
+> [!NOTE]
+> `bodyHtml` 필드는 DB가 아닌 서버의 물리적 파일 시스템(`.html`)에서 읽어온 문자열입니다.
 
 ### 기본 검증
 
 - `key`는 필수
 - 공개 조회에서는 `published=true`인 데이터만 반환
-- 없으면 404 반환
+- 해당하는 키의 파일이나 DB 레코드가 없으면 404 반환
 
 ---
 
@@ -51,10 +58,6 @@
 ## GET `/api/public/notices`
 
 공개된 공지 목록을 조회한다.
-
-### Query Params
-
-- 현재 MVP에서는 별도 Query Params 없이 단순 목록을 조회한다.
 
 ### Response 200
 
@@ -70,12 +73,6 @@
 }
 ```
 
-### 기본 규칙
-
-- `published=true`인 데이터만 반환
-- 기본 정렬은 `publishedAt desc`
-- 최신 공지가 먼저 보이도록 `id desc`를 보조 정렬로 사용한다
-
 ---
 
 ### 3. Notice 단건 조회
@@ -84,10 +81,6 @@
 
 공개된 공지 상세를 조회한다.
 
-### Path Params
-
-- `id`: Notice 식별자
-
 ### Response 200
 
 ```json
@@ -95,14 +88,9 @@
   "data": {
     "id": 10,
     "title": "공지 제목",
-    "body": "공지 본문",
-    "publishedAt": "2026-03-30T09:00:00"
+    "bodyHtml": "공지 본문 HTML",
+    "publishedAt": "2026-03-30T09:00:00",
+    "attachments": []
   }
 }
 ```
-
-### 기본 검증
-
-- `id`는 숫자 형식
-- `published=true`인 데이터만 반환
-- 없으면 404 반환
