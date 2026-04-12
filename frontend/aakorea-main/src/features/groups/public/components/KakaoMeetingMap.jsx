@@ -98,8 +98,6 @@ function loadKakaoMapSdk() {
 export function KakaoMeetingMap({
   latitude,
   longitude,
-  locationAddress,
-  locationDetail,
 }) {
   const isDesktopViewport = useMediaQuery(DESKTOP_MAP_MEDIA_QUERY)
   const mapContainerRef = useRef(null)
@@ -156,17 +154,6 @@ export function KakaoMeetingMap({
         className="meeting-focus-map__canvas"
         aria-hidden="true"
       />
-
-      {isDesktopViewport ? (
-        <div className="meeting-focus-map__copy meeting-focus-location-card meeting-focus-location-card--overlay">
-          <strong className="meeting-focus-location-card__title">
-            {locationDetail || '선택한 모임 위치'}
-          </strong>
-          <p className="meeting-focus-location-card__address">
-            {locationAddress || '공개 주소 없음'}
-          </p>
-        </div>
-      ) : null}
 
       {loadError ? (
         <p className="meeting-focus-map__error">지도 정보를 불러오지 못했습니다.</p>

@@ -643,20 +643,7 @@
   justify-content: center;
 }
 
-.meeting-focus-location-card__title {
-  display: block;
-  color: var(--color-text);
-  font-size: clamp(1.02rem, 2vw, 1.16rem);
-  font-weight: 700;
-  line-height: 1.4;
-}
 
-.meeting-focus-location-card__address {
-  margin-top: var(--space-1);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  line-height: 1.45;
-}
 
 .meeting-focus-state {
   color: var(--color-text-muted);
@@ -680,12 +667,7 @@
   display: none;
 }
 
-.meeting-focus-map__copy {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  max-width: min(100%, 320px);
-}
+
 
 .meeting-focus-map__error {
   position: absolute;
@@ -701,17 +683,7 @@
   line-height: 1.2;
 }
 
-.meeting-focus-location-card {
-  border: 1px solid var(--public-map-border);
-  border-radius: 20px;
-  background: var(--public-card-background-soft);
-  padding: 0.9rem 1rem;
-}
 
-.meeting-focus-location-card--overlay {
-  background: var(--public-card-background-soft-strong);
-  box-shadow: var(--public-location-card-shadow);
-}
 
 .meeting-focus-contact-block {
   display: flex;
@@ -848,12 +820,7 @@
     border-radius: 18px;
   }
 
-  .meeting-focus-map__copy {
-    right: 0.9rem;
-    bottom: 0.9rem;
-    left: 0.9rem;
-    max-width: none;
-  }
+
 
   .meeting-focus-contact__fab {
     width: 58px;

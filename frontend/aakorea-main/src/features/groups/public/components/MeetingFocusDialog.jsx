@@ -218,8 +218,6 @@ export function MeetingFocusDialog({
                   key={selectedMeeting.id}
                   latitude={selectedMeeting.latitude}
                   longitude={selectedMeeting.longitude}
-                  locationAddress={selectedMeeting.locationAddress}
-                  locationDetail={selectedMeeting.locationDetail}
                 />
 
                 {contactPhone ? (
