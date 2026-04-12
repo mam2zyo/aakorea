@@ -245,4 +245,3 @@
 
 - 공개 사이트 theme는 아직 code-backed preset만 지원하며 원격 theme editor는 없다
 - `admin/account`의 theme preference는 현재 localStorage만 사용하고 서버 저장은 없다
-- `GET /api/public/meetings/{id}` 단건 상세 API는 남아 있지만, 메인 공개 UI는 `/meetings` / `/groups/:id`의 그룹 상세 흐름을 우선 사용한다
