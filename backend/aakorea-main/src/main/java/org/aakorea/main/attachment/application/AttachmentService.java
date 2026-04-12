@@ -15,6 +15,10 @@ public class AttachmentService {
     private final AttachmentRepository attachmentRepository;
     private final StorageService storageService;
 
+    /**
+     * 파일을 업로드하고 메타데이터를 DB에 저장합니다.
+     * filePath 필드에는 실제 물리 경로가 아닌, 클라이언트에서 접근 가능한 URL(/api/public/assets/...)이 저장됩니다.
+     */
     @Transactional
     public Attachment uploadAttachment(MultipartFile file) {
         if (file == null || file.isEmpty()) {

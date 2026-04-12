@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.aakorea.main.content.domain.Notice;
 
+/**
+ * Notice(공지사항)에 종속된 첨부파일을 관리하기 위한 브릿지 엔터티입니다.
+ * 자산 재사용성과 노출 순서(orderIndex) 관리를 위해 브릿지 구조를 사용합니다.
+ */
 @Getter
 @Entity
 @Table(name = "notice_attachments")

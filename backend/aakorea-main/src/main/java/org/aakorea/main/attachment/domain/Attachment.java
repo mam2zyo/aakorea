@@ -22,6 +22,9 @@ public class Attachment {
     @Column(nullable = false)
     private String savedName;
 
+    /**
+     * 클라이언트에서 접근 가능한 URL 경로 (예: /api/public/assets/uuid.pdf)
+     */
     @Column(nullable = false)
     private String filePath;
 
