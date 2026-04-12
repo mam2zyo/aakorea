@@ -1,3 +1,5 @@
+<!-- docs/reference/java-null-safety.md -->
+
 # 자바 널 안정성(Java Null Safety) 가이드
 
 이 문서는 프로젝트 내의 'Null type safety' 관련 이슈를 이해하고, 향후 코드의 안정성을 높이기 위한 전략을 설명합니다.

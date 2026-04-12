@@ -1,3 +1,5 @@
+<!-- docs/reference/ADMIN_DOMAIN_SEPARATION_STRATEGY.md -->
+
 # 도메인 분리 전략 및 향후 과제 영향 분석 (Domain Separation Strategy & Impact Analysis)
 
 이 문서는 공개 사이트(`maumtalk.win`)와 관리자 서비스(`office.maumtalk.win`)를 물리적인 도메인으로 분리하기 위한 전략과, 이 변화가 향후 프로젝트 로드맵에 미칠 영향을 분석합니다.

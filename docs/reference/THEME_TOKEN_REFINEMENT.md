@@ -1,3 +1,5 @@
+<!-- docs/reference/THEME_TOKEN_REFINEMENT.md -->
+
 # 테마 토큰 고도화 전략 (Theme Token Refinement)
 
 > [!NOTE]

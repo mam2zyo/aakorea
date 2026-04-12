@@ -1,3 +1,5 @@
+<!-- docs/reference/BUNDLE_OPTIMIZATION_TROUBLESHOOTING.md -->
+
 # 번들 최적화 트러블슈팅 기록 (Bundle Optimization Troubleshooting)
 
 이 문서는 `feature/bundle-optimization` 브랜치에서 관리자 번들 격리 및 지도 로딩 최적화를 시도하며 발견한 문제점과 기술적 분석 내용을 기록합니다. 차후 새로운 브랜치에서 재작업 시 참고 자료로 활용합니다.
