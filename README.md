@@ -14,7 +14,6 @@
 - 사용자가 전국(`All`) 또는 지역(`Province`) 기준으로 `Meeting`을 검색하고, 상세 조건(연합, 요일, 유형, 키워드)으로 필터링할 수 있어야 한다
 - 현재 위치 기준 100km 이내의 가까운 모임을 실시간으로 찾을 수 있어야 한다
 - 모임 조회 후 `GroupContact.phone`으로 바로 전화할 수 있어야 한다
-- 운영자는 `District`, `Group`, `Meeting`, `ContentPage`, `Notice`를 관리할 수 있어야 한다
 
 ---
 
