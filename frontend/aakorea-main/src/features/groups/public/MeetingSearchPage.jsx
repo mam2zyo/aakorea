@@ -289,7 +289,6 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
           onClose={() => onNavigate(closePath)}
           onNavigate={onNavigate}
           selectedMeeting={selectedMeeting}
-          selectedMeetingId={selectedSearchMeetingId}
         />
       )}
     </>

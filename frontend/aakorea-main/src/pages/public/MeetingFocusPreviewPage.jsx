@@ -81,9 +81,8 @@ export function MeetingFocusPreviewPage({ onNavigate }) {
       </PageSection>
 
       <MeetingFocusDialog
-        detailLoading={false}
-        filters={PREVIEW_FILTERS}
         groupDetails={PREVIEW_GROUP_DETAILS}
+        loading={false}
         missingGroup={false}
         onClose={() => onNavigate('/meetings')}
         onNavigate={handlePreviewNavigate}

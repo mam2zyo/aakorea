@@ -18,9 +18,8 @@ import {
 } from '../utils'
 
 export function MeetingFocusDialog({
-  detailLoading,
-  filters,
   groupDetails,
+  loading,
   missingGroup,
   onClose,
   onNavigate,
@@ -75,7 +74,7 @@ export function MeetingFocusDialog({
         </header>
 
         <div className="meeting-focus-dialog__body">
-          {detailLoading ? (
+          {loading ? (
             <div className="meeting-focus-state">Group 안내를 불러오는 중입니다...</div>
           ) : null}
 
