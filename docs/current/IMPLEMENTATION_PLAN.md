@@ -43,6 +43,9 @@
 
 ### 4. 운영 콘텐츠 / 테마 / 도구 흐름
 
+- `Notice` CRUD (Rich Text 에디터 통합)
+- `ContentPage` CRUD (HTML 파일 업로드 기반 하이브리드 아키텍처)
+- 첨부파일 및 에디터 이미지 자산 업로드/관리
 - 운영자 권한 세분화 (AdminUser / Role / Permission)
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장
@@ -73,6 +76,6 @@
 - 방문자가 공개 페이지에서 공지사항의 첨부파일을 다운로드할 수 있다
 - 운영자가 그룹과 모임을 생성 / 수정 / 삭제할 수 있다
 - 운영자가 역할(Role)과 권한(Permission)에 따라 차등적으로 기능에 접근할 수 있다
-- 운영자가 Rich Text 에디터와 첨부파일을 사용해 콘텐츠를 편집할 수 있다
+- 운영자가 `Notice`는 Rich Text 에디터로, `ContentPage`는 HTML 파일 업로드를 통해 편집할 수 있다
 - 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다
 - 운영자가 필요 시 import / 좌표 보정 도구를 사용할 수 있다

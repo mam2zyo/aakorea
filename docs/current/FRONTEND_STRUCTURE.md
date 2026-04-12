@@ -136,8 +136,6 @@
 - `/admin/public-theme`
   공개 사이트 theme의 draft / publish / rollback
 
-- `/admin/overview`
-  HTML normalize + 정제 JSON import와 모임 좌표 일괄 보정 도구
 
 ---
 
