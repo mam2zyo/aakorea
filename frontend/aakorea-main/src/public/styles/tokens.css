@@ -525,7 +525,7 @@
   --color-input-placeholder: rgba(var(--palette-slate-450-rgb), 0.78);
 
   /* Layer 3: Component Tokens */
-  --public-shell-background: linear-gradient(180deg, var(--palette-blue-400) 0%, var(--palette-blue-900) 100%);
+  --public-shell-background: rgba(var(--palette-blue-900-rgb), 0.96);
   --public-shell-border: rgba(var(--palette-blue-950-rgb), 0.28);
   --public-shell-utility-background: rgba(var(--palette-blue-900-rgb), 0.98);
   --public-shell-utility-text: rgba(236, 243, 251, 0.88);
