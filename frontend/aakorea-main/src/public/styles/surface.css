@@ -19,7 +19,7 @@
   gap: var(--space-4);
   width: min(1180px, calc(100% - (var(--space-5) * 2)));
   margin: 0 auto;
-  padding: 0.95rem 0;
+  padding: var(--space-4) 0;
 }
 
 .public-theme .brand-lockup {
@@ -43,7 +43,7 @@
   background: var(--public-brand-mark-background);
   color: var(--public-brand-mark-text);
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 700;
 }
 
@@ -56,13 +56,13 @@
 .public-theme .brand-copy strong {
   color: var(--public-shell-text);
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
 }
 
 .public-theme .brand-copy span {
   color: var(--public-shell-subtitle);
-  font-size: 0.84rem;
+  font-size: var(--font-size-sm);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -86,10 +86,10 @@
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  padding: 0.42rem 0.82rem;
+  padding: var(--space-2) var(--space-3);
   background: var(--public-preview-chip-background);
   color: var(--public-shell-utility-text);
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -97,7 +97,7 @@
 
 .public-theme .nav-link {
   border-radius: 999px;
-  padding: 0.55rem 0.95rem;
+  padding: var(--space-2) var(--space-4);
   color: var(--public-shell-nav-text);
   transition: background 140ms ease, color 140ms ease;
 }
@@ -146,7 +146,7 @@
 
 .public-theme .public-footer__brand {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: var(--font-size-lg);
   color: var(--public-footer-heading);
 }
 
@@ -176,7 +176,7 @@
   min-height: 2.2rem;
   border-radius: 999px;
   border: 1px solid var(--public-footer-link-border);
-  padding: 0.48rem 0.9rem;
+  padding: var(--space-2) var(--space-4);
   transition: background 140ms ease, transform 140ms ease;
 }
 
@@ -208,8 +208,8 @@
 
 .public-theme .page-intro__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3vw, 3.3rem);
-  line-height: 1.15;
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
 }
 
 .public-theme .page-intro__description,
@@ -228,7 +228,7 @@
 
 .public-theme .eyebrow {
   color: var(--color-primary);
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -251,7 +251,7 @@
   justify-content: center;
   flex-shrink: 0;
   border-radius: 999px;
-  padding: 0.8rem 1.2rem;
+  padding: var(--space-3) var(--space-5);
   border: 1px solid transparent;
   white-space: nowrap;
   transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
@@ -274,8 +274,8 @@
 }
 
 .public-theme .primary-button--small {
-  padding: 0.62rem 1rem;
-  font-size: 0.94rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
   box-shadow: var(--public-button-primary-shadow);
 }
 
@@ -311,8 +311,8 @@
 }
 
 .public-theme .ghost-button--small {
-  padding: 0.55rem 0.9rem;
-  font-size: 0.92rem;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
 }
 
 .public-theme .panel {
@@ -338,7 +338,7 @@
 }
 
 .public-theme .field__label {
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
 }
 
@@ -350,7 +350,7 @@
 
 .public-theme .field__error {
   color: var(--color-danger);
-  font-size: 0.84rem;
+  font-size: var(--font-size-sm);
 }
 
 .public-theme .detail-grid {
@@ -367,7 +367,7 @@
 
 .public-theme .detail-item dt {
   color: var(--color-text-muted);
-  font-size: 0.84rem;
+  font-size: var(--font-size-sm);
 }
 
 .public-theme .detail-item dd {
@@ -375,9 +375,9 @@
 }
 
 .public-theme .content-body {
-  line-height: var(--text-leading-relaxed, 1.625);
+  line-height: var(--line-height-relaxed, 1.625);
   color: var(--color-text);
-  font-size: var(--text-size-base);
+  font-size: var(--font-size-base);
 }
 
 .public-theme .content-body > *:first-child {
@@ -391,12 +391,12 @@
   color: var(--color-primary-strong);
   margin-top: var(--space-10);
   margin-bottom: var(--space-4);
-  line-height: var(--text-leading-tight);
+  line-height: var(--line-height-tight);
 }
 
-.public-theme .content-body h2 { font-size: var(--text-size-2xl); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); }
-.public-theme .content-body h3 { font-size: var(--text-size-xl); }
-.public-theme .content-body h4 { font-size: var(--text-size-lg); }
+.public-theme .content-body h2 { font-size: var(--font-size-2xl); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); }
+.public-theme .content-body h3 { font-size: var(--font-size-xl); }
+.public-theme .content-body h4 { font-size: var(--font-size-lg); }
 
 .public-theme .content-body p {
   margin-bottom: var(--space-4);
@@ -443,7 +443,7 @@
 .public-theme .content-body table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--text-size-sm);
+  font-size: var(--font-size-sm);
   text-align: left;
 }
 
@@ -582,7 +582,7 @@
 
   .public-theme .shell-main-row {
     gap: var(--space-3);
-    padding: 0.8rem 0;
+    padding: var(--space-3) 0;
   }
 
   .public-theme .brand-mark {
@@ -591,7 +591,7 @@
   }
 
   .public-theme .brand-copy strong {
-    font-size: 1.08rem;
+    font-size: var(--font-size-lg);
   }
 
   .public-theme .brand-copy span {
@@ -599,7 +599,7 @@
   }
 
   .public-theme .nav-link {
-    padding: 0.46rem 0.78rem;
+    padding: var(--space-2) var(--space-3);
   }
 
   .public-theme .status-banner--floating {
@@ -649,7 +649,7 @@
 }
 
 .content-toc__title {
-  font-size: var(--text-size-xs);
+  font-size: var(--font-size-xs);
   font-weight: 700;
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -668,7 +668,7 @@
 
 .content-toc__link {
   display: block;
-  font-size: var(--text-size-sm);
+  font-size: var(--font-size-sm);
   color: var(--color-text-description);
   text-decoration: none;
   padding: var(--space-1) var(--space-2);

@@ -88,7 +88,7 @@
   position: relative;
   display: block;
   border-radius: var(--radius-sm);
-  padding: 0.9rem 1rem;
+  padding: var(--space-3) var(--space-4);
   color: var(--admin-sidebar-text-muted);
   transition: background 140ms ease, color 140ms ease, transform 140ms ease;
 }
@@ -142,10 +142,10 @@
 .admin-nav-link__status {
   flex-shrink: 0;
   border-radius: 999px;
-  padding: 0.18rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
   background: var(--admin-nav-status-background);
   color: var(--color-text-muted);
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
 }
 
@@ -177,7 +177,7 @@
 
 .admin-main__heading .eyebrow {
   color: var(--color-text-muted);
-  font-size: 0.74rem;
+  font-size: var(--font-size-xs);
   letter-spacing: 0.1em;
 }
 
@@ -256,7 +256,7 @@
 
 .admin-directory-toolbar__count {
   color: var(--color-text-muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
   white-space: nowrap;
 }
 
@@ -398,7 +398,7 @@
 
 .admin-overlay__heading h2 {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: var(--font-size-3xl);
   line-height: 1.15;
 }
 
@@ -456,7 +456,7 @@
   grid-template-columns: minmax(150px, 0.65fr) minmax(0, 1fr) minmax(0, 1fr) 96px;
   gap: var(--space-4);
   align-items: center;
-  padding: 0.95rem 1.15rem;
+  padding: var(--space-4) var(--space-5);
 }
 
 .admin-table__header {
@@ -466,7 +466,7 @@
 
 .admin-table__heading {
   color: var(--color-text-muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -503,14 +503,14 @@
 
 .admin-table__cell--index {
   color: var(--color-text-muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
 .admin-table__cell--primary strong {
   display: block;
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
 }
 
@@ -554,7 +554,7 @@
 
 .admin-group-modal__header .admin-overlay__heading h2 {
   font-family: var(--font-body);
-  font-size: 1.4rem;
+  font-size: var(--font-size-2xl);
   font-weight: 500;
   letter-spacing: -0.02em;
 }
@@ -618,7 +618,7 @@
 }
 
 .admin-group-modal__panel .section-header h3 {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .admin-group-modal__panel .entity-list {
@@ -670,7 +670,7 @@
 
 .admin-group-wizard__progress {
   color: var(--color-text-muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
 }
 
 .admin-group-wizard {
@@ -726,17 +726,17 @@
 
 .admin-group-wizard__section-head strong {
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--space-1);
 }
 
 .admin-group-wizard__section-title {
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--space-1);
 }
 
 .admin-group-wizard__section-head p {
   color: var(--color-text-muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
 }
 
 .admin-group-wizard__postcode,
@@ -827,7 +827,7 @@
 .address-search-panel__copy {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .address-search-panel__copy span,
@@ -838,7 +838,7 @@
 
 .address-search-panel__error {
   color: var(--color-danger);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
 }
 
 .address-search-panel__embed {
@@ -878,7 +878,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .admin-group-wizard__meeting-location {
@@ -888,7 +888,7 @@
 .admin-group-wizard__meeting-address,
 .admin-group-wizard__meeting-contact {
   color: var(--color-text-muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-sm);
 }
 
 .admin-group-wizard__meeting-actions {
@@ -964,7 +964,7 @@
 .admin-group-wizard__meeting-preview {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .admin-group-wizard__actions {
@@ -1032,7 +1032,7 @@
 
 .admin-group-edit-sheet__rowlabel {
   color: var(--color-text);
-  font-size: 0.98rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
 }
 
@@ -1041,7 +1041,7 @@
   min-width: 0;
   max-width: 360px;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .admin-group-edit-sheet__rowcontrol--compact {
@@ -1150,7 +1150,7 @@
 }
 
 .admin-group-edit-sheet__section-head h3 {
-  font-size: 1.02rem;
+  font-size: var(--font-size-base);
 }
 
 .admin-group-edit-sheet__list {
@@ -1188,7 +1188,7 @@
 .admin-group-edit-sheet__meeting-meta-head {
   padding: 0.9rem 0;
   color: var(--color-text-muted);
-  font-size: 0.84rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
@@ -1209,7 +1209,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .admin-group-edit-sheet__meeting-summary span {
@@ -1312,7 +1312,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--space-1);
 }
 
 .admin-group-edit-sheet__row-body span {
@@ -1328,7 +1328,7 @@
 .admin-group-edit-sheet__toggle {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--space-3);
   color: var(--color-text-muted);
 }
 
@@ -1340,8 +1340,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.7rem;
-  padding: 0.2rem 0;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
 }
 
 .admin-group-edit-sheet__status-label {
@@ -1399,7 +1399,7 @@
 }
 
 .admin-group-edit-sheet__switch-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   transition: color 160ms ease;
 }
@@ -1469,12 +1469,12 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: var(--space-1);
 }
 
 .admin-import-panel__meta span {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .admin-import-panel__summary,

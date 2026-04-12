@@ -22,7 +22,7 @@
 .home-chip,
 .home-hero-card__eyebrow {
   color: var(--color-primary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -37,7 +37,7 @@
   border: 0;
   border-bottom: 1px solid var(--public-resource-row-border);
   background: transparent;
-  padding: 0.95rem 0;
+  padding: var(--space-4) 0;
   text-align: left;
 }
 
@@ -54,7 +54,7 @@
 
 .home-notice-card__meta {
   color: var(--color-text-muted);
-  font-size: 0.84rem;
+  font-size: var(--font-size-sm);
 }
 
 .home-notice-card__action {
@@ -79,7 +79,7 @@
 
 .home-notice-banner__eyebrow {
   color: var(--color-primary-strong);
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -126,7 +126,7 @@
   border: 1px solid var(--public-audience-tab-border);
   background: var(--public-audience-tab-background);
   color: var(--public-audience-tab-text);
-  padding: 0.72rem 1rem;
+  padding: var(--space-3) var(--space-4);
   font-weight: 700;
 }
 
@@ -202,7 +202,7 @@
   border: 0;
   border-bottom: 1px solid var(--public-resource-row-border);
   background: transparent;
-  padding: 1rem 0;
+  padding: var(--space-4) 0;
   text-align: left;
   transition: background 140ms ease, transform 140ms ease;
 }
@@ -225,7 +225,7 @@
 
 .home-resource-link__meta {
   color: var(--public-resource-row-meta);
-  font-size: 0.82rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -280,7 +280,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  padding: 0.82rem 1.2rem;
+  padding: var(--space-3) var(--space-5);
   font-weight: 700;
 }
 
