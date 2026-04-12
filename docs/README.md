@@ -184,7 +184,6 @@ docs/
    ├─ THEME_TOKEN_REFINEMENT.md
    ├─ CONTENT_ARCHITECTURE_STRATEGY.md   
    ├─ java-null-safety.md
-   └─ old_contents/
 ```
 
 ## 추가 확장 제안
