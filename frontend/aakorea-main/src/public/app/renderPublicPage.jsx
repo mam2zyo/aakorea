@@ -1,9 +1,9 @@
 import { EmptyState, PageSection } from '../ui'
-import { ContentPageViewPage } from '../../pages/public/ContentPageViewPage'
-import { HomePage } from '../../pages/public/HomePage'
-import { MeetingFocusPreviewPage } from '../../pages/public/MeetingFocusPreviewPage'
-import { MeetingSearchPage } from '../../pages/public/MeetingSearchPage'
-import { NoticePage } from '../../pages/public/NoticePage'
+import { ContentPageViewPage } from '../pages/ContentPageViewPage'
+import { HomePage } from '../pages/HomePage'
+import { MeetingFocusPreviewPage } from '../pages/MeetingFocusPreviewPage'
+import { MeetingSearchPage } from '../pages/MeetingSearchPage'
+import { NoticePage } from '../pages/NoticePage'
 
 export function renderPublicPage({
   onError,

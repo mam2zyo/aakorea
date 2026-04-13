@@ -7,7 +7,7 @@ import {
 } from '../../public/ui'
 import { publicContentApi } from '../../features/content/api/public'
 import { ApiError } from '../../shared/lib/request'
-import { PublicAttachmentList } from '../../ui/PublicAttachmentList'
+import { PublicAttachmentList } from '../components/PublicAttachmentList'
 
 export function NoticePage({ noticeId, onError, onNavigate }) {
   const [notices, setNotices] = useState([])
