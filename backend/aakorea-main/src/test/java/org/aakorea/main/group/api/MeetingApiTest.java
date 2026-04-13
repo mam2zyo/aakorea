@@ -71,16 +71,17 @@ class MeetingApiTest {
     @Test
     void createMeetingReturnsCreatedResponse() throws Exception {
         given(meetingAdminService.createMeeting(
-                20L,
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
-                37.4979,
-                127.0276,
-                "010-9999-0000",
-                "MONDAY",
-                "19:30",
-                "OPEN",
-                true))
+                new MeetingAdminService.MeetingCommand(
+                        20L,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        127.0276,
+                        "010-9999-0000",
+                        "MONDAY",
+                        "19:30",
+                        "OPEN",
+                        true)))
                 .willReturn(new MeetingAdminService.MeetingData(
                         100L,
                         20L,

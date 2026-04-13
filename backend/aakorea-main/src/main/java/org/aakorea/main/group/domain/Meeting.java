@@ -79,7 +79,7 @@ public class Meeting extends AuditFields {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.contactPhoneOverride = contactPhoneOverride;
+        this.contactPhoneOverride = contactPhoneOverride != null ? contactPhoneOverride.trim() : null;
         this.active = active;
     }
 
@@ -97,7 +97,7 @@ public class Meeting extends AuditFields {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.contactPhoneOverride = contactPhoneOverride;
+        this.contactPhoneOverride = contactPhoneOverride != null ? contactPhoneOverride.trim() : null;
         this.active = active;
     }
 

@@ -27,11 +27,11 @@ public class PublicMeetingQueryService {
     private static final int MAX_NEARBY_MEETING_COUNT = 500;
     private static final int DEFAULT_NEARBY_RADIUS_KM = 100;
     private static final int MAX_NEARBY_RADIUS_KM = 100;
-    private static final double EARTH_RADIUS_KM = 6371.0088;
 
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
+    private final DistanceCalculator distanceCalculator;
 
     public List<PublicMeetingSummary> getMeetings(
             List<String> province,
@@ -53,36 +53,27 @@ public class PublicMeetingQueryService {
         }
 
         boolean isAllProvinces = province != null && province.contains("all");
-        Specification<Meeting> specification = (root, query, criteriaBuilder) ->
-                criteriaBuilder.isTrue(root.get("active"));
+        Specification<Meeting> specification = MeetingSpecifications.active();
 
         if (!isAllProvinces) {
             List<Province> normalizedProvinces = MeetingFieldSupport.requireProvinces(province);
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    root.get("location").get("province").in(normalizedProvinces));
+            specification = specification.and(MeetingSpecifications.hasProvinceIn(normalizedProvinces));
         }
 
         if (normalizedDayOfWeek != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("dayOfWeek"), normalizedDayOfWeek));
+            specification = specification.and(MeetingSpecifications.hasDayOfWeek(normalizedDayOfWeek));
         }
 
         if (type != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), type));
+            specification = specification.and(MeetingSpecifications.hasType(type));
         }
 
         if (districtId != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("group").get("district").get("id"), districtId));
+            specification = specification.and(MeetingSpecifications.hasDistrictId(districtId));
         }
 
         if (keyword != null && !keyword.isBlank()) {
-            String pattern = "%" + keyword.trim() + "%";
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.or(
-                            criteriaBuilder.like(root.get("group").get("name"), pattern),
-                            criteriaBuilder.like(root.get("location").get("detail"), pattern)));
+            specification = specification.and(MeetingSpecifications.hasKeyword(keyword));
         }
 
         return meetingRepository.findAll(specification).stream()
@@ -123,40 +114,32 @@ public class PublicMeetingQueryService {
             String keyword,
             int radiusKm
     ) {
-        Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.isTrue(root.get("active")),
-                criteriaBuilder.isNotNull(root.get("location").get("latitude")),
-                criteriaBuilder.isNotNull(root.get("location").get("longitude")));
+        Specification<Meeting> specification = MeetingSpecifications.active()
+                .and(MeetingSpecifications.hasCoordinates());
 
         if (dayOfWeek != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("dayOfWeek"), dayOfWeek));
+            specification = specification.and(MeetingSpecifications.hasDayOfWeek(dayOfWeek));
         }
 
         if (type != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), type));
+            specification = specification.and(MeetingSpecifications.hasType(type));
         }
 
         if (districtId != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("group").get("district").get("id"), districtId));
+            specification = specification.and(MeetingSpecifications.hasDistrictId(districtId));
         }
 
         if (keyword != null && !keyword.isBlank()) {
-            String pattern = "%" + keyword.trim() + "%";
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.or(
-                            criteriaBuilder.like(root.get("group").get("name"), pattern),
-                            criteriaBuilder.like(root.get("location").get("detail"), pattern)));
+            specification = specification.and(MeetingSpecifications.hasKeyword(keyword));
         }
 
-        return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
-                .map(meeting -> new NearbyMeeting(meeting, calculateDistanceKm(
-                        latitude,
-                        longitude,
-                        meeting.getLatitude(),
-                        meeting.getLongitude())))
+        return meetingRepository.findAll(specification).stream()
+                .map(meeting -> {
+                    double distanceKm = distanceCalculator.calculateDistanceKm(
+                            latitude, longitude,
+                            meeting.getLatitude(), meeting.getLongitude());
+                    return new NearbyMeeting(meeting, distanceKm);
+                })
                 .filter(item -> item.distanceKm() <= radiusKm)
                 .sorted(Comparator
                         .comparingDouble(NearbyMeeting::distanceKm)
@@ -235,25 +218,6 @@ public class PublicMeetingQueryService {
         }
 
         return radiusKm;
-    }
-
-    private double calculateDistanceKm(
-            double originLatitude,
-            double originLongitude,
-            double destinationLatitude,
-            double destinationLongitude
-    ) {
-        double originLatitudeRadians = Math.toRadians(originLatitude);
-        double destinationLatitudeRadians = Math.toRadians(destinationLatitude);
-        double latitudeDelta = Math.toRadians(destinationLatitude - originLatitude);
-        double longitudeDelta = Math.toRadians(destinationLongitude - originLongitude);
-
-        double haversine = Math.sin(latitudeDelta / 2) * Math.sin(latitudeDelta / 2)
-                + Math.cos(originLatitudeRadians) * Math.cos(destinationLatitudeRadians)
-                * Math.sin(longitudeDelta / 2) * Math.sin(longitudeDelta / 2);
-        double centralAngle = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
-
-        return EARTH_RADIUS_KM * centralAngle;
     }
 
     private double roundDistanceKm(double distanceKm) {

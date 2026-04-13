@@ -56,8 +56,7 @@ public class MeetingAdminService {
                 .toList();
     }
 
-    @Transactional
-    public MeetingData createMeeting(
+    public record MeetingCommand(
             Long groupId,
             String locationDetail,
             String locationAddress,
@@ -69,26 +68,23 @@ public class MeetingAdminService {
             String type,
             boolean active
     ) {
-        Group group = getGroup(groupId);
-        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
-        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
-        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
-        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
-        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
-        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
+    }
+
+    @Transactional
+    public MeetingData createMeeting(MeetingCommand command) {
+        Group group = getGroup(command.groupId());
         Meeting meeting = meetingRepository.save(new Meeting(
                 group,
                 buildLocation(
-                        normalizedLocationDetail,
-                        normalizedLocationAddress,
-                        normalizedLatitude,
-                        normalizedLongitude),
-                MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
-                MeetingFieldSupport.requireStartTime(startTime),
-                MeetingFieldSupport.requireMeetingType(type),
-                normalizedContactPhoneOverride,
-                active));
+                        command.locationDetail(),
+                        command.locationAddress(),
+                        command.latitude(),
+                        command.longitude()),
+                MeetingFieldSupport.requireDayOfWeek(command.dayOfWeek()),
+                MeetingFieldSupport.requireStartTime(command.startTime()),
+                MeetingFieldSupport.requireMeetingType(command.type()),
+                command.contactPhoneOverride(),
+                command.active()));
         
         changeLogService.logCreate(meeting, meeting.getId());
 
@@ -96,19 +92,7 @@ public class MeetingAdminService {
     }
 
     @Transactional
-    public MeetingData updateMeeting(
-            Long id,
-            Long groupId,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            String dayOfWeek,
-            String startTime,
-            String type,
-            boolean active
-    ) {
+    public MeetingData updateMeeting(Long id, MeetingCommand command) {
         Meeting meeting = getMeeting(id);
         
         // Snapshot old state
@@ -122,26 +106,19 @@ public class MeetingAdminService {
             meeting.isActive()
         );
 
-        Group group = getGroup(groupId);
-        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
-        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
-        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
-        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
-        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
-        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
+        Group group = getGroup(command.groupId());
         meeting.update(
                 group,
                 buildLocation(
-                        normalizedLocationDetail,
-                        normalizedLocationAddress,
-                        normalizedLatitude,
-                        normalizedLongitude),
-                MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
-                MeetingFieldSupport.requireStartTime(startTime),
-                MeetingFieldSupport.requireMeetingType(type),
-                normalizedContactPhoneOverride,
-                active);
+                        command.locationDetail(),
+                        command.locationAddress(),
+                        command.latitude(),
+                        command.longitude()),
+                MeetingFieldSupport.requireDayOfWeek(command.dayOfWeek()),
+                MeetingFieldSupport.requireStartTime(command.startTime()),
+                MeetingFieldSupport.requireMeetingType(command.type()),
+                command.contactPhoneOverride(),
+                command.active());
 
         changeLogService.logUpdate(oldState, meeting, id);
 
@@ -234,6 +211,16 @@ public class MeetingAdminService {
             Double longitude
     ) {
         Province province = MeetingFieldSupport.resolveProvince(locationAddress);
+        
+        // Manual check for partial coordinates before geocoding
+        if ((latitude != null && longitude == null) || (latitude == null && longitude != null)) {
+            if (latitude == null) {
+                throw FieldValidationException.badRequest("latitude", "latitude is required when longitude is provided");
+            } else {
+                throw FieldValidationException.badRequest("longitude", "longitude is required when latitude is provided");
+            }
+        }
+        
         MeetingAddressGeocoder.Coordinates coordinates = resolveCoordinates(locationAddress, latitude, longitude);
 
         return new Location(
