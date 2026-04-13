@@ -167,7 +167,7 @@ export function AdminPublicThemePage({
                 <button
                   className="ghost-button ghost-button--small"
                   type="button"
-                  onClick={() => onNavigate('/')}
+                  onClick={() => window.open('/', '_blank')}
                 >
                   라이브 홈 열기
                 </button>
@@ -200,7 +200,7 @@ export function AdminPublicThemePage({
                   className="ghost-button"
                   disabled={publishing || rollingBack}
                   type="button"
-                  onClick={() => onNavigate(previewPath)}
+                  onClick={() => window.open(previewPath, '_blank')}
                 >
                   {themeState.hasUnpublishedDraft ? '드래프트 미리보기' : '라이브 미리보기'}
                 </button>

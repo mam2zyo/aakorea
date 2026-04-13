@@ -297,7 +297,7 @@ export function NoticeAdminPage({ onError, onNavigate, onSuccess, session }) {
                   <button
                     className="ghost-button"
                     type="button"
-                    onClick={() => onNavigate(`/notices/${noticeForm.id}`)}
+                    onClick={() => window.open(`/notices/${noticeForm.id}`, '_blank')}
                     disabled={formBusy}
                   >
                     공개 미리 보기
