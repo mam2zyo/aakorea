@@ -7,21 +7,52 @@
 - **MPA (Multi-Page Application) 기반 도메인 격리**: Public(공개)과 Admin(관리자) 환경을 독립적인 HTML 진입로 분리하여 물리적 번들 격리와 보안을 달성합니다.
 - **Shared Kernel 아키텍처**: 도메인 간 중복 코드는 `src/shared/`에서 엄격히 관리하며, 도메인 간 직접 참조를 금지합니다.
 - **성능 중심**: 각 도메인은 자기에게 필요한 라이브러리만 로드하여 초기 로딩 성능(Lighthouse 90점 이상)을 극대화합니다.
-- **상태 중심 검색**: 복잡한 URL 쿼리 대신 상태 머신(`useMeetingSearch`)을 통해 검색 흐름을 제어합니다.
+- **별칭 기반 경로(Path Aliases)**: 모든 경로는 `@/` 별칭을 사용하여 모듈 간 결합도를 낮추고 유지보수성을 높입니다.
+- **사용자 맥락 중심 (Experience First)**: 도메인별 주 사용 환경에 맞춰 디자인 목표를 이원화합니다.
 
-## 2. 소스 코드 구조 (Source Map)
+## 2. 도메인별 디자인 목표 (Design Philosophy)
+
+AAKorea Main은 사용자의 환경과 목적에 따라 서로 다른 디자인 철학을 적용합니다.
+
+### Public: 모바일 우선 (Mobile-First)
+- **주 사용 환경**: 스마트폰 (이동 중 검색)
+- **핵심 목표**: **"빠른 도달과 직관적인 터치"**
+- **디자인 원칙**: 
+  - 큰 터치 타겟 (최소 44x44px 영역 확보)
+  - 한 손 조작이 용이한 버튼 배치 및 바텀 시트 활용
+  - 텍스트 가독성을 위한 시원한 여백 (High Padding)
+
+### Admin: 생산성 우선 (Efficiency-First)
+- **주 사용 환경**: 태블릿 및 PC (사무실/가정 내 장시간 작업)
+- **핵심 목표**: **"정보 밀도와 피로도 최소화"**
+- **디자인 원칙**: 
+  - 높은 정보 밀도 (Density) - 한눈에 더 많은 데이터를 파악할 수 있는 그리드
+  - 시각적 피로도를 낮추는 차분한 색조 및 낮은 대조의 배경 사용
+  - 정밀한 조작을 위한 키보드 단축키 및 마우스 오버 인터랙션 강화
+
+## 3. 소스 코드 구조 (Source Map)
 
 프론트엔드 소스는 관심사에 따라 다음과 같이 구조화되어 있습니다.
 
 - **Entry Points**:
   - `index.html` / `src/public-main.jsx`: 공개 사이트 진입점.
   - `admin.html` / `src/admin-main.jsx`: 관리자 콘솔 진입점.
-- `src/public/`: 공개 사이트 전용 도메인 코드.
-- `src/admin/`: 관리자 콘솔 전용 도메인 코드.
-- `src/shared/`: 도메인 간 공유되는 라이브러리, 유틸리티, 공통 스타일(Kernel).
-- `src/shared/lib/request.js`: 서버 통신을 위한 공통 API 클라이언트.
+- **`src/public/`**: 공개 사이트 전용 도메인 코드 (Pages, Components, Hooks).
+- **`src/admin/`**: 관리자 콘솔 전용 도메인 코드 (Pages, Features, UI).
+- **`src/shared/`**: 도메인 간 공유되는 인프라 스트럭처.
+  - `api/`: 공통 API 클라이언트 및 엔드포인트 정의.
+  - `ui/`: 도메인 중립적인 기초 UI 컴포넌트.
+  - `lib/`: 비즈니스 로직이 없는 순수 유틸리티.
+  - `hooks/`: 재사용 가능한 리액트 훅.
+  - `app/`: 라우팅 및 위치 제어 공통 로직.
 
-## 3. 개발 가이드라인
-- **Domain Isolation**: 새로운 기능은 해당 도메인(`admin/` 또는 `public/`)의 `features/` 또는 `pages/`에 배치합니다. 도메인 간 직접 임포트는 절대 금지입니다.
-- **Shared Kernel**: 두 도메인에서 공통으로 필요한 로직은 반드시 `src/shared/`로 추출한 뒤 참조합니다.
-- **Zero-Guess Infrastructure**: Nginx 및 백엔드 설정은 각 HTML 진입점(MPA)을 정확히 서빙하도록 구성되어야 합니다.
+## 4. 별칭 시스템 (Path Aliases)
+
+프로젝트는 상대 경로의 복잡성을 해결하기 위해 Vite 별칭 설정을 사용합니다.
+- **`@/`**: `src/` 디렉터리를 가리킵니다.
+- **설정**: `vite.config.js` 및 `jsconfig.json`에서 정의되어 있습니다.
+
+## 5. 개발 가이드라인 (Policies)
+
+- **Domain Isolation**: 관리자(`admin/`)와 공개(`public/`) 코드는 서로를 직접 임포트할 수 없습니다. 공유가 필요한 경우 반드시 `shared/` 레이어로 추출한 뒤 참조합니다.
+- **MPA Navigation**: Admin에서 Public 페이지로 이동할 때는 **`window.open(path, '_blank')`** 등을 사용하여 물리적인 앱 전환을 수행해야 합니다.
