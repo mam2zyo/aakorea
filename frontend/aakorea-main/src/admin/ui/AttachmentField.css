@@ -26,7 +26,7 @@
 .attachment-field__upload-zone p {
   margin-top: var(--space-2);
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.92rem;
 }
 
 .attachment-field__upload-zone strong {
@@ -47,7 +47,7 @@
   background: var(--admin-card-background);
   border: 1px solid var(--admin-card-border);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-elevation-low);
+  box-shadow: 0 2px 8px var(--color-shadow);
   transition: transform 140ms ease;
 }
 
@@ -67,11 +67,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: var(--font-size-sm);
+  font-size: 0.95rem;
 }
 
 .attachment-item__meta {
-  font-size: var(--font-size-xs);
+  font-size: 0.82rem;
   color: var(--color-text-muted);
 }
 
@@ -83,6 +83,6 @@
 
 .attachment-field__error {
   color: var(--color-danger);
-  font-size: var(--font-size-sm);
+  font-size: 0.88rem;
   margin-top: var(--space-1);
 }

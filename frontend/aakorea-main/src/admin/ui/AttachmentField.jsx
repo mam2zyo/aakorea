@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { adminAttachmentApi } from '../features/attachment/api/admin'
+import { adminAttachmentApi } from '../../features/attachment/api/admin'
 import './AttachmentField.css'
 
 export function AttachmentField({ attachments, onChange, disabled }) {

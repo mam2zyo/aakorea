@@ -4,14 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="익명의 알코올중독자들(AA) 한국연합 공식 안내 포털입니다. 정기 모임 정보와 회복을 위한 가이드를 제공합니다." />
-    <title>AAKorea</title>
+    <title>AAKorea Main</title>
     <script>
       (() => {
         const root = document.documentElement
-        const { search } = window.location
+        const { pathname, search } = window.location
         const searchParams = new URLSearchParams(search)
+        const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
+        const adminThemeStorageKey = 'aakorea-admin-theme-preference'
         const publicActiveThemeStorageKey = 'aakorea-public-active-theme'
+        const validAdminThemePreferences = ['system', 'light', 'dark']
         const publicBootstrapThemes = {
           classic: {
             background:
@@ -40,7 +42,43 @@
           root.style.colorScheme = colorScheme
         }
 
+        if (isAdminRoute) {
+          let themePreference = 'system'
+
+          try {
+            const storedValue = window.localStorage.getItem(adminThemeStorageKey)
+            if (validAdminThemePreferences.includes(storedValue)) {
+              themePreference = storedValue
+            }
+          } catch {}
+
+          const systemTheme =
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+          const resolvedTheme = themePreference === 'system' ? systemTheme : themePreference
+
+          root.dataset.routeSurface = 'admin'
+          root.dataset.adminTheme = resolvedTheme
+          root.dataset.adminThemePreference = themePreference
+          root.removeAttribute('data-public-theme')
+          root.removeAttribute('data-public-active-theme')
+
+          applyBootstrapSurface({
+            background:
+              resolvedTheme === 'dark'
+                ? 'radial-gradient(circle at top left, rgba(63, 169, 120, 0.16), transparent 30%), linear-gradient(180deg, #0f151c 0%, #121a23 100%)'
+                : 'radial-gradient(circle at top left, rgba(44, 106, 75, 0.08), transparent 28%), linear-gradient(180deg, #f6f1e6 0%, #f2ece1 100%)',
+            color: resolvedTheme === 'dark' ? '#edf3f7' : '#241d16',
+            colorScheme: resolvedTheme,
+          })
+
+          return
+        }
+
         let activePublicThemeId = 'classic'
+
         try {
           const storedPublicThemeId = window.localStorage.getItem(publicActiveThemeStorageKey)
           if (validPublicThemeIds.includes(storedPublicThemeId)) {
@@ -56,6 +94,8 @@
         root.dataset.routeSurface = 'public'
         root.dataset.publicActiveTheme = activePublicThemeId
         root.dataset.publicTheme = publicThemeId
+        root.removeAttribute('data-admin-theme')
+        root.removeAttribute('data-admin-theme-preference')
 
         applyBootstrapSurface(publicBootstrapThemes[publicThemeId] ?? publicBootstrapThemes.classic)
       })()
@@ -63,6 +103,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/public-main.jsx"></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

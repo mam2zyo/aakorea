@@ -3,16 +3,16 @@
   background: transparent;
   color: var(--color-primary-strong);
   font-family: var(--font-display);
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
   font-weight: 500;
 }
 
 .admin-theme .shell-badge {
   border-radius: 999px;
-  padding: var(--space-2) var(--space-4);
+  padding: 0.55rem 0.95rem;
   background: var(--color-surface-strong);
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.92rem;
 }
 
 .admin-theme .shell-badge--muted {
@@ -26,8 +26,8 @@
   justify-content: center;
   width: max-content;
   max-width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-sm);
+  padding: 0.45rem 0.78rem;
+  font-size: 0.84rem;
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -72,7 +72,7 @@
 
 .admin-theme .eyebrow {
   color: var(--color-primary);
-  font-size: var(--font-size-sm);
+  font-size: 0.82rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -96,7 +96,7 @@
   justify-content: center;
   flex-shrink: 0;
   border-radius: 999px;
-  padding: var(--space-3) var(--space-5);
+  padding: 0.8rem 1.2rem;
   border: 1px solid transparent;
   white-space: nowrap;
   transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
@@ -113,8 +113,8 @@
 }
 
 .admin-theme .primary-button--small {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--font-size-sm);
+  padding: 0.62rem 1rem;
+  font-size: 0.94rem;
   box-shadow: var(--admin-button-primary-shadow);
 }
 
@@ -150,8 +150,8 @@
 }
 
 .admin-theme .ghost-button--small {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-sm);
+  padding: 0.55rem 0.9rem;
+  font-size: 0.92rem;
 }
 
 .admin-theme .field-grid {
@@ -162,11 +162,11 @@
 .admin-theme .field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0.45rem;
 }
 
 .admin-theme .field__label {
-  font-size: var(--font-size-sm);
+  font-size: 0.92rem;
   font-weight: 500;
 }
 
@@ -178,7 +178,7 @@
 
 .admin-theme .field__error {
   color: var(--color-danger);
-  font-size: var(--font-size-sm);
+  font-size: 0.84rem;
 }
 
 .admin-theme .admin-user-editor {
@@ -217,19 +217,19 @@
 .admin-theme .admin-user-editor__identity-grid .detail-item dt,
 .admin-theme .admin-user-editor__field .field__label {
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.84rem;
   font-weight: 500;
   line-height: 1.3;
 }
 
 .admin-theme .admin-user-editor__identity-grid .detail-item dd {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
 }
 
 .admin-theme .admin-user-editor__field select {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
 }
@@ -265,7 +265,7 @@
 .admin-theme .admin-user-editor__history-item {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0.28rem;
 }
 
 .admin-theme .admin-user-editor__history-row,
@@ -279,7 +279,7 @@
 .admin-theme .admin-user-editor__history-row span,
 .admin-theme .admin-user-editor__history-meta {
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.84rem;
 }
 
 .admin-theme .admin-user-editor__history-meta span:last-child {
@@ -304,12 +304,12 @@
 .admin-theme .detail-item {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0.25rem;
 }
 
 .admin-theme .detail-item dt {
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.84rem;
 }
 
 .admin-theme .detail-item dd {
@@ -336,7 +336,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0.3rem;
 }
 
 .admin-theme .content-note {
@@ -350,7 +350,7 @@
 .admin-theme .toggle-field {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 0.7rem;
   padding: var(--space-3) 0;
 }
 
@@ -360,7 +360,7 @@
 
 .admin-theme .auth-note {
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: 0.92rem;
 }
 
 .admin-theme .status-banner {
@@ -406,8 +406,8 @@
   align-items: center;
   width: fit-content;
   border-radius: 999px;
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--font-size-xs);
+  padding: 0.32rem 0.7rem;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
@@ -470,7 +470,7 @@
 }
 
 .admin-theme .theme-choice-button strong {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
 }
 
 .admin-theme .theme-choice-button span {
@@ -503,9 +503,9 @@
   min-width: 0;
   min-height: 116px;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 0.35rem;
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  padding: 1rem 1.1rem;
   white-space: normal;
   text-align: left;
 }
@@ -517,7 +517,7 @@
 }
 
 .admin-theme .admin-user-permission-button strong {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
 }
 
 .admin-theme .admin-user-permission-button__description {

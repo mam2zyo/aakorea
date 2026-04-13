@@ -8,15 +8,10 @@
 
 ---
 
----
+## 현재 모델 의미
 
-## 삼중 관리 구조 (Tripartite Structure)
-
-`ContentPage`는 대용량/장기 컨텐츠의 효율적 관리를 위해 세 가지 레이어로 나뉜 하이브리드 아키텍처를 채택하고 있다.
-
-1. **메타데이터 (Metadata - DB)**: `ContentPage` 엔티티가 페이지 고유 키, 제목, 공개 여부 등 시스템 제어용 속성을 관리한다.
-2. **본문 (Content Body - Filesystem)**: 실제 페이지의 HTML 또는 JSX 내용은 서버 파일 시스템에 저장된다. 에디터 의존성을 줄이고 자유로운 레이아웃 구성을 보장하며, `originalFileName`은 이 본문 파일의 원본 명칭을 추적한다.
-3. **보조 자산 (Supplementary Attachments - Domain)**: 페이지 하단에 노출되는 다운로드용 문서(PDF, ZIP 등)나 본문에 삽입된 이미지들은 `Attachment` 도메인을 통해 관리되며, `ContentAttachment` 브릿지를 통해 해당 페이지와 연결된다.
+`ContentPage`는 비교적 안정적인 설명 / 안내 정보를 담는 콘텐츠 모델이다.
+현재 시스템은 **DB(메타데이터) + 파일 시스템(본문)** 하이브리드 아키텍처를 채택하고 있다.
 
 ---
 
@@ -36,9 +31,9 @@
 | `id` | `Long` | 고유 식별자 |
 | `key` | `String` | 고유 키 (URL 슬러그) |
 | `title` | `String` | 페이지 제목 |
-| `originalFileName` | `String` | 업로드된 **본문용** HTML 파일명 |
+| `originalFileName` | `String` | 업로드된 HTML 파일명 |
 | `published` | `boolean` | 공개/비공개 상태 |
-| `attachments` | `List<Attachment>` | 페이지 하단 **보조 첨부파일** (선택) |
+| `attachments` | `List<Attachment>` | 페이지 하단 첨부파일 (선택) |
 
 ---
 

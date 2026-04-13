@@ -1,10 +1,4 @@
-<!-- docs/reference/THEME_TOKEN_REFINEMENT.md -->
-
 # 테마 토큰 고도화 전략 (Theme Token Refinement)
-
-> [!NOTE]
-> **상태: 구현 완료 (2026-04-12)**  
-> 이 문서는 설계 초안입니다. 현재 프론트엔드에 적용된 최신 디자인 시스템 명세는 [STYLE_SYSTEM.md](../front/STYLE_SYSTEM.md)을 참조하세요.
 
 이 문서는 현재의 단순 색상 변수 체계를 다층적인 디자인 토큰 시스템으로 정제하기 위한 가이드라인을 제시합니다.
 

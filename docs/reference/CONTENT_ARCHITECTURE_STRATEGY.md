@@ -1,5 +1,3 @@
-<!-- docs/reference/CONTENT_ARCHITECTURE_STRATEGY.md -->
-
 # 콘텐츠 아키텍처 전략: Refined HTML vs JSX
 
 이 문서는 A.A. Korea 공개 사이트의 콘텐츠(안내 페이지, 도구 등)를 구현할 때 고려해야 할 기술적 접근 방식과 인터랙션 처리 전략을 정리합니다.

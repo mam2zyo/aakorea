@@ -79,38 +79,25 @@
   --palette-blue-vivid: #1a1aff;
 
   /* Layer 1.5: Global Utilities (Shared across themes) */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+  --text-size-xs: 0.75rem;
+  --text-size-sm: 0.875rem;
+  --text-size-base: 1rem;
+  --text-size-lg: 1.125rem;
+  --text-size-xl: 1.25rem;
+  --text-size-2xl: 1.5rem;
+  --text-size-3xl: 1.875rem;
+  --text-size-4xl: 2.25rem;
 
-  /* Typography Scale (Refinement targets) */
-  --font-size-h1: 2.5rem;
-  --font-size-body: 1rem;
+  --text-weight-normal: 400;
+  --text-weight-medium: 500;
+  --text-weight-bold: 700;
 
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
+  --text-leading-tight: 1.2;
+  --text-leading-normal: 1.5;
+  --text-leading-relaxed: 1.625;
 
-  --line-height-tight: 1.2;
-  --line-height-base: 1.5;
-  --line-height-relaxed: 1.625;
-
-  --letter-spacing-tight: -0.02em;
-
-  /* Interaction States */
   --state-hover-overlay: rgba(0, 0, 0, 0.03);
   --state-active-overlay: rgba(0, 0, 0, 0.06);
-  --state-disabled-opacity: 0.5;
-
-  /* Surface Details */
-  --border-width-base: 1px;
-  --shadow-elevation-low: 0 2px 8px var(--color-shadow);
-  --shadow-elevation-high: 0 12px 32px var(--color-shadow);
 }
 
 .public-theme:not([data-theme]),
@@ -525,7 +512,7 @@
   --color-input-placeholder: rgba(var(--palette-slate-450-rgb), 0.78);
 
   /* Layer 3: Component Tokens */
-  --public-shell-background: rgba(var(--palette-blue-900-rgb), 0.96);
+  --public-shell-background: linear-gradient(180deg, var(--palette-blue-400) 0%, var(--palette-blue-900) 100%);
   --public-shell-border: rgba(var(--palette-blue-950-rgb), 0.28);
   --public-shell-utility-background: rgba(var(--palette-blue-900-rgb), 0.98);
   --public-shell-utility-text: rgba(236, 243, 251, 0.88);
@@ -692,25 +679,3 @@
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%),
     linear-gradient(180deg, var(--palette-blue-100) 0%, var(--palette-blue-200) 100%);
 }
-
-/* --- Responsive Token Overrides --- */
-
-@media (max-width: 640px) {
-  :root {
-    --space-1: 0.2rem;
-    --space-2: 0.4rem;
-    --space-3: 0.6rem;
-    --space-4: 0.8rem;
-    --space-5: 1rem;
-    --space-6: 1.2rem;
-    --space-8: 1.6rem;
-    --space-10: 2rem;
-    --space-12: 2.4rem;
-
-    --font-size-h1: 2rem;
-    --font-size-4xl: 1.8rem;
-    --font-size-3xl: 1.6rem;
-    --font-size-2xl: 1.35rem;
-  }
-}
-

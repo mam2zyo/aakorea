@@ -38,7 +38,7 @@
 3. `current/domain/README.md`
 4. `current/api/README.md`
 5. `current/IMPLEMENTATION_PLAN.md`
-6. `front/OVERVIEW.md`
+6. `current/FRONTEND_STRUCTURE.md`
 7. `runbooks/README.md`
 
 이 순서는 다음 흐름을 따른다.
@@ -48,7 +48,7 @@
 - 어떤 도메인과 필드를 쓰는지 확인하고
 - API 계약을 정리하고
 - 구현 상태와 다음 작업을 본다
-- 프론트엔드 상세 구조(Style/Logic)와 운영 절차를 확인한다
+- 프론트 구조와 운영 절차를 확인한다
 
 현재 MVP 밖의 확장 목표를 검토할 때는
 `deferred/FUTURE_IMPLEMENTATION_GOALS.md`를 별도로 본다.
@@ -140,6 +140,7 @@ docs/
 │  ├─ PRODUCT_SCOPE.md
 │  ├─ ACTORS_AND_USE_CASES.md
 │  ├─ IMPLEMENTATION_PLAN.md
+│  ├─ FRONTEND_STRUCTURE.md
 │  ├─ auth/
 │  │  ├─ AUTHENTICATION_MODEL.md
 │  │  └─ AUTHORIZATION_POLICY.md
@@ -175,15 +176,12 @@ docs/
 │  ├─ README.md
 │  ├─ LOCAL_DEVELOPMENT.md
 │  └─ NGINX_TERMUX_DEPLOYMENT.md
-├─ front/
-│  ├─ OVERVIEW.md
-│  ├─ STYLE_SYSTEM.md
-│  ├─ PUBLIC_APP.md
-│  └─ ADMIN_APP.md
 └─ reference/
    ├─ THEME_TOKEN_REFINEMENT.md
-   ├─ CONTENT_ARCHITECTURE_STRATEGY.md   
+   ├─ CONTENT_ARCHITECTURE_STRATEGY.md
+   ├─ PUBLIC_SITE_MENU_PROPOSAL.md
    ├─ java-null-safety.md
+   └─ old_contents/
 ```
 
 ## 추가 확장 제안
