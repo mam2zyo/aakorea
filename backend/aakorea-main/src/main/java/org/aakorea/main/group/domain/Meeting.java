@@ -83,6 +83,18 @@ public class Meeting extends AuditFields {
         this.active = active;
     }
 
+    public static Meeting create(
+            Group group,
+            Location location,
+            DayOfWeek dayOfWeek,
+            LocalTime startTime,
+            MeetingType type,
+            String contactPhoneOverride,
+            boolean active
+    ) {
+        return new Meeting(group, location, dayOfWeek, startTime, type, contactPhoneOverride, active);
+    }
+
     public void update(
             Group group,
             Location location,
@@ -99,6 +111,18 @@ public class Meeting extends AuditFields {
         this.type = type;
         this.contactPhoneOverride = contactPhoneOverride != null ? contactPhoneOverride.trim() : null;
         this.active = active;
+    }
+
+    public Meeting snapshot() {
+        return new Meeting(
+                this.group,
+                this.location,
+                this.dayOfWeek,
+                this.startTime,
+                this.type,
+                this.contactPhoneOverride,
+                this.active
+        );
     }
 
     public void updateLocation(Location location) {

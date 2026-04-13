@@ -32,8 +32,9 @@ public class MeetingAdminService {
     private final GroupRepository groupRepository;
     private final MeetingAddressGeocoder meetingAddressGeocoder;
     private final ChangeLogService changeLogService;
+    private final MeetingMapper meetingMapper;
 
-    public List<MeetingData> getMeetings(Long groupId, String province, Boolean active) {
+    public List<MeetingMapper.MeetingData> getMeetings(Long groupId, String province, Boolean active) {
         Province normalizedProvince = MeetingFieldSupport.optionalProvince(province);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -51,60 +52,37 @@ public class MeetingAdminService {
                     criteriaBuilder.equal(root.get("active"), active));
         }
 
-        return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
-                .map(this::toMeetingData)
-                .toList();
-    }
-
-    public record MeetingCommand(
-            Long groupId,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            String dayOfWeek,
-            String startTime,
-            String type,
-            boolean active
-    ) {
+        List<Meeting> meetings = meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id"));
+        return meetingMapper.toMeetingDataList(meetings);
     }
 
     @Transactional
-    public MeetingData createMeeting(MeetingCommand command) {
+    public MeetingMapper.MeetingData createMeeting(MeetingCommand command) {
         Group group = getGroup(command.groupId());
-        Meeting meeting = meetingRepository.save(new Meeting(
+        Meeting meeting = meetingRepository.save(Meeting.create(
                 group,
                 buildLocation(
                         command.locationDetail(),
                         command.locationAddress(),
                         command.latitude(),
                         command.longitude()),
-                MeetingFieldSupport.requireDayOfWeek(command.dayOfWeek()),
-                MeetingFieldSupport.requireStartTime(command.startTime()),
-                MeetingFieldSupport.requireMeetingType(command.type()),
+                command.dayOfWeek(),
+                command.startTime(),
+                command.type(),
                 command.contactPhoneOverride(),
                 command.active()));
         
         changeLogService.logCreate(meeting, meeting.getId());
 
-        return toMeetingData(meeting);
+        return meetingMapper.toMeetingData(meeting);
     }
 
     @Transactional
-    public MeetingData updateMeeting(Long id, MeetingCommand command) {
+    public MeetingMapper.MeetingData updateMeeting(Long id, MeetingCommand command) {
         Meeting meeting = getMeeting(id);
         
         // Snapshot old state
-        Meeting oldState = new Meeting(
-            meeting.getGroup(),
-            meeting.getLocation(),
-            meeting.getDayOfWeek(),
-            meeting.getStartTime(),
-            meeting.getType(),
-            meeting.getContactPhoneOverride(),
-            meeting.isActive()
-        );
+        Meeting oldState = meeting.snapshot();
 
         Group group = getGroup(command.groupId());
         meeting.update(
@@ -114,15 +92,15 @@ public class MeetingAdminService {
                         command.locationAddress(),
                         command.latitude(),
                         command.longitude()),
-                MeetingFieldSupport.requireDayOfWeek(command.dayOfWeek()),
-                MeetingFieldSupport.requireStartTime(command.startTime()),
-                MeetingFieldSupport.requireMeetingType(command.type()),
+                command.dayOfWeek(),
+                command.startTime(),
+                command.type(),
                 command.contactPhoneOverride(),
                 command.active());
 
         changeLogService.logUpdate(oldState, meeting, id);
 
-        return toMeetingData(meeting);
+        return meetingMapper.toMeetingData(meeting);
     }
 
     @Transactional
@@ -166,7 +144,6 @@ public class MeetingAdminService {
 
             if (!dryRun) {
                 meeting.updateLocation(new Location(
-                        meeting.getProvince(),
                         meeting.getLocationDetail(),
                         locationAddress,
                         coordinates.latitude(),
@@ -210,8 +187,6 @@ public class MeetingAdminService {
             Double latitude,
             Double longitude
     ) {
-        Province province = MeetingFieldSupport.resolveProvince(locationAddress);
-        
         // Manual check for partial coordinates before geocoding
         if ((latitude != null && longitude == null) || (latitude == null && longitude != null)) {
             if (latitude == null) {
@@ -224,7 +199,6 @@ public class MeetingAdminService {
         MeetingAddressGeocoder.Coordinates coordinates = resolveCoordinates(locationAddress, latitude, longitude);
 
         return new Location(
-                province,
                 locationDetail,
                 locationAddress,
                 coordinates.latitude(),
@@ -265,38 +239,6 @@ public class MeetingAdminService {
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }
-    }
-
-    private MeetingData toMeetingData(Meeting meeting) {
-        return new MeetingData(
-                meeting.getId(),
-                meeting.getGroup().getId(),
-                meeting.getProvince().getCode(),
-                meeting.getLocationDetail(),
-                meeting.getLocationAddress(),
-                meeting.getLatitude(),
-                meeting.getLongitude(),
-                meeting.getContactPhoneOverride(),
-                meeting.getDayOfWeek(),
-                MeetingFieldSupport.formatTime(meeting.getStartTime()),
-                meeting.getType(),
-                meeting.isActive());
-    }
-
-    public record MeetingData(
-            Long id,
-            Long groupId,
-            String province,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            DayOfWeek dayOfWeek,
-            String startTime,
-            MeetingType type,
-            boolean active
-    ) {
     }
 
     public record CoordinateBackfillResult(

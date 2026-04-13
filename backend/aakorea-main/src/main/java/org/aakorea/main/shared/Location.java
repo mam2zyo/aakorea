@@ -27,6 +27,20 @@ public class Location {
     private Double longitude;
 
     public Location(
+            String detail,
+            String address,
+            Double latitude,
+            Double longitude
+    ) {
+        validate(detail, address, latitude, longitude);
+        this.province = Province.fromAddress(address.trim());
+        this.detail = detail != null ? detail.trim() : null;
+        this.address = address != null ? address.trim() : null;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Location(
             Province province,
             String detail,
             String address,
