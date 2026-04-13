@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ApiError } from '../../shared/lib/request'
+import { ApiError } from '@/shared/lib/request'
 
 export function useFlashState() {
   const [flash, setFlash] = useState(null)

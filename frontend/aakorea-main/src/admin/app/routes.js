@@ -1,7 +1,11 @@
-export const DEFAULT_ADMIN_PATH = '/admin/groups'
-const IS_DEV = Boolean(import.meta.env?.DEV)
+import {
+  createRoute,
+  normalizePath,
+} from '@/shared/app/routerLogic'
 
-export function parseRoute(pathname, search = '') {
+export const DEFAULT_ADMIN_PATH = '/admin/groups'
+
+export function parseAdminRoute(pathname, search = '') {
   const params = new URLSearchParams(search)
   const normalizedPath = normalizePath(pathname)
   const create = (name, currentPath, extra = {}) => createRoute(name, currentPath, {
@@ -9,53 +13,7 @@ export function parseRoute(pathname, search = '') {
     ...extra,
   })
 
-  if (normalizedPath === '/') {
-    return create('home', normalizedPath, { section: 'public' })
-  }
-
-  if (normalizedPath === '/meetings') {
-    return create('meetings', normalizedPath, {
-      section: 'public',
-      groupId: optionalNumber(params.get('groupId')),
-      meetingId: optionalNumber(params.get('meetingId')),
-    })
-  }
-
-  if (IS_DEV && normalizedPath === '/__preview/meeting-focus') {
-    return create('meeting-focus-preview', normalizedPath, {
-      section: 'public',
-    })
-  }
-
-  const groupMatch = normalizedPath.match(/^\/groups\/(\d+)$/)
-  if (groupMatch) {
-    return create('meetings', normalizedPath, {
-      section: 'public',
-      groupId: Number(groupMatch[1]),
-      meetingId: optionalNumber(params.get('meetingId')),
-    })
-  }
-
-  if (normalizedPath === '/notices') {
-    return create('notices', normalizedPath, { section: 'public', noticeId: null })
-  }
-
-  const noticeMatch = normalizedPath.match(/^\/notices\/(\d+)$/)
-  if (noticeMatch) {
-    return create('notices', normalizedPath, {
-      section: 'public',
-      noticeId: Number(noticeMatch[1]),
-    })
-  }
-
-  const contentPageMatch = normalizedPath.match(/^\/content-pages\/([^/]+)$/)
-  if (contentPageMatch) {
-    return create('content-page', normalizedPath, {
-      section: 'public',
-      pageKey: decodeURIComponent(contentPageMatch[1]),
-    })
-  }
-
+  // Admin routes only
   if (normalizedPath === '/admin/login') {
     return create('admin-login', normalizedPath, {
       section: 'admin',
@@ -123,7 +81,8 @@ export function parseRoute(pathname, search = '') {
     return create('not-found', normalizedPath, { section: 'admin' })
   }
 
-  return create('not-found', normalizedPath, { section: 'public' })
+  // Not found (but conceptually should be handled by the router if it's admin-only)
+  return create('not-found', normalizedPath, { section: 'admin' })
 }
 
 export function requiresAdminSession(route) {
@@ -161,51 +120,4 @@ export function buildAdminLoginPath(redirectPath = DEFAULT_ADMIN_PATH) {
 
 export function buildAdminRegisterPath() {
   return '/admin/register'
-}
-
-function normalizePath(pathname) {
-  if (!pathname || pathname === '') {
-    return '/'
-  }
-
-  if (pathname.length > 1 && pathname.endsWith('/')) {
-    return pathname.slice(0, -1)
-  }
-
-  return pathname
-}
-
-function createRoute(name, currentPath, extra = {}) {
-  return {
-    name,
-    currentPath,
-    ...extra,
-  }
-}
-
-function optionalNumber(value) {
-  if (!value) {
-    return null
-  }
-
-  const parsedValue = Number(value)
-  return Number.isFinite(parsedValue) ? parsedValue : null
-}
-
-function optionalInteger(value) {
-  if (!value) {
-    return null
-  }
-
-  const parsedValue = Number.parseInt(value, 10)
-  return Number.isFinite(parsedValue) ? parsedValue : null
-}
-
-function optionalFloat(value) {
-  if (!value) {
-    return null
-  }
-
-  const parsedValue = Number.parseFloat(value)
-  return Number.isFinite(parsedValue) ? parsedValue : null
 }

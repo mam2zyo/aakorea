@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react'
 import {
   applyDocumentTheme,
   resolveAdminDocumentState,
-} from '../../app/themeDocument'
+} from '@/shared/utils/themeDocument'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { EmptyState, PageSection } from '../ui'
 

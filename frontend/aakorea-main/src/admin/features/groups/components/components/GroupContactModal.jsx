@@ -1,6 +1,6 @@
 import { AddressSearchField } from '../../../../components/AddressSearchField'
 import { Field } from '../../../../ui'
-import { readFieldError } from '../../../../../lib/formErrors'
+import { readFieldError } from '@/shared/lib/formErrors'
 
 export function GroupContactModal({
   errors,

@@ -3,7 +3,7 @@ import {
   ADMIN_THEME_STORAGE_KEY,
   DEFAULT_ADMIN_THEME_PREFERENCE,
   normalizeAdminThemePreference,
-} from '../../app/themeDocument'
+} from '@/shared/utils/themeDocument'
 
 function readStoredThemePreference() {
   if (typeof window === 'undefined') {

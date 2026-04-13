@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState, useRef } from 'react'
-import { EmptyState, PageIntro, PageSection } from '../../public/ui'
+import { EmptyState, PageIntro, PageSection } from '@/public/ui'
 import { publicContentApi } from '../features/content/api'
-import { ApiError } from '../../shared/lib/request'
+import { ApiError } from '@/shared/lib/request'
 import { PublicAttachmentList } from '../components/PublicAttachmentList'
 import { CONTENT_JSX_REGISTRY } from '../features/content/components/registry'
 

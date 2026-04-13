@@ -8,10 +8,10 @@ import {
   adminGroupApi,
   adminGroupContactApi,
   adminMeetingApi,
-} from '../../../../lib/api'
-import { getApiFieldErrors, omitFieldErrors } from '../../../../lib/formErrors'
-import { normalizePhoneFieldValue } from '../../../../lib/phone'
-import { ensureSelectValue } from '../../../../lib/view'
+} from '@/shared/api'
+import { getApiFieldErrors, omitFieldErrors } from '@/shared/lib/formErrors'
+import { normalizePhoneFieldValue } from '@/shared/lib/phone'
+import { ensureSelectValue } from '@/shared/lib/view'
 import { CreateGroupWizard } from './components/CreateGroupWizard'
 import { EditGroupSheet } from './components/EditGroupSheet'
 import {

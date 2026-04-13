@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
-import { ApiError } from '../../../../../shared/lib/request'
-import { publicDistrictApi, publicGroupApi, publicMeetingApi } from '../../../../../lib/api'
+import { ApiError } from '@/shared/lib/request'
+import { publicDistrictApi, publicGroupApi, publicMeetingApi } from '@/shared/api'
 import {
   buildMeetingsPath,
   calculateDistanceKm,

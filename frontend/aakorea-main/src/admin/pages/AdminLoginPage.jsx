@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { EmptyState, PageSection } from '../../admin/ui'
-import { buildAdminRegisterPath, sanitizeAdminRedirect } from '../../app/router'
+import { EmptyState, PageSection } from '@/admin/ui'
+import { buildAdminRegisterPath, sanitizeAdminRedirect } from '@/admin/app/router'
 
 const INITIAL_AUTH_FORM = { email: '', password: '' }
 

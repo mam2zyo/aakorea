@@ -3,8 +3,8 @@ import { EmptyState } from '../../../../ui'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '../../../../../lib/options'
-import { lookupLabel } from '../../../../../lib/view'
+} from '@/shared/lib/options'
+import { lookupLabel } from '@/shared/lib/view'
 import kakaoMapIcon from '../assets/kakaomap100.png'
 import tmapIcon from '../assets/tmap100.png'
 import { KakaoMeetingMap } from './KakaoMeetingMap'

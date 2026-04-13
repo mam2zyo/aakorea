@@ -8,7 +8,7 @@ import {
   SEARCH_DAY_OF_WEEK_OPTIONS,
   SEARCH_PROVINCE_OPTIONS,
   SEARCH_MEETING_TYPE_OPTIONS,
-} from '../../../../lib/options'
+} from '@/shared/lib/options'
 import { MeetingFocusDialog } from './components/MeetingFocusDialog'
 import { MeetingResultsSection } from './components/MeetingResultsSection'
 import { useMeetingSearch, SEARCH_STATE } from './hooks/useMeetingSearch'

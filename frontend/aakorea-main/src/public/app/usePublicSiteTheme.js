@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { PUBLIC_ACTIVE_THEME_STORAGE_KEY } from '../../app/themeDocument'
-import { publicSiteThemeApi } from '../../lib/api'
+import { PUBLIC_ACTIVE_THEME_STORAGE_KEY } from '@/shared/utils/themeDocument'
+import { publicSiteThemeApi } from '@/shared/api'
 import { DEFAULT_PUBLIC_THEME_ID, isPublicThemeId } from './publicTheme'
 
 function readInitialActiveThemeId() {

@@ -1,4 +1,4 @@
-import { EmptyState, PageSection } from '../../admin/ui'
+import { EmptyState, PageSection } from '@/admin/ui'
 
 export function AdminPendingApprovalPage({ onLogout, session }) {
   return (

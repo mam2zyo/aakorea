@@ -1,7 +1,7 @@
 import {
   DEFAULT_PUBLIC_THEME_ID,
   resolvePublicTheme,
-} from '../public/app/publicTheme.js'
+} from '@/public/app/publicTheme.js'
 
 export const ADMIN_THEME_STORAGE_KEY = 'aakorea-admin-theme-preference'
 export const PUBLIC_ACTIVE_THEME_STORAGE_KEY = 'aakorea-public-active-theme'

@@ -1,4 +1,4 @@
-import { SEARCH_PROVINCE_OPTIONS } from '../../../../lib/options'
+import { SEARCH_PROVINCE_OPTIONS } from '@/shared/lib/options'
 
 export const DEFAULT_PROVINCE = SEARCH_PROVINCE_OPTIONS[0]?.value ?? 'all'
 export const MEETING_SEARCH_MODE = {

@@ -4,13 +4,13 @@ import {
   DetailItem,
   EmptyState,
   PageSection,
-} from '../../admin/ui'
-import { adminSiteThemeApi } from '../../lib/api'
+} from '@/admin/ui'
+import { adminSiteThemeApi } from '@/shared/api'
 import {
   applyPublicThemePreview,
   getPublicTheme,
   listPublicThemes,
-} from '../../public/app/publicTheme'
+} from '@/public/app/publicTheme'
 
 const PUBLIC_THEME_OPTIONS = listPublicThemes()
 

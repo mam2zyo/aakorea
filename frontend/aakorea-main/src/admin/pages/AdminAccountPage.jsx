@@ -1,4 +1,4 @@
-import { AdminPageHeader, PageSection } from '../../admin/ui'
+import { AdminPageHeader, PageSection } from '@/admin/ui'
 
 const THEME_OPTIONS = [
   {

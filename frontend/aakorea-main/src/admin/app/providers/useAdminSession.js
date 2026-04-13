@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { authApi } from '../../lib/api'
-import { ApiError } from '../../shared/lib/request'
+import { authApi } from '@/shared/api'
+import { ApiError } from '@/shared/lib/request'
 import { navigate } from '../router'
 
 const UNAUTHENTICATED_SESSION = {

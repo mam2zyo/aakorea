@@ -1,4 +1,4 @@
-import { ApiError } from './api'
+import { ApiError } from '@/shared/api'
 
 export function getApiFieldErrors(error) {
   if (!(error instanceof ApiError) || !error.fields) {

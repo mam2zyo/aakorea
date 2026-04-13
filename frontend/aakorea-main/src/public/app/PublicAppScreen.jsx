@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react'
 import {
   applyDocumentTheme,
   resolvePublicDocumentState,
-} from '../../app/themeDocument'
+} from '@/shared/utils/themeDocument'
 import { PublicLayout } from '../layouts/PublicLayout'
 
 export function PublicAppScreen({ currentPath, flash, onNavigate, page, theme }) {

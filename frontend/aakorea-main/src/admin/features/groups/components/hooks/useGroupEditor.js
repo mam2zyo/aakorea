@@ -1,18 +1,18 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { getApiFieldErrors, omitFieldErrors } from '../../../../../lib/formErrors'
+import { getApiFieldErrors, omitFieldErrors } from '@/shared/lib/formErrors'
 import {
   formatKoreanPhoneNumber,
   normalizePhoneFieldValue,
-} from '../../../../../lib/phone'
+} from '@/shared/lib/phone'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '../../../../../lib/options'
+} from '@/shared/lib/options'
 import {
   adminGroupApi,
   adminGroupContactApi,
   adminMeetingApi,
-} from '../../../../../lib/api'
+} from '@/shared/api'
 import { toPostalContactPayload } from '../utils'
 
 const EMPTY_GROUP_FORM = {

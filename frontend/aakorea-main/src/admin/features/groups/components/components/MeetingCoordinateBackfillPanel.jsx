@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DetailItem } from '../../../../ui'
-import { adminMeetingApi } from '../../../../../lib/api'
+import { adminMeetingApi } from '@/shared/api'
 
 const BACKFILL_ITEM_LIMIT = 12
 

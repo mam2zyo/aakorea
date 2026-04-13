@@ -3,7 +3,7 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
-} from '../../admin/ui'
+} from '@/admin/ui'
 import { adminContentApi } from '../features/content/api'
 
 const CONTENT_PAGE_SORT_MODES = {

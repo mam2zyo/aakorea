@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { EmptyState, Field, PageSection } from '../../admin/ui'
-import { buildAdminLoginPath } from '../../app/router'
-import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
+import { EmptyState, Field, PageSection } from '@/admin/ui'
+import { buildAdminLoginPath } from '@/admin/app/router'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/lib/formErrors'
 
 const INITIAL_REGISTER_FORM = {
   email: '',

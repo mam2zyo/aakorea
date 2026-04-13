@@ -1,7 +1,4 @@
 import { useEffect, useState } from 'react'
-import {
-  parseRoute,
-} from './routeDefinitions'
 
 function readLocation() {
   return {
@@ -23,7 +20,7 @@ export function navigate(to, options = {}) {
   window.scrollTo({ top: 0, left: 0 })
 }
 
-export function useAppRoute() {
+export function useLocation() {
   const [location, setLocation] = useState(() => readLocation())
 
   useEffect(() => {
@@ -35,14 +32,5 @@ export function useAppRoute() {
     return () => window.removeEventListener('popstate', handleLocationChange)
   }, [])
 
-  return parseRoute(location.pathname, location.search)
+  return location
 }
-
-export {
-  buildAdminRegisterPath,
-  buildAdminLoginPath,
-  DEFAULT_ADMIN_PATH,
-  parseRoute,
-  requiresAdminSession,
-  sanitizeAdminRedirect,
-} from './routeDefinitions'

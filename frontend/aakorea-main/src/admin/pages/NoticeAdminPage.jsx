@@ -1,14 +1,14 @@
 import { useEffect, useEffectEvent, useState } from 'react'
-import { ADMIN_PERMISSION, hasPermission } from '../../admin/app/adminAuthorization'
+import { ADMIN_PERMISSION, hasPermission } from '@/admin/app/adminAuthorization'
 import {
   AdminPageHeader,
   EmptyState,
   Field,
   RichTextEditor,
   AttachmentField,
-} from '../../admin/ui'
+} from '@/admin/ui'
 import { adminContentApi } from '../features/content/api'
-import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/lib/formErrors'
 
 const NOTICE_SORT_MODES = {
   recent: '최신순',

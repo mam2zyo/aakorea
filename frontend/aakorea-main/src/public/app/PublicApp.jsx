@@ -1,6 +1,6 @@
 import '../styles/index.css'
-import { useFlashState } from '../../app/providers/useFlashState'
-import { navigate, useAppRoute } from '../../app/router'
+import { useFlashState } from '@/shared/hooks/useFlashState'
+import { navigate, useAppRoute } from './router'
 import { PublicAppScreen } from './PublicAppScreen'
 import {
   applyPublicThemePreview,

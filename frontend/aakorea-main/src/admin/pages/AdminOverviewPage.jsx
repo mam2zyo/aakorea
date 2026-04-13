@@ -1,4 +1,4 @@
-import { AdminPageHeader } from '../../admin/ui'
+import { AdminPageHeader } from '@/admin/ui'
 import { MeetingCoordinateBackfillPanel } from '../features/groups/components/components/MeetingCoordinateBackfillPanel'
 import { MeetingImportPanel } from '../features/groups/components/components/MeetingImportPanel'
 

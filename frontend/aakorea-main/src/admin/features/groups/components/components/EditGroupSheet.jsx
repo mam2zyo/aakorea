@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../../../ui'
-import { formatPostalContact } from '../../../../../lib/address'
+import { formatPostalContact } from '@/shared/lib/address'
 import {
   DAY_OF_WEEK_OPTIONS,
-} from '../../../../../lib/options'
-import { lookupLabel } from '../../../../../lib/view'
+} from '@/shared/lib/options'
+import { lookupLabel } from '@/shared/lib/view'
 import { useGroupEditor } from '../hooks/useGroupEditor'
 import { GroupBasicsModal } from './GroupBasicsModal'
 import { GroupContactModal } from './GroupContactModal'

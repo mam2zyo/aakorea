@@ -1,10 +1,10 @@
 import { AddressSearchField } from '../../../../components/AddressSearchField'
 import { Field } from '../../../../ui'
-import { readFieldError } from '../../../../../lib/formErrors'
+import { readFieldError } from '@/shared/lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '../../../../../lib/options'
+} from '@/shared/lib/options'
 
 export function GroupMeetingFormModal({
   errors,
