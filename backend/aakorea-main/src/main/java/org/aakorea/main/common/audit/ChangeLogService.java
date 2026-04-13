@@ -38,7 +38,14 @@ public class ChangeLogService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void logUpdate(Object oldEntity, Object newEntity, Long entityId) {
-        Map<String, Map<String, Object>> diff = calculateDiff(oldEntity, newEntity);
+        Object comparableOld = oldEntity;
+        Object comparableNew = newEntity;
+
+        if (oldEntity instanceof Meeting.MeetingSnapshot oldSnap && newEntity instanceof Meeting newMeeting) {
+            comparableNew = newMeeting.snapshot();
+        }
+
+        Map<String, Map<String, Object>> diff = calculateDiff(comparableOld, comparableNew);
         if (diff.isEmpty()) {
             return;
         }

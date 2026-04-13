@@ -16,7 +16,8 @@ public class SecurityAuditorAware implements AuditorAware<Long> {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null
                 || !authentication.isAuthenticated()
-                || authentication instanceof AnonymousAuthenticationToken) {
+                || authentication instanceof AnonymousAuthenticationToken
+                || "anonymousUser".equals(authentication.getPrincipal())) {
             return Optional.empty();
         }
 

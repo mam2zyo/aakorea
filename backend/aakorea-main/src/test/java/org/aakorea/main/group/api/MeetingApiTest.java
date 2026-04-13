@@ -25,6 +25,8 @@ import org.aakorea.main.group.api.admin.MeetingAdminController;
 import org.aakorea.main.group.api.publicapi.PublicGroupController;
 import org.aakorea.main.group.api.publicapi.PublicMeetingController;
 import org.aakorea.main.group.application.MeetingAdminService;
+import org.aakorea.main.group.application.MeetingCommand;
+import org.aakorea.main.group.application.MeetingMapper;
 import org.aakorea.main.group.application.PublicMeetingQueryService;
 import org.aakorea.main.group.domain.MeetingType;
 import org.junit.jupiter.api.Test;
@@ -71,7 +73,7 @@ class MeetingApiTest {
     @Test
     void createMeetingReturnsCreatedResponse() throws Exception {
         given(meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+                MeetingCommand.from(
                         20L,
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
@@ -82,18 +84,19 @@ class MeetingApiTest {
                         "19:30",
                         "OPEN",
                         true)))
-                .willReturn(new MeetingAdminService.MeetingData(
+                .willReturn(new MeetingMapper.MeetingData(
                         100L,
                         20L,
+                        "강남그룹",
                         "seoul",
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
                         37.4979,
                         127.0276,
                         "010-9999-0000",
-                        DayOfWeek.MONDAY,
+                        "MONDAY",
                         "19:30",
-                        MeetingType.OPEN,
+                        "OPEN",
                         true));
 
         mockMvc.perform(post("/api/admin/meetings")

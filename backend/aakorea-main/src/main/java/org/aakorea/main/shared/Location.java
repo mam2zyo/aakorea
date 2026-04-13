@@ -33,7 +33,11 @@ public class Location {
             Double longitude
     ) {
         validate(detail, address, latitude, longitude);
-        this.province = Province.fromAddress(address.trim());
+        try {
+            this.province = Province.fromAddress(address.trim());
+        } catch (IllegalArgumentException e) {
+            throw badRequest("locationAddress", "locationAddress cannot determine province");
+        }
         this.detail = detail != null ? detail.trim() : null;
         this.address = address != null ? address.trim() : null;
         this.latitude = latitude;
@@ -56,14 +60,8 @@ public class Location {
     }
 
     private void validate(String detail, String address, Double latitude, Double longitude) {
-        if (detail != null && address == null) {
-            throw badRequest("locationAddress", "locationAddress is required when locationDetail is provided");
-        }
-        if (address != null && detail == null) {
-            throw badRequest("locationDetail", "locationDetail is required when locationAddress is provided");
-        }
-        if (detail == null && address == null) {
-            throw badRequest("locationDetail", "locationDetail is required");
+        if (address == null || address.isBlank()) {
+            throw badRequest("locationAddress", "locationAddress is required");
         }
 
         if (latitude != null && longitude == null) {

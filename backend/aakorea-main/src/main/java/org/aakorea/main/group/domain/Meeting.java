@@ -42,7 +42,7 @@ public class Meeting extends AuditFields {
     @AttributeOverrides({
             @AttributeOverride(name = "province", column = @Column(name = "province", nullable = false)),
             @AttributeOverride(name = "detail", column = @Column(name = "location_detail")),
-            @AttributeOverride(name = "address", column = @Column(name = "location_address")),
+            @AttributeOverride(name = "address", column = @Column(name = "location_address", nullable = false)),
             @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
             @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
     })
@@ -113,13 +113,27 @@ public class Meeting extends AuditFields {
         this.active = active;
     }
 
-    public Meeting snapshot() {
-        return new Meeting(
-                this.group,
-                this.location,
+    public record MeetingSnapshot(
+            DayOfWeek dayOfWeek,
+            LocalTime startTime,
+            MeetingType type,
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude,
+            String contactPhoneOverride,
+            boolean active
+    ) {}
+
+    public MeetingSnapshot snapshot() {
+        return new MeetingSnapshot(
                 this.dayOfWeek,
                 this.startTime,
                 this.type,
+                this.location.getDetail(),
+                this.location.getAddress(),
+                this.location.getLatitude(),
+                this.location.getLongitude(),
                 this.contactPhoneOverride,
                 this.active
         );

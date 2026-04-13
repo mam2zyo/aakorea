@@ -82,7 +82,7 @@ public class MeetingAdminService {
         Meeting meeting = getMeeting(id);
         
         // Snapshot old state
-        Meeting oldState = meeting.snapshot();
+        Meeting.MeetingSnapshot oldState = meeting.snapshot();
 
         Group group = getGroup(command.groupId());
         meeting.update(
@@ -187,15 +187,14 @@ public class MeetingAdminService {
             Double latitude,
             Double longitude
     ) {
-        // Manual check for partial coordinates before geocoding
-        if ((latitude != null && longitude == null) || (latitude == null && longitude != null)) {
-            if (latitude == null) {
-                throw FieldValidationException.badRequest("latitude", "latitude is required when longitude is provided");
-            } else {
-                throw FieldValidationException.badRequest("longitude", "longitude is required when latitude is provided");
-            }
+        if (latitude != null && longitude != null) {
+            return new Location(locationDetail, locationAddress, latitude, longitude);
         }
-        
+
+        // Validate basic location first through Location VO
+        // Use dummy coordinates for initial validation to avoid triggering coordinate-related errors
+        new Location(locationDetail, locationAddress, 0.0, 0.0);
+
         MeetingAddressGeocoder.Coordinates coordinates = resolveCoordinates(locationAddress, latitude, longitude);
 
         return new Location(
@@ -213,6 +212,14 @@ public class MeetingAdminService {
         if (latitude != null && longitude != null) {
             return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
         }
+        
+        // At this point, if one is present, both should be present but are not.
+        // However, we want Location VO to handle this validation, so we throw specifically if both are null (geocode).
+        if (latitude != null || longitude != null) {
+            // This case will be handled by new Location(...) in buildLocation before calling this, 
+            // but just in case, we return what we have to let Location's constructor fail.
+            return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
+        }
 
         try {
             MeetingAddressGeocoder.Coordinates coordinates = meetingAddressGeocoder.resolveCoordinates(locationAddress);
@@ -222,8 +229,6 @@ public class MeetingAdminService {
                         "locationAddress cannot determine coordinates");
             }
             return coordinates;
-        } catch (FieldValidationException exception) {
-            throw exception;
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }

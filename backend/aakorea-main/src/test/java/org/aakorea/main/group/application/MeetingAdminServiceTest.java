@@ -44,6 +44,9 @@ class MeetingAdminServiceTest {
     @Mock
     private ChangeLogService changeLogService;
 
+    @Mock
+    private MeetingMapper meetingMapper;
+
     @InjectMocks
     private MeetingAdminService meetingAdminService;
 
@@ -58,6 +61,23 @@ class MeetingAdminServiceTest {
             Meeting meeting = invocation.getArgument(0);
             ReflectionTestUtils.setField(meeting, "id", 100L);
             return meeting;
+        });
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting meeting = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    meeting.getId(),
+                    meeting.getGroup().getId(),
+                    meeting.getGroup().getName(),
+                    meeting.getProvince().getCode(),
+                    meeting.getLocationDetail(),
+                    meeting.getLocationAddress(),
+                    meeting.getLatitude(),
+                    meeting.getLongitude(),
+                    meeting.getContactPhoneOverride(),
+                    meeting.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(meeting.getStartTime()),
+                    meeting.getType().name(),
+                    meeting.isActive());
         });
 
         MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
@@ -130,6 +150,23 @@ class MeetingAdminServiceTest {
 
         given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
         given(groupRepository.findById(21L)).willReturn(Optional.of(newGroup));
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting m = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    m.getId(),
+                    m.getGroup().getId(),
+                    m.getGroup().getName(),
+                    m.getProvince().getCode(),
+                    m.getLocationDetail(),
+                    m.getLocationAddress(),
+                    m.getLatitude(),
+                    m.getLongitude(),
+                    m.getContactPhoneOverride(),
+                    m.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(m.getStartTime()),
+                    m.getType().name(),
+                    m.isActive());
+        });
 
         MeetingMapper.MeetingData result = meetingAdminService.updateMeeting(
                 100L,
@@ -158,7 +195,7 @@ class MeetingAdminServiceTest {
         assertThat(meeting.isActive()).isFalse();
         assertThat(result.groupId()).isEqualTo(21L);
         assertThat(result.contactPhoneOverride()).isEqualTo("010-1111-2222");
-        assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED);
+        assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED.name());
     }
 
     @Test
@@ -229,6 +266,23 @@ class MeetingAdminServiceTest {
             Meeting meeting = invocation.getArgument(0);
             ReflectionTestUtils.setField(meeting, "id", 100L);
             return meeting;
+        });
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting m = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    m.getId(),
+                    m.getGroup().getId(),
+                    m.getGroup().getName(),
+                    m.getProvince().getCode(),
+                    m.getLocationDetail(),
+                    m.getLocationAddress(),
+                    m.getLatitude(),
+                    m.getLongitude(),
+                    m.getContactPhoneOverride(),
+                    m.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(m.getStartTime()),
+                    m.getType().name(),
+                    m.isActive());
         });
 
         MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
