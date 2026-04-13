@@ -13,6 +13,8 @@ import {
   requiresAdminSession,
 } from './router'
 
+import { AdminThemeProvider } from './providers/AdminThemeContext'
+
 export function AdminApp() {
   const route = useAppRoute()
   const { flash, showError, showSuccess } = useFlashState()
@@ -68,30 +70,32 @@ export function AdminApp() {
     || route.name === 'admin-pending'
 
   return (
-    <AdminAppScreen
-      currentPath={route.currentPath}
-      flash={flash}
-      isStandaloneAdminScreen={isStandaloneAdminScreen}
-      onLogout={handleLogout}
-      onNavigate={navigate}
-      page={renderAdminPage({
-        authPending,
-        onError: showError,
-        onLogin: handleLogin,
-        onRegister: handleRegister,
-        onNavigate: navigate,
-        onLogout: handleLogout,
-        onSuccess: showSuccess,
-        publicThemeState,
-        route,
-        session,
-        sessionChecked,
-        theme: adminTheme,
-      })}
-      requiresSession={isProtectedAdminRoute}
-      session={session}
-      sessionChecked={sessionChecked}
-      theme={adminTheme}
-    />
+    <AdminThemeProvider value={adminTheme}>
+      <AdminAppScreen
+        currentPath={route.currentPath}
+        flash={flash}
+        isStandaloneAdminScreen={isStandaloneAdminScreen}
+        onLogout={handleLogout}
+        onNavigate={navigate}
+        page={renderAdminPage({
+          authPending,
+          onError: showError,
+          onLogin: handleLogin,
+          onRegister: handleRegister,
+          onNavigate: navigate,
+          onLogout: handleLogout,
+          onSuccess: showSuccess,
+          publicThemeState,
+          route,
+          session,
+          sessionChecked,
+          theme: adminTheme,
+        })}
+        requiresSession={isProtectedAdminRoute}
+        session={session}
+        sessionChecked={sessionChecked}
+        theme={adminTheme}
+      />
+    </AdminThemeProvider>
   )
 }
