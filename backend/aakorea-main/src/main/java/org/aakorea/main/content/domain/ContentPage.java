@@ -11,11 +11,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.aakorea.main.common.audit.AuditFields;
+
 @Getter
 @Entity
 @Table(name = "content_pages")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentPage {
+public class ContentPage extends AuditFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

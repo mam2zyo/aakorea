@@ -52,6 +52,9 @@
 - `ADMIN_CONTENT.md`
   운영 `ContentPage`, `Notice` API 계약
 
+- `ADMIN_AUDIT_LOG.md`
+  운영 주요 도메인 개체 변경 이력(활동 로그) 조회 API 계약
+
 즉, 공통 규칙은 한 문서에 두고,
 엔드포인트 계약은 책임별 문서로 분리한다.
 
@@ -72,6 +75,7 @@
 9. `ADMIN_MEETINGS.md`
 10. `ADMIN_MEETING_IMPORTS.md`
 11. `ADMIN_CONTENT.md`
+12. `ADMIN_AUDIT_LOG.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -163,6 +167,7 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 운영 테스트 도구용 import API를 확인할 때: `ADMIN_MEETING_IMPORTS.md`
 - 운영 콘텐츠 API를 확인할 때: `ADMIN_CONTENT.md`
 - 운영 첨부파일 및 미디어 API를 확인할 때: `ADMIN_ATTACHMENT.md`
+- 운영 활동 로그(변경 이력) API를 확인할 때: `ADMIN_AUDIT_LOG.md`
 
 범위 포함 / 제외 판단은 `../PRODUCT_SCOPE.md`를 따른다.
 도메인 의미와 필드 정의의 원본은 `../domain/README.md`와 해당 세부 문서를 따른다.

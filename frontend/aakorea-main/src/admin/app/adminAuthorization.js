@@ -89,6 +89,8 @@ export function canAccessAdminRoute(session, routeName) {
       return hasPermission(session, ADMIN_PERMISSION.PUBLIC_THEME_MANAGE)
     case 'admin-overview':
       return canAccessOperationsTools(session)
+    case 'admin-audit-logs':
+      return hasPermission(session, ADMIN_PERMISSION.AUDIT_VIEW)
     default:
       return true
   }

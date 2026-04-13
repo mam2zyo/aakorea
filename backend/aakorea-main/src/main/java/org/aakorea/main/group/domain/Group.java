@@ -14,11 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.aakorea.main.generalservice.domain.District;
 
+import org.aakorea.main.common.audit.AuditFields;
+
 @Getter
 @Entity
 @Table(name = "groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Group {
+public class Group extends AuditFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

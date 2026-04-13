@@ -53,12 +53,6 @@ const ADMIN_NAV_GROUPS = [
       canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.PUBLIC_THEME_MANAGE),
       match: (path) => path === "/admin/public-theme",
     },
-    {
-      label: "운영자 관리",
-      href: "/admin/admin-users",
-      canAccess: (session) => canManageAdminUsers(session),
-      match: (path) => path === "/admin/admin-users",
-    },
   ],
   [
     {
@@ -66,6 +60,18 @@ const ADMIN_NAV_GROUPS = [
       href: "/admin/overview",
       canAccess: (session) => canAccessOperationsTools(session),
       match: (path) => path === "/admin/overview",
+    },
+    {
+      label: "운영자 관리",
+      href: "/admin/admin-users",
+      canAccess: (session) => canManageAdminUsers(session),
+      match: (path) => path === "/admin/admin-users",
+    },
+    {
+      label: "활동 로그",
+      href: "/admin/audit-logs",
+      canAccess: (session) => hasPermission(session, ADMIN_PERMISSION.AUDIT_VIEW),
+      match: (path) => path === "/admin/audit-logs",
     },
   ],
 ];

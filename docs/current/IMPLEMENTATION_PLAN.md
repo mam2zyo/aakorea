@@ -17,6 +17,7 @@
 - 공개 / 운영 라우트 분리
 - admin / public surface 분리와 document theme runtime 동기화
 - 3계층(Primitives, Semantic, Component) 디자인 토큰 아키텍처 수립 및 적용
+- 번들 최적화 및 사이트 격리 (관리자 및 공개 사이트 MPA 분리)
 
 ### 2. 공개 흐름
 
@@ -52,6 +53,7 @@
 - 디자인 토큰 시스템 구축 (색상 리터럴 완전 제거 및 시맨틱 변수화)
 - HTML normalize + 정제 JSON import preview / apply / reset
 - 좌표 backfill dry-run / apply
+- 주요 도메인 변경 이력 추적 기능 (Audit Log)
 
 ---
 
@@ -61,8 +63,6 @@
 
 현재 추후 구현 목표로 유지하는 항목:
 
-- 주요 도메인 변경 이력 추적 기능 (Audit Log)
-- 번들 최적화 (관리자 및 공개 사이트 분리)
 - **ContentPage 보조 첨부파일 운영 UI**: 운영자 페이지에서 페이지별 다운로드용 자산(매뉴얼 등)을 관리하는 인터페이스 추가
 - **ContentPage 공개 첨부파일 노출**: 방문자용 페이지 하단에 공지사항과 동일한 방식의 첨부파일 다운로드 영역 추가
 
@@ -81,3 +81,4 @@
 - 운영자가 `Notice`는 Rich Text 에디터로, `ContentPage`는 HTML 파일 업로드를 통해 편집할 수 있다
 - 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다
 - 운영자가 필요 시 import / 좌표 보정 도구를 사용할 수 있다
+- 운영자가 주요 도메인 개체(Group, Meeting 등)의 변경 이력을 이름과 계정 중심으로 확인할 수 있다

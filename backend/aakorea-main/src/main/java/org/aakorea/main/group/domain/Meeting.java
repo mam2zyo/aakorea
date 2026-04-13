@@ -22,11 +22,13 @@ import lombok.NoArgsConstructor;
 import org.aakorea.main.shared.Location;
 import org.aakorea.main.shared.Province;
 
+import org.aakorea.main.common.audit.AuditFields;
+
 @Getter
 @Entity
 @Table(name = "meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Meeting {
+public class Meeting extends AuditFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

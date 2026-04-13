@@ -13,6 +13,7 @@ import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.aakorea.main.shared.Location;
 import org.aakorea.main.shared.Province;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,7 @@ public class MeetingAdminService {
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
     private final MeetingAddressGeocoder meetingAddressGeocoder;
+    private final ChangeLogService changeLogService;
 
     public List<MeetingData> getMeetings(Long groupId, String province, Boolean active) {
         Province normalizedProvince = MeetingFieldSupport.optionalProvince(province);
@@ -75,7 +77,7 @@ public class MeetingAdminService {
         String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
         MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
         MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
-        Meeting meeting = new Meeting(
+        Meeting meeting = meetingRepository.save(new Meeting(
                 group,
                 buildLocation(
                         normalizedLocationDetail,
@@ -86,9 +88,11 @@ public class MeetingAdminService {
                 MeetingFieldSupport.requireStartTime(startTime),
                 MeetingFieldSupport.requireMeetingType(type),
                 normalizedContactPhoneOverride,
-                active);
+                active));
+        
+        changeLogService.logCreate(meeting, meeting.getId());
 
-        return toMeetingData(meetingRepository.save(meeting));
+        return toMeetingData(meeting);
     }
 
     @Transactional
@@ -106,6 +110,18 @@ public class MeetingAdminService {
             boolean active
     ) {
         Meeting meeting = getMeeting(id);
+        
+        // Snapshot old state
+        Meeting oldState = new Meeting(
+            meeting.getGroup(),
+            meeting.getLocation(),
+            meeting.getDayOfWeek(),
+            meeting.getStartTime(),
+            meeting.getType(),
+            meeting.getContactPhoneOverride(),
+            meeting.isActive()
+        );
+
         Group group = getGroup(groupId);
         String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
         String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
@@ -127,6 +143,8 @@ public class MeetingAdminService {
                 normalizedContactPhoneOverride,
                 active);
 
+        changeLogService.logUpdate(oldState, meeting, id);
+
         return toMeetingData(meeting);
     }
 
@@ -134,6 +152,7 @@ public class MeetingAdminService {
     public void deleteMeeting(Long id) {
         Meeting meeting = getMeeting(id);
         meetingRepository.delete(meeting);
+        changeLogService.logDelete(Meeting.class, id, meeting.getGroup().getName());
     }
 
     @Transactional

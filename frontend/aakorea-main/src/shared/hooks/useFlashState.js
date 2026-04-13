@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ApiError } from '@/shared/lib/request'
 
 export function useFlashState() {
@@ -16,14 +16,14 @@ export function useFlashState() {
     return () => window.clearTimeout(timeoutId)
   }, [flash])
 
-  function showSuccess(message) {
+  const showSuccess = useCallback((message) => {
     setFlash({
       tone: 'success',
       message,
     })
-  }
+  }, [])
 
-  function showError(error, fallbackMessage = '요청을 처리하지 못했습니다.') {
+  const showError = useCallback((error, fallbackMessage = '요청을 처리하지 못했습니다.') => {
     const message = error instanceof ApiError
       ? error.message
       : error instanceof Error && error.message
@@ -34,7 +34,7 @@ export function useFlashState() {
       tone: 'error',
       message: message || fallbackMessage,
     })
-  }
+  }, [])
 
   return {
     flash,

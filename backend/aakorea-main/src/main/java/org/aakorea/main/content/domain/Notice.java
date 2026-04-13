@@ -12,11 +12,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.aakorea.main.common.audit.AuditFields;
+
 @Getter
 @Entity
 @Table(name = "notices")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notice {
+public class Notice extends AuditFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

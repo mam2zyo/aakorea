@@ -15,6 +15,7 @@ import org.aakorea.main.attachment.domain.NoticeAttachment;
 import org.aakorea.main.attachment.infrastructure.AttachmentRepository;
 import org.aakorea.main.attachment.infrastructure.ContentAttachmentRepository;
 import org.aakorea.main.attachment.infrastructure.NoticeAttachmentRepository;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class ContentAdminService {
     private final NoticeAttachmentRepository noticeAttachmentRepository;
     private final ContentAttachmentRepository contentAttachmentRepository;
     private final FileSystemContentService fileSystemContentService;
+    private final ChangeLogService changeLogService;
 
     public List<ContentPageSummaryData> getContentPages() {
         return contentPageRepository.findAllByOrderByIdAsc().stream()
@@ -61,12 +63,23 @@ public class ContentAdminService {
 
         syncContentAttachments(contentPage, attachmentIds);
 
+        changeLogService.logCreate(contentPage, contentPage.getId());
+
         return toContentPageData(contentPage);
     }
 
     @Transactional
     public ContentPageData updateContentPage(Long id, String key, String title, boolean published, MultipartFile file, List<Long> attachmentIds) {
         ContentPage contentPage = getContentPageEntity(id);
+        
+        // Snapshot old state
+        ContentPage oldState = new ContentPage(
+            contentPage.getKey(),
+            contentPage.getTitle(),
+            contentPage.isPublished(),
+            contentPage.getOriginalFileName()
+        );
+
         String normalizedKey = normalizeKey(key);
         ensureUniqueContentPageKey(normalizedKey, id);
 
@@ -82,6 +95,8 @@ public class ContentAdminService {
         }
 
         syncContentAttachments(contentPage, attachmentIds);
+
+        changeLogService.logUpdate(oldState, contentPage, id);
 
         return toContentPageData(contentPage);
     }
@@ -109,12 +124,24 @@ public class ContentAdminService {
 
         syncNoticeAttachments(notice, attachmentIds);
 
+        changeLogService.logCreate(notice, notice.getId());
+
         return toNoticeData(notice);
     }
 
     @Transactional
     public NoticeData updateNotice(Long id, String title, String bodyHtml, String bodyJson, boolean published, LocalDateTime publishedAt, List<Long> attachmentIds) {
         Notice notice = getNoticeEntity(id);
+        
+        // Snapshot old state
+        Notice oldState = new Notice(
+            notice.getTitle(),
+            notice.getBodyHtml(),
+            notice.getBodyJson(),
+            notice.isPublished(),
+            notice.getPublishedAt()
+        );
+
         notice.update(
                 normalizeText(title, "title"),
                 normalizeText(bodyHtml, "bodyHtml"),
@@ -124,13 +151,17 @@ public class ContentAdminService {
 
         syncNoticeAttachments(notice, attachmentIds);
 
+        changeLogService.logUpdate(oldState, notice, id);
+
         return toNoticeData(notice);
     }
 
     @Transactional
     public void deleteNotice(Long id) {
+        Notice notice = getNoticeEntity(id);
         noticeAttachmentRepository.deleteAllByNotice_Id(id);
-        noticeRepository.delete(getNoticeEntity(id));
+        noticeRepository.delete(notice);
+        changeLogService.logDelete(Notice.class, id, notice.getTitle());
     }
 
     @Transactional
@@ -139,6 +170,7 @@ public class ContentAdminService {
         fileSystemContentService.deleteContentFile(contentPage.getKey());
         contentAttachmentRepository.deleteAllByContentPage_Id(id);
         contentPageRepository.delete(contentPage);
+        changeLogService.logDelete(ContentPage.class, id, contentPage.getTitle());
     }
 
     private void syncNoticeAttachments(Notice notice, List<Long> attachmentIds) {

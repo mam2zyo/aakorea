@@ -77,6 +77,10 @@ export function parseAdminRoute(pathname, search = '') {
     return create('admin-notices', normalizedPath, { section: 'admin' })
   }
 
+  if (normalizedPath === '/admin/audit-logs') {
+    return create('admin-audit-logs', normalizedPath, { section: 'admin' })
+  }
+
   if (normalizedPath.startsWith('/admin')) {
     return create('not-found', normalizedPath, { section: 'admin' })
   }

@@ -10,6 +10,7 @@ import org.aakorea.main.group.domain.GroupContact;
 import org.aakorea.main.group.infrastructure.GroupContactRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.aakorea.main.shared.PostalContact;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class GroupAdminService {
     private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
     private final MeetingRepository meetingRepository;
+    private final ChangeLogService changeLogService;
 
     public List<GroupData> getGroups(Long districtId) {
         List<Group> groups = districtId != null
@@ -47,6 +49,7 @@ public class GroupAdminService {
                 district,
                 GroupFieldSupport.requireName(name),
                 GroupFieldSupport.optionalNotice(notice)));
+        changeLogService.logCreate(group, group.getId());
         return toGroupData(group);
     }
 
@@ -58,11 +61,18 @@ public class GroupAdminService {
             String notice
     ) {
         Group group = getGroup(id);
+        
+        // Snapshot old state for auditing
+        Group oldState = new Group(group.getDistrict(), group.getName(), group.getNotice());
+
         District district = getDistrict(districtId);
         group.update(
                 district,
                 GroupFieldSupport.requireName(name),
                 GroupFieldSupport.optionalNotice(notice));
+        
+        changeLogService.logUpdate(oldState, group, id);
+        
         return toGroupData(group);
     }
 
@@ -72,6 +82,7 @@ public class GroupAdminService {
         meetingRepository.deleteAllByGroup_Id(id);
         groupContactRepository.deleteAllByGroup_Id(id);
         groupRepository.delete(group);
+        changeLogService.logDelete(Group.class, id, group.getName());
     }
 
     public List<GroupContactData> getGroupContacts(Long groupId) {
@@ -100,6 +111,7 @@ public class GroupAdminService {
                 requirePhone(phone),
                 optionalText(email),
                 toPostalContact(postalContact)));
+        changeLogService.logCreate(groupContact, groupContact.getId());
         return toGroupContactData(groupContact);
     }
 
@@ -111,10 +123,22 @@ public class GroupAdminService {
             PostalContactInput postalContact
     ) {
         GroupContact groupContact = getGroupContact(id);
+        
+        // Snapshot old state
+        GroupContact oldState = new GroupContact(
+            groupContact.getGroup(),
+            groupContact.getPhone(),
+            groupContact.getEmail(),
+            groupContact.getPostalContact()
+        );
+
         groupContact.update(
                 requirePhone(phone),
                 optionalText(email),
                 toPostalContact(postalContact));
+        
+        changeLogService.logUpdate(oldState, groupContact, id);
+        
         return toGroupContactData(groupContact);
     }
 
