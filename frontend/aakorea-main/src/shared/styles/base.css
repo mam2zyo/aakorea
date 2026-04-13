@@ -10,7 +10,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  line-height: var(--text-leading-normal, 1.5);
+  line-height: var(--line-height-base, 1.5);
   background: var(--color-bg, #fff);
   color: var(--color-text, inherit);
   font-family: var(--font-body, sans-serif);
@@ -44,7 +44,7 @@ textarea {
   border-radius: var(--radius-sm, 8px);
   background: var(--color-input-bg, #fff);
   color: var(--color-input-text, var(--color-text));
-  padding: 0.75rem 1rem; /* Slightly normalized padding */
+  padding: var(--space-3) var(--space-4); /* Slightly normalized padding */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

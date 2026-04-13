@@ -172,8 +172,6 @@
   --admin-switch-text-inactive: rgba(131, 148, 150, 0.6);
 
   --admin-theme-choice-hover-background: rgba(var(--palette-solar-blue-rgb), 0.08);
-  --admin-tab-active-border: rgba(var(--palette-solar-blue-rgb), 0.7);
-
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -187,6 +185,30 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.50rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  /* Typography Refinement */
+  --font-size-h1: 2.5rem;
+  --font-size-body: 1rem;
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --letter-spacing-tight: -0.02em;
+
+  /* Interaction States */
+  --state-disabled-opacity: 0.5;
+
+  /* Surface Details */
+  --border-width-base: 1px;
+  --shadow-elevation-low: 0 2px 8px var(--color-shadow);
+  --shadow-elevation-high: 0 12px 32px var(--color-shadow);
 
   --font-body: "Inter", "Noto Sans KR", sans-serif;
   --font-display: "Outfit", "Noto Serif KR", serif;
@@ -338,5 +360,26 @@
 
   color: var(--color-text);
   font-family: var(--font-body);
+}
+
+/* --- Responsive Token Overrides --- */
+
+@media (max-width: 640px) {
+  :root {
+    --space-1: 0.2rem;
+    --space-2: 0.4rem;
+    --space-3: 0.6rem;
+    --space-4: 0.8rem;
+    --space-5: 1rem;
+    --space-6: 1.2rem;
+    --space-8: 1.6rem;
+    --space-10: 2rem;
+    --space-12: 2.4rem;
+
+    --font-size-h1: 2rem;
+    --font-size-4xl: 1.8rem;
+    --font-size-3xl: 1.65rem;
+    --font-size-2xl: 1.4rem;
+  }
 }
 

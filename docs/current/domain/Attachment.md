@@ -33,7 +33,7 @@
 | `id` | `Long` | PK |
 | `originalName` | `String` | 사용자가 업로드할 때의 원본 파일명 |
 | `savedName` | `String` | 서버에 저장된 고유 파일명 (UUID 기반) |
-| `filePath` | `String` | 저장소 내의 실제 경로 |
+| `filePath` | `String` | 클라이언트에서 접근 가능한 URL 경로 (예: `/api/public/assets/...`) |
 | `fileSize` | `long` | 파일 용량 (bytes) |
 | `contentType` | `String` | MIME type (예: `image/jpeg`, `application/pdf`) |
 | `createdAt` | `LocalDateTime` | 업로드 일시 |
@@ -53,15 +53,19 @@
 ### 3. 첨부파일 다운로드
 - 공지사항 하단 등에 리스팅되는 "다운로드용" 파일들이다.
 - 원본 파일명(`originalName`)을 복구하여 다운로드할 수 있도록 전용 엔드포인트를 사용한다.
+  - 전용 엔드포인트: `/api/public/attachments/{id}/download`
 
 ---
 
-## 관계 정의
+## ContentPage 연동 구조
 
-### Notice / ContentPage 연동
-- 공지(`Notice`)와 콘텐츠(`ContentPage`)는 여러 개의 첨부파일을 가질 수 있다.
-- 순서를 보장해야 하는 경우 브릿지 엔터티(`NoticeAttachment`, `ContentAttachment`)를 통해 관리한다.
-- 에디터(TipTap) 본문 내의 이미지는 별도의 하드 링크가 아닌 URL 참조 방식으로 동작하며, 해당 이미지는 `Attachment` 도메인을 통해 업로드된 자산이다.
+`ContentPage`는 유연한 컨텐츠 구성을 위해 다음과 같은 **삼중 관리 구조**를 가진다.
+
+1. **메타데이터 (DB Entity)**: 페이지 제목, 키, 공개 상태 등의 관리 속성
+2. **본문 (Body - Filesystem)**: `.html` 또는 `.jsx` 파일 형태의 실제 컨텐츠 본문
+3. **보조 자산 (Supplementary Attachments - Domain)**: 페이지와 연관된 다운로드용 문서나 이미지들 (브릿지 엔터티 사용)
+
+본문 파일 내의 이미지나 링크는 `Attachment` 도메인을 통해 업로드된 URL을 참조하여 삽입된다.
 
 ---
 
@@ -70,3 +74,13 @@
 - **최대 파일 용량**: 현재 설정 기준 단일 파일 10MB, 요청당 20MB.
 - **허용 확장자**: 이미지류, PDF, ZIP 등 일반 문서 자산 위주.
 - **보안**: 관리자 인증(`credentials: 'include'`)이 있는 사용자만 업로드 API에 접근할 수 있다.
+
+---
+
+## 브릿지 엔터티(Bridge Entity) 설계 철학
+
+`NoticeAttachment`, `ContentAttachment`와 같은 교차 엔터티를 사용하는 이유는 다음과 같다.
+
+1. **자산의 재사용성 (M:N 관계)**: 동일한 `Attachment` 자산을 여러 공지나 페이지에서 중복 업로드 없이 공유할 수 있다.
+2. **관계 전용 메타데이터**: 특정 페이지 내에서의 파일 노출 순서(`orderIndex`) 등 '관계' 자체의 속성을 저장하기 위함이다.
+3. **도메인 결합도 분리**: `Attachment` 도메인이 상위 도메인(Notice, ContentPage 등)을 알 필요가 없게 하여 시스템의 확장성을 높인다.
