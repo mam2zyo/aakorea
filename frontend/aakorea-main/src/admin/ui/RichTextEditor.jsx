@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 
-import { adminAssetApi } from '../../features/asset/api/admin'
+import { adminAssetApi } from '../features/asset/api/admin'
 
 import './RichTextEditor.css'
 
