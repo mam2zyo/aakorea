@@ -60,8 +60,8 @@ class MeetingAdminServiceTest {
             return meeting;
         });
 
-        MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+        MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
+                MeetingCommand.from(
                         20L,
                         "  강남역 인근  ",
                         "  서울특별시 강남구 테헤란로 123  ",
@@ -131,9 +131,9 @@ class MeetingAdminServiceTest {
         given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
         given(groupRepository.findById(21L)).willReturn(Optional.of(newGroup));
 
-        MeetingAdminService.MeetingData result = meetingAdminService.updateMeeting(
+        MeetingMapper.MeetingData result = meetingAdminService.updateMeeting(
                 100L,
-                new MeetingAdminService.MeetingCommand(
+                MeetingCommand.from(
                         21L,
                         "해운대역 인근",
                         "부산광역시 해운대구 우동 123",
@@ -170,7 +170,7 @@ class MeetingAdminServiceTest {
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+                MeetingCommand.from(
                         20L,
                         "알 수 없는 위치",
                         "어딘가 1",
@@ -231,8 +231,8 @@ class MeetingAdminServiceTest {
             return meeting;
         });
 
-        MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+        MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
+                MeetingCommand.from(
                         20L,
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
@@ -260,7 +260,7 @@ class MeetingAdminServiceTest {
                 .willReturn(null);
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+                MeetingCommand.from(
                         20L,
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
@@ -288,7 +288,7 @@ class MeetingAdminServiceTest {
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                new MeetingAdminService.MeetingCommand(
+                MeetingCommand.from(
                         20L,
                         "강남역 인근",
                         "서울특별시 강남구 테헤란로 123",
