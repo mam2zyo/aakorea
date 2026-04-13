@@ -1,6 +1,6 @@
 import { AdminPageHeader } from '../../admin/ui'
-import { MeetingCoordinateBackfillPanel } from '../../features/groups/admin/components/MeetingCoordinateBackfillPanel'
-import { MeetingImportPanel } from '../../features/groups/admin/components/MeetingImportPanel'
+import { MeetingCoordinateBackfillPanel } from '../features/groups/components/components/MeetingCoordinateBackfillPanel'
+import { MeetingImportPanel } from '../features/groups/components/components/MeetingImportPanel'
 
 export function AdminOverviewPage({ onError, onSuccess }) {
   return (

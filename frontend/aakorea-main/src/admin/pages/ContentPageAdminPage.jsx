@@ -4,7 +4,7 @@ import {
   EmptyState,
   Field,
 } from '../../admin/ui'
-import { adminContentApi } from '../../features/content/api/admin'
+import { adminContentApi } from '../features/content/api'
 
 const CONTENT_PAGE_SORT_MODES = {
   key: 'key순',

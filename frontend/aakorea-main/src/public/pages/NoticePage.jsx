@@ -5,7 +5,7 @@ import {
   PageIntro,
   PageSection,
 } from '../../public/ui'
-import { publicContentApi } from '../../features/content/api/public'
+import { publicContentApi } from '../features/content/api'
 import { ApiError } from '../../shared/lib/request'
 import { PublicAttachmentList } from '../components/PublicAttachmentList'
 

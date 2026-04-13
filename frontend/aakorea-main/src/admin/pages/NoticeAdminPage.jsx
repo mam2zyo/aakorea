@@ -7,7 +7,7 @@ import {
   RichTextEditor,
   AttachmentField,
 } from '../../admin/ui'
-import { adminContentApi } from '../../features/content/api/admin'
+import { adminContentApi } from '../features/content/api'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const NOTICE_SORT_MODES = {

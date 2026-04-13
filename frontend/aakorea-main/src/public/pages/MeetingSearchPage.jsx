@@ -1,1 +1,1 @@
-export { MeetingSearchPage } from '../../features/groups/public/MeetingSearchPage'
+export { MeetingSearchPage } from '../features/groups/components/MeetingSearchPage'

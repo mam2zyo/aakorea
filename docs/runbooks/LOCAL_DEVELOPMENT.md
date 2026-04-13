@@ -22,8 +22,9 @@
 - Spring Boot API: `8081`
 - PostgreSQL: `5432`
 
-로컬 개발 중 브라우저는 보통 `http://localhost:5173`을 사용하고,
-`/api` 요청은 Vite proxy를 통해 `http://localhost:8081`로 전달된다.
+로컬 개발 중 브라우저는 보통 `http://localhost:5173`을 사용합니다.
+- **MPA Routing**: Vite dev server는 `/admin` 경로를 감지하면 자동으로 `admin.html`을 서빙하도록 설정되어 있습니다.
+- **API Proxy**: `/api` 요청은 Vite proxy를 통해 `http://localhost:8081`로 전달됩니다.
 
 ---
 
@@ -126,9 +127,10 @@ VITE_PROXY_TARGET=http://localhost:8081 npm run dev
 
 ## 확인
 
-- 브라우저에서 `http://localhost:5173`이 열려야 한다
-- `http://localhost:8081/api/public/notices`가 응답해야 한다
-- 대화면 공개 모임 상세에서 지도까지 보려면 프론트 env key가 필요하다
+- **공개 사이트**: `http://localhost:5173/` 접속 확인.
+- **관리자 콘솔**: `http://localhost:5173/admin/login` 접속 확인.
+- **API**: `http://localhost:8081/api/public/notices` 응답 확인.
+- **지도**: 대화면 공개 모임 상세에서 지도까지 보려면 프론트 env key가 필요합니다.
 
 정적 빌드 결과를 `nginx`로 미리보기 해야 하면
 `NGINX_TERMUX_DEPLOYMENT.md`의 Ubuntu 절차를 따른다.

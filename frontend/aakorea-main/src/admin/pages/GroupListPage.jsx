@@ -1,1 +1,1 @@
-export { GroupManagementPage as GroupListPage } from '../../features/groups/admin/GroupManagementPage'
+export { GroupManagementPage as GroupListPage } from '../features/groups/components/GroupManagementPage'

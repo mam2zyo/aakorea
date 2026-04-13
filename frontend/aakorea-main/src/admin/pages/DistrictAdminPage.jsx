@@ -4,8 +4,8 @@ import {
   EmptyState,
   Field,
 } from '../../admin/ui'
-import { adminDistrictApi } from '../../features/districts/api/admin'
-import { adminGroupApi } from '../../features/groups/api/admin'
+import { adminDistrictApi } from '../features/districts/api'
+import { adminGroupApi } from '../features/groups/api'
 import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
 
 const DISTRICT_SORT_MODES = {

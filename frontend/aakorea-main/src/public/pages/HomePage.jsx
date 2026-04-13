@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { EmptyState, PageIntro, PageSection } from '../../public/ui'
-import { publicContentApi } from '../../features/content/api/public'
+import { publicContentApi } from '../features/content/api'
 
 const GUIDE_PAGE_KEY = 'first-visitor-guide'
 const HOME_AUDIENCES = Object.freeze([
@@ -261,7 +261,8 @@ export function HomePage({ onNavigate }) {
           {HOME_AUDIENCES.map((audience) => (
             <button
               key={audience.id}
-              aria-pressed={activeAudience.id === audience.id}
+              role="tab"
+              aria-selected={activeAudience.id === audience.id}
               className={`home-audience-tab${
                 activeAudience.id === audience.id ? ' home-audience-tab--active' : ''
               }`}
