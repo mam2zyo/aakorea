@@ -1,6 +1,5 @@
 package org.aakorea.main.group.application;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
-import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
 import org.aakorea.main.common.audit.ChangeLogService;
