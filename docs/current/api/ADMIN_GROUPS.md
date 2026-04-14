@@ -258,6 +258,68 @@
 
 ---
 
+## 8. 그룹 벌크 생성 (Bulk API)
+
+### POST `/api/admin/groups/bulk`
+
+그룹, 연락처, 모임 목록을 하나의 트랜잭션으로 생성한다.
+
+#### Request Body
+
+```json
+{
+  "group": {
+    "districtId": 1,
+    "name": "강남그룹",
+    "notice": "첫 방문자는 10분 전에 와 주세요."
+  },
+  "contact": {
+    "phone": "02-1234-5678",
+    "email": "group@example.org",
+    "postalContact": {
+      "recipient": "담당자",
+      "postalCode": "06123",
+      "roadAddress": "서울특별시 강남구 테헤란로 123",
+      "detailAddress": "7층"
+    }
+  },
+  "meetings": [
+    {
+      "dayOfWeek": "MONDAY",
+      "startTime": "19:00",
+      "endTime": "20:30",
+      "format": "OFFLINE",
+      "location": {
+        "name": "강남역 1번 출구",
+        "address": "서울 강남구 테헤란로 123",
+        "latitude": 37.4979,
+        "longitude": 127.0276
+      }
+    }
+  ]
+}
+```
+
+#### Response 201
+
+```json
+{
+  "data": {
+    "id": 20,
+    "districtId": 1,
+    "name": "강남그룹",
+    "notice": "첫 방문자는 10분 전에 와 주세요."
+  }
+}
+```
+
+#### 주요 특징
+
+- **트랜잭션 보장**: 그룹, 연락처, 모임 중 하나라도 생성에 실패하면 전체 롤백된다.
+- **데이터 정합성**: 네트워크 오류 등으로 인해 연락처가 없는 그룹이 생성되는 문제를 방지한다.
+
+---
+
 ## 현재 구현에 없는 것
 
 - `DELETE /api/admin/group-contacts/{id}`

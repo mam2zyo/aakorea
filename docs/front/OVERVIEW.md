@@ -52,7 +52,14 @@ AAKorea Main은 사용자의 환경과 목적에 따라 서로 다른 디자인 
 - **`@/`**: `src/` 디렉터리를 가리킵니다.
 - **설정**: `vite.config.js` 및 `jsconfig.json`에서 정의되어 있습니다.
 
-## 5. 개발 가이드라인 (Policies)
+## 6. 패턴 및 관례 (Patterns & Conventions)
 
-- **Domain Isolation**: 관리자(`admin/`)와 공개(`public/`) 코드는 서로를 직접 임포트할 수 없습니다. 공유가 필요한 경우 반드시 `shared/` 레이어로 추출한 뒤 참조합니다.
-- **MPA Navigation**: Admin에서 Public 페이지로 이동할 때는 **`window.open(path, '_blank')`** 등을 사용하여 물리적인 앱 전환을 수행해야 합니다.
+### Container-Presenter 패턴
+복잡한 비즈니스 로직과 UI 렌더링을 분리하기 위해 Container-Presenter 패턴을 권장합니다.
+- **Container**: 데이터 페칭, 상태 관리(`useReducer` 등), 이벤트 핸들러 정의를 담당합니다.
+- **Presenter**: Props로 전달받은 데이터를 화면에 출력하고 사용자의 입력을 Container로 전달하는 UI 역할만 담당합니다.
+- **이점**: 비즈니스 로직의 테스트 용이성 확보 및 UI 컴포넌트의 재사용성 향상.
+
+### 상태 관리 (State Management)
+- 복잡한 페이지 상태는 `useState`의 나열 대신 `useReducer`를 사용하여 상태 전이 로직을 명확히 관리합니다.
+- 도메인 간 공유가 필요한 전역 상태는 최소화하며, 필요한 경우 React Context 또는 전용 Store를 검토합니다.
