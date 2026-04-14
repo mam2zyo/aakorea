@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.GroupAdminService;
+import org.aakorea.main.group.application.GroupCompositeRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,15 @@ public class GroupAdminController {
                         request.districtId(),
                         request.name(),
                         request.notice())));
+    }
+
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
+    @PostMapping("/groups/bulk")
+    public ResponseEntity<ApiResponse<Long>> createGroupBulk(
+            @Valid @RequestBody GroupCompositeRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(
+                groupAdminService.createGroupComposite(request)));
     }
 
     @PreAuthorize("hasAuthority('PERM_group.manage')")

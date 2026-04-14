@@ -46,6 +46,7 @@ public class ContentAdminController {
             @RequestParam(value = "published", defaultValue = "false") boolean published,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
+        officeAuthorizationService.assertCanSaveContentPage(null, published);
         return ResponseEntity.ok(ApiResponse.success(contentAdminService.createContentPage(key, title, published, file, List.of())));
     }
 
@@ -58,6 +59,7 @@ public class ContentAdminController {
             @RequestParam("published") boolean published,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
+        officeAuthorizationService.assertCanSaveContentPage(id, published);
         return ResponseEntity.ok(ApiResponse.success(contentAdminService.updateContentPage(id, key, title, published, file, List.of())));
     }
 
@@ -66,6 +68,7 @@ public class ContentAdminController {
     public ResponseEntity<ApiResponse<ContentAdminService.ContentPageData>> updateContentMetadata(
             @PathVariable Long id,
             @RequestBody MetadataUpdateRequest request) {
+        officeAuthorizationService.assertCanSaveContentPage(id, request.published());
         ContentAdminService.ContentPageData updated = contentAdminService.updateContentPage(
                 id, request.key(), request.title(), request.published(), null, List.of());
         return ResponseEntity.ok(ApiResponse.success(updated));
@@ -74,6 +77,7 @@ public class ContentAdminController {
     @PreAuthorize("hasAuthority('PERM_content_page.manage')")
     @DeleteMapping("/content-pages/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteContentPage(@PathVariable Long id) {
+        officeAuthorizationService.assertCanDeleteContentPage(id);
         contentAdminService.deleteContentPage(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -83,6 +87,7 @@ public class ContentAdminController {
     public ResponseEntity<ApiResponse<Void>> togglePublishContentPage(
             @PathVariable Long id,
             @RequestParam("published") boolean published) {
+        officeAuthorizationService.assertCanSaveContentPage(id, published);
         contentAdminService.updateContentPage(id, null, null, published, null, List.of());
         return ResponseEntity.ok(ApiResponse.success(null));
     }

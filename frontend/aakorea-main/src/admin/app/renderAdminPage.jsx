@@ -1,6 +1,7 @@
 import { canAccessAdminRoute, resolveAdminHomePath } from './adminAuthorization'
 import { EmptyState, PageSection } from '../ui'
 import { AdminAccountPage } from '../pages/AdminAccountPage'
+import { AuditLogPage } from '../pages/AuditLogPage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
 import { AdminPendingApprovalPage } from '../pages/AdminPendingApprovalPage'
 import { AdminRegisterPage } from '../pages/AdminRegisterPage'
@@ -165,6 +166,13 @@ export function renderAdminPage({
           onNavigate={onNavigate}
           onSuccess={onSuccess}
           session={session}
+        />
+      )
+    case 'admin-audit-logs':
+      return (
+        <AuditLogPage
+          onError={onError}
+          onSuccess={onSuccess}
         />
       )
     default:

@@ -4,9 +4,9 @@ import {
   DetailItem,
   EmptyState,
   Field,
-} from '../../admin/ui'
-import { adminUserApi } from '../../lib/api'
-import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
+} from '@/admin/ui'
+import { adminUserApi } from '@/shared/api'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/lib/formErrors'
 
 const EMPTY_WORKSPACE = {
   users: [],

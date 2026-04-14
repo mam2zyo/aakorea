@@ -3,10 +3,10 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
-} from '../../admin/ui'
+} from '@/admin/ui'
 import { adminDistrictApi } from '../features/districts/api'
 import { adminGroupApi } from '../features/groups/api'
-import { getApiFieldErrors, omitFieldErrors, readFieldError } from '../../lib/formErrors'
+import { getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/lib/formErrors'
 
 const DISTRICT_SORT_MODES = {
   name: '이름순',

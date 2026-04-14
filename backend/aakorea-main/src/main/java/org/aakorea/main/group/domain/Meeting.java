@@ -22,11 +22,13 @@ import lombok.NoArgsConstructor;
 import org.aakorea.main.shared.Location;
 import org.aakorea.main.shared.Province;
 
+import org.aakorea.main.common.audit.AuditFields;
+
 @Getter
 @Entity
 @Table(name = "meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Meeting {
+public class Meeting extends AuditFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +42,7 @@ public class Meeting {
     @AttributeOverrides({
             @AttributeOverride(name = "province", column = @Column(name = "province", nullable = false)),
             @AttributeOverride(name = "detail", column = @Column(name = "location_detail")),
-            @AttributeOverride(name = "address", column = @Column(name = "location_address")),
+            @AttributeOverride(name = "address", column = @Column(name = "location_address", nullable = false)),
             @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
             @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
     })
@@ -77,8 +79,20 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.contactPhoneOverride = contactPhoneOverride;
+        this.contactPhoneOverride = contactPhoneOverride != null ? contactPhoneOverride.trim() : null;
         this.active = active;
+    }
+
+    public static Meeting create(
+            Group group,
+            Location location,
+            DayOfWeek dayOfWeek,
+            LocalTime startTime,
+            MeetingType type,
+            String contactPhoneOverride,
+            boolean active
+    ) {
+        return new Meeting(group, location, dayOfWeek, startTime, type, contactPhoneOverride, active);
     }
 
     public void update(
@@ -95,8 +109,34 @@ public class Meeting {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.type = type;
-        this.contactPhoneOverride = contactPhoneOverride;
+        this.contactPhoneOverride = contactPhoneOverride != null ? contactPhoneOverride.trim() : null;
         this.active = active;
+    }
+
+    public record MeetingSnapshot(
+            DayOfWeek dayOfWeek,
+            LocalTime startTime,
+            MeetingType type,
+            String locationDetail,
+            String locationAddress,
+            Double latitude,
+            Double longitude,
+            String contactPhoneOverride,
+            boolean active
+    ) {}
+
+    public MeetingSnapshot snapshot() {
+        return new MeetingSnapshot(
+                this.dayOfWeek,
+                this.startTime,
+                this.type,
+                this.location.getDetail(),
+                this.location.getAddress(),
+                this.location.getLatitude(),
+                this.location.getLongitude(),
+                this.contactPhoneOverride,
+                this.active
+        );
     }
 
     public void updateLocation(Location location) {

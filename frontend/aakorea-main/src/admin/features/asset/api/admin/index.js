@@ -1,4 +1,4 @@
-import { ApiError } from '../../../../../shared/lib/request'
+import { ApiError } from '@/shared/lib/request'
 
 export const adminAssetApi = {
   async uploadAsset(file) {

@@ -1,6 +1,5 @@
 package org.aakorea.main.group.application;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.group.domain.Group;
 import org.aakorea.main.group.domain.Meeting;
-import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.aakorea.main.shared.Location;
 import org.aakorea.main.shared.Province;
 import org.springframework.data.domain.Sort;
@@ -30,8 +29,10 @@ public class MeetingAdminService {
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
     private final MeetingAddressGeocoder meetingAddressGeocoder;
+    private final ChangeLogService changeLogService;
+    private final MeetingMapper meetingMapper;
 
-    public List<MeetingData> getMeetings(Long groupId, String province, Boolean active) {
+    public List<MeetingMapper.MeetingData> getMeetings(Long groupId, String province, Boolean active) {
         Province normalizedProvince = MeetingFieldSupport.optionalProvince(province);
 
         Specification<Meeting> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -49,91 +50,62 @@ public class MeetingAdminService {
                     criteriaBuilder.equal(root.get("active"), active));
         }
 
-        return meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id")).stream()
-                .map(this::toMeetingData)
-                .toList();
+        List<Meeting> meetings = meetingRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "id"));
+        return meetingMapper.toMeetingDataList(meetings);
     }
 
     @Transactional
-    public MeetingData createMeeting(
-            Long groupId,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            String dayOfWeek,
-            String startTime,
-            String type,
-            boolean active
-    ) {
-        Group group = getGroup(groupId);
-        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
-        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
-        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
-        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
-        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
-        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
-        Meeting meeting = new Meeting(
+    public MeetingMapper.MeetingData createMeeting(MeetingCommand command) {
+        Group group = getGroup(command.groupId());
+        Meeting meeting = meetingRepository.save(Meeting.create(
                 group,
                 buildLocation(
-                        normalizedLocationDetail,
-                        normalizedLocationAddress,
-                        normalizedLatitude,
-                        normalizedLongitude),
-                MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
-                MeetingFieldSupport.requireStartTime(startTime),
-                MeetingFieldSupport.requireMeetingType(type),
-                normalizedContactPhoneOverride,
-                active);
+                        command.locationDetail(),
+                        command.locationAddress(),
+                        command.latitude(),
+                        command.longitude()),
+                command.dayOfWeek(),
+                command.startTime(),
+                command.type(),
+                command.contactPhoneOverride(),
+                command.active()));
+        
+        changeLogService.logCreate(meeting, meeting.getId());
 
-        return toMeetingData(meetingRepository.save(meeting));
+        return meetingMapper.toMeetingData(meeting);
     }
 
     @Transactional
-    public MeetingData updateMeeting(
-            Long id,
-            Long groupId,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            String dayOfWeek,
-            String startTime,
-            String type,
-            boolean active
-    ) {
+    public MeetingMapper.MeetingData updateMeeting(Long id, MeetingCommand command) {
         Meeting meeting = getMeeting(id);
-        Group group = getGroup(groupId);
-        String normalizedLocationDetail = MeetingFieldSupport.optionalText(locationDetail);
-        String normalizedLocationAddress = MeetingFieldSupport.optionalText(locationAddress);
-        Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
-        Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
-        String normalizedContactPhoneOverride = MeetingFieldSupport.optionalPhone(contactPhoneOverride);
-        MeetingFieldSupport.validateLocation(normalizedLocationDetail, normalizedLocationAddress);
-        MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
+        
+        // Snapshot old state
+        Meeting.MeetingSnapshot oldState = meeting.snapshot();
+
+        Group group = getGroup(command.groupId());
         meeting.update(
                 group,
                 buildLocation(
-                        normalizedLocationDetail,
-                        normalizedLocationAddress,
-                        normalizedLatitude,
-                        normalizedLongitude),
-                MeetingFieldSupport.requireDayOfWeek(dayOfWeek),
-                MeetingFieldSupport.requireStartTime(startTime),
-                MeetingFieldSupport.requireMeetingType(type),
-                normalizedContactPhoneOverride,
-                active);
+                        command.locationDetail(),
+                        command.locationAddress(),
+                        command.latitude(),
+                        command.longitude()),
+                command.dayOfWeek(),
+                command.startTime(),
+                command.type(),
+                command.contactPhoneOverride(),
+                command.active());
 
-        return toMeetingData(meeting);
+        changeLogService.logUpdate(oldState, meeting, id);
+
+        return meetingMapper.toMeetingData(meeting);
     }
 
     @Transactional
     public void deleteMeeting(Long id) {
         Meeting meeting = getMeeting(id);
         meetingRepository.delete(meeting);
+        changeLogService.logDelete(Meeting.class, id, meeting.getGroup().getName());
     }
 
     @Transactional
@@ -170,7 +142,6 @@ public class MeetingAdminService {
 
             if (!dryRun) {
                 meeting.updateLocation(new Location(
-                        meeting.getProvince(),
                         meeting.getLocationDetail(),
                         locationAddress,
                         coordinates.latitude(),
@@ -214,11 +185,17 @@ public class MeetingAdminService {
             Double latitude,
             Double longitude
     ) {
-        Province province = MeetingFieldSupport.resolveProvince(locationAddress);
+        if (latitude != null && longitude != null) {
+            return new Location(locationDetail, locationAddress, latitude, longitude);
+        }
+
+        // Validate basic location first through Location VO
+        // Use dummy coordinates for initial validation to avoid triggering coordinate-related errors
+        new Location(locationDetail, locationAddress, 0.0, 0.0);
+
         MeetingAddressGeocoder.Coordinates coordinates = resolveCoordinates(locationAddress, latitude, longitude);
 
         return new Location(
-                province,
                 locationDetail,
                 locationAddress,
                 coordinates.latitude(),
@@ -233,6 +210,14 @@ public class MeetingAdminService {
         if (latitude != null && longitude != null) {
             return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
         }
+        
+        // At this point, if one is present, both should be present but are not.
+        // However, we want Location VO to handle this validation, so we throw specifically if both are null (geocode).
+        if (latitude != null || longitude != null) {
+            // This case will be handled by new Location(...) in buildLocation before calling this, 
+            // but just in case, we return what we have to let Location's constructor fail.
+            return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
+        }
 
         try {
             MeetingAddressGeocoder.Coordinates coordinates = meetingAddressGeocoder.resolveCoordinates(locationAddress);
@@ -242,8 +227,6 @@ public class MeetingAdminService {
                         "locationAddress cannot determine coordinates");
             }
             return coordinates;
-        } catch (FieldValidationException exception) {
-            throw exception;
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }
@@ -259,38 +242,6 @@ public class MeetingAdminService {
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }
-    }
-
-    private MeetingData toMeetingData(Meeting meeting) {
-        return new MeetingData(
-                meeting.getId(),
-                meeting.getGroup().getId(),
-                meeting.getProvince().getCode(),
-                meeting.getLocationDetail(),
-                meeting.getLocationAddress(),
-                meeting.getLatitude(),
-                meeting.getLongitude(),
-                meeting.getContactPhoneOverride(),
-                meeting.getDayOfWeek(),
-                MeetingFieldSupport.formatTime(meeting.getStartTime()),
-                meeting.getType(),
-                meeting.isActive());
-    }
-
-    public record MeetingData(
-            Long id,
-            Long groupId,
-            String province,
-            String locationDetail,
-            String locationAddress,
-            Double latitude,
-            Double longitude,
-            String contactPhoneOverride,
-            DayOfWeek dayOfWeek,
-            String startTime,
-            MeetingType type,
-            boolean active
-    ) {
     }
 
     public record CoordinateBackfillResult(

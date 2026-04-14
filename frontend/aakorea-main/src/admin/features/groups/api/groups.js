@@ -1,5 +1,5 @@
-import { request } from '../../../../shared/lib/request'
-import { withQuery } from '../../../../shared/utils/query'
+import { request } from '@/shared/lib/request'
+import { withQuery } from '@/shared/utils/query'
 
 export const adminGroupApi = {
   getGroups(districtId) {
@@ -9,6 +9,12 @@ export const adminGroupApi = {
   },
   createGroup(payload) {
     return request('/api/admin/groups', {
+      method: 'POST',
+      body: payload,
+    })
+  },
+  createGroupBulk(payload) {
+    return request('/api/admin/groups/bulk', {
       method: 'POST',
       body: payload,
     })

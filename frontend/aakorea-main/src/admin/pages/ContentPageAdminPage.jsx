@@ -3,7 +3,7 @@ import {
   AdminPageHeader,
   EmptyState,
   Field,
-} from '../../admin/ui'
+} from '@/admin/ui'
 import { adminContentApi } from '../features/content/api'
 
 const CONTENT_PAGE_SORT_MODES = {
@@ -239,7 +239,7 @@ export function ContentPageAdminPage({ onError, onNavigate, onSuccess }) {
                     <button
                       className="ghost-button ghost-button--small"
                       type="button"
-                      onClick={() => onNavigate(`/content-pages/${contentPage.key}`)}
+                      onClick={() => window.open(`/content-pages/${contentPage.key}`, '_blank')}
                     >
                       보기
                     </button>

@@ -9,23 +9,25 @@
 
 ## 문서 운영 원칙
 
-문서는 아래 네 영역으로 구분한다.
+문서는 아래 영역으로 구분한다.
 
-- `current/`
-  현재 MVP 기준으로 **실제로 따를 문서**를 둔다.
+- `00-core/`
+  프로젝트의 핵심 가이드, 제품 범위, 유즈케이스 및 로드맵을 둔다.
 
-- `runbooks/`
+- `01-current/`
+  현재 MVP 기준으로 **실제로 따를 최신 명세(API, 도메인, 아키텍처)**를 둔다.
+
+- `02-decisions/` (ADR)
+  기술적 결정 이력, 문제 해결 분석 보고서 등 **의사결정 히스토리**를 둔다.
+
+- `03-runbooks/`
   로컬 실행, env 설정, 배포, 재시작처럼 **운영 절차 문서**를 둔다.
 
-- `reference/`
-  배경 분석, 디자인 토큰 명세(`THEME_TOKEN_REFINEMENT.md`), 콘텐츠 구조 전략 등 **참조용 문서**를 둔다.
+- `04-deferred/`
+  현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 미래 구현 과제를 둔다.
 
-- `deferred/`
-  현재 MVP 범위 밖이지만, 이후 확장 가능성이 있는 주제를 둔다.
-  필요 시 이 원칙에 따라 문서를 추가한다.
-
-현재 구현과 설계 판단의 기준은 항상 `current/` 아래 문서고,
-실행 및 운영 절차의 기준은 `runbooks/` 아래 문서다.
+현재 구현과 설계 판단의 기준은 항상 `01-current/` 아래 문서고,
+실행 및 운영 절차의 기준은 `03-runbooks/` 아래 문서다.
 
 ---
 
@@ -33,25 +35,22 @@
 
 처음 문서를 읽을 때는 아래 순서를 권장한다.
 
-1. `current/PRODUCT_SCOPE.md`
-2. `current/ACTORS_AND_USE_CASES.md`
-3. `current/domain/README.md`
-4. `current/api/README.md`
-5. `current/IMPLEMENTATION_PLAN.md`
-6. `front/OVERVIEW.md`
-7. `runbooks/README.md`
+1. `00-core/PRODUCT_SCOPE.md`
+2. `00-core/ACTORS_AND_USE_CASES.md`
+3. `01-current/domain/README.md`
+4. `01-current/api/README.md`
+5. `00-core/ROADMAP.md`
+6. `01-current/architecture/frontend-overview.md`
+7. `03-runbooks/README.md`
 
 이 순서는 다음 흐름을 따른다.
 
-- 무엇을 만들지 정하고
-- 누가 무엇을 하는지 확인하고
-- 어떤 도메인과 필드를 쓰는지 확인하고
-- API 계약을 정리하고
-- 구현 상태와 다음 작업을 본다
-- 프론트엔드 상세 구조(Style/Logic)와 운영 절차를 확인한다
-
-현재 MVP 밖의 확장 목표를 검토할 때는
-`deferred/FUTURE_IMPLEMENTATION_GOALS.md`를 별도로 본다.
+- 무엇을 만들지 정하고 (`00-core`)
+- 누가 무엇을 하는지 확인하고 (`00-core`)
+- 어떤 도메인과 필드를 쓰는지 확인하고 (`01-current/domain`)
+- API 계약을 정리하고 (`01-current/api`)
+- 구현 상태와 다음 작업을 본다 (`00-core/ROADMAP.md`)
+- 상세 아키텍처와 운영 절차를 확인한다 (`01-current/architecture`, `03-runbooks`)
 
 ---
 
@@ -60,39 +59,32 @@
 문서가 늘어날수록 같은 내용을 여러 파일에 반복해서 적기 쉽다.  
 이를 줄이기 위해 아래 규칙을 따른다.
 
-### 1. 범위는 `PRODUCT_SCOPE.md`에만 둔다
+### 1. 범위는 `00-core/PRODUCT_SCOPE.md`에만 둔다
 
 다른 문서에서 “무엇을 포함/제외하는가”를 길게 다시 설명하지 않는다.
 
-### 2. 사용자 행동은 `ACTORS_AND_USE_CASES.md`에만 둔다
+### 2. 사용자 행동은 `00-core/ACTORS_AND_USE_CASES.md`에만 둔다
 
 다른 문서에서 사용자 시나리오를 상세히 반복하지 않는다.
 
-### 3. 도메인 의미와 필드는 `current/domain/` 아래 각 문서를 기준으로 한다
+### 3. 도메인 의미와 필드는 `01-current/domain/` 아래 각 문서를 기준으로 한다
 
-`District`, `Group`, `Meeting` 같은 개체의 의미와 필드 목록은
 각 도메인 문서 한 곳에서 관리한다.
 
-### 4. 콘텐츠 구분 기준은 `current/domain/README.md`에 둔다
+### 4. 콘텐츠 구분 기준은 `01-current/domain/README.md`에 둔다
 
-`ContentPage`와 `Notice`의 차이는
-각 문서에 반복하지 말고 도메인 허브에서 비교 기준으로 관리한다.
+`ContentPage`와 `Notice`의 차이는 도메인 허브에서 비교 기준으로 관리한다.
 
-### 5. API 계약은 `current/api/`를 기준으로 한다
+### 5. API 계약은 `01-current/api/`를 기준으로 한다
 
-공통 규약은 `current/api/COMMON.md`에 두고,
-상세 엔드포인트 계약은 `current/api/` 아래 책임별 문서로 나눈다.
+상세 엔드포인트 계약은 `01-current/api/` 아래 책임별 문서로 나눈다.
 
-다른 문서에서는 필요한 경우 API 이름만 언급하고, 상세 형식은 반복하지 않는다.
+### 6. 구현 순서는 `00-core/ROADMAP.md`에만 둔다
 
-### 6. 구현 순서는 `IMPLEMENTATION_PLAN.md`에만 둔다
-
-다른 문서에서 단계별 작업 순서를 자세히 반복하지 않는다.
-
-### 7. 운영 절차는 `runbooks/`를 기준으로 한다
+### 7. 운영 절차는 `03-runbooks/`를 기준으로 한다
 
 배포, env 설정, 재시작, import/backfill 같은 실행 절차는
-설계 문서와 섞지 않고 `runbooks/` 아래에서 관리한다.
+설계 문서와 섞지 않고 `03-runbooks/` 아래에서 관리한다.
 
 ---
 
@@ -123,9 +115,9 @@
 
 가능하면 다음 방식으로 쓴다.
 
-- 자세한 범위 판단은 `PRODUCT_SCOPE.md`를 따른다
-- 도메인 의미와 필드는 `current/domain/README.md`와 해당 세부 문서를 따른다
-- API 계약은 `current/api/README.md`와 해당 세부 문서를 따른다
+- 자세한 범위 판단은 `00-core/PRODUCT_SCOPE.md`를 따른다
+- 도메인 의미와 필드는 `01-current/domain/README.md`와 해당 세부 문서를 따른다
+- API 계약은 `01-current/api/README.md`와 해당 세부 문서를 따른다
 
 즉, **반복해서 다시 쓰기보다 기준 문서를 가리키는 방식**을 우선한다.
 
@@ -136,54 +128,35 @@
 ```text
 docs/
 ├─ README.md
-├─ current/
+├─ 00-core/
 │  ├─ PRODUCT_SCOPE.md
 │  ├─ ACTORS_AND_USE_CASES.md
-│  ├─ IMPLEMENTATION_PLAN.md
+│  └─ ROADMAP.md
+├─ 01-current/
+│  ├─ architecture/
+│  │  ├─ frontend-overview.md
+│  │  ├─ admin-app-architecture.md
+│  │  ├─ public-app-architecture.md
+│  │  ├─ style-system-guide.md
+│  │  ├─ admin-domain-separation-strategy.md
+│  │  ├─ content-architecture-strategy.md
+│  │  └─ frontend-directory-plan.md
 │  ├─ auth/
-│  │  ├─ AUTHENTICATION_MODEL.md
-│  │  └─ AUTHORIZATION_POLICY.md
-│  ├─ domain/
-│  │  ├─ README.md
-│  │  ├─ SharedTypes.md
-│  │  ├─ Attachment.md
-│  │  ├─ District.md
-│  │  ├─ Group.md
-│  │  ├─ GroupContact.md
-│  │  ├─ Meeting.md
-│  │  ├─ ContentPage.md
-│  │  ├─ Notice.md
-│  │  └─ PublicThemeSetting.md
+...
 │  └─ api/
-│     ├─ README.md
-│     ├─ COMMON.md
-│     ├─ AUTH.md
-│     ├─ ADMIN_AUTHORIZATION.md
-│     ├─ PUBLIC_THEME.md
-│     ├─ PUBLIC_CONTENT.md
-│     ├─ PUBLIC_ATTACHMENT.md
-│     ├─ PUBLIC_MEETINGS.md
-│     ├─ ADMIN_GENERAL_SERVICES.md
-│     ├─ ADMIN_GROUPS.md
-│     ├─ ADMIN_MEETINGS.md
-│     ├─ ADMIN_MEETING_IMPORTS.md
-│     ├─ ADMIN_CONTENT.md
-│     └─ ADMIN_ATTACHMENT.md
-├─ deferred/
-│  └─ FUTURE_IMPLEMENTATION_GOALS.md
-├─ runbooks/
+...
+├─ 02-decisions/
+│  ├─ theme-token-refinement.md
+│  ├─ architecture-decoupling-report.md
+│  ├─ shared-ui-refactoring-analysis.md
+│  └─ README.md
+├─ 03-runbooks/
 │  ├─ README.md
-│  ├─ LOCAL_DEVELOPMENT.md
-│  └─ NGINX_TERMUX_DEPLOYMENT.md
-├─ front/
-│  ├─ OVERVIEW.md
-│  ├─ STYLE_SYSTEM.md
-│  ├─ PUBLIC_APP.md
-│  └─ ADMIN_APP.md
-└─ reference/
-   ├─ THEME_TOKEN_REFINEMENT.md
-   ├─ CONTENT_ARCHITECTURE_STRATEGY.md   
-   ├─ java-null-safety.md
+│  ├─ local-development.md
+│  ├─ nginx-termux-deployment.md
+│  └─ java-null-safety-guide.md
+└─ 04-deferred/
+   └─ future-implementation-goals.md
 ```
 
 ## 추가 확장 제안

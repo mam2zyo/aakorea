@@ -16,6 +16,7 @@ import org.aakorea.main.group.domain.Meeting;
 import org.aakorea.main.group.domain.MeetingType;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.aakorea.main.group.infrastructure.MeetingRepository;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +41,12 @@ class MeetingAdminServiceTest {
     @Mock
     private MeetingAddressGeocoder meetingAddressGeocoder;
 
+    @Mock
+    private ChangeLogService changeLogService;
+
+    @Mock
+    private MeetingMapper meetingMapper;
+
     @InjectMocks
     private MeetingAdminService meetingAdminService;
 
@@ -55,18 +62,36 @@ class MeetingAdminServiceTest {
             ReflectionTestUtils.setField(meeting, "id", 100L);
             return meeting;
         });
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting meeting = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    meeting.getId(),
+                    meeting.getGroup().getId(),
+                    meeting.getGroup().getName(),
+                    meeting.getProvince().getCode(),
+                    meeting.getLocationDetail(),
+                    meeting.getLocationAddress(),
+                    meeting.getLatitude(),
+                    meeting.getLongitude(),
+                    meeting.getContactPhoneOverride(),
+                    meeting.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(meeting.getStartTime()),
+                    meeting.getType().name(),
+                    meeting.isActive());
+        });
 
-        MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
-                20L,
-                "  강남역 인근  ",
-                "  서울특별시 강남구 테헤란로 123  ",
-                37.4979,
-                127.0276,
-                " 010-9999-0000 ",
-                "monday",
-                "19:30",
-                "open",
-                true);
+        MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
+                MeetingCommand.from(
+                        20L,
+                        "  강남역 인근  ",
+                        "  서울특별시 강남구 테헤란로 123  ",
+                        37.4979,
+                        127.0276,
+                        " 010-9999-0000 ",
+                        "monday",
+                        "19:30",
+                        "open",
+                        true));
 
         ArgumentCaptor<Meeting> captor = ArgumentCaptor.forClass(Meeting.class);
         verify(meetingRepository).save(captor.capture());
@@ -125,19 +150,37 @@ class MeetingAdminServiceTest {
 
         given(meetingRepository.findById(100L)).willReturn(Optional.of(meeting));
         given(groupRepository.findById(21L)).willReturn(Optional.of(newGroup));
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting m = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    m.getId(),
+                    m.getGroup().getId(),
+                    m.getGroup().getName(),
+                    m.getProvince().getCode(),
+                    m.getLocationDetail(),
+                    m.getLocationAddress(),
+                    m.getLatitude(),
+                    m.getLongitude(),
+                    m.getContactPhoneOverride(),
+                    m.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(m.getStartTime()),
+                    m.getType().name(),
+                    m.isActive());
+        });
 
-        MeetingAdminService.MeetingData result = meetingAdminService.updateMeeting(
+        MeetingMapper.MeetingData result = meetingAdminService.updateMeeting(
                 100L,
-                21L,
-                "해운대역 인근",
-                "부산광역시 해운대구 우동 123",
-                35.1631,
-                129.1635,
-                "010-1111-2222",
-                "TUESDAY",
-                "20:00",
-                "NOTFIXED",
-                false);
+                MeetingCommand.from(
+                        21L,
+                        "해운대역 인근",
+                        "부산광역시 해운대구 우동 123",
+                        35.1631,
+                        129.1635,
+                        "010-1111-2222",
+                        "TUESDAY",
+                        "20:00",
+                        "NOTFIXED",
+                        false));
 
         assertThat(meeting.getGroup()).isEqualTo(newGroup);
         assertThat(meeting.getProvince()).isEqualTo(Province.BUSAN);
@@ -152,7 +195,7 @@ class MeetingAdminServiceTest {
         assertThat(meeting.isActive()).isFalse();
         assertThat(result.groupId()).isEqualTo(21L);
         assertThat(result.contactPhoneOverride()).isEqualTo("010-1111-2222");
-        assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED);
+        assertThat(result.type()).isEqualTo(MeetingType.NOTFIXED.name());
     }
 
     @Test
@@ -164,16 +207,17 @@ class MeetingAdminServiceTest {
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                20L,
-                "알 수 없는 위치",
-                "어딘가 1",
-                null,
-                null,
-                null,
-                "MONDAY",
-                "19:30",
-                "OPEN",
-                true))
+                MeetingCommand.from(
+                        20L,
+                        "알 수 없는 위치",
+                        "어딘가 1",
+                        null,
+                        null,
+                        null,
+                        "MONDAY",
+                        "19:30",
+                        "OPEN",
+                        true)))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -223,18 +267,36 @@ class MeetingAdminServiceTest {
             ReflectionTestUtils.setField(meeting, "id", 100L);
             return meeting;
         });
+        given(meetingMapper.toMeetingData(any(Meeting.class))).willAnswer(invocation -> {
+            Meeting m = invocation.getArgument(0);
+            return new MeetingMapper.MeetingData(
+                    m.getId(),
+                    m.getGroup().getId(),
+                    m.getGroup().getName(),
+                    m.getProvince().getCode(),
+                    m.getLocationDetail(),
+                    m.getLocationAddress(),
+                    m.getLatitude(),
+                    m.getLongitude(),
+                    m.getContactPhoneOverride(),
+                    m.getDayOfWeek().name(),
+                    MeetingFieldSupport.formatTime(m.getStartTime()),
+                    m.getType().name(),
+                    m.isActive());
+        });
 
-        MeetingAdminService.MeetingData result = meetingAdminService.createMeeting(
-                20L,
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
-                null,
-                null,
-                null,
-                "MONDAY",
-                "19:30",
-                "OPEN",
-                true);
+        MeetingMapper.MeetingData result = meetingAdminService.createMeeting(
+                MeetingCommand.from(
+                        20L,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null,
+                        null,
+                        "MONDAY",
+                        "19:30",
+                        "OPEN",
+                        true));
 
         assertThat(result.latitude()).isEqualTo(37.4979);
         assertThat(result.longitude()).isEqualTo(127.0276);
@@ -252,16 +314,17 @@ class MeetingAdminServiceTest {
                 .willReturn(null);
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                20L,
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
-                null,
-                null,
-                null,
-                "MONDAY",
-                "19:30",
-                "OPEN",
-                true))
+                MeetingCommand.from(
+                        20L,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        null,
+                        null,
+                        null,
+                        "MONDAY",
+                        "19:30",
+                        "OPEN",
+                        true)))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;
@@ -279,16 +342,17 @@ class MeetingAdminServiceTest {
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
 
         assertThatThrownBy(() -> meetingAdminService.createMeeting(
-                20L,
-                "강남역 인근",
-                "서울특별시 강남구 테헤란로 123",
-                37.4979,
-                null,
-                null,
-                "MONDAY",
-                "19:30",
-                "OPEN",
-                true))
+                MeetingCommand.from(
+                        20L,
+                        "강남역 인근",
+                        "서울특별시 강남구 테헤란로 123",
+                        37.4979,
+                        null,
+                        null,
+                        "MONDAY",
+                        "19:30",
+                        "OPEN",
+                        true)))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseStatusException = (ResponseStatusException) exception;

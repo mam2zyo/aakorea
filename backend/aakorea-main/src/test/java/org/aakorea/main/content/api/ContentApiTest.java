@@ -94,7 +94,10 @@ class ContentApiTest {
                         .param("key", "first-visitor-guide")
                         .param("title", "처음 오신 분 안내")
                         .param("published", "true")
-                        .with(officeUser(AdminRole.MANAGER, AdminPermission.CONTENT_PUBLISH)))
+                        .with(officeUser(
+                                AdminRole.MANAGER,
+                                AdminPermission.CONTENT_PAGE_MANAGE,
+                                AdminPermission.CONTENT_PUBLISH)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.key").value("first-visitor-guide"))

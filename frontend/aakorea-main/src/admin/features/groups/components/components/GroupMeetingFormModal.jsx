@@ -1,10 +1,10 @@
 import { AddressSearchField } from '../../../../components/AddressSearchField'
 import { Field } from '../../../../ui'
-import { readFieldError } from '../../../../../lib/formErrors'
+import { readFieldError } from '@/shared/lib/formErrors'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '../../../../../lib/options'
+} from '@/shared/lib/options'
 
 export function GroupMeetingFormModal({
   errors,
@@ -18,12 +18,15 @@ export function GroupMeetingFormModal({
   title,
 }) {
   return (
-    <div className="admin-overlay admin-overlay--nested" role="presentation">
+    <div 
+      className="admin-overlay admin-overlay--nested"
+      onClick={onCancel}
+    >
       <section
         aria-modal="true"
         className="admin-overlay__dialog admin-overlay__dialog--submodal"
         role="dialog"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <header className="admin-group-modal__header admin-group-modal__header--submodal">
           <div className="admin-overlay__heading">

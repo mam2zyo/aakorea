@@ -1,7 +1,7 @@
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '../../../../lib/options'
+} from '@/shared/lib/options'
 
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 

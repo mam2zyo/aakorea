@@ -1,17 +1,19 @@
 import { useEffect, useEffectEvent } from 'react'
 import '../styles/index.css'
-import { useAdminSession } from '../../app/providers/useAdminSession'
-import { useFlashState } from '../../app/providers/useFlashState'
-import { navigate, useAppRoute } from '../../app/router'
+import { useAdminSession } from './providers/useAdminSession'
+import { useFlashState } from '@/shared/hooks/useFlashState'
+import { navigate, useAppRoute } from './router'
 import { AdminAppScreen } from './AdminAppScreen'
 import { resolveAdminHomePath } from './adminAuthorization'
 import { renderAdminPage } from './renderAdminPage'
 import { useAdminTheme } from './useAdminTheme'
-import { usePublicSiteTheme } from '../../public/app/usePublicSiteTheme'
+import { usePublicSiteTheme } from '@/public/app/usePublicSiteTheme'
 import {
   buildAdminLoginPath,
   requiresAdminSession,
-} from '../../app/router'
+} from './router'
+
+import { AdminThemeProvider } from './providers/AdminThemeContext'
 
 export function AdminApp() {
   const route = useAppRoute()
@@ -68,30 +70,32 @@ export function AdminApp() {
     || route.name === 'admin-pending'
 
   return (
-    <AdminAppScreen
-      currentPath={route.currentPath}
-      flash={flash}
-      isStandaloneAdminScreen={isStandaloneAdminScreen}
-      onLogout={handleLogout}
-      onNavigate={navigate}
-      page={renderAdminPage({
-        authPending,
-        onError: showError,
-        onLogin: handleLogin,
-        onRegister: handleRegister,
-        onNavigate: navigate,
-        onLogout: handleLogout,
-        onSuccess: showSuccess,
-        publicThemeState,
-        route,
-        session,
-        sessionChecked,
-        theme: adminTheme,
-      })}
-      requiresSession={isProtectedAdminRoute}
-      session={session}
-      sessionChecked={sessionChecked}
-      theme={adminTheme}
-    />
+    <AdminThemeProvider value={adminTheme}>
+      <AdminAppScreen
+        currentPath={route.currentPath}
+        flash={flash}
+        isStandaloneAdminScreen={isStandaloneAdminScreen}
+        onLogout={handleLogout}
+        onNavigate={navigate}
+        page={renderAdminPage({
+          authPending,
+          onError: showError,
+          onLogin: handleLogin,
+          onRegister: handleRegister,
+          onNavigate: navigate,
+          onLogout: handleLogout,
+          onSuccess: showSuccess,
+          publicThemeState,
+          route,
+          session,
+          sessionChecked,
+          theme: adminTheme,
+        })}
+        requiresSession={isProtectedAdminRoute}
+        session={session}
+        sessionChecked={sessionChecked}
+        theme={adminTheme}
+      />
+    </AdminThemeProvider>
   )
 }

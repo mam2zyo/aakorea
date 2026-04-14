@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.error.FieldValidationException;
 import org.aakorea.main.generalservice.domain.District;
+import org.aakorea.main.common.audit.ChangeLogService;
 import org.aakorea.main.generalservice.infrastructure.DistrictRepository;
 import org.aakorea.main.group.infrastructure.GroupRepository;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ public class DistrictAdminService {
 
     private final DistrictRepository districtRepository;
     private final GroupRepository groupRepository;
+    private final ChangeLogService changeLogService;
 
     public List<DistrictData> getDistricts() {
         return districtRepository.findAllByOrderByIdAsc().stream()
@@ -31,16 +33,24 @@ public class DistrictAdminService {
         ensureUniqueDistrictName(normalizedName, null);
 
         District district = districtRepository.save(new District(normalizedName));
+        changeLogService.logCreate(district, district.getId());
         return toDistrictData(district);
     }
 
     @Transactional
     public DistrictData updateDistrict(Long id, String name) {
         District district = getDistrict(id);
+        
+        // Create a copy for diffing
+        District oldState = new District(district.getName());
+        
         String normalizedName = normalize(name);
         ensureUniqueDistrictName(normalizedName, id);
 
         district.update(normalizedName);
+        
+        changeLogService.logUpdate(oldState, district, id);
+        
         return toDistrictData(district);
     }
 
@@ -53,6 +63,7 @@ public class DistrictAdminService {
         }
 
         districtRepository.delete(district);
+        changeLogService.logDelete(District.class, id, district.getName());
     }
 
     private District getDistrict(Long districtId) {

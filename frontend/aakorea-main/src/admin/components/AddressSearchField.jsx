@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Postcode as KakaoPostcode } from '@clroot/react-kakao-postcode'
-import { normalizeAddressSelection } from '../../lib/address'
+import { normalizeAddressSelection } from '@/shared/lib/address'
 import { Field } from '../ui'
+import { useAdminThemeContext } from '../app/providers/AdminThemeContext'
 
 export function AddressSearchField({
   addressError,
@@ -19,6 +20,7 @@ export function AddressSearchField({
   allowManualEntry = false,
 }) {
   const [searchOpen, setSearchOpen] = useState(false)
+  const { resolvedTheme } = useAdminThemeContext()
   const supportsPostalCode = typeof postalCodeValue === 'string' && onPostalCodeChange
 
   function handleComplete(data) {
@@ -32,6 +34,33 @@ export function AddressSearchField({
 
   const effectiveAddressPlaceholder =
     addressPlaceholder || '주소 검색 버튼으로 주소를 선택하거나 변경해 주세요.'
+
+  const isDark = resolvedTheme === 'dark'
+  const KAKAO_THEME = isDark
+    ? {
+        bgColor: '#252526',
+        searchBgColor: '#252526',
+        contentBgColor: '#252526',
+        pageBgColor: '#252526',
+        textColor: '#d4d4d4',
+        queryTextColor: '#ffffff',
+        postcodeTextColor: '#3794ff',
+        emphTextColor: '#2aa198',
+        outlineColor: '#3c3c3c',
+      }
+    : {
+        bgColor: '#fdf6e3', // Solarized Base3
+        searchBgColor: '#eee8d5', // Solarized Base2
+        contentBgColor: '#fdf6e3',
+        pageBgColor: '#fdf6e3',
+        textColor: '#073642', // Solarized Base02
+        queryTextColor: '#073642',
+        postcodeTextColor: '#268bd2', // Solarized Blue
+        emphTextColor: '#2aa198', // Solarized Cyan
+        outlineColor: '#d4ccb8', // Solarized Border
+      }
+
+  const wrapperBackground = isDark ? '#252526' : '#fdf6e3'
 
   return (
     <>
@@ -77,13 +106,17 @@ export function AddressSearchField({
         </button>
       </div>
 
-      {searchOpen ? (
-        <div className="admin-overlay" role="presentation">
+      {searchOpen && (
+        <div 
+          className="admin-overlay admin-overlay--nested"
+          onClick={() => setSearchOpen(false)}
+        >
           <section
             aria-modal="true"
             className="admin-overlay__dialog admin-overlay__dialog--submodal address-search-dialog"
             role="dialog"
-            onClick={(event) => event.stopPropagation()}
+            style={{ width: '500px' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className="admin-group-modal__header admin-group-modal__header--submodal">
               <div className="admin-overlay__heading">
@@ -99,16 +132,25 @@ export function AddressSearchField({
               </button>
             </header>
 
-            <div className="admin-group-modal__body address-search-dialog__body">
+            <div
+              className="admin-group-modal__body address-search-dialog__body"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                background: wrapperBackground,
+              }}
+            >
               <KakaoPostcode
                 autoClose
                 onComplete={handleComplete}
-                style={{ width: '100%', height: '460px' }}
+                style={{ width: '100%', height: '450px' }}
+                theme={KAKAO_THEME}
               />
             </div>
           </section>
         </div>
-      ) : null}
+      )}
     </>
   )
 }

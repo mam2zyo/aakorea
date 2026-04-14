@@ -7,6 +7,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aakorea.main.common.response.ApiResponse;
 import org.aakorea.main.group.application.MeetingAdminService;
+import org.aakorea.main.group.application.MeetingCommand;
+import org.aakorea.main.group.application.MeetingMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +31,7 @@ public class MeetingAdminController {
 
     @PreAuthorize("hasAuthority('PERM_group.manage')")
     @GetMapping
-    public ApiResponse<List<MeetingAdminService.MeetingData>> getMeetings(
+    public ApiResponse<List<MeetingMapper.MeetingData>> getMeetings(
             @RequestParam(required = false) Long groupId,
             @RequestParam(required = false) String province,
             @RequestParam(required = false) Boolean active
@@ -39,30 +41,24 @@ public class MeetingAdminController {
 
     @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PostMapping
-    public ResponseEntity<ApiResponse<MeetingAdminService.MeetingData>> createMeeting(
+    public ResponseEntity<ApiResponse<MeetingMapper.MeetingData>> createMeeting(
             @Valid @RequestBody MeetingRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(meetingAdminService.createMeeting(
-                request.groupId(),
-                request.locationDetail(),
-                request.locationAddress(),
-                request.latitude(),
-                request.longitude(),
-                request.contactPhoneOverride(),
-                request.dayOfWeek(),
-                request.startTime(),
-                request.type(),
-                request.active())));
+                toCommand(request))));
     }
 
     @PreAuthorize("hasAuthority('PERM_group.manage')")
     @PutMapping("/{id}")
-    public ApiResponse<MeetingAdminService.MeetingData> updateMeeting(
+    public ApiResponse<MeetingMapper.MeetingData> updateMeeting(
             @PathVariable Long id,
             @Valid @RequestBody MeetingRequest request
     ) {
-        return ApiResponse.success(meetingAdminService.updateMeeting(
-                id,
+        return ApiResponse.success(meetingAdminService.updateMeeting(id, toCommand(request)));
+    }
+
+    private MeetingCommand toCommand(MeetingRequest request) {
+        return MeetingCommand.from(
                 request.groupId(),
                 request.locationDetail(),
                 request.locationAddress(),
@@ -72,7 +68,7 @@ public class MeetingAdminController {
                 request.dayOfWeek(),
                 request.startTime(),
                 request.type(),
-                request.active()));
+                request.active());
     }
 
     @PreAuthorize("hasAuthority('PERM_group.manage')")

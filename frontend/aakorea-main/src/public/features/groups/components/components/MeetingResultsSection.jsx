@@ -3,8 +3,8 @@ import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
   PROVINCE_OPTIONS,
-} from '../../../../../lib/options'
-import { lookupLabel } from '../../../../../lib/view'
+} from '@/shared/lib/options'
+import { lookupLabel } from '@/shared/lib/view'
 import { buildMeetingsPath, formatDistanceLabel, MEETING_SEARCH_MODE } from '../utils'
 
 export function MeetingResultsSection({
