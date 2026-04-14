@@ -26,7 +26,45 @@ public class GroupAdminService {
     private final GroupRepository groupRepository;
     private final GroupContactRepository groupContactRepository;
     private final MeetingRepository meetingRepository;
+    private final MeetingAdminService meetingAdminService;
     private final ChangeLogService changeLogService;
+
+    @Transactional
+    public Long createGroupComposite(GroupCompositeRequest request) {
+        // 1. Create Group
+        GroupData groupData = createGroup(request.districtId(), request.name(), request.notice());
+        Long groupId = groupData.id();
+
+        // 2. Create Contact (if provided)
+        if (request.contact() != null) {
+            createGroupContact(
+                    groupId,
+                    request.contact().phone(),
+                    request.contact().email(),
+                    request.contact().postalContact()
+            );
+        }
+
+        // 3. Create Meetings (if provided)
+        if (request.meetings() != null) {
+            for (GroupCompositeRequest.MeetingCompositeRequest meetingRequest : request.meetings()) {
+                meetingAdminService.createMeeting(MeetingCommand.from(
+                        groupId,
+                        meetingRequest.locationDetail(),
+                        meetingRequest.locationAddress(),
+                        meetingRequest.latitude(),
+                        meetingRequest.longitude(),
+                        meetingRequest.contactPhoneOverride(),
+                        meetingRequest.dayOfWeek(),
+                        meetingRequest.startTime(),
+                        meetingRequest.type(),
+                        meetingRequest.active()
+                ));
+            }
+        }
+
+        return groupId;
+    }
 
     public List<GroupData> getGroups(Long districtId) {
         List<Group> groups = districtId != null

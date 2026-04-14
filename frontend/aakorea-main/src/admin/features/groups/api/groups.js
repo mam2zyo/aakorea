@@ -13,6 +13,12 @@ export const adminGroupApi = {
       body: payload,
     })
   },
+  createGroupBulk(payload) {
+    return request('/api/admin/groups/bulk', {
+      method: 'POST',
+      body: payload,
+    })
+  },
   updateGroup(id, payload) {
     return request(`/api/admin/groups/${id}`, {
       method: 'PUT',

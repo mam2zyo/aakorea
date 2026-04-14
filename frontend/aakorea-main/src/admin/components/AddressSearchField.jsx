@@ -106,14 +106,17 @@ export function AddressSearchField({
         </button>
       </div>
 
-      {searchOpen ? (
-        <div className="admin-overlay admin-overlay--nested" role="presentation">
+      {searchOpen && (
+        <div 
+          className="admin-overlay admin-overlay--nested"
+          onClick={() => setSearchOpen(false)}
+        >
           <section
             aria-modal="true"
             className="admin-overlay__dialog admin-overlay__dialog--submodal address-search-dialog"
             role="dialog"
             style={{ width: '500px' }}
-            onClick={(event) => event.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className="admin-group-modal__header admin-group-modal__header--submodal">
               <div className="admin-overlay__heading">
@@ -147,7 +150,7 @@ export function AddressSearchField({
             </div>
           </section>
         </div>
-      ) : null}
+      )}
     </>
   )
 }

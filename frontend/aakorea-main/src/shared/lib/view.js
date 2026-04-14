@@ -2,7 +2,7 @@ export function lookupLabel(options, value) {
   return options.find((option) => option.value === value)?.label ?? value
 }
 
-export function ensureSelectValue(previous, key, items) {
+export function syncSelectionWithList(previous, key, items) {
   if (items.length === 0) {
     if (previous[key] === '') {
       return previous

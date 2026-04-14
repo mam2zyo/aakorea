@@ -1,5 +1,4 @@
 import React from 'react'
-
 export function AuditLogDetailModal({ log, onClose }) {
   if (!log) return null
 
@@ -24,14 +23,17 @@ export function AuditLogDetailModal({ log, onClose }) {
   }
 
   return (
-    <div className="admin-overlay" role="presentation" onClick={onClose}>
+    <div 
+      className="admin-overlay"
+      onClick={onClose}
+    >
       <div
         aria-labelledby="audit-detail-title"
         aria-modal="true"
         className="admin-overlay__dialog"
         role="dialog"
-        onClick={(event) => event.stopPropagation()}
         style={{ maxWidth: '800px', width: '90%' }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="admin-overlay__header">
           <div className="admin-overlay__heading">

@@ -127,7 +127,7 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
   }
 
   // ── 실시간 클라이언트 필터링 ──────────────────────────────
-  const meetings = useMemo(() => {
+  const filteredMeetings = useMemo(() => {
     if (rawMeetings.length === 0) return []
 
     let result = rawMeetings.map(m => {
@@ -143,7 +143,6 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
       if (filters.dayOfWeek && m.dayOfWeek !== filters.dayOfWeek) return false
       if (filters.type && m.type !== filters.type) return false
       if (filters.districtId) {
-        // districtId가 null/undefined인 경우 필터에서 제외
         if (m.districtId == null) return false
         if (String(m.districtId) !== String(filters.districtId)) return false
       }
@@ -156,8 +155,12 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
       return true
     })
 
-    return sortMeetings(result, isNearbyActive ? MEETING_SEARCH_MODE.NEARBY : MEETING_SEARCH_MODE.REGION)
+    return result
   }, [rawMeetings, filters, isNearbyActive, nearbyLocation])
+
+  const meetings = useMemo(() => {
+    return sortMeetings(filteredMeetings, isNearbyActive ? MEETING_SEARCH_MODE.NEARBY : MEETING_SEARCH_MODE.REGION)
+  }, [filteredMeetings, isNearbyActive])
 
   // ── 다이얼로그 관련 ────────────────────────────────────────
   async function loadGroupDetails(targetGroupId) {
