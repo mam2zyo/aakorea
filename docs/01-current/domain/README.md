@@ -1,4 +1,4 @@
-<!-- docs/current/domain/README.md -->
+<!-- docs/01-current/domain/README.md -->
 
 # DOMAIN
 
@@ -170,7 +170,7 @@
 `ContentPage`와 `Notice`의 경계처럼
 도메인 간 비교가 필요한 내용은 이 문서에서 관리한다.
 
-### 4. API 세부 형식은 `current/api/`로 넘긴다
+### 4. API 세부 형식은 `01-current/api/`로 넘긴다
 
 도메인 문서에서는 API 이름 정도만 언급하고,
 요청 / 응답 JSON 상세는 반복하지 않는다.

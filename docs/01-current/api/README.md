@@ -1,4 +1,4 @@
-<!-- docs/current/api/README.md -->
+<!-- docs/01-current/api/README.md -->
 
 # API
 
@@ -17,7 +17,7 @@
 
 ## 현재 API 문서 구조
 
-현재 MVP의 API 계약 기준 문서는 `current/api/` 아래에 둔다.
+현재 MVP의 API 계약 기준 문서는 `01-current/api/` 아래에 둔다.
 
 - `COMMON.md`
   공통 규약, 응답 형식, 상태 코드, 값 형식, 공통 주의사항
@@ -169,5 +169,5 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 운영 첨부파일 및 미디어 API를 확인할 때: `ADMIN_ATTACHMENT.md`
 - 운영 활동 로그(변경 이력) API를 확인할 때: `ADMIN_AUDIT_LOG.md`
 
-범위 포함 / 제외 판단은 `../PRODUCT_SCOPE.md`를 따른다.
+범위 포함 / 제외 판단은 `../../00-core/PRODUCT_SCOPE.md`를 따른다.
 도메인 의미와 필드 정의의 원본은 `../domain/README.md`와 해당 세부 문서를 따른다.

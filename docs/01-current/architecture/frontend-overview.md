@@ -1,4 +1,4 @@
-<!-- docs/front/OVERVIEW.md -->
+<!-- docs/01-current/architecture/frontend-overview.md -->
 # 프론트엔드 아키텍처 개요 (Frontend Overview)
 
 이 문서는 AAKorea Main 프론트엔드의 전반적인 설계 원칙과 소스 코드 구조를 관리합니다.
