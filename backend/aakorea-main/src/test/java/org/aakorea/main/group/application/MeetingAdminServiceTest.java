@@ -261,7 +261,7 @@ class MeetingAdminServiceTest {
 
         given(groupRepository.findById(20L)).willReturn(Optional.of(group));
         given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
-                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+                .willReturn(new MeetingAddressGeocoder.GeocodedAddress(37.4979, 127.0276, "서울특별시 강남구 테헤란로 123"));
         given(meetingRepository.save(any(Meeting.class))).willAnswer(invocation -> {
             Meeting meeting = invocation.getArgument(0);
             ReflectionTestUtils.setField(meeting, "id", 100L);
@@ -384,7 +384,7 @@ class MeetingAdminServiceTest {
 
         given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
         given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
-                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+                .willReturn(new MeetingAddressGeocoder.GeocodedAddress(37.4979, 127.0276, "서울특별시 강남구 테헤란로 123"));
 
         MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(true);
 
@@ -428,7 +428,7 @@ class MeetingAdminServiceTest {
 
         given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
         given(meetingAddressGeocoder.resolveCoordinates("서울특별시 강남구 테헤란로 123"))
-                .willReturn(new MeetingAddressGeocoder.Coordinates(37.4979, 127.0276));
+                .willReturn(new MeetingAddressGeocoder.GeocodedAddress(37.4979, 127.0276, "서울특별시 강남구 테헤란로 123"));
 
         MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(false);
 
@@ -480,5 +480,39 @@ class MeetingAdminServiceTest {
         });
         assertThat(meeting.getLatitude()).isNull();
         assertThat(meeting.getLongitude()).isNull();
+    }
+
+    @Test
+    void backfillMissingCoordinatesNormalizesIncompleteAddress() {
+        District district = new District("강원");
+        Group group = new Group(district, "삼척그룹");
+        Meeting meeting = new Meeting(
+                group,
+                new Location(
+                        Province.GANGWON,
+                        "낙원",
+                        "삼척시 척주로 48",
+                        null,
+                        null),
+                DayOfWeek.MONDAY,
+                java.time.LocalTime.of(19, 30),
+                MeetingType.OPEN,
+                null,
+                true);
+
+        ReflectionTestUtils.setField(group, "id", 20L);
+        ReflectionTestUtils.setField(meeting, "id", 100L);
+
+        given(meetingRepository.findMeetingsMissingCoordinates()).willReturn(List.of(meeting));
+        given(meetingAddressGeocoder.resolveCoordinates("삼척시 척주로 48"))
+                .willReturn(new MeetingAddressGeocoder.GeocodedAddress(37.443999, 129.169186, "강원특별자치도 삼척시 척주로 48"));
+
+        MeetingAdminService.CoordinateBackfillResult result = meetingAdminService.backfillMissingCoordinates(false);
+
+        assertThat(result.updatedCount()).isEqualTo(1);
+        assertThat(meeting.getLocationAddress()).isEqualTo("강원특별자치도 삼척시 척주로 48");
+        assertThat(meeting.getLatitude()).isEqualTo(37.443999);
+        assertThat(meeting.getLongitude()).isEqualTo(129.169186);
+        assertThat(meeting.getProvince()).isEqualTo(Province.GANGWON);
     }
 }
