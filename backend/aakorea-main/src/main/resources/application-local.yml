@@ -1,20 +1,8 @@
-spring:
-  application:
-    name: aakorea-main
-  datasource:
-    url: ${AAKOREA_DB_URL:jdbc:postgresql://localhost:5432/aakorea_main}
-    username: ${AAKOREA_DB_USERNAME:aakorea_admin}
-    password: ${AAKOREA_DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-server:
-  port: 8081
-  forward-headers-strategy: framework
-
+# local 프로필 전용 설정 (필요 시 아래에 추가)
+# 기본적으로 application.yml의 설정을 상속받습니다.
 app:
   auth:
     admin:
+      # 필요 시 로컬 전용 계정 정보를 설정할 수 있습니다.
       username: ${AAKOREA_ADMIN_USERNAME}
       password: ${AAKOREA_ADMIN_PASSWORD}
