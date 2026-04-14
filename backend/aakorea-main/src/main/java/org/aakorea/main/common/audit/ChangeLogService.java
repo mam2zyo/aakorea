@@ -41,7 +41,7 @@ public class ChangeLogService {
         Object comparableOld = oldEntity;
         Object comparableNew = newEntity;
 
-        if (oldEntity instanceof Meeting.MeetingSnapshot oldSnap && newEntity instanceof Meeting newMeeting) {
+        if (oldEntity instanceof Meeting.MeetingSnapshot && newEntity instanceof Meeting newMeeting) {
             comparableNew = newMeeting.snapshot();
         }
 
