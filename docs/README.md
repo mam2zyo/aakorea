@@ -155,8 +155,12 @@ docs/
 │  ├─ local-development.md
 │  ├─ nginx-termux-deployment.md
 │  └─ java-null-safety-guide.md
-└─ 04-deferred/
-   └─ future-implementation-goals.md
+├─ 04-deferred/
+│  ├─ future-implementation-goals.md
+│  ├─ nextjs-fullstack-migration.md
+│  ├─ multi-service-expansion-strategy.md
+│  ├─ centralized-auth-strategy-feasibility.md
+│  └─ docker-multi-service-strategy.md
 ```
 
 ## 추가 확장 제안
