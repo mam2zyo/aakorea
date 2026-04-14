@@ -3,7 +3,7 @@ set -euo pipefail
 
 TERMUX_TARGET="${TERMUX_TARGET:-}"
 TERMUX_SSH_PORT="${TERMUX_SSH_PORT:-}"
-REMOTE_ENV_FILE="${REMOTE_ENV_FILE:-/data/data/com.termux/files/home/aakorea-nginx.env}"
+REMOTE_ENV_FILE="${REMOTE_ENV_FILE:-/data/data/com.termux/files/home/aakorea/config/aakorea-termux.env}"
 DB_SCHEMA="${DB_SCHEMA:-public}"
 LIST_ONLY=0
 CONFIRMED=0
