@@ -1,4 +1,4 @@
-<!-- docs/reference/ADMIN_DOMAIN_SEPARATION_STRATEGY.md -->
+<!-- docs/01-current/architecture/admin-domain-separation-strategy.md -->
 
 # 도메인 분리 전략 및 향후 과제 영향 분석 (Domain Separation Strategy & Impact Analysis)
 

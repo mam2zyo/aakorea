@@ -1,4 +1,4 @@
-<!-- docs/reference/CONTENT_ARCHITECTURE_STRATEGY.md -->
+<!-- docs/01-current/architecture/content-architecture-strategy.md -->
 
 # 콘텐츠 아키텍처 전략: Refined HTML vs JSX
 
@@ -67,4 +67,4 @@ HTML 본문 내에서 클릭 이벤트 등이 필요할 경우 **이벤트 위�
 ---
 
 **관심 문서:**
-*   [공개 사이트 메뉴 구성 제안](file:///home/mam2z/apps/aakorea-main/docs/reference/PUBLIC_SITE_MENU_PROPOSAL.md)
+*   [공개 사이트 메뉴 구성 제안](https://github.com/aakorea/aakorea-main/blob/main/docs/README.md) (참고: 현재 설계 통합 중)

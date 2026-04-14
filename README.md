@@ -72,6 +72,7 @@ docs/
 
 - [docs/README.md](./docs/README.md)
 - [docs/runbooks/README.md](./docs/runbooks/README.md)
+- [docs/00-core/ROADMAP.md](./docs/00-core/ROADMAP.md)
 
 ---
 
@@ -169,7 +170,7 @@ npm run build
 - 현재는 최소 필드 기준으로 빠르게 CRUD와 조회 흐름을 검증하는 것이 우선입니다
 - 현재 프론트엔드는 공개 홈과 안내 페이지, 공지, 모임 찾기, 운영 로그인, `District` 관리, `Group` 관리, 콘텐츠 관리, 테스트 도구 화면, 공개 사이트 테마 화면을 제공합니다
 
-현재 가장 먼저 검증할 핵심 흐름:
+현재 가장 먼저 검증할 핵심 흐름 (자세한 내용은 [ROADMAP.md](./docs/00-core/ROADMAP.md) 참고):
 
 1. 운영자가 `District`를 생성한다
 2. 운영자가 `Group`과 `GroupContact.phone`을 생성한다

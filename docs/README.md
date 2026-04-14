@@ -39,7 +39,7 @@
 2. `00-core/ACTORS_AND_USE_CASES.md`
 3. `01-current/domain/README.md`
 4. `01-current/api/README.md`
-5. `00-core/IMPLEMENTATION_PLAN.md`
+5. `00-core/ROADMAP.md`
 6. `01-current/architecture/frontend-overview.md`
 7. `03-runbooks/README.md`
 
@@ -49,7 +49,7 @@
 - 누가 무엇을 하는지 확인하고 (`00-core`)
 - 어떤 도메인과 필드를 쓰는지 확인하고 (`01-current/domain`)
 - API 계약을 정리하고 (`01-current/api`)
-- 구현 상태와 다음 작업을 본다 (`00-core`)
+- 구현 상태와 다음 작업을 본다 (`00-core/ROADMAP.md`)
 - 상세 아키텍처와 운영 절차를 확인한다 (`01-current/architecture`, `03-runbooks`)
 
 ---
@@ -79,7 +79,7 @@
 
 상세 엔드포인트 계약은 `01-current/api/` 아래 책임별 문서로 나눈다.
 
-### 6. 구현 순서는 `00-core/IMPLEMENTATION_PLAN.md`에만 둔다
+### 6. 구현 순서는 `00-core/ROADMAP.md`에만 둔다
 
 ### 7. 운영 절차는 `03-runbooks/`를 기준으로 한다
 
@@ -131,53 +131,30 @@ docs/
 ├─ 00-core/
 │  ├─ PRODUCT_SCOPE.md
 │  ├─ ACTORS_AND_USE_CASES.md
-│  └─ IMPLEMENTATION_PLAN.md
+│  └─ ROADMAP.md
 ├─ 01-current/
 │  ├─ architecture/
 │  │  ├─ frontend-overview.md
 │  │  ├─ admin-app-architecture.md
 │  │  ├─ public-app-architecture.md
-│  │  └─ style-system-guide.md
+│  │  ├─ style-system-guide.md
+│  │  ├─ admin-domain-separation-strategy.md
+│  │  ├─ content-architecture-strategy.md
+│  │  └─ frontend-directory-plan.md
 │  ├─ auth/
-│  │  ├─ AUTHENTICATION_MODEL.md
-│  │  └─ AUTHORIZATION_POLICY.md
-│  ├─ domain/
-│  │  ├─ README.md
-│  │  ├─ SharedTypes.md
-│  │  ├─ Attachment.md
-│  │  ├─ District.md
-│  │  ├─ Group.md
-│  │  ├─ GroupContact.md
-│  │  ├─ Meeting.md
-│  │  ├─ ContentPage.md
-│  │  └─ Notice.md
+...
 │  └─ api/
-│     ├─ README.md
-│     ├─ COMMON.md
-│     ├─ AUTH.md
-│     ├─ ADMIN_AUTHORIZATION.md
-│     ├─ PUBLIC_THEME.md
-│     ├─ PUBLIC_CONTENT.md
-│     ├─ PUBLIC_ATTACHMENT.md
-│     ├─ PUBLIC_MEETINGS.md
-│     ├─ ADMIN_GENERAL_SERVICES.md
-│     ├─ ADMIN_GROUPS.md
-│     ├─ ADMIN_MEETINGS.md
-│     ├─ ADMIN_MEETING_IMPORTS.md
-│     ├─ ADMIN_CONTENT.md
-│     └─ ADMIN_ATTACHMENT.md
+...
 ├─ 02-decisions/
-│  ├─ admin-domain-separation-strategy.md
 │  ├─ theme-token-refinement.md
 │  ├─ architecture-decoupling-report.md
-│  ├─ content-architecture-strategy.md
-│  ├─ frontend-directory-plan.md
 │  ├─ shared-ui-refactoring-analysis.md
-│  └─ java-null-safety.md
+│  └─ README.md
 ├─ 03-runbooks/
 │  ├─ README.md
 │  ├─ local-development.md
-│  └─ nginx-termux-deployment.md
+│  ├─ nginx-termux-deployment.md
+│  └─ java-null-safety-guide.md
 └─ 04-deferred/
    └─ future-implementation-goals.md
 ```

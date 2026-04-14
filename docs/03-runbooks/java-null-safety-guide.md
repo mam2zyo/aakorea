@@ -1,4 +1,4 @@
-<!-- docs/reference/java-null-safety.md -->
+<!-- docs/03-runbooks/java-null-safety-guide.md -->
 
 # 자바 널 안정성(Java Null Safety) 가이드
 
