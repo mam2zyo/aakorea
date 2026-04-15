@@ -19,7 +19,7 @@
 
 ### 2. [Test](./test/)
 테스트 서버 배포 및 네트워크 설정
-- `termux-test-server-deployment.md`: Termux (안드로이드) 환경 테스트 서버 구축 가이드 (권장)
+- `termux-deployment.md`: Termux (안드로이드) 환경 테스트 서버 구축 및 Wi-Fi keepalive 테스트 가이드 (권장)
 - `nginx-termux-deployment.md`: Termux Nginx 정적 서빙 및 API 프록시 상세 가이드
 - `cloudflare-tunnel.md`: Cloudflare Tunnel을 이용한 외부 노출 설정 가이드
 
