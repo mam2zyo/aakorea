@@ -89,16 +89,72 @@ load_env_file_optional() {
 detect_default_gateway() {
     local gateway
 
-    gateway="$(ip route show default 2>/dev/null | awk '/default/ { print $3; exit }')"
+    # 1. ip route get (가장 정확한 방법: 외부 대상 경로 질의)
+    # 특정 외부 IP로 가는 경로를 질의하여 사용 중인 게이트웨이를 직접 추출
+    gateway="$(ip route get 8.8.8.8 2>/dev/null | awk '/via/ {for(i=1;i<NF;i++) if($i=="via") {print $(i+1); exit}}')"
+    if [[ -n "${gateway}" && "${gateway}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        printf '%s\n' "${gateway}"
+        return 0
+    fi
+
+    # 2. ip route (기본 게이트웨이 탐지용)
+    # 'default via 192.168.1.1 dev wlan0 proto static' 형식 대응
+    gateway="$(ip route show default 2>/dev/null | awk '/default/ { for(i=1;i<NF;i++) if($i=="via") {print $(i+1); exit} }')"
     if [[ -n "${gateway}" ]]; then
         printf '%s\n' "${gateway}"
         return 0
     fi
 
-    gateway="$(route -n 2>/dev/null | awk '$1 == "0.0.0.0" { print $2; exit }')"
+    # 3. route -n (고전적인 net-tools 방식)
+    # Destination 0.0.0.0의 Gateway 컬럼 탐지
+    gateway="$(route -n 2>/dev/null | awk '$1 == "0.0.0.0" { for(i=2;i<=NF;i++) if($i != "0.0.0.0" && $i ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) {print $i; exit} }')"
     if [[ -n "${gateway}" ]]; then
         printf '%s\n' "${gateway}"
         return 0
+    fi
+
+    # 4. getprop (Android/Termux 전용 방식)
+    # WiFi가 활성화된 경우 DHCP 정보를 직접 조회
+    if command -v getprop >/dev/null 2>&1; then
+        gateway="$(getprop dhcp.wlan0.gateway 2>/dev/null)"
+        if [[ -n "${gateway}" && "${gateway}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            printf '%s\n' "${gateway}"
+            return 0
+        fi
+        # eth0 등 다른 인터페이스도 시도
+        gateway="$(getprop dhcp.eth0.gateway 2>/dev/null)"
+        if [[ -n "${gateway}" && "${gateway}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            printf '%s\n' "${gateway}"
+            return 0
+        fi
+    fi
+
+    # 5. dumpsys connectivity (Android 시스템 서비스 활용)
+    if command -v dumpsys >/dev/null 2>&1; then
+        # 'Gateway: /192.168.1.1' 형식 추출
+        gateway="$(dumpsys connectivity 2>/dev/null | grep -i "Gateway:" | head -n 1 | awk -F'/' '{print $2}' | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')"
+        if [[ -n "${gateway}" ]]; then
+            printf '%s\n' "${gateway}"
+            return 0
+        fi
+    fi
+
+    # 6. /proc/net/route (리눅스 커널 인터페이스 직접 조회)
+    # Gateway 필드가 리틀 엔디안 16진수임에 유의 (예: 01901DAC -> 172.29.144.1)
+    # Dest(2번째)가 00000000인 행의 Gateway(3번째) 추출 후 점진법 IP로 변환
+    if [[ -f /proc/net/route ]]; then
+        local hex_gateway
+        hex_gateway="$(awk '$2 == "00000000" { print $3; exit }' /proc/net/route 2>/dev/null)"
+        if [[ -n "${hex_gateway}" && "${hex_gateway}" != "00000000" ]]; then
+            # 16진수를 IP로 변환 (8자리 hex를 2자리씩 끊어서 역순으로 10진수 변환)
+            local g1 g2 g3 g4
+            g4=$((16#${hex_gateway:0:2}))
+            g3=$((16#${hex_gateway:2:2}))
+            g2=$((16#${hex_gateway:4:2}))
+            g1=$((16#${hex_gateway:6:2}))
+            printf '%d.%d.%d.%d\n' "${g1}" "${g2}" "${g3}" "${g4}"
+            return 0
+        fi
     fi
 
     return 1
@@ -234,6 +290,8 @@ start_wifi_keepalive() {
     local keepalive_target=""
     local keepalive_interval=""
 
+    load_env_file_optional # 환경 변수 파일(.env) 로드 (수동 설정 확인용)
+
     if ! is_keepalive_enabled; then
         return
     fi
@@ -245,7 +303,10 @@ start_wifi_keepalive() {
 
     keepalive_target="$(resolve_wifi_keepalive_target || true)"
     if [[ -z "${keepalive_target}" ]]; then
-        log "기본 게이트웨이를 찾지 못해 Wi-Fi keepalive를 시작하지 않습니다."
+        log "기본 게이트웨이를 자동 탐지하지 못했습니다."
+        log "해결 방법:"
+        log "1. ${ENV_FILE:-.env} 파일에 WIFI_KEEPALIVE_TARGET=192.168.50.1 처럼 대상 IP를 추가하세요."
+        log "2. 또는 실행 시 직접 환경 변수를 주입하세요: WIFI_KEEPALIVE_TARGET=192.168.50.1 ./restart-backend.sh"
         return
     fi
 
