@@ -129,6 +129,7 @@ export function openKakaoMapWithFallback(event, latitude, longitude, onFallbackN
 
   let fallbackPending = true
   let fallbackTimeoutId = null
+  const startTime = Date.now()
 
   function cleanup() {
     fallbackPending = false
@@ -140,6 +141,7 @@ export function openKakaoMapWithFallback(event, latitude, longitude, onFallbackN
 
     document.removeEventListener('visibilitychange', handleVisibilityChange)
     window.removeEventListener('pagehide', handlePageHide)
+    window.removeEventListener('blur', handleBlur)
   }
 
   function handleVisibilityChange() {
@@ -152,11 +154,24 @@ export function openKakaoMapWithFallback(event, latitude, longitude, onFallbackN
     cleanup()
   }
 
+  function handleBlur() {
+    cleanup()
+  }
+
   document.addEventListener('visibilitychange', handleVisibilityChange)
   window.addEventListener('pagehide', handlePageHide, { once: true })
+  window.addEventListener('blur', handleBlur, { once: true })
 
   fallbackTimeoutId = window.setTimeout(() => {
     if (!fallbackPending) {
+      return
+    }
+
+    const elapsed = Date.now() - startTime
+    // If more than 1500ms has passed for a 900ms timeout, the browser was likely suspended
+    // because the Kakao Map app opened successfully.
+    if (elapsed > 1500) {
+      cleanup()
       return
     }
 
