@@ -8,11 +8,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
+
 @Getter
 @Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
+
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
     @Convert(converter = ProvinceConverter.class)
     @Column(nullable = false)
@@ -22,9 +29,8 @@ public class Location {
 
     private String address;
 
-    private Double latitude;
-
-    private Double longitude;
+    @Column(columnDefinition = "geometry(Point, 4326)")
+    private Point point;
 
     public Location(
             String detail,
@@ -40,8 +46,7 @@ public class Location {
         }
         this.detail = detail != null ? detail.trim() : null;
         this.address = address != null ? address.trim() : null;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.point = createPoint(latitude, longitude);
     }
 
     public Location(
@@ -55,8 +60,22 @@ public class Location {
         this.province = province;
         this.detail = detail != null ? detail.trim() : null;
         this.address = address != null ? address.trim() : null;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.point = createPoint(latitude, longitude);
+    }
+
+    private Point createPoint(Double latitude, Double longitude) {
+        if (latitude == null || longitude == null) {
+            return null;
+        }
+        return GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
+    }
+
+    public Double getLatitude() {
+        return point == null ? null : point.getY();
+    }
+
+    public Double getLongitude() {
+        return point == null ? null : point.getX();
     }
 
     private void validate(String detail, String address, Double latitude, Double longitude) {

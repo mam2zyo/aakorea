@@ -113,8 +113,13 @@ public class PublicMeetingQueryService {
             String keyword,
             int radiusKm
     ) {
+        org.locationtech.jts.geom.Point refPoint = new org.locationtech.jts.geom.GeometryFactory(
+                new org.locationtech.jts.geom.PrecisionModel(), 4326)
+                .createPoint(new org.locationtech.jts.geom.Coordinate(longitude, latitude));
+
         Specification<Meeting> specification = MeetingSpecifications.active()
-                .and(MeetingSpecifications.hasCoordinates());
+                .and(MeetingSpecifications.hasCoordinates())
+                .and(MeetingSpecifications.isWithinDistance(refPoint, radiusKm));
 
         if (dayOfWeek != null) {
             specification = specification.and(MeetingSpecifications.hasDayOfWeek(dayOfWeek));
@@ -139,7 +144,6 @@ public class PublicMeetingQueryService {
                             meeting.getLatitude(), meeting.getLongitude());
                     return new NearbyMeeting(meeting, distanceKm);
                 })
-                .filter(item -> item.distanceKm() <= radiusKm)
                 .sorted(Comparator
                         .comparingDouble(NearbyMeeting::distanceKm)
                         .thenComparing(item -> item.meeting().getDayOfWeek().getValue())
