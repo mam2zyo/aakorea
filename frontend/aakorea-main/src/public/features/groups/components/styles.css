@@ -2,6 +2,22 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { 
+    transform: translateY(100%); 
+    opacity: 0.5;
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1;
+  }
+}
+
 /* 버튼 내 SVG 아이콘 세로 정렬 */
 .meeting-search-reset svg,
 .meeting-search-nearby svg,
@@ -568,6 +584,9 @@
   padding: var(--space-5);
   background: var(--public-overlay-background);
   backdrop-filter: blur(16px);
+  /* 애니메이션 추가 */
+  animation: modalFadeIn 0.3s ease-out;
+  will-change: opacity;
 }
 
 .meeting-focus-dialog {
@@ -581,6 +600,9 @@
   border-radius: 28px;
   background: var(--public-dialog-background);
   box-shadow: var(--public-dialog-shadow);
+  /* 애니메이션 추가 */
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .meeting-focus-dialog__header {
