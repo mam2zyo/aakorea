@@ -9,8 +9,8 @@
 
 @keyframes modalSlideUp {
   from { 
-    transform: translateY(100%); 
-    opacity: 0.5;
+    transform: translateY(80px); /* 100% 대신 작은 거리에서 부드럽게 시작 */
+    opacity: 0;
   }
   to { 
     transform: translateY(0); 
@@ -600,8 +600,8 @@
   border-radius: 28px;
   background: var(--public-dialog-background);
   box-shadow: var(--public-dialog-shadow);
-  /* 애니메이션 추가 */
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 애니메이션 추가: 더 완만하고 부드러운 감속 곡선 사용 */
+  animation: modalSlideUp 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
   will-change: transform, opacity;
 }
 
