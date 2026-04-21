@@ -27,7 +27,7 @@ public class KakaoMeetingAddressGeocoder implements MeetingAddressGeocoder {
     }
 
     @Override
-    public Coordinates resolveCoordinates(String locationAddress) {
+    public GeocodedAddress resolveCoordinates(String locationAddress) {
         if (locationAddress == null || locationAddress.isBlank()) {
             return null;
         }
@@ -52,9 +52,10 @@ public class KakaoMeetingAddressGeocoder implements MeetingAddressGeocoder {
             }
 
             KakaoAddressDocument document = response.documents().getFirst();
-            return new Coordinates(
+            return new GeocodedAddress(
                     Double.parseDouble(document.y()),
-                    Double.parseDouble(document.x()));
+                    Double.parseDouble(document.x()),
+                    document.addressName());
         } catch (NumberFormatException | RestClientException exception) {
             throw new IllegalStateException("Failed to geocode address with Kakao Local API", exception);
         }
@@ -66,6 +67,8 @@ public class KakaoMeetingAddressGeocoder implements MeetingAddressGeocoder {
     }
 
     private record KakaoAddressDocument(
+            @com.fasterxml.jackson.annotation.JsonProperty("address_name")
+            String addressName,
             String x,
             String y
     ) {

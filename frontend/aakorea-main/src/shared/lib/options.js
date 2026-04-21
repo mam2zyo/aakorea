@@ -56,3 +56,9 @@ export const SEARCH_MEETING_TYPE_OPTIONS = [
   { value: '', label: '유형 전체' },
   ...MEETING_TYPE_OPTIONS,
 ]
+
+export const getShortDayLabel = (dayValue) => {
+  const option = DAY_OF_WEEK_OPTIONS.find(o => o.value === dayValue)
+  if (!option) return ''
+  return option.label.substring(0, 1)
+}

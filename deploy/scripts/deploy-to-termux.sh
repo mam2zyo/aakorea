@@ -21,8 +21,14 @@ LOCAL_TERMUX_ENV_EXAMPLE="${REPO_ROOT}/deploy/env/termux.env.example"
 LOCAL_RESTART_SCRIPT="${REPO_ROOT}/deploy/scripts/restart-backend.sh"
 
 # 원격(Termux) 설정 - 기본 구조: ~/aakorea
-TERMUX_TARGET="${TERMUX_TARGET:-}"   # 사용자명@호스트 주소
-TERMUX_SSH_PORT="${TERMUX_SSH_PORT:-}" # SSH 포트 (Termux 기본값: 8022)
+# 현재 테스트 서버(A34) 기준 기본값이며, 환경 변수/인자로 덮어쓸 수 있습니다.
+TERMUX_USER="${TERMUX_USER:-u0_a312}"
+TERMUX_HOST="${TERMUX_HOST:-192.168.50.211}"
+TERMUX_TARGET="${TERMUX_TARGET:-}"     # 사용자명@호스트 주소
+TERMUX_SSH_PORT="${TERMUX_SSH_PORT:-8022}" # SSH 포트 (Termux 기본값: 8022)
+TERMUX_SSH_MULTIPLEXING="${TERMUX_SSH_MULTIPLEXING:-1}"   # 같은 배포 실행 중 SSH 연결 재사용
+TERMUX_SSH_CONTROL_PATH="${TERMUX_SSH_CONTROL_PATH:-${HOME}/.ssh/controlmasters/%C}"
+TERMUX_SSH_CONTROL_PERSIST="${TERMUX_SSH_CONTROL_PERSIST:-15m}"
 TERMUX_APP_DIR="${TERMUX_APP_DIR:-/data/data/com.termux/files/home/aakorea}"
 TERMUX_ENV_FILE="${TERMUX_ENV_FILE:-${TERMUX_APP_DIR}/config/aakorea-termux.env}"
 REMOTE_RESTART_SCRIPT="${REMOTE_RESTART_SCRIPT:-${TERMUX_APP_DIR}/scripts/restart-backend.sh}"
@@ -47,7 +53,8 @@ usage() {
   ./deploy/scripts/deploy-to-termux.sh <termux-user>@<termux-host> [options]
 
 필수:
-  TERMUX_TARGET 환경 변수 혹은 첫 번째 인자로 타겟 주소를 지정해야 합니다.
+  TERMUX_TARGET 환경 변수 혹은 첫 번째 인자로 타겟 주소를 지정할 수 있습니다.
+  지정하지 않으면 TERMUX_USER/TERMUX_HOST 기본값으로 현재 A34 테스트 서버를 사용합니다.
 
 옵션:
   --frontend-only  프론트엔드 빌드 및 업로드만 수행
@@ -57,14 +64,19 @@ usage() {
   --help           도움말 표시
 
 환경 변수:
-  TERMUX_TARGET         SSH 타겟 주소 (예: u0_a312@172.30.1.81)
-  TERMUX_SSH_PORT       SSH 포트 (예: 8022)
+  TERMUX_USER           Termux 사용자명 (기본값: u0_a312)
+  TERMUX_HOST           Termux 호스트/IP (기본값: 192.168.50.211)
+  TERMUX_TARGET         SSH 타겟 주소. 지정 시 TERMUX_USER/HOST보다 우선
+  TERMUX_SSH_PORT       SSH 포트 (기본값: 8022)
+  TERMUX_SSH_MULTIPLEXING  1이면 같은 배포 실행 중 SSH 연결을 재사용 (기본값: 1)
+  TERMUX_SSH_CONTROL_PERSIST  재사용 연결 유지 시간 (기본값: 15m)
   TERMUX_APP_DIR        원격 서버 앱 루트 경로
   TERMUX_ENV_FILE       환경 변수 파일 경로 (.env)
   REMOTE_RESTART_SCRIPT 원격 서버 재시작 스크립트 경로
 
 예시:
-  TERMUX_TARGET=termux@192.168.0.20 TERMUX_SSH_PORT=8022 ./deploy/scripts/deploy-to-termux.sh
+  ./deploy/scripts/deploy-to-termux.sh
+  TERMUX_TARGET=u0_a312@192.168.50.211 TERMUX_SSH_PORT=8022 ./deploy/scripts/deploy-to-termux.sh
   ./deploy/scripts/deploy-to-termux.sh ssh.maumtalk.win --skip-build
 EOF
 }
@@ -72,6 +84,37 @@ EOF
 # 로그 출력용 함수
 log() {
     printf '[deploy-to-termux] %s\n' "$*"
+}
+
+is_truthy() {
+    case "$1" in
+        1|true|TRUE|yes|YES|on|ON)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+enable_ssh_connection_sharing() {
+    if ! is_truthy "${TERMUX_SSH_MULTIPLEXING}"; then
+        return
+    fi
+
+    mkdir -p "$(dirname "${TERMUX_SSH_CONTROL_PATH}")"
+
+    SSH_CMD+=(
+        -o ControlMaster=auto
+        -o "ControlPersist=${TERMUX_SSH_CONTROL_PERSIST}"
+        -o "ControlPath=${TERMUX_SSH_CONTROL_PATH}"
+    )
+    SCP_CMD+=(
+        -o ControlMaster=auto
+        -o "ControlPersist=${TERMUX_SSH_CONTROL_PERSIST}"
+        -o "ControlPath=${TERMUX_SSH_CONTROL_PATH}"
+    )
+    RSYNC_SSH_COMMAND="${RSYNC_SSH_COMMAND} -o ControlMaster=auto -o ControlPersist=${TERMUX_SSH_CONTROL_PERSIST} -o ControlPath=${TERMUX_SSH_CONTROL_PATH}"
 }
 
 # 로컬 파일 존재 여부 확인 함수
@@ -146,6 +189,11 @@ while (($# > 0)); do
     shift
 done
 
+# TERMUX_TARGET 이 직접 지정되지 않았다면 기본 사용자/호스트 조합으로 구성
+if [[ -z "${TERMUX_TARGET}" && -n "${TERMUX_USER}" && -n "${TERMUX_HOST}" ]]; then
+    TERMUX_TARGET="${TERMUX_USER}@${TERMUX_HOST}"
+fi
+
 # 타겟 주소 확인
 if [[ -z "${TERMUX_TARGET}" ]]; then
     printf '배포 타겟(TERMUX_TARGET)이 지정되지 않았습니다.\n\n' >&2
@@ -159,6 +207,8 @@ if [[ -n "${TERMUX_SSH_PORT}" ]]; then
     SCP_CMD+=(-P "${TERMUX_SSH_PORT}")
     RSYNC_SSH_COMMAND="ssh -p ${TERMUX_SSH_PORT}"
 fi
+
+enable_ssh_connection_sharing
 
 # 필수 설정 파일 존재 확인
 require_file "${LOCAL_TERMUX_NGINX_CONF}"

@@ -43,8 +43,21 @@ public final class MeetingSpecifications {
     }
 
     public static Specification<Meeting> hasCoordinates() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.isNotNull(root.get("location").get("latitude")),
-                criteriaBuilder.isNotNull(root.get("location").get("longitude")));
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("location").get("point"));
+    }
+
+    public static Specification<Meeting> isWithinDistance(org.locationtech.jts.geom.Point refPoint, double radiusKm) {
+        return (root, query, criteriaBuilder) -> {
+            // Convert km to meters for ST_DWithin (when used with geography)
+            // Or use ST_DWithin with geometry and cast
+            return criteriaBuilder.isTrue(
+                    criteriaBuilder.function("ST_DWithin", Boolean.class,
+                            root.get("location").get("point"),
+                            criteriaBuilder.literal(refPoint),
+                            criteriaBuilder.literal(radiusKm * 1000.0),
+                            criteriaBuilder.literal(true) // useSpheroid
+                    )
+            );
+        };
     }
 }

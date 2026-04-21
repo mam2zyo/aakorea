@@ -111,7 +111,7 @@ public class MeetingAdminService {
     @Transactional
     public CoordinateBackfillResult backfillMissingCoordinates(boolean dryRun) {
         List<Meeting> candidates = meetingRepository.findMeetingsMissingCoordinates();
-        Map<String, Optional<MeetingAddressGeocoder.Coordinates>> coordinatesCache = new HashMap<>();
+        Map<String, Optional<MeetingAddressGeocoder.GeocodedAddress>> geocodingCache = new HashMap<>();
         List<CoordinateBackfillItem> items = new ArrayList<>();
         int resolvedCount = 0;
         int updatedCount = 0;
@@ -119,11 +119,11 @@ public class MeetingAdminService {
 
         for (Meeting meeting : candidates) {
             String locationAddress = meeting.getLocationAddress();
-            Optional<MeetingAddressGeocoder.Coordinates> cachedCoordinates = coordinatesCache.computeIfAbsent(
+            Optional<MeetingAddressGeocoder.GeocodedAddress> geocodedOptional = geocodingCache.computeIfAbsent(
                     locationAddress,
                     this::resolveCoordinatesForBackfill);
 
-            if (cachedCoordinates.isEmpty()) {
+            if (geocodedOptional.isEmpty()) {
                 failedCount++;
                 items.add(new CoordinateBackfillItem(
                         meeting.getId(),
@@ -138,14 +138,14 @@ public class MeetingAdminService {
             }
 
             resolvedCount++;
-            MeetingAddressGeocoder.Coordinates coordinates = cachedCoordinates.get();
+            MeetingAddressGeocoder.GeocodedAddress geocodedAddress = geocodedOptional.get();
 
             if (!dryRun) {
                 meeting.updateLocation(new Location(
                         meeting.getLocationDetail(),
-                        locationAddress,
-                        coordinates.latitude(),
-                        coordinates.longitude()));
+                        geocodedAddress.normalizedAddress(),
+                        geocodedAddress.latitude(),
+                        geocodedAddress.longitude()));
                 updatedCount++;
             }
 
@@ -154,8 +154,8 @@ public class MeetingAdminService {
                     meeting.getGroup().getId(),
                     meeting.getGroup().getName(),
                     locationAddress,
-                    coordinates.latitude(),
-                    coordinates.longitude(),
+                    geocodedAddress.latitude(),
+                    geocodedAddress.longitude(),
                     dryRun ? CoordinateBackfillStatus.READY : CoordinateBackfillStatus.UPDATED,
                     dryRun ? "coordinates resolved" : "coordinates updated"));
         }
@@ -193,22 +193,22 @@ public class MeetingAdminService {
         // Use dummy coordinates for initial validation to avoid triggering coordinate-related errors
         new Location(locationDetail, locationAddress, 0.0, 0.0);
 
-        MeetingAddressGeocoder.Coordinates coordinates = resolveCoordinates(locationAddress, latitude, longitude);
+        MeetingAddressGeocoder.GeocodedAddress geocodedAddress = resolveCoordinates(locationAddress, latitude, longitude);
 
         return new Location(
                 locationDetail,
-                locationAddress,
-                coordinates.latitude(),
-                coordinates.longitude());
+                geocodedAddress.normalizedAddress(),
+                geocodedAddress.latitude(),
+                geocodedAddress.longitude());
     }
 
-    private MeetingAddressGeocoder.Coordinates resolveCoordinates(
+    private MeetingAddressGeocoder.GeocodedAddress resolveCoordinates(
             String locationAddress,
             Double latitude,
             Double longitude
     ) {
         if (latitude != null && longitude != null) {
-            return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
+            return new MeetingAddressGeocoder.GeocodedAddress(latitude, longitude, locationAddress);
         }
         
         // At this point, if one is present, both should be present but are not.
@@ -216,29 +216,29 @@ public class MeetingAdminService {
         if (latitude != null || longitude != null) {
             // This case will be handled by new Location(...) in buildLocation before calling this, 
             // but just in case, we return what we have to let Location's constructor fail.
-            return new MeetingAddressGeocoder.Coordinates(latitude, longitude);
+            return new MeetingAddressGeocoder.GeocodedAddress(latitude, longitude, locationAddress);
         }
 
         try {
-            MeetingAddressGeocoder.Coordinates coordinates = meetingAddressGeocoder.resolveCoordinates(locationAddress);
-            if (coordinates == null || coordinates.latitude() == null || coordinates.longitude() == null) {
+            MeetingAddressGeocoder.GeocodedAddress geocodedAddress = meetingAddressGeocoder.resolveCoordinates(locationAddress);
+            if (geocodedAddress == null || geocodedAddress.latitude() == null || geocodedAddress.longitude() == null) {
                 throw FieldValidationException.badRequest(
                         "locationAddress",
                         "locationAddress cannot determine coordinates");
             }
-            return coordinates;
+            return geocodedAddress;
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }
     }
 
-    private Optional<MeetingAddressGeocoder.Coordinates> resolveCoordinatesForBackfill(String locationAddress) {
+    private Optional<MeetingAddressGeocoder.GeocodedAddress> resolveCoordinatesForBackfill(String locationAddress) {
         try {
-            MeetingAddressGeocoder.Coordinates coordinates = meetingAddressGeocoder.resolveCoordinates(locationAddress);
-            if (coordinates == null || coordinates.latitude() == null || coordinates.longitude() == null) {
+            MeetingAddressGeocoder.GeocodedAddress geocodedAddress = meetingAddressGeocoder.resolveCoordinates(locationAddress);
+            if (geocodedAddress == null || geocodedAddress.latitude() == null || geocodedAddress.longitude() == null) {
                 return Optional.empty();
             }
-            return Optional.of(coordinates);
+            return Optional.of(geocodedAddress);
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "address geocoding is unavailable", exception);
         }

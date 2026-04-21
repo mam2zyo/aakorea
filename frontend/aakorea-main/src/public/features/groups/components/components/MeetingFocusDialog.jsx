@@ -214,7 +214,7 @@ export function MeetingFocusDialog({
                 </div>
 
                 <KakaoMeetingMap
-                  key={selectedMeeting.id}
+                  key={`${selectedMeeting.latitude},${selectedMeeting.longitude}`}
                   latitude={selectedMeeting.latitude}
                   longitude={selectedMeeting.longitude}
                 />

@@ -43,8 +43,7 @@ public class Meeting extends AuditFields {
             @AttributeOverride(name = "province", column = @Column(name = "province", nullable = false)),
             @AttributeOverride(name = "detail", column = @Column(name = "location_detail")),
             @AttributeOverride(name = "address", column = @Column(name = "location_address", nullable = false)),
-            @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
+            @AttributeOverride(name = "point", column = @Column(name = "location_point"))
     })
     private Location location;
 

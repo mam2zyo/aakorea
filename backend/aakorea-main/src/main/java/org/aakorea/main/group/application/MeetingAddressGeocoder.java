@@ -2,11 +2,12 @@ package org.aakorea.main.group.application;
 
 public interface MeetingAddressGeocoder {
 
-    Coordinates resolveCoordinates(String locationAddress);
-
-    record Coordinates(
+    GeocodedAddress resolveCoordinates(String locationAddress);
+ 
+    record GeocodedAddress(
             Double latitude,
-            Double longitude
+            Double longitude,
+            String normalizedAddress
     ) {
     }
 }

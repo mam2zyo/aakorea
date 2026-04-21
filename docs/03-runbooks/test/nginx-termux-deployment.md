@@ -1,240 +1,113 @@
 <!-- docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md -->
 
-# Nginx / Termux Deployment
+# Nginx / Termux 테스트 서버 배포 가이드
 
-## 이 문서의 역할
-
-로컬 Ubuntu와 Termux 테스트 서버에서 프론트엔드는 `nginx`가 정적으로 서빙하고,
-`/api`만 Spring Boot로 프록시하는 배포 구조를 정리한다.
+이 문서는 Termux(안드로이드) 환경에서 프론트엔드를 Nginx로 정적 서빙하고, API 요청을 Spring Boot로 프록시하는 테스트 서버 배포 절차를 설명합니다.
 
 ---
 
-## 이 문서에 포함하지 않는 내용
+## 1. 개요 및 목표 구조
 
-- 제품 범위와 기능 판단은 `docs/current/` 문서를 따른다
-- 로컬 개발용 Vite 실행과 env 설정은 `../local/local-development.md`를 따른다
-- Cloudflare Tunnel 생성 절차 자체는 포함하지 않는다
+로컬 PC에서 빌드된 결과물을 Termux로 전송하여 실제 모바일 기기에서 테스트 서버를 운영하는 것이 목표입니다.
 
----
-
-## 주요 라우팅 구조 (MPA)
-
-- **공개 사이트 (`index.html`)**: `/`, `/meetings/**`, `/notices/**` 등 기본 경로.
-- **관리자 콘솔 (`admin.html`)**: `/admin`, `/admin/**` 경로.
+- **Nginx (8080)**: 정적 파일 서빙 및 `/api/*` 프록시
+- **Spring Boot API (8081)**: 백엔드 로직 처리
+- **Cloudflare Tunnel**: 외부 도메인 연결 (`http://localhost:8080` 바라보기)
 
 ---
 
-## 목표 구조
+## 2. 관련 파일 및 디렉토리
 
-- `nginx`: `8080`
-- Spring Boot API: `8081`
-- PostgreSQL: `5432`
-- Cloudflare Tunnel: `maumtalk.win`, `www.maumtalk.win` -> `http://localhost:8080`
-
-브라우저는 항상 `nginx`에 접속한다.
-정적 파일은 `nginx`가 응답하고, `/api/*` 요청만 Spring Boot로 전달한다.
+- `deploy/nginx/aakorea-termux.conf`: Termux용 Nginx 설정 템플릿
+- `deploy/scripts/deploy-to-termux.sh`: 로컬 → Termux 자동 배포 스크립트
+- `deploy/scripts/restart-backend.sh`: Termux용 백엔드 재시작 스크립트
+- `deploy/env/nginx.env.example`: 환경 변수 설정 템플릿
 
 ---
 
-## 관련 파일
+## 3. Termux 배포 절차
 
-- `deploy/nginx/aakorea-local.conf`
-- `deploy/nginx/aakorea-termux.conf`
-- `deploy/env/local-dev.env.example`
-- `deploy/env/nginx.env.example`
-- `deploy/scripts/deploy-to-termux.sh`
-- `deploy/scripts/restart-backend.sh`
-- `backend/aakorea-main/src/main/resources/application-nginx.yml`
+이 절차는 로컬 PC(Ubuntu/WSL)에서 빌드가 완료되어 있다는 것을 가정합니다.
 
-현재 `application-nginx.yml` 기준으로 API는 `8081`에서 실행된다.
+### 3.1 파일 전송 (로컬 → Termux)
+
+`deploy-to-termux.sh` 스크립트를 사용하거나 수동으로 파일을 전송합니다.
+
+```bash
+# 자동 배포 스크립트 예시
+TERMUX_TARGET=user@host TERMUX_SSH_PORT=8022 ./deploy/scripts/deploy-to-termux.sh
+```
+
+**수동 전송 시 필수 파일:**
+- 프론트엔드 빌드 결과물 (`dist/`)
+- 백엔드 실행 파일 (`aakorea-main.jar`)
+- 설정 파일 (`aakorea-termux.conf`, `nginx.env.example`)
 
 ---
 
-## Ubuntu에서 `nginx` 정적 서빙 적용
+### 3.2 Termux Nginx 설정 반영
 
-### 1. 프론트 빌드
-
-```bash
-cd /home/mam2z/apps/aakorea-main/frontend/aakorea-main
-npm run build
-```
-
-`nginx`는 `dist/` 결과물을 직접 서빙한다.
-
-### 2. `nginx` 설정 연결
-
-샘플 설정:
-
-- `/home/mam2z/apps/aakorea-main/deploy/nginx/aakorea-local.conf`
-
-Ubuntu 예시:
+Termux의 Nginx 설정 파일 위치는 보통 `$PREFIX/etc/nginx/nginx.conf`입니다. 매번 서버 블록을 직접 붙여넣는 대신 `include` 지시어를 사용하여 설정을 관리합니다.
 
 ```bash
-sudo cp /home/mam2z/apps/aakorea-main/deploy/nginx/aakorea-local.conf /etc/nginx/sites-available/aakorea-local.conf
-sudo ln -sf /etc/nginx/sites-available/aakorea-local.conf /etc/nginx/sites-enabled/aakorea-local.conf
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-`8080`을 다른 프로세스가 쓰고 있다면 `listen` 포트와 연관 문서를 함께 바꾼다.
-
-### 3. 백엔드 env 파일 준비
-
-```bash
-cp /home/mam2z/apps/aakorea-main/deploy/env/nginx.env.example ~/aakorea-nginx.env
-nano ~/aakorea-nginx.env
-```
-
-최소한 아래 값은 실제 값으로 바꾼다.
-
-- `AAKOREA_DB_URL`
-- `AAKOREA_DB_USERNAME`
-- `AAKOREA_DB_PASSWORD`
-- `AAKOREA_ADMIN_USERNAME`
-- `AAKOREA_ADMIN_PASSWORD`
-
-`AAKOREA_SERVER_PORT`는 기본값이 이미 `8081`이라,
-같은 포트를 유지할 때는 예시 값을 그대로 써도 된다.
-
-### 4. 백엔드 실행
-
-```bash
-cd /home/mam2z/apps/aakorea-main/backend/aakorea-main
-set -a
-source ~/aakorea-nginx.env
-set +a
-SPRING_PROFILES_ACTIVE=nginx ./gradlew bootRun
-```
-
-### 5. 확인
-
-- 브라우저: `http://localhost:8080`
-- API 직접 확인: `http://localhost:8080/api/public/notices`
-
-정상이라면 브라우저는 `8080`만 바라보고, 백엔드 `8081`은 직접 노출하지 않는다.
-
----
-
-## Termux 배포
-
-이 절은 로컬 Ubuntu 또는 WSL에서 아래 산출물이 준비되어 있다고 가정한다.
-
-- 프론트 정적 파일: `/home/mam2z/apps/aakorea-main/frontend/aakorea-main/dist/`
-- 백엔드 실행 파일: `/home/mam2z/apps/aakorea-main/backend/aakorea-main/build/libs/aakorea-main-0.0.1-SNAPSHOT.jar`
-
-현재 배포 스크립트는 기본적으로 아래 앱 디렉터리를 사용한다.
-
-```text
-/data/data/com.termux/files/home/apps/aakorea-main
-```
-
-직접 휴대폰 IP로 접속하면 기본 SSH 포트는 `22`가 아니라 `8022`다.
-
-### 1. 로컬 배포 스크립트 사용
-
-가장 간단한 방법은 `deploy-to-termux.sh`를 쓰는 것이다.
-이 스크립트는 기본적으로 프론트 `build`와 백엔드 `bootJar`까지 수행한 뒤 파일을 업로드한다.
-
-```bash
-TERMUX_TARGET=<termux-user>@<termux-host> TERMUX_SSH_PORT=8022 ./deploy/scripts/deploy-to-termux.sh
-```
-
-자주 쓰는 옵션:
-
-- `--skip-build`
-- `--frontend-only`
-- `--backend-only`
-- `--no-restart`
-
-`~/aakorea-nginx.env`가 아직 없다면 업로드만 수행하고 자동 재시작은 건너뛴다.
-
-### 2. 수동 업로드
-
-스크립트를 쓰지 않을 때는 아래 파일을 직접 올린다.
-
-```bash
-rsync -av --delete -e "ssh -p 8022" /home/mam2z/apps/aakorea-main/frontend/aakorea-main/dist/ <termux-user>@<termux-host>:~/apps/aakorea-main/frontend/aakorea-main/dist/
-
-scp -P 8022 /home/mam2z/apps/aakorea-main/backend/aakorea-main/build/libs/aakorea-main-0.0.1-SNAPSHOT.jar <termux-user>@<termux-host>:~/apps/aakorea-main/backend/aakorea-main/aakorea-main.jar
-
-scp -P 8022 /home/mam2z/apps/aakorea-main/deploy/nginx/aakorea-termux.conf <termux-user>@<termux-host>:~/apps/aakorea-main/deploy/nginx/aakorea-termux.conf
-
-scp -P 8022 /home/mam2z/apps/aakorea-main/deploy/env/nginx.env.example <termux-user>@<termux-host>:~/apps/aakorea-main/deploy/env/nginx.env.example
-
-scp -P 8022 /home/mam2z/apps/aakorea-main/deploy/scripts/restart-backend.sh <termux-user>@<termux-host>:~/apps/aakorea-main/deploy/scripts/restart-backend.sh
-```
-
-`rsync`를 쓰기 어렵다면 `scp -r`로 `dist/` 전체를 복사해도 된다.
-
-### 3. Termux env 파일 작성
-
-```bash
-cp ~/apps/aakorea-main/deploy/env/nginx.env.example ~/aakorea-nginx.env
-nano ~/aakorea-nginx.env
-```
-
-최소한 아래 값을 실제 값으로 바꾼다.
-
-- `AAKOREA_DB_URL`
-- `AAKOREA_DB_USERNAME`
-- `AAKOREA_DB_PASSWORD`
-- `AAKOREA_ADMIN_USERNAME`
-- `AAKOREA_ADMIN_PASSWORD`
-
-### 4. Termux `nginx` 설정 반영
-
-Termux `PREFIX` 예시는 아래와 같다.
-
-```text
-/data/data/com.termux/files/usr
-```
-
-메인 설정 파일 경로:
-
-```text
-$PREFIX/etc/nginx/nginx.conf
-```
-
-가장 단순한 방법은 `aakorea-termux.conf`의 `server {}` 내용을
-`nginx.conf`의 `http {}` 블록 안에 넣는 것이다.
-
-```bash
-echo $PREFIX
+# 기본 설정 백업
 cp $PREFIX/etc/nginx/nginx.conf $PREFIX/etc/nginx/nginx.conf.bak
-cat ~/apps/aakorea-main/deploy/nginx/aakorea-termux.conf
+
+# nginx.conf의 http { ... } 블록 내부에 아래 줄을 추가합니다.
+# 주의: 경로는 실제 프로젝트 위치에 맞게 수정하세요.
 nano $PREFIX/etc/nginx/nginx.conf
+```
+
+**추가할 내용 (nginx.conf 내부):**
+```nginx
+http {
+    ...
+    include /data/data/com.termux/files/home/apps/aakorea-main/deploy/nginx/aakorea-termux.conf;
+}
+```
+
+```bash
+# Nginx 설정 검사 및 재시작
 nginx -t
 nginx -s reload || nginx
 ```
 
-### 5. 백엔드 시작 또는 재시작
+---
 
-재시작 스크립트 업로드 후:
+### 3.3 백엔드 실행
+
+재시작 스크립트를 사용하여 백엔드를 안전하게 가동합니다.
 
 ```bash
+# 환경 변수 설정
+cp ~/apps/aakorea-main/deploy/env/nginx.env.example ~/aakorea-nginx.env
+nano ~/aakorea-nginx.env # 실제 수치로 수정
+
+# 재시작
 chmod +x ~/apps/aakorea-main/deploy/scripts/restart-backend.sh
 ENV_FILE=~/aakorea-nginx.env ~/apps/aakorea-main/deploy/scripts/restart-backend.sh restart
 ```
 
-수동 실행 예시:
+---
+
+## 4. 점검 및 확인
+
+배포 후 아래 명령어로 상태를 확인합니다.
 
 ```bash
-cd ~/apps/aakorea-main/backend/aakorea-main
-set -a
-source ~/aakorea-nginx.env
-set +a
-SPRING_PROFILES_ACTIVE=nginx nohup java -jar ./aakorea-main.jar > ./application.log 2>&1 &
-```
-
-### 6. 점검
-
-```bash
+# Nginx 상태
 nginx -t
+
+# 로컬 접속 테스트
 curl http://127.0.0.1:8080
-curl http://127.0.0.1:8080/api/public/notices
-~/apps/aakorea-main/deploy/scripts/restart-backend.sh status
+
+# 백엔드 로그 확인
 tail -n 50 ~/apps/aakorea-main/backend/aakorea-main/application.log
 ```
 
-Cloudflare Tunnel이 이미 `http://localhost:8080`을 바라보고 있다면,
-Termux에서 `nginx`가 `8080`에 정상 기동하는지만 확인하면 된다.
+---
+
+## 5. 주의사항
+- **경로 차이**: Termux는 `/home/ubuntu` 같은 일반적인 Linux 경로가 아니라 `/data/data/com.termux/files/home` 경로를 사용합니다. 설정 파일 내 `root` 경로를 확인하세요.
+- **SSH 포트**: 기본 포트는 `8022`입니다.
+- **Cloudflare Tunnel**: 터널이 `8080` 포트를 바라보고 있다면, 외부 도메인 접속 시 Nginx가 먼저 요청을 받게 됩니다.

@@ -5,15 +5,20 @@ import {
   PROVINCE_OPTIONS,
 } from '@/shared/lib/options'
 import { lookupLabel } from '@/shared/lib/view'
+import { getShortDayLabel } from '@/shared/lib/options'
 import { buildMeetingsPath, formatDistanceLabel, MEETING_SEARCH_MODE } from '../utils'
 
 export function MeetingResultsSection({
   filters,
+  hasMore,
   loading,
+  loadMore,
   meetings,
   onNavigate,
   searchMeta,
   selectedSearchMeetingId,
+  totalCount,
+  visibleCount,
 }) {
   const nearbySearchActive = filters.searchMode === MEETING_SEARCH_MODE.NEARBY
 
@@ -31,7 +36,7 @@ export function MeetingResultsSection({
                 : '리스트에서 모임을 선택하면 장소와 그룹 안내가 모달로 열립니다.'}
             </p>
           </div>
-          <span>{meetings.length}개</span>
+          <span>전체 {totalCount ?? meetings.length}개</span>
         </div>
 
         {meetings.length === 0 ? (
@@ -41,7 +46,7 @@ export function MeetingResultsSection({
           />
         ) : (
           <div className="meeting-list">
-            {meetings.map((meeting) => (
+            {meetings.slice(0, visibleCount).map((meeting) => (
               <button
                 key={meeting.id}
                 className={`meeting-search-item${
@@ -51,23 +56,51 @@ export function MeetingResultsSection({
                 onClick={() => onNavigate(buildMeetingsPath(meeting.groupId, meeting.id))}
               >
                 <div className="meeting-search-item__body">
-                  <span className="meeting-search-item__group">{meeting.groupName}</span>
-                  <strong className="meeting-search-item__title">
-                    {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
-                    {' · '}
-                    {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
-                  </strong>
-                  <span className="meeting-search-item__meta">
-                    {meeting.locationDetail || '상세 위치 미정'}
-                  </span>
+                  {/* 1행: 요일 시간 그룹명 타입 */}
+                  <div className="meeting-search-item__row-primary">
+                    <span className="meeting-search-item__day">
+                      {getShortDayLabel(meeting.dayOfWeek)}
+                    </span>
+                    <span className="meeting-search-item__time">
+                      {meeting.startTime}
+                    </span>
+                    <span className="meeting-search-item__group-name">
+                      {meeting.groupName}
+                    </span>
+                    <span className={`meeting-focus-type-badge meeting-focus-type-badge--${meeting.type?.toLowerCase()}`}>
+                      {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
+                    </span>
+                  </div>
+
+                  {/* 2행: 주소 + 거리 */}
+                  <div className="meeting-search-item__row-secondary">
+                    <span className="meeting-search-item__address">
+                      {meeting.locationAddress || '주소 정보 없음'}
+                      {nearbySearchActive && Number.isFinite(meeting.distanceKm) && (
+                        <span className="meeting-search-item__distance">
+                          {` (${formatDistanceLabel(meeting.distanceKm)})`}
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 </div>
-                <span className="meeting-search-item__province">
-                  {nearbySearchActive && Number.isFinite(meeting.distanceKm)
-                    ? formatDistanceLabel(meeting.distanceKm)
-                    : lookupLabel(PROVINCE_OPTIONS, meeting.province)}
-                </span>
               </button>
             ))}
+
+            {hasMore ? (
+              <div className="meeting-list__more">
+                <button
+                  className="meeting-list__more-button"
+                  type="button"
+                  onClick={loadMore}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                  결과 더 보기 ({totalCount - visibleCount}개 남음)
+                </button>
+              </div>
+            ) : null}
           </div>
         )}
       </section>

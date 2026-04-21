@@ -22,7 +22,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long>, JpaSpec
             join fetch m.group g
             where m.location.address is not null
               and trim(m.location.address) <> ''
-              and (m.location.latitude is null or m.location.longitude is null)
+              and m.location.point is null
             order by m.id asc
             """)
     List<Meeting> findMeetingsMissingCoordinates();
