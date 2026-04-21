@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "npm run test:node && npm run test:react",
-    "test:e2e": "npm run build && node --test test/e2e/**/*.e2e.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:node": "node --test test/**/*.test.js",
     "test:react": "TMPDIR=/tmp TMP=/tmp TEMP=/tmp vitest run --config vitest.config.js"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.59.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.14",
