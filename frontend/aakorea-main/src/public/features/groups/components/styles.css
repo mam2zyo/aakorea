@@ -1002,8 +1002,9 @@
 
   .meeting-focus-dialog {
     width: 100%;
-    max-height: min(88vh, 920px); /* Fallback */
-    max-height: min(88dvh, 920px); /* 모바일 하단 툴바를 고려한 동적 높이 */
+    margin: 0; /* PC용 margin: auto 제거하여 바닥 밀착 */
+    max-height: min(92vh, 920px);
+    max-height: min(92dvh, 920px);
     border-right: 0;
     border-bottom: 0;
     border-left: 0;
@@ -1024,8 +1025,7 @@
     position: relative;
     z-index: 1;
     margin-top: -0.65rem;
-    /* 하단 버튼이 툴바에 가리지 않도록 전체적인 하단 패딩 확보 */
-    padding: 1rem 1.2rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    padding: 1rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom, 0px));
     background: var(--public-mobile-footer-background);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
