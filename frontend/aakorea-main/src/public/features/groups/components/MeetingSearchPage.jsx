@@ -126,10 +126,10 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
         <div ref={sentinelRef} className="meeting-search-sentinel" />
         
         {/* Placeholder: Sticky 상태일 때 레이아웃이 무너지는 것을 방지 */}
-        {isSticky && <div className="meeting-search-placeholder panel" />}
+        {isSticky && hasResults && <div className="meeting-search-placeholder panel" />}
         
-        <div className={`meeting-search-form ${isSticky ? 'meeting-search-form--sticky' : 'panel'}`}>
-          {isSticky ? (
+        <div className={`meeting-search-form ${isSticky && hasResults ? 'meeting-search-form--sticky' : 'panel'}`}>
+          {isSticky && hasResults ? (
             /* ── 스티키 모드: 요약 정보 + 액션 ── */
             <div className="meeting-search-sticky-layout">
               <div className="meeting-search-status">
