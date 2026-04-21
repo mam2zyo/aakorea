@@ -505,20 +505,20 @@
 .meeting-search-item__day {
   color: var(--public-brand-primary);
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   flex-shrink: 0;
 }
 
 .meeting-search-item__time {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--color-text-main);
   flex-shrink: 0;
 }
 
 .meeting-search-item__group-name {
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--color-text-main);
   /* 긴 그룹명은 말줄임표 처리하거나 줄바꿈 허용 */
   white-space: nowrap;
@@ -531,7 +531,7 @@
 .meeting-search-item__row-primary .meeting-focus-type-badge {
   margin-left: auto;
   padding: 4px 10px; /* 리스트에서는 약간 더 컴팩트하게 */
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 
@@ -541,7 +541,7 @@
   align-items: center;
   width: 100%;
   color: var(--color-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.95rem;
 }
 
 .meeting-search-item__address {
