@@ -600,6 +600,8 @@
   /* 애니메이션 추가 */
   animation: modalFadeIn 0.3s ease-out;
   will-change: opacity;
+  /* 배경으로 스크롤이 전파되는 현상을 방지 */
+  overscroll-behavior: contain;
 }
 
 .meeting-focus-dialog {

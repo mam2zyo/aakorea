@@ -97,20 +97,32 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
     }
   }, [searchState])
 
-  // 다이얼로그 키보드 이벤트
+  // 모달(상세 정보 또는 상세 검색) 열림 시 배경 스크롤 차단 및 키보드 이벤트
   useEffect(() => {
-    if (!isDialogOpen) return undefined
+    const isAnyModalOpen = isDialogOpen || isFilterModalOpen
+    if (!isAnyModalOpen) return undefined
+
     const previousOverflow = document.body.style.overflow
+    const previousTouchAction = document.body.style.touchAction
+    
+    // 배경 스크롤 차단 및 터치 간섭 방지
     document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none' 
+
     function handleKeyDown(event) {
-      if (event.key === 'Escape') onNavigate(closePath)
+      if (event.key === 'Escape') {
+        if (isDialogOpen) onNavigate(closePath)
+        if (isFilterModalOpen) setIsFilterModalOpen(false)
+      }
     }
+    
     window.addEventListener('keydown', handleKeyDown)
     return () => {
       document.body.style.overflow = previousOverflow
+      document.body.style.touchAction = previousTouchAction
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [closePath, isDialogOpen, onNavigate])
+  }, [closePath, isDialogOpen, isFilterModalOpen, onNavigate])
 
   const provinceLabel = SEARCH_PROVINCE_OPTIONS.find(o => o.value === province)?.label || '전국'
 
