@@ -7,9 +7,22 @@
   to { opacity: 1; }
 }
 
-@keyframes modalSlideUp {
+/* PC용: 제자리에서 살짝 커지며 나타나는 묵직한 효과 */
+@keyframes modalEnter {
   from { 
-    transform: translateY(80px); /* 100% 대신 작은 거리에서 부드럽게 시작 */
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 모바일용: 바닥에서 탄탄하게 올라오는 효과 */
+@keyframes mobileSheetEnter {
+  from { 
+    transform: translateY(100px);
     opacity: 0;
   }
   to { 
@@ -600,8 +613,8 @@
   border-radius: 28px;
   background: var(--public-dialog-background);
   box-shadow: var(--public-dialog-shadow);
-  /* 애니메이션 추가: 더 완만하고 부드러운 감속 곡선 사용 */
-  animation: modalSlideUp 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* PC 애니메이션: 묵직한 중앙 안착 */
+  animation: modalEnter 0.35s cubic-bezier(0.2, 0, 0, 1);
   will-change: transform, opacity;
 }
 
@@ -1031,6 +1044,8 @@
     border-bottom: 0;
     border-left: 0;
     border-radius: 24px 24px 0 0;
+    /* 모바일 전용: 바텀 시스 슬라이드 애니메이션 적용 */
+    animation: mobileSheetEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .meeting-focus-dialog__header {
