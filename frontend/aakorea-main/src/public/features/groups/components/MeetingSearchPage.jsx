@@ -88,11 +88,12 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
     return () => clearTimeout(timer)
   }, [localKeyword])
 
-  // 검색 초기화 시 상세 필터도 초기화
+  // 검색 초기화 시 상세 필터도 초기화 및 스크롤 상단 이동
   useEffect(() => {
     if (searchState === SEARCH_STATE.IDLE) {
       setLocalKeyword('')
       setShowAdvancedFilters(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [searchState])
 
