@@ -9,6 +9,7 @@ import {
   hasCreateBasicsErrors,
   sortGroups,
   toPostalContactPayload,
+  validateCreateBasics,
 } from './utils'
 import { GROUP_MGMT_ACTION, groupManagementReducer, initialState } from './reducer'
 import { GroupListPresenter } from './GroupListPresenter'
@@ -82,7 +83,7 @@ export function GroupManagementPage({
       return
     }
 
-    dispatch({ type: GROUP_MGMT_ACTION.START_EDITING, payload: editorGroupId })
+    dispatch({ type: GROUP_MGMT_ACTION.START_EDITING, payload: { groupId: editorGroupId, source: 'route' } })
   }, [editorGroupId])
 
   // ── 필터링 및 정렬 ──────────────────────────────────────
@@ -123,7 +124,7 @@ export function GroupManagementPage({
   }
 
   const handleCloseEditor = () => {
-    if (editorState.source === 'route') {
+    if (editorState.open && Number.isFinite(editorGroupId)) {
       onNavigate('/admin/groups')
     } else {
       dispatch({ type: GROUP_MGMT_ACTION.CLOSE_EDITOR })
@@ -137,8 +138,8 @@ export function GroupManagementPage({
 
   // ── 비즈니스 로직 (Bulk API 연동) ────────────────────────
   async function saveCreateBasics() {
-    const errors = hasCreateBasicsErrors(createForm)
-    if (errors) {
+    const errors = validateCreateBasics(createForm)
+    if (Object.keys(errors).length > 0) {
       dispatch({ type: GROUP_MGMT_ACTION.SET_CREATE_ERRORS, payload: errors })
       return
     }
