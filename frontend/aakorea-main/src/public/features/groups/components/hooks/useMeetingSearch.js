@@ -50,6 +50,10 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
   const [detailLoading, setDetailLoading] = useState(false)
   const [missingGroup, setMissingGroup] = useState(false)
 
+  // ── 페이징 상태 ──────────────────────────────────────────
+  const INITIAL_VISIBLE_COUNT = 20
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
+
   const activeGroupId = Number.isFinite(groupId) ? groupId : null
   const isDialogOpen = activeGroupId !== null
 
@@ -78,6 +82,7 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
       const result = await publicMeetingApi.getMeetings({ province })
       setRawMeetings(result)
       setFilters(EMPTY_FILTERS)
+      setVisibleCount(INITIAL_VISIBLE_COUNT)
       setSearchState(SEARCH_STATE.REGION_ACTIVE)
     } catch (error) {
       setSearchState(SEARCH_STATE.IDLE)
@@ -106,6 +111,7 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
       setNearbyLocation({ latitude, longitude })
       setRawMeetings(result)
       setFilters(EMPTY_FILTERS)
+      setVisibleCount(INITIAL_VISIBLE_COUNT)
       setSearchState(SEARCH_STATE.NEARBY_ACTIVE)
     } catch (error) {
       setSearchState(SEARCH_STATE.IDLE)
@@ -123,6 +129,7 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
     setRawMeetings([])
     setNearbyLocation(null)
     setFilters(EMPTY_FILTERS)
+    setVisibleCount(INITIAL_VISIBLE_COUNT)
     setSearchState(SEARCH_STATE.IDLE)
   }
 
@@ -140,9 +147,9 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
     })
 
     result = result.filter(m => {
-      if (filters.dayOfWeek && m.dayOfWeek !== filters.dayOfWeek) return false
-      if (filters.type && m.type !== filters.type) return false
-      if (filters.districtId) {
+      if (filters.dayOfWeek && filters.dayOfWeek !== 'ALL' && m.dayOfWeek !== filters.dayOfWeek) return false
+      if (filters.type && filters.type !== 'ALL' && m.type !== filters.type) return false
+      if (filters.districtId && filters.districtId !== 'ALL') {
         if (m.districtId == null) return false
         if (String(m.districtId) !== String(filters.districtId)) return false
       }
@@ -205,6 +212,13 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
   const closePath = useMemo(() => buildMeetingsPath(), [])
   const selectedSearchMeetingId = selectedMeeting?.id ?? meetingId ?? null
 
+  // ── 페이징 액션 ────────────────────────────────────────────
+  function loadMore() {
+    setVisibleCount(prev => prev + INITIAL_VISIBLE_COUNT)
+  }
+
+  const hasMore = filteredMeetings.length > visibleCount
+
   return {
     // 상태
     searchState,
@@ -219,12 +233,16 @@ export function useMeetingSearch({ groupId, meetingId, onError }) {
     filters,
     setFilters,
     // 검색 결과
-    meetings,
+    meetings, // 전체 목록 (필터링 및 정렬 완료)
+    totalCount: filteredMeetings.length,
+    visibleCount,
+    hasMore,
     districts,
     // 액션
     handleRegionSearch,
     handleNearbySearch,
     handleReset,
+    loadMore,
     // 다이얼로그
     closePath,
     detailLoading,

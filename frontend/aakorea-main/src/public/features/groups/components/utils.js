@@ -5,9 +5,9 @@ export const MEETING_SEARCH_MODE = {
   REGION: 'region',
   NEARBY: 'nearby',
 }
-export const DEFAULT_NEARBY_RADIUS_KM = 100
-export const MAX_NEARBY_RADIUS_KM = 100
-export const NEARBY_RADIUS_STEPS = [100]
+export const DEFAULT_NEARBY_RADIUS_KM = 80
+export const MAX_NEARBY_RADIUS_KM = 80
+export const NEARBY_RADIUS_STEPS = [80]
 
 const TMAP_APP_KEY = import.meta.env?.VITE_TMAP_APP_KEY?.trim() ?? ''
 

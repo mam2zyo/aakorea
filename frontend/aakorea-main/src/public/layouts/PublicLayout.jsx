@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { applyPublicThemePreview } from '../app/publicTheme'
 import { PublicFooter } from '../components/PublicFooter'
 
@@ -19,9 +20,32 @@ function NavLink({ active, children, href, onNavigate }) {
 export function PublicLayout({ children, currentPath, onNavigate, theme }) {
   const previewAwarePath = (path) => applyPublicThemePreview(path, theme)
 
+  // ── 스마트 헤더 로직: 스크롤 방향 감기 ─────────────────────
+  const [headerVisible, setHeaderVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY < 50) {
+        setHeaderVisible(true)
+      } else if (currentScrollY > lastScrollY) {
+        // Downscroll
+        setHeaderVisible(false)
+      } else {
+        // Upscroll
+        setHeaderVisible(true)
+      }
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY])
+
   return (
-    <div className="app-shell">
-      <header className="shell-bar">
+    <div className={`app-shell${headerVisible ? ' is-header-visible' : ''}`}>
+      <header className={`shell-bar${headerVisible ? '' : ' shell-bar--hidden'}`}>
         <div className="shell-main-row">
           <button
             className="brand-lockup"

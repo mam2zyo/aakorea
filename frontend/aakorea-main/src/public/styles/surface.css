@@ -7,9 +7,15 @@
 .public-theme .shell-bar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
   background: var(--public-shell-background);
   border-bottom: 1px solid var(--public-shell-border);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), background 200ms ease;
+  will-change: transform;
+}
+
+.public-theme .shell-bar--hidden {
+  transform: translateY(-100%);
 }
 
 .public-theme .shell-main-row {

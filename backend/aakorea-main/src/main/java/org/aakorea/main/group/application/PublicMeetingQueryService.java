@@ -24,8 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class PublicMeetingQueryService {
 
     private static final int MAX_NEARBY_MEETING_COUNT = 500;
-    private static final int DEFAULT_NEARBY_RADIUS_KM = 100;
-    private static final int MAX_NEARBY_RADIUS_KM = 100;
+    private static final int DEFAULT_NEARBY_RADIUS_KM = 80;
+    private static final int MAX_NEARBY_RADIUS_KM = 80;
 
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
