@@ -563,7 +563,7 @@
   inset: 0;
   z-index: 2000; /* 고정바(90)보다 훨씬 높게 설정 */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: var(--space-5);
   background: var(--public-overlay-background);
@@ -574,8 +574,8 @@
   display: flex;
   flex-direction: column;
   width: min(100%, 680px);
-  max-height: calc(100vh - 2.5rem); /* 기본 폴백 */
-  max-height: calc(100dvh - 2.5rem); /* 모바일 동적 뷰포트 대응 */
+  margin: auto; /* 상위 컨테이너 중앙 정렬, flex-start + margin auto는 상단 잘림 방지 효과 */
+  max-height: 100%; /* 부모(overlay)의 inset:0 영역 안에서 패딩을 제외한 100% 높이 차지 */
   overflow: hidden;
   border: 1px solid var(--public-dialog-border);
   border-radius: 28px;
