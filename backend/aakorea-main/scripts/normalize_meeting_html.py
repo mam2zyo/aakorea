@@ -51,7 +51,15 @@ DAY_LABELS = {
     "SATURDAY": "토요일",
     "SUNDAY": "일요일",
 }
-TYPE_BY_SYMBOL = {"○": "OPEN", "●": "CLOSED", "◐": "NOTFIXED"}
+TYPE_BY_SYMBOL = {
+    "○": "OPEN",
+    "공개": "OPEN",
+    "●": "CLOSED",
+    "비공개": "CLOSED",
+    "◐": "NOTFIXED",
+    "가변": "NOTFIXED",
+    "불확정": "NOTFIXED",
+}
 
 INCHEON_ALLIANCE_LOCALITIES = {
     "인천",
@@ -296,18 +304,20 @@ def split_without_comma(location_without_notes):
     return address, detail, True
 
 
-def parse_location(raw_location):
-    normalized_raw_location = normalize_spaces(raw_location)
+def parse_location(address_or_raw, detail_or_none=None, notice_or_none=None):
+    normalized_raw_location = normalize_spaces(
+        address_or_raw + (" " + detail_or_none if detail_or_none else "")
+    )
     general_notices = []
     special_notices = []
 
+    if notice_or_none and notice_or_none.strip():
+        general_notices.append(normalize_spaces(notice_or_none))
+
     for match in NOTE_PATTERN.finditer(normalized_raw_location):
-        note = normalize_spaces(match.group(1) or match.group(2) or "")
+        note = normalize_spaces(match.group(1) or match.group(2))
         if not note:
             continue
-        target = special_notices if SPECIAL_NOTICE_PATTERN.search(note) else general_notices
-        if note not in target:
-            target.append(note)
 
     location_without_notes = normalize_spaces(NOTE_PATTERN.sub("", normalized_raw_location))
     used_heuristic_split = False
@@ -433,6 +443,36 @@ def extract_row_fragments(html_fragment):
 
 
 def build_row(area_name, cells, current_day, active):
+    if len(cells) >= 9:
+        group_name = cells[2]
+        detail = cells[3]
+        address = cells[4]
+        representative = cells[5]
+        district_name_from_html = cells[6].strip()
+        notice = cells[7]
+        meeting_type_label = cells[8].strip()
+
+        if not group_name or not representative or not address:
+            return None
+
+        phone_match = PHONE_PATTERN.search(representative)
+        phone = phone_match.group(0) if phone_match else representative.strip()
+
+        location = parse_location(address, detail, notice)
+        return {
+            "sourceAreaName": area_name,
+            "groupName": group_name.strip(),
+            "normalizedGroupName": normalize(group_name),
+            "phone": phone,
+            "dayOfWeek": DAY_OF_WEEK_BY_KOREAN[current_day],
+            "startTime": cells[1].strip(),
+            "meetingType": TYPE_BY_SYMBOL.get(meeting_type_label, "OPEN"),
+            "rawLocation": (address + " " + detail).strip(),
+            "location": location,
+            "districtName": district_name_from_html if district_name_from_html else infer_district_name(location["province"], location["address"]),
+            "active": active,
+        }
+
     group_name = cells[2]
     raw_location = cells[3]
     representative = cells[-2]
@@ -453,7 +493,7 @@ def build_row(area_name, cells, current_day, active):
         "phone": phone_match.group(0),
         "dayOfWeek": DAY_OF_WEEK_BY_KOREAN[current_day],
         "startTime": cells[1].strip(),
-        "meetingType": TYPE_BY_SYMBOL[meeting_type_symbol],
+        "meetingType": TYPE_BY_SYMBOL.get(meeting_type_symbol, "OPEN"),
         "rawLocation": raw_location.strip(),
         "location": location,
         "districtName": infer_district_name(location["province"], location["address"]),

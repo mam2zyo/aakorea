@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.aakorea.main.common.audit.ChangeLogService;
 
 @ExtendWith(MockitoExtension.class)
 class ContentAdminServiceTest {
@@ -44,6 +45,9 @@ class ContentAdminServiceTest {
 
     @Mock
     private FileSystemContentService fileSystemContentService;
+
+    @Mock
+    private ChangeLogService changeLogService;
 
     @InjectMocks
     private ContentAdminService contentAdminService;

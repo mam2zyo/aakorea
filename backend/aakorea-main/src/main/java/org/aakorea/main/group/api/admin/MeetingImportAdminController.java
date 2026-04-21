@@ -19,27 +19,11 @@ public class MeetingImportAdminController {
     private final MeetingImportAdminService meetingImportAdminService;
 
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
-    @PostMapping("/normalize")
-    public ApiResponse<MeetingImportAdminService.NormalizedMeetingImport> normalizeImport(
+    @PostMapping("/apply-html")
+    public ApiResponse<MeetingImportAdminService.ImportApplyResult> applyHtmlImport(
             @Valid @RequestBody MeetingImportHtmlRequest request
     ) {
-        return ApiResponse.success(meetingImportAdminService.normalizeHtml(request.html()));
-    }
-
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
-    @PostMapping("/preview")
-    public ApiResponse<MeetingImportAdminService.ImportPreview> previewImport(
-            @RequestBody MeetingImportAdminService.NormalizedMeetingImport request
-    ) {
-        return ApiResponse.success(meetingImportAdminService.previewImport(request));
-    }
-
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
-    @PostMapping("/apply")
-    public ApiResponse<MeetingImportAdminService.ImportApplyResult> applyImport(
-            @RequestBody MeetingImportAdminService.NormalizedMeetingImport request
-    ) {
-        return ApiResponse.success(meetingImportAdminService.applyImport(request));
+        return ApiResponse.success(meetingImportAdminService.applyHtml(request.html()));
     }
 
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")

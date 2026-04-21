@@ -1,20 +1,8 @@
 import { request } from '@/shared/lib/request'
 
 export const adminMeetingImportApi = {
-  normalizeImport(payload) {
-    return request('/api/admin/meeting-imports/normalize', {
-      method: 'POST',
-      body: payload,
-    })
-  },
-  previewImport(payload) {
-    return request('/api/admin/meeting-imports/preview', {
-      method: 'POST',
-      body: payload,
-    })
-  },
-  applyImport(payload) {
-    return request('/api/admin/meeting-imports/apply', {
+  applyImportHtml(payload) {
+    return request('/api/admin/meeting-imports/apply-html', {
       method: 'POST',
       body: payload,
     })
