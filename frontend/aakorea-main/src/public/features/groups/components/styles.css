@@ -574,7 +574,8 @@
   display: flex;
   flex-direction: column;
   width: min(100%, 680px);
-  max-height: calc(100vh - 2.5rem);
+  max-height: calc(100vh - 2.5rem); /* 기본 폴백 */
+  max-height: calc(100dvh - 2.5rem); /* 모바일 동적 뷰포트 대응 */
   overflow: hidden;
   border: 1px solid var(--public-dialog-border);
   border-radius: 28px;
