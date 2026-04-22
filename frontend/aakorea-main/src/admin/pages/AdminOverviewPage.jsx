@@ -1,6 +1,5 @@
 import { AdminPageHeader } from '@/admin/ui'
 import { MeetingCoordinateBackfillPanel } from '../features/groups/components/components/MeetingCoordinateBackfillPanel'
-import { MeetingImportPanel } from '../features/groups/components/components/MeetingImportPanel'
 
 export function AdminOverviewPage({ onError, onSuccess }) {
   return (
@@ -11,11 +10,6 @@ export function AdminOverviewPage({ onError, onSuccess }) {
       />
 
       <MeetingCoordinateBackfillPanel
-        onError={onError}
-        onSuccess={onSuccess}
-      />
-
-      <MeetingImportPanel
         onError={onError}
         onSuccess={onSuccess}
       />
