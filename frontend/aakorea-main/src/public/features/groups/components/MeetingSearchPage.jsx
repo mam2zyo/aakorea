@@ -88,28 +88,41 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
     return () => clearTimeout(timer)
   }, [localKeyword])
 
-  // 검색 초기화 시 상세 필터도 초기화
+  // 검색 초기화 시 상세 필터도 초기화 및 스크롤 상단 이동
   useEffect(() => {
     if (searchState === SEARCH_STATE.IDLE) {
       setLocalKeyword('')
       setShowAdvancedFilters(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [searchState])
 
-  // 다이얼로그 키보드 이벤트
+  // 모달(상세 정보 또는 상세 검색) 열림 시 배경 스크롤 차단 및 키보드 이벤트
   useEffect(() => {
-    if (!isDialogOpen) return undefined
+    const isAnyModalOpen = isDialogOpen || isFilterModalOpen
+    if (!isAnyModalOpen) return undefined
+
     const previousOverflow = document.body.style.overflow
+    const previousTouchAction = document.body.style.touchAction
+    
+    // 배경 스크롤 차단 및 터치 간섭 방지
     document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none' 
+
     function handleKeyDown(event) {
-      if (event.key === 'Escape') onNavigate(closePath)
+      if (event.key === 'Escape') {
+        if (isDialogOpen) onNavigate(closePath)
+        if (isFilterModalOpen) setIsFilterModalOpen(false)
+      }
     }
+    
     window.addEventListener('keydown', handleKeyDown)
     return () => {
       document.body.style.overflow = previousOverflow
+      document.body.style.touchAction = previousTouchAction
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [closePath, isDialogOpen, onNavigate])
+  }, [closePath, isDialogOpen, isFilterModalOpen, onNavigate])
 
   const provinceLabel = SEARCH_PROVINCE_OPTIONS.find(o => o.value === province)?.label || '전국'
 
@@ -126,10 +139,10 @@ export function MeetingSearchPage({ groupId, meetingId, onError, onNavigate }) {
         <div ref={sentinelRef} className="meeting-search-sentinel" />
         
         {/* Placeholder: Sticky 상태일 때 레이아웃이 무너지는 것을 방지 */}
-        {isSticky && <div className="meeting-search-placeholder panel" />}
+        {isSticky && hasResults && <div className="meeting-search-placeholder panel" />}
         
-        <div className={`meeting-search-form ${isSticky ? 'meeting-search-form--sticky' : 'panel'}`}>
-          {isSticky ? (
+        <div className={`meeting-search-form ${isSticky && hasResults ? 'meeting-search-form--sticky' : 'panel'}`}>
+          {isSticky && hasResults ? (
             /* ── 스티키 모드: 요약 정보 + 액션 ── */
             <div className="meeting-search-sticky-layout">
               <div className="meeting-search-status">

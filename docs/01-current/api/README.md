@@ -46,8 +46,6 @@
 - `ADMIN_MEETINGS.md`
   운영 `Meeting` API 계약
 
-- `ADMIN_MEETING_IMPORTS.md`
-  운영 테스트 도구용 HTML normalize + 정제 JSON import API 계약
 
 - `ADMIN_CONTENT.md`
   운영 `ContentPage`, `Notice` API 계약
@@ -73,9 +71,8 @@
 7. `ADMIN_GENERAL_SERVICES.md`
 8. `ADMIN_GROUPS.md`
 9. `ADMIN_MEETINGS.md`
-10. `ADMIN_MEETING_IMPORTS.md`
-11. `ADMIN_CONTENT.md`
-12. `ADMIN_AUDIT_LOG.md`
+10. `ADMIN_CONTENT.md`
+11. `ADMIN_AUDIT_LOG.md`
 
 이 순서는 다음 흐름을 따른다.
 
@@ -124,10 +121,6 @@
 - `PUT /api/admin/meetings/{id}`
 - `DELETE /api/admin/meetings/{id}`
 - `POST /api/admin/meetings/backfill-coordinates`
-- `POST /api/admin/meeting-imports/normalize`
-- `POST /api/admin/meeting-imports/preview`
-- `POST /api/admin/meeting-imports/apply`
-- `POST /api/admin/meeting-imports/reset`
 - `GET /api/admin/public-theme`
 - `PUT /api/admin/public-theme/draft`
 - `POST /api/admin/public-theme/publish`
@@ -164,7 +157,6 @@ API 문서를 사용할 때는 아래 방식으로 본다.
 - 운영 `District` API를 확인할 때: `ADMIN_GENERAL_SERVICES.md`
 - 운영 `Group`, `GroupContact` API를 확인할 때: `ADMIN_GROUPS.md`
 - 운영 모임 API를 확인할 때: `ADMIN_MEETINGS.md`
-- 운영 테스트 도구용 import API를 확인할 때: `ADMIN_MEETING_IMPORTS.md`
 - 운영 콘텐츠 API를 확인할 때: `ADMIN_CONTENT.md`
 - 운영 첨부파일 및 미디어 API를 확인할 때: `ADMIN_ATTACHMENT.md`
 - 운영 활동 로그(변경 이력) API를 확인할 때: `ADMIN_AUDIT_LOG.md`

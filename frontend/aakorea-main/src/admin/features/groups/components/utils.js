@@ -103,3 +103,21 @@ export function hasCreateBasicsErrors(fieldErrors) {
     'postalDetailAddress',
   ].includes(field))
 }
+
+export function validateCreateBasics(form) {
+  const errors = {}
+
+  if (!form.name?.trim()) {
+    errors.name = '그룹 이름을 입력해 주세요.'
+  }
+
+  if (!form.districtId) {
+    errors.districtId = '지역연합을 선택해 주세요.'
+  }
+
+  if (!form.phone?.trim()) {
+    errors.phone = '대표 연락처를 입력해 주세요.'
+  }
+
+  return errors
+}

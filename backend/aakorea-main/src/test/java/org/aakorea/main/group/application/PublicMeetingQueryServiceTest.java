@@ -40,6 +40,9 @@ class PublicMeetingQueryServiceTest {
     @Mock
     private GroupRepository groupRepository;
 
+    @Mock
+    private DistanceCalculator distanceCalculator;
+
     @InjectMocks
     private PublicMeetingQueryService publicMeetingQueryService;
 
@@ -157,17 +160,20 @@ class PublicMeetingQueryServiceTest {
         ReflectionTestUtils.setField(fartherMeeting, "id", 101L);
 
         given(meetingRepository.findAll(
-                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any(),
-                any(org.springframework.data.domain.Sort.class)))
+                org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<Meeting>>any()))
                 .willReturn(List.of(fartherMeeting, nearestMeeting));
+
+        given(distanceCalculator.calculateDistanceKm(any(Double.class), any(Double.class), org.mockito.ArgumentMatchers.eq(37.4563), org.mockito.ArgumentMatchers.eq(126.7052))).willReturn(20.0);
+        given(distanceCalculator.calculateDistanceKm(any(Double.class), any(Double.class), org.mockito.ArgumentMatchers.eq(37.4979), org.mockito.ArgumentMatchers.eq(127.0276))).willReturn(0.1);
 
         List<PublicMeetingQueryService.PublicMeetingSummary> result =
                 publicMeetingQueryService.getMeetings(null, "MONDAY", null, null, null, 37.4980, 127.0280, 10);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().id()).isEqualTo(100L);
-        assertThat(result.getFirst().distanceKm()).isNotNull();
-        assertThat(result.getFirst().distanceKm()).isLessThan(1.0);
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).id()).isEqualTo(100L); // nearest
+        assertThat(result.get(1).id()).isEqualTo(101L); // farther
+        assertThat(result.get(0).distanceKm()).isNotNull();
+        assertThat(result.get(0).distanceKm()).isLessThan(1.0);
     }
 
 

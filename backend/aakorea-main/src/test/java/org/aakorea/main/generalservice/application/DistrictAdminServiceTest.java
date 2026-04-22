@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import org.aakorea.main.common.audit.ChangeLogService;
 
 @ExtendWith(MockitoExtension.class)
 class DistrictAdminServiceTest {
@@ -27,6 +28,9 @@ class DistrictAdminServiceTest {
 
     @Mock
     private GroupRepository groupRepository;
+
+    @Mock
+    private ChangeLogService changeLogService;
 
     @InjectMocks
     private DistrictAdminService districtAdminService;

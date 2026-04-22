@@ -64,9 +64,12 @@ export function groupManagementReducer(state, action) {
         editor: { open: true, source: 'manual', groupId: null },
       }
     case GROUP_MGMT_ACTION.START_EDITING:
+      const { groupId, source = 'manual' } = typeof action.payload === 'object' 
+        ? action.payload 
+        : { groupId: action.payload }
       return {
         ...state,
-        editor: { open: true, source: 'manual', groupId: action.payload },
+        editor: { open: true, source, groupId },
       }
     case GROUP_MGMT_ACTION.CLOSE_EDITOR:
       return {

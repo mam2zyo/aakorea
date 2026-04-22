@@ -2,6 +2,35 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* PC용: 제자리에서 살짝 커지며 나타나는 묵직한 효과 */
+@keyframes modalEnter {
+  from { 
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 모바일용: 바닥에서 탄탄하게 올라오는 효과 */
+@keyframes mobileSheetEnter {
+  from { 
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1;
+  }
+}
+
 /* 버튼 내 SVG 아이콘 세로 정렬 */
 .meeting-search-reset svg,
 .meeting-search-nearby svg,
@@ -505,20 +534,20 @@
 .meeting-search-item__day {
   color: var(--public-brand-primary);
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   flex-shrink: 0;
 }
 
 .meeting-search-item__time {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--color-text-main);
   flex-shrink: 0;
 }
 
 .meeting-search-item__group-name {
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--color-text-main);
   /* 긴 그룹명은 말줄임표 처리하거나 줄바꿈 허용 */
   white-space: nowrap;
@@ -531,7 +560,7 @@
 .meeting-search-item__row-primary .meeting-focus-type-badge {
   margin-left: auto;
   padding: 4px 10px; /* 리스트에서는 약간 더 컴팩트하게 */
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 
@@ -541,7 +570,7 @@
   align-items: center;
   width: 100%;
   color: var(--color-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.95rem;
 }
 
 .meeting-search-item__address {
@@ -563,23 +592,32 @@
   inset: 0;
   z-index: 2000; /* 고정바(90)보다 훨씬 높게 설정 */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: var(--space-5);
   background: var(--public-overlay-background);
   backdrop-filter: blur(16px);
+  /* 애니메이션 추가 */
+  animation: modalFadeIn 0.3s ease-out;
+  will-change: opacity;
+  /* 배경으로 스크롤이 전파되는 현상을 방지 */
+  overscroll-behavior: contain;
 }
 
 .meeting-focus-dialog {
   display: flex;
   flex-direction: column;
   width: min(100%, 680px);
-  max-height: calc(100vh - 2.5rem);
+  margin: auto; /* 상위 컨테이너 중앙 정렬, flex-start + margin auto는 상단 잘림 방지 효과 */
+  max-height: 100%; /* 부모(overlay)의 inset:0 영역 안에서 패딩을 제외한 100% 높이 차지 */
   overflow: hidden;
   border: 1px solid var(--public-dialog-border);
   border-radius: 28px;
   background: var(--public-dialog-background);
   box-shadow: var(--public-dialog-shadow);
+  /* PC 애니메이션: 묵직한 중앙 안착 */
+  animation: modalEnter 0.35s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform, opacity;
 }
 
 .meeting-focus-dialog__header {
@@ -1001,11 +1039,15 @@
 
   .meeting-focus-dialog {
     width: 100%;
-    max-height: min(90vh, 920px);
+    margin: 0; /* PC용 margin: auto 제거하여 바닥 밀착 */
+    max-height: min(92vh, 920px);
+    max-height: min(92dvh, 920px);
     border-right: 0;
     border-bottom: 0;
     border-left: 0;
     border-radius: 24px 24px 0 0;
+    /* 모바일 전용: 바텀 시스 슬라이드 애니메이션 적용 */
+    animation: mobileSheetEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .meeting-focus-dialog__header {
@@ -1022,7 +1064,7 @@
     position: relative;
     z-index: 1;
     margin-top: -0.65rem;
-    padding: 1rem 1.2rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    padding: 1rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom, 0px));
     background: var(--public-mobile-footer-background);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);

@@ -9,7 +9,6 @@ export {
   adminGroupApi,
   adminGroupContactApi,
   adminMeetingApi,
-  adminMeetingImportApi,
 } from '@/admin/features/groups/api'
 export { publicGroupApi, publicMeetingApi } from '@/public/features/groups/api'
 export { adminSiteThemeApi } from '@/admin/features/theme/api'
