@@ -37,6 +37,14 @@ export default defineConfig({
         target: process.env.VITE_PROXY_TARGET || 'http://localhost:8081',
         changeOrigin: true,
       },
+      '/swagger-ui': {
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost:8081',
+        changeOrigin: true,
+      },
+      '/v3/api-docs': {
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost:8081',
+        changeOrigin: true,
+      },
     },
   },
 })
