@@ -30,7 +30,7 @@
 - 운영자가 역할(Role)과 권한(Permission)에 따라 차등적으로 기능에 접근할 수 있다
 - 운영자가 `Notice`는 Rich Text 에디터로, `ContentPage`는 HTML 파일 업로드를 통해 편집할 수 있다
 - 운영자가 공개 사이트 theme를 draft / publish / rollback 할 수 있다
-- 운영자가 필요 시 import / 좌표 보정 도구를 사용할 수 있다
+- 운영자가 필요 시 SQL 기반 데이터 관리 / 좌표 보정 도구를 사용할 수 있다
 - 운영자가 주요 도메인 개체(Group, Meeting 등)의 변경 이력을 이름과 계정 중심으로 확인할 수 있다
 
 ---
@@ -45,6 +45,7 @@
 - admin / public surface 분리와 document theme runtime 동기화
 - 3계층(Primitives, Semantic, Component) 디자인 토큰 아키텍처 수립 및 적용
 - 번들 최적화 및 사이트 격리 (관리자 및 공개 사이트 MPA 분리)
+- PostGIS 기반 공간 쿼리 및 위치 기반 검색 최적화
 
 ### 2. 공개 흐름
 
@@ -78,6 +79,6 @@
 - 공개 사이트 theme draft / publish / rollback
 - 운영 콘솔 theme preference 로컬 저장
 - 디자인 토큰 시스템 구축 (색상 리터럴 완전 제거 및 시맨틱 변수화)
-- HTML normalize + 정제 JSON import preview / apply / reset
+- SQL 기반 대량 데이터 임포트 및 관리 체계 (PostgreSQL/SQL Script)
 - 좌표 backfill dry-run / apply
 - 주요 도메인 변경 이력 추적 기능 (Audit Log)
