@@ -1,0 +1,102 @@
+package org.aakorea.core.group.api.office;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.aakorea.core.common.response.ApiResponse;
+import org.aakorea.core.group.application.MeetingOfficeService;
+import org.aakorea.core.group.application.MeetingCommand;
+import org.aakorea.core.group.application.MeetingMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/office/meetings")
+@RequiredArgsConstructor
+public class MeetingOfficeController {
+
+    private final MeetingOfficeService meetingOfficeService;
+
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
+    @GetMapping
+    public ApiResponse<List<MeetingMapper.MeetingData>> getMeetings(
+            @RequestParam(required = false) Long groupId,
+            @RequestParam(required = false) String province,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return ApiResponse.success(meetingOfficeService.getMeetings(groupId, province, active));
+    }
+
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
+    @PostMapping
+    public ResponseEntity<ApiResponse<MeetingMapper.MeetingData>> createMeeting(
+            @Valid @RequestBody MeetingRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(meetingOfficeService.createMeeting(
+                toCommand(request))));
+    }
+
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
+    @PutMapping("/{id}")
+    public ApiResponse<MeetingMapper.MeetingData> updateMeeting(
+            @PathVariable Long id,
+            @Valid @RequestBody MeetingRequest request
+    ) {
+        return ApiResponse.success(meetingOfficeService.updateMeeting(id, toCommand(request)));
+    }
+
+    private MeetingCommand toCommand(MeetingRequest request) {
+        return MeetingCommand.from(
+                request.groupId(),
+                request.locationDetail(),
+                request.locationAddress(),
+                request.latitude(),
+                request.longitude(),
+                request.contactPhoneOverride(),
+                request.dayOfWeek(),
+                request.startTime(),
+                request.type(),
+                request.active());
+    }
+
+    @PreAuthorize("hasAuthority('PERM_group.manage')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMeeting(@PathVariable Long id) {
+        meetingOfficeService.deleteMeeting(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PostMapping("/backfill-coordinates")
+    public ApiResponse<MeetingOfficeService.CoordinateBackfillResult> backfillMissingCoordinates(
+            @RequestParam(defaultValue = "true") boolean dryRun
+    ) {
+        return ApiResponse.success(meetingOfficeService.backfillMissingCoordinates(dryRun));
+    }
+
+    public record MeetingRequest(
+            @NotNull(message = "groupId is required") Long groupId,
+            @NotBlank(message = "locationDetail is required") String locationDetail,
+            @NotBlank(message = "locationAddress is required") String locationAddress,
+            Double latitude,
+            Double longitude,
+            String contactPhoneOverride,
+            @NotBlank(message = "dayOfWeek is required") String dayOfWeek,
+            @NotBlank(message = "startTime is required") String startTime,
+            @NotBlank(message = "type is required") String type,
+            @NotNull(message = "active is required") Boolean active
+    ) {
+    }
+}

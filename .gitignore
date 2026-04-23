@@ -50,9 +50,7 @@ backend/bin/
 backend/.env
 backend/.env.*
 !backend/.env.example
-backend/aakorea-main/uploads/
-backend/aakorea-main/test_output.txt
-backend/aakorea-main/full_test_log.txt
+backend/uploads/
 uploads/
 
 # =========================

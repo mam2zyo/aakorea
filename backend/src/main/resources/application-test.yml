@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aakorea_main_test
+    username: aakorea_admin
+    password: aa1935
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  auth:
+    admin:
+      username: admin-test
+      password: password-test
