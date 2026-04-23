@@ -19,7 +19,7 @@
 *   **API 문서 현행화 (Swagger 중심)**
     *   **조건**: 백엔드 컨트롤러나 프론트엔드 API 호출 규격이 변경/삭제되었는가?
     *   **행동**: 
-        1. `docs/01-current/api/` 하위의 정적 명세 업데이트는 지양하고, **Swagger UI(`http://localhost:8080/swagger-ui/index.html`)에서 명세가 올바르게 출력되는지 확인**합니다.
+        1. `docs/01-current/api/` 하위의 정적 명세 업데이트는 지양하고, **Swagger UI(`http://localhost:5173/swagger-ui/index.html`)에서 명세가 올바르게 출력되는지 확인**합니다.
         2. 필요시 코드 내 **Swagger 어노테이션(`@Tag`, `@Operation`, `@Schema` 등)**을 추가/수정하여 문서 품질을 높입니다.
         3. 비즈니스 로직의 복합적인 흐름(Workflow) 변경 시에만 관련 가이드 문서(마크다운)를 업데이트합니다.
 *   **도메인 문서 현행화**
