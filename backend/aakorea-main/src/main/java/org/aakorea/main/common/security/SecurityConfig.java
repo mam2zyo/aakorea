@@ -63,7 +63,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").authenticated()
                         // 로그인/세션 확인 및 공개 조회 API는 누구나 접근 가능하다.
                         .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
+                        // Swagger UI 및 API Docs 엔드포인트 허용
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         // 그 밖의 정적 리소스나 추후 공개 엔드포인트는 기본 허용으로 둔다.
+
                         .anyRequest().permitAll())
                 // 인증 실패/권한 부족 시 HTML 에러 페이지 대신 JSON 응답을 내보낸다.
                 .exceptionHandling(exceptions -> exceptions

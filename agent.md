@@ -1,3 +1,4 @@
+<!-- agent.md -->
 # Antigravity Agent Protocol
 
 이 문서는 이 저장소에서 Antigravity AI 에이전트가 코딩 및 관리 작업을 수행할 때 반드시 지켜야 할 **필수 행동 강령(Protocol)**을 정의합니다. AI는 작업을 시작하기 전과 커밋을 진행하기 전에 항상 이 문서를 숙지하고 점검해야 합니다.
