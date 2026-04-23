@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin/
-
-# Block search engines from indexing the admin area
-Noindex: /admin/

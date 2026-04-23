@@ -11,6 +11,10 @@ Desktop.ini
 .idea/
 *.iml
 .vscode/
+old/
+.codex
+
+
 
 # =========================
 # Logs
