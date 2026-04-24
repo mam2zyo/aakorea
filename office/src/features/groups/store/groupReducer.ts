@@ -18,6 +18,7 @@ export const GROUP_MGMT_ACTION = {
   SET_CREATE_ERRORS: 'SET_CREATE_ERRORS',
   SET_CREATE_STEP: 'SET_CREATE_STEP',
   RESET_POSTAL_INFO: 'RESET_POSTAL_INFO',
+  SET_DISTRICT_FILTER: 'SET_DISTRICT_FILTER',
 } as const;
 
 // 타입 재수출
@@ -32,10 +33,11 @@ export interface GroupManagementState {
   districts: District[];
   groups: Group[];
   searchQuery: string;
-  sortMode: 'district' | 'name';
+  sortMode: 'name-asc' | 'name-desc';
   createForm: CreateForm;
   createErrors: Record<string, string>;
   createStep: number;
+  districtFilter: number | null;
   editor: EditorState;
 }
 
@@ -52,7 +54,8 @@ export type GroupMgmtAction =
   | { type: 'UPDATE_CREATE_FORM'; payload: Partial<CreateForm> }
   | { type: 'SET_CREATE_ERRORS'; payload: Record<string, string> }
   | { type: 'SET_CREATE_STEP'; payload: number }
-  | { type: 'RESET_POSTAL_INFO' };
+  | { type: 'RESET_POSTAL_INFO' }
+  | { type: 'SET_DISTRICT_FILTER'; payload: number | null };
 
 export type GroupMgmtDispatch = Dispatch<GroupMgmtAction>;
 
@@ -65,10 +68,11 @@ export const initialState: GroupManagementState = {
   districts: [],
   groups: [],
   searchQuery: '',
-  sortMode: 'district',
+  sortMode: 'name-asc',
   createForm: createEmptyCreateForm(),
   createErrors: {},
   createStep: 1,
+  districtFilter: null,
   editor: createClosedEditor(),
 };
 
@@ -97,7 +101,7 @@ export function groupManagementReducer(
     case GROUP_MGMT_ACTION.TOGGLE_SORT_MODE:
       return {
         ...state,
-        sortMode: state.sortMode === 'district' ? 'name' : 'district',
+        sortMode: state.sortMode === 'name-asc' ? 'name-desc' : 'name-asc',
       };
     case GROUP_MGMT_ACTION.START_CREATING:
       return {
@@ -142,6 +146,8 @@ export function groupManagementReducer(
           postalDetailAddress: '',
         },
       };
+    case GROUP_MGMT_ACTION.SET_DISTRICT_FILTER:
+      return { ...state, districtFilter: action.payload };
     default:
       return state;
   }

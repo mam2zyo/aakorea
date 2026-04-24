@@ -9,12 +9,14 @@ export function GroupListPresenter({
   groupsCount,
   searchQuery,
   sortMode,
+  districtFilter,
   loading,
   deleting,
   hasDistrictOptions,
   districts,
   editorState,
   onSearchChange,
+  onDistrictFilterChange,
   onToggleSort,
   onStartCreating,
   onStartEditing,
@@ -35,10 +37,27 @@ export function GroupListPresenter({
           <div className="office-list-toolbar__search">
             <input
               aria-label="그룹 검색"
-              placeholder="그룹 이름 또는 지역연합으로 검색"
+              placeholder="그룹 이름으로 검색"
               value={searchQuery}
               onChange={(event) => onSearchChange(event.target.value)}
             />
+          </div>
+
+          <div className="office-list-toolbar__filter">
+            <select
+              aria-label="지역연합 필터"
+              value={districtFilter ?? ''}
+              onChange={(event) => onDistrictFilterChange(event.target.value)}
+            >
+              <option value="">전체 지역연합</option>
+              {[...districts]
+                .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                .map((district) => (
+                  <option key={district.id} value={district.id}>
+                    {district.name}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <button

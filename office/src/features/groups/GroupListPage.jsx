@@ -32,6 +32,7 @@ export function GroupListPage({
     createForm,
     createErrors,
     createStep,
+    districtFilter,
     editor: editorState,
   } = state
 
@@ -47,6 +48,12 @@ export function GroupListPage({
         type: GROUP_MGMT_ACTION.LOAD_INDEX_SUCCESS,
         payload: { districts: districtData, groups: groupData },
       })
+
+      // '강원연합'을 찾아 기본 필터로 설정
+      const gangwon = districtData.find((d) => d.name === '강원연합')
+      if (gangwon) {
+        dispatch({ type: GROUP_MGMT_ACTION.SET_DISTRICT_FILTER, payload: gangwon.id })
+      }
     } catch (error) {
       onError(error, '그룹 목록을 불러오지 못했습니다.')
       dispatch({ type: GROUP_MGMT_ACTION.SET_LOADING, payload: false })
@@ -93,13 +100,16 @@ export function GroupListPage({
   const filteredGroups = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko')
     const filtered = groups.filter((group) => {
-      const districtName = districtNameFor(group.districtId, districts)
-      return [group.name, districtName].some((value) =>
-        value.toLocaleLowerCase('ko').includes(normalizedQuery),
-      )
+      // 1. 지역연합 필터
+      if (districtFilter !== null && group.districtId !== districtFilter) {
+        return false
+      }
+
+      // 2. 검색어 필터 (그룹 이름만 검색)
+      return group.name.toLocaleLowerCase('ko').includes(normalizedQuery)
     })
     return sortGroups(filtered, districts, sortMode)
-  }, [groups, districts, searchQuery, sortMode])
+  }, [groups, districts, searchQuery, districtFilter, sortMode])
 
   // ── 액션 핸들러 ──────────────────────────────────────────
   const handleSearchChange = (query) => {
@@ -108,6 +118,10 @@ export function GroupListPage({
 
   const handleToggleSort = () => {
     dispatch({ type: GROUP_MGMT_ACTION.TOGGLE_SORT_MODE })
+  }
+
+  const handleDistrictFilterChange = (id) => {
+    dispatch({ type: GROUP_MGMT_ACTION.SET_DISTRICT_FILTER, payload: id ? Number(id) : null })
   }
 
   const handleStartCreating = () => {
@@ -231,12 +245,14 @@ export function GroupListPage({
         groupsCount={groups.length}
         searchQuery={searchQuery}
         sortMode={sortMode}
+        districtFilter={districtFilter}
         loading={loading}
         deleting={deleting}
         hasDistrictOptions={districts.length > 0}
         districts={districts}
         editorState={editorState}
         onSearchChange={handleSearchChange}
+        onDistrictFilterChange={handleDistrictFilterChange}
         onToggleSort={handleToggleSort}
         onStartCreating={handleStartCreating}
         onStartEditing={handleStartEditing}

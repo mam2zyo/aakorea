@@ -20,6 +20,8 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
   const [saving, setSaving] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  // none: 이름순(기본), desc: 그룹 많은 순, asc: 그룹 적은 순
+  const [sortMode, setSortMode] = useState<'none' | 'desc' | 'asc'>('none');
   const [districtForm, setDistrictForm] = useState(EMPTY_DISTRICT_FORM);
   const [districtErrors, setDistrictErrors] = useState<Record<string, string>>({});
 
@@ -51,8 +53,24 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
 
   const filteredDistricts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return districts.filter(d => d.name.toLowerCase().includes(q));
-  }, [districts, searchQuery]);
+    const filtered = districts.filter(d => d.name.toLowerCase().includes(q));
+    
+    return [...filtered].sort((a, b) => {
+      const countA = groupCountByDistrictId[a.id] || 0;
+      const countB = groupCountByDistrictId[b.id] || 0;
+
+      if (sortMode === 'desc') {
+        return countB - countA || a.name.localeCompare(b.name, 'ko');
+      }
+      
+      if (sortMode === 'asc') {
+        return countA - countB || a.name.localeCompare(b.name, 'ko');
+      }
+
+      // 기본값 (none): 이름 순
+      return a.name.localeCompare(b.name, 'ko');
+    });
+  }, [districts, searchQuery, sortMode, groupCountByDistrictId]);
 
   const saveDistrict = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,8 +115,21 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
             placeholder="이름으로 검색" 
             value={searchQuery} 
             onChange={e => setSearchQuery(e.target.value)}
-            className="office-input"
           />
+          <button 
+            type="button" 
+            className="ghost-button ghost-button--small"
+            onClick={() => {
+              if (sortMode === 'none') setSortMode('desc');
+              else if (sortMode === 'desc') setSortMode('asc');
+              else setSortMode('none');
+            }}
+          >
+            정렬: {
+              sortMode === 'none' ? '기본' : 
+              sortMode === 'desc' ? '그룹 많은 순' : '그룹 적은 순'
+            }
+          </button>
         </div>
         <div className="office-list-toolbar__cluster office-list-toolbar__cluster--end">
           <button className="primary-button" onClick={() => {

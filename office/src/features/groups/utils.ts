@@ -7,30 +7,28 @@ import type { CreateForm, EditorState, Group, District, PostalContactForm } from
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
 export const GROUP_SORT_MODES = {
-  district: '지역연합/이름순',
-  name: '이름순',
+  'name-asc': '이름 순',
+  'name-desc': '이름 역순',
 }
 
-export function sortGroups(groups: Group[], districts: District[], sortMode: 'district' | 'name') {
+export type GroupSortMode = keyof typeof GROUP_SORT_MODES
+
+export function sortGroups(groups: Group[], districts: District[], sortMode: GroupSortMode) {
   return [...groups].sort((left, right) => {
-    if (sortMode === 'name') {
-      const nameCompare = textCollator.compare(left.name, right.name)
-      if (nameCompare !== 0) {
-        return nameCompare
-      }
+    const nameCompare = textCollator.compare(left.name, right.name)
+    const factor = sortMode === 'name-desc' ? -1 : 1
+
+    if (nameCompare !== 0) {
+      return nameCompare * factor
     }
 
+    // 이름이 같을 경우 지역연합순 (보조 정렬)
     const districtCompare = textCollator.compare(
       districtNameFor(left.districtId, districts),
       districtNameFor(right.districtId, districts),
     )
     if (districtCompare !== 0) {
       return districtCompare
-    }
-
-    const nameCompare = textCollator.compare(left.name, right.name)
-    if (nameCompare !== 0) {
-      return nameCompare
     }
 
     return left.id - right.id
