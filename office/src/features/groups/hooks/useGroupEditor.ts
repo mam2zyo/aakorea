@@ -7,11 +7,7 @@ import { toPostalContactPayload } from '../utils';
 
 // ── 폼 초기값 ──────────────────────────────────────────────
 
-const EMPTY_GROUP_FORM = {
-  districtId: '',
-  name: '',
-  notice: '',
-};
+// const EMPTY_GROUP_FORM = { ... }; // Removed as it was unused
 
 const EMPTY_CONTACT_FORM = {
   id: null as number | null,
@@ -56,12 +52,15 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
   const [meetingErrors, setMeetingErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const [prevGroup, setPrevGroup] = useState(group);
+
+  if (group !== prevGroup) {
+    setPrevGroup(group);
     setGroupForm(toGroupForm(group));
     setGroupErrors({});
     setContactErrors({});
     setMeetingErrors({});
-  }, [group]);
+  }
 
   async function loadEditorData() {
     if (!Number.isFinite(groupId)) {
@@ -246,13 +245,13 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
   }
 
   function updateContactField(field: string, value: string) {
-    const nextValue = normalizePhoneFieldValue(field, value);
+    const nextValue = (field === 'phone') ? normalizePhoneFieldValue(value) : value;
     setContactForm((previous) => ({ ...previous, [field]: nextValue }));
     setContactErrors((previous) => omitFieldErrors(previous, field));
   }
 
   function updateMeetingField(field: string, value: string) {
-    const nextValue = normalizePhoneFieldValue(field, value);
+    const nextValue = (field === 'contactPhoneOverride') ? normalizePhoneFieldValue(value) : value;
     setMeetingForm((previous) => ({ ...previous, [field]: nextValue }));
     setMeetingErrors((previous) => omitFieldErrors(previous, field));
   }

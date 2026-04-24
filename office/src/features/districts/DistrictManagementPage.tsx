@@ -23,7 +23,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
   const [districtForm, setDistrictForm] = useState(EMPTY_DISTRICT_FORM);
   const [districtErrors, setDistrictErrors] = useState<Record<string, string>>({});
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [districtData, groupData] = await Promise.all([
         districtApi.getDistricts(),
@@ -38,13 +38,12 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
       setGroupCountByDistrictId(counts);
     } catch (error) {
       onError(error, '데이터를 불러오지 못했습니다.');
-    } finally {
     }
-  };
+  }, [onError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const filteredDistricts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -81,7 +80,6 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
       loadData();
     } catch (error) {
       onError(error, '삭제에 실패했습니다.');
-    } finally {
     }
   };
 

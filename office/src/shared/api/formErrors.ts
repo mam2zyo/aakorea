@@ -6,8 +6,9 @@ export function getApiFieldErrors(error: any): Record<string, string> | null {
 }
 
 export function omitFieldErrors(errors: Record<string, string>, field: string): Record<string, string> {
-  const { [field]: _, ...rest } = errors;
-  return rest;
+  const nextErrors = { ...errors };
+  delete nextErrors[field];
+  return nextErrors;
 }
 
 export function readFieldError(errors: Record<string, string> | null, field: string): string | null {

@@ -1,23 +1,9 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { authApi } from '@/shared/api';
-import type { UserSession } from '@/shared/types/auth';
+import type { UserSession, LoginCredentials } from '@/shared/types/auth';
 import { UNAUTHENTICATED_SESSION } from '@/shared/types/auth';
 import { OfficeRole, UserStatus } from '@/shared/constants/auth';
-
-interface AuthContextType {
-  session: UserSession;
-  loading: boolean;
-  sessionChecked: boolean;
-  checkSession: () => Promise<void>;
-  login: (credentials: any) => Promise<UserSession>;
-  logout: () => Promise<void>;
-  hasPermission: (permission: string) => boolean;
-  isSystemAdmin: boolean;
-  isPendingApproval: boolean;
-  getHomePath: () => string;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<UserSession>(UNAUTHENTICATED_SESSION);
@@ -28,9 +14,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const authStatus = await authApi.me();
       setSession(authStatus);
-    } catch (error: any) {
-      // 401 Unauthorized는 비로그인 상태를 의미하므로 에러 로그를 남기지 않고 세션만 초기화
-      if (error?.status === 401 || error?.response?.status === 401) {
+    } catch (error) {
+      const err = error as { status?: number; response?: { status?: number } };
+      if (err?.status === 401 || err?.response?.status === 401) {
         setSession(UNAUTHENTICATED_SESSION);
       } else {
         console.error("Session check failed:", error);
@@ -40,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (credentials: any) => {
+  const login = async (credentials: LoginCredentials) => {
     setLoading(true);
     try {
       const authStatus = await authApi.login(credentials);
@@ -93,15 +79,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    console.error('AuthContext is undefined. Check if useAuth is called within AuthProvider.');
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
-
-/** @deprecated useAuth()를 직접 사용하세요. */
-export const useAuthContext = useAuth;

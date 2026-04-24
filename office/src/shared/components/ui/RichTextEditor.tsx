@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, Editor } from '@tiptap/react'
+import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
@@ -18,7 +18,7 @@ import {
   AlignCenter,
   AlignRight,
 } from 'lucide-react'
-import { useCallback, useEffect, ReactNode } from 'react'
+import { useCallback, useEffect, type ReactNode } from 'react'
 
 import { assetApi } from '@/shared/api';
 import './RichTextEditor.css';
@@ -69,8 +69,8 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }: Ric
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
-    input.onchange = async (event: any) => {
-      const file = event.target.files?.[0]
+    input.onchange = async (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0]
       if (!file) return
 
       try {

@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@/features/auth/AuthContext';
-import { ThemeProvider } from '@/providers/ThemeContext';
+import { AuthProvider } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/features/auth/AuthContext';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 import { MainLayout } from '@/layouts/MainLayout';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
 import { createRouteCallbacks } from '@/router/callbacks';
+import type { LoginCredentials } from '@/shared/types/auth';
 
 // 페이지 컴포넌트
 import { OfficeLoginPage } from '@/features/auth/OfficeLoginPage';
@@ -52,7 +54,7 @@ function AppRoutes() {
   }
 
   // OfficeLoginPage의 onLogin(credentials, redirectPath) 시그니처에 맞게 래핑.
-  const handleLogin = async (credentials: any, redirectPath?: string) => {
+  const handleLogin = async (credentials: LoginCredentials, redirectPath?: string) => {
     try {
       const authStatus = await login(credentials);
       navigate(redirectPath ?? getHomePath(), { replace: true });
@@ -74,7 +76,7 @@ function AppRoutes() {
 
       {/* 보호된 운영 페이지 (MainLayout 적용) */}
       <Route path="/office" element={<ProtectedRoute session={session}><MainLayout><OfficeOverviewPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/users" element={<ProtectedRoute session={session}><MainLayout><UserManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/users" element={<ProtectedRoute session={session}><MainLayout><UserManagementPage onError={onError} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/groups" element={<ProtectedRoute session={session}><MainLayout><GroupListPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/content-pages" element={<ProtectedRoute session={session}><MainLayout><ContentManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/notices" element={<ProtectedRoute session={session}><MainLayout><NoticePage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />

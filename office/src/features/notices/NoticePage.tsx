@@ -11,10 +11,9 @@ interface Notice {
 
 export function NoticePage({ onError }: { onError: (error: unknown, message: string) => void, onSuccess: (message: string) => void }) {
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadNotices = useCallback(async () => {
-    setLoading(true);
     try {
       const data = await contentApi.getNotices();
       setNotices(data);
@@ -36,7 +35,7 @@ export function NoticePage({ onError }: { onError: (error: unknown, message: str
         {loading ? (
           <div className="section-note">불러오는 중...</div>
         ) : notices.length === 0 ? (
-          <EmptyState title="등록된 공지가 없습니다." />
+          <EmptyState title="등록된 공지가 없습니다." description="게시된 공지사항이 아직 없습니다." />
         ) : (
           <div className="office-table">
             <div className="office-table__header">

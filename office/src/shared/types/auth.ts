@@ -19,3 +19,17 @@ export const UNAUTHENTICATED_SESSION: UserSession = {
   status: null,
   permissions: [],
 };
+
+export interface LoginCredentials {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  displayName: string;
+  phoneNumber?: string;
+}

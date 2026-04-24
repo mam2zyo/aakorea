@@ -1,14 +1,13 @@
-import { useEffect, useState, useMemo } from 'react';
-import { PageHeader, EmptyState, Field, DetailItem } from '@/shared/components/ui';
-import { userApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/api';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { PageHeader, EmptyState } from '@/shared/components/ui';
+import { userApi } from '@/shared/api';
 
-export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuccess: any }) {
+export function UserManagementPage({ onError }: { onError: any }) {
   const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadUsers = async () => {
-    setLoading(true);
+  const loadUsers = useCallback(async () => {
     try {
       const data = await userApi.getWorkspace();
       setUsers(data.users || []);
@@ -17,11 +16,11 @@ export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuc
     } finally {
       setLoading(false);
     }
-  };
+  }, [onError]);
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   const filteredUsers = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -46,7 +45,7 @@ export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuc
         {loading ? (
           <div className="section-note">불러오는 중...</div>
         ) : filteredUsers.length === 0 ? (
-          <EmptyState title="사용자가 없습니다." />
+          <EmptyState title="사용자가 없습니다." description="검색어에 일치하는 사용자가 없습니다." />
         ) : (
           <div className="office-table">
             <div className="office-table__header">

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EmptyState, OfficePageHeader, Field } from '@/shared/components/ui';
-import type { UserSession } from '@/shared/types/auth';
+import type { UserSession, LoginCredentials } from '@/shared/types/auth';
 
 const INITIAL_AUTH_FORM = { email: '', password: '' };
 
 interface OfficeLoginPageProps {
   authPending?: boolean;
-  onLogin: (credentials: typeof INITIAL_AUTH_FORM, redirectPath: string) => Promise<any>;
+  onLogin: (credentials: LoginCredentials, redirectPath: string) => Promise<UserSession>;
   redirectPath?: string;
   session: UserSession;
   sessionChecked: boolean;
@@ -29,8 +29,9 @@ export function OfficeLoginPage({
     setError(null);
     try {
       await onLogin(authForm, redirectPath);
-    } catch (err: any) {
-      setError(err.message || '로그인 중 오류가 발생했습니다.');
+    } catch (err) {
+      const error = err as { message?: string };
+      setError(error.message || '로그인 중 오류가 발생했습니다.');
     }
   };
 
