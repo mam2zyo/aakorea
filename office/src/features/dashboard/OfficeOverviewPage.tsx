@@ -1,7 +1,10 @@
 import { PageHeader } from '@/shared/components/ui';
 import { MeetingCoordinateBackfillPanel } from '@/features/groups/components/MeetingCoordinateBackfillPanel';
 
-export function OfficeOverviewPage({ onError, onSuccess }: { onError: any, onSuccess: any }) {
+export function OfficeOverviewPage({ onError, onSuccess }: { 
+  onError: (error: unknown, fallback?: string) => void; 
+  onSuccess: (message: string) => void;
+}) {
   return (
     <div className="office-flat-page">
       <PageHeader

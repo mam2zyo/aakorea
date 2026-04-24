@@ -2,8 +2,16 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { PageHeader, EmptyState } from '@/shared/components/ui';
 import { userApi } from '@/shared/api';
 
-export function UserManagementPage({ onError }: { onError: any }) {
-  const [users, setUsers] = useState<any[]>([]);
+interface User {
+  id: number;
+  email: string;
+  displayName: string;
+  roleLabel: string;
+  statusLabel: string;
+}
+
+export function UserManagementPage({ onError }: { onError: (error: unknown, fallback?: string) => void }) {
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -19,7 +27,10 @@ export function UserManagementPage({ onError }: { onError: any }) {
   }, [onError]);
 
   useEffect(() => {
-    loadUsers();
+    const timer = setTimeout(() => {
+      void loadUsers();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadUsers]);
 
   const filteredUsers = useMemo(() => {

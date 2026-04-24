@@ -1,6 +1,8 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeMeetingApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 
@@ -14,11 +16,11 @@ export class OfficeMeetingApi {
 
   // --- useGroupEditor에서 사용하는 메서드 ---
 
-  async createMeeting(payload: any) {
+  async createMeeting(payload: Record<string, unknown>) {
     return this.client.post('/api/office/meetings', payload);
   }
 
-  async updateMeeting(meetingId: number, payload: any) {
+  async updateMeeting(meetingId: number, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/meetings/${meetingId}`, payload);
   }
 

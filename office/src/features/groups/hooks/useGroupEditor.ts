@@ -4,10 +4,9 @@ import { formatKoreanPhoneNumber, normalizePhoneFieldValue } from '@/shared/util
 import { DAY_OF_WEEK_OPTIONS, MEETING_TYPE_OPTIONS } from '@/shared/constants/options';
 import { groupApi, groupContactApi, meetingApi } from '@/shared/api';
 import { toPostalContactPayload } from '../utils';
+import type { Group, GroupContact, Meeting } from '../types';
 
 // ── 폼 초기값 ──────────────────────────────────────────────
-
-// const EMPTY_GROUP_FORM = { ... }; // Removed as it was unused
 
 const EMPTY_CONTACT_FORM = {
   id: null as number | null,
@@ -30,20 +29,20 @@ const EMPTY_MEETING_FORM = {
   active: true,
 };
 
-// ── 훅 ────────────────────────────────────────────────────
+// ── 타입 ────────────────────────────────────────────────────
 
 interface UseGroupEditorParams {
-  group: any;
-  onError: (error: any, fallback?: string) => void;
-  onGroupSaved?: (group: any) => void;
+  group: Group | null;
+  onError: (error: unknown, fallback?: string) => void;
+  onGroupSaved?: (group: Group) => void;
   onSuccess: (message: string) => void;
 }
 
 export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseGroupEditorParams) {
-  const groupId = Number.isFinite(group?.id) ? group.id : null;
+  const groupId = group?.id ?? null;
 
-  const [groupContacts, setGroupContacts] = useState<any[]>([]);
-  const [meetings, setMeetings] = useState<any[]>([]);
+  const [groupContacts, setGroupContacts] = useState<GroupContact[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [groupForm, setGroupForm] = useState(toGroupForm(group));
   const [contactForm, setContactForm] = useState(EMPTY_CONTACT_FORM);
   const [meetingForm, setMeetingForm] = useState(EMPTY_MEETING_FORM);
@@ -76,8 +75,8 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
 
     try {
       const [contactData, meetingData] = await Promise.all([
-        groupContactApi.getGroupContacts(groupId),
-        meetingApi.getMeetings({ groupId }),
+        groupContactApi.getGroupContacts(groupId!) as unknown as Promise<GroupContact[]>,
+        meetingApi.getMeetings({ groupId: groupId! }) as unknown as Promise<Meeting[]>,
       ]);
 
       setGroupContacts(contactData);
@@ -96,18 +95,21 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
   });
 
   useEffect(() => {
-    loadEditorDataEffect();
+    const timer = setTimeout(() => {
+      loadEditorDataEffect();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [groupId]);
 
   async function saveGroup(): Promise<boolean> {
     if (!groupId) return false;
 
     try {
-      const updatedGroup = await groupApi.updateGroup(groupId, {
+      const updatedGroup = (await groupApi.updateGroup(groupId, {
         districtId: Number(groupForm.districtId),
         name: groupForm.name,
         notice: groupForm.notice,
-      });
+      })) as unknown as Group;
 
       onGroupSaved?.(updatedGroup);
       setGroupForm(toGroupForm(updatedGroup));
@@ -130,7 +132,7 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
     if (!groupId) return false;
 
     try {
-      const savedContact = contactForm.id
+      const savedContact = (contactForm.id
         ? await groupContactApi.updateGroupContact(contactForm.id, {
           phone: contactForm.phone,
           email: contactForm.email,
@@ -141,7 +143,7 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
           phone: contactForm.phone,
           email: contactForm.email,
           postalContact: toPostalContactPayload(contactForm),
-        });
+        })) as unknown as GroupContact;
 
       setContactErrors({});
       setContactForm(toContactForm(savedContact));
@@ -177,9 +179,9 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
         active: meetingForm.active,
       };
 
-      const savedMeeting = meetingForm.id
+      const savedMeeting = (meetingForm.id
         ? await meetingApi.updateMeeting(meetingForm.id, payload)
-        : await meetingApi.createMeeting(payload);
+        : await meetingApi.createMeeting(payload)) as unknown as Meeting;
 
       setMeetingErrors({});
       setMeetingForm(toMeetingForm(savedMeeting));
@@ -223,18 +225,18 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
     setContactErrors({});
   }
 
-  function startEditContact(contact: any) {
+  function startEditContact(contact: GroupContact) {
     setContactForm(toContactForm(contact));
     setContactErrors({});
   }
 
   function startNewMeeting() {
-    const sourceMeeting = hasMeetingLocation(meetingForm) ? meetingForm : meetings[0] ?? {};
+    const sourceMeeting = hasMeetingLocation(meetingForm as Record<string, unknown>) ? meetingForm : (meetings[0] as unknown as Partial<typeof EMPTY_MEETING_FORM>) ?? {};
     setMeetingForm(createMeetingFormDefaults(sourceMeeting));
     setMeetingErrors({});
   }
 
-  function startEditMeeting(meeting: any) {
+  function startEditMeeting(meeting: Meeting) {
     setMeetingForm(toMeetingForm(meeting));
     setMeetingErrors({});
   }
@@ -293,7 +295,7 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
 
 // ── 내부 헬퍼 함수 ────────────────────────────────────────
 
-function toGroupForm(group: any) {
+function toGroupForm(group: Group | null) {
   return {
     districtId: group ? String(group.districtId) : '',
     name: group?.name ?? '',
@@ -301,7 +303,7 @@ function toGroupForm(group: any) {
   };
 }
 
-function toContactForm(contact: any) {
+function toContactForm(contact: GroupContact) {
   return {
     id: contact.id,
     phone: formatKoreanPhoneNumber(contact.phone),
@@ -313,7 +315,7 @@ function toContactForm(contact: any) {
   };
 }
 
-function toMeetingForm(meeting: any) {
+function toMeetingForm(meeting: Meeting) {
   return {
     id: meeting.id,
     locationDetail: meeting.locationDetail ?? '',
@@ -334,11 +336,11 @@ function createMeetingFormDefaults(source: Partial<typeof EMPTY_MEETING_FORM> = 
   };
 }
 
-function hasMeetingLocation(meeting: any): boolean {
+function hasMeetingLocation(meeting: Record<string, unknown>): boolean {
   return Boolean(meeting.locationDetail || meeting.locationAddress);
 }
 
-function mergeById(items: any[], savedItem: any): any[] {
+function mergeById<T extends { id: number }>(items: T[], savedItem: T): T[] {
   const existingIndex = items.findIndex((item) => item.id === savedItem.id);
   if (existingIndex === -1) return [...items, savedItem];
   const nextItems = [...items];

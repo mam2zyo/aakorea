@@ -1,6 +1,8 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeGroupApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 
@@ -12,11 +14,11 @@ export class OfficeGroupApi {
     return this.client.get(`/api/office/groups/${id}`);
   }
 
-  async createGroupBulk(payload: any) {
+  async createGroupBulk(payload: Record<string, unknown>[]) {
     return this.client.post('/api/office/groups/bulk', payload);
   }
 
-  async updateGroup(id: number, payload: any) {
+  async updateGroup(id: number, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/groups/${id}`, payload);
   }
 

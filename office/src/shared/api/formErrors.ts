@@ -1,6 +1,7 @@
-export function getApiFieldErrors(error: any): Record<string, string> | null {
-  if (error?.response?.data?.errors) {
-    return error.response.data.errors;
+export function getApiFieldErrors(error: unknown): Record<string, string> | null {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const axiosError = error as { response?: { data?: { errors?: Record<string, string> } } };
+    return axiosError.response?.data?.errors ?? null;
   }
   return null;
 }

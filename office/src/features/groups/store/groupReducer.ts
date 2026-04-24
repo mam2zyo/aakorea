@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import type { EditorState, CreateForm } from '../types';
+import type { EditorState, CreateForm, Group, District } from '../types';
 import { createClosedEditor, createEmptyCreateForm } from '../utils';
 
 // ── 액션 타입 ──────────────────────────────────────────────
@@ -29,8 +29,8 @@ export interface GroupManagementState {
   loading: boolean;
   saving: boolean;
   deleting: boolean;
-  districts: any[];
-  groups: any[];
+  districts: District[];
+  groups: Group[];
   searchQuery: string;
   sortMode: 'district' | 'name';
   createForm: CreateForm;
@@ -43,7 +43,7 @@ export type GroupMgmtAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_SAVING'; payload: boolean }
   | { type: 'SET_DELETING'; payload: boolean }
-  | { type: 'LOAD_INDEX_SUCCESS'; payload: { districts: any[]; groups: any[] } }
+  | { type: 'LOAD_INDEX_SUCCESS'; payload: { districts: District[]; groups: Group[] } }
   | { type: 'UPDATE_SEARCH_QUERY'; payload: string }
   | { type: 'TOGGLE_SORT_MODE' }
   | { type: 'START_CREATING' }

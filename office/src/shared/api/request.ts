@@ -8,7 +8,7 @@ export interface ApiErrorDetail {
   fields: Record<string, string> | null;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   error?: ApiErrorDetail;
 }
@@ -61,14 +61,14 @@ export default client;
 /**
  * 기존 request 함수와의 호환성을 위한 래퍼
  */
-export async function request<T = any>(path: string, options: any = {}): Promise<T> {
+export async function request<T = unknown>(path: string, options: Record<string, unknown> = {}): Promise<T> {
   const { method = 'GET', body, headers } = options;
   
-  const response = await client.request<any, T>({
+  const response = await client.request<unknown, T>({
     url: path,
-    method,
+    method: method as string,
     data: body,
-    headers,
+    headers: headers as Record<string, string>,
   });
 
   return response;

@@ -2,6 +2,7 @@ import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
 } from '@/shared/constants/options'
+import type { CreateForm, EditorState, Group, District, PostalContactForm } from './types'
 
 const textCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' })
 
@@ -10,7 +11,7 @@ export const GROUP_SORT_MODES = {
   name: '이름순',
 }
 
-export function sortGroups(groups, districts, sortMode) {
+export function sortGroups(groups: Group[], districts: District[], sortMode: 'district' | 'name') {
   return [...groups].sort((left, right) => {
     if (sortMode === 'name') {
       const nameCompare = textCollator.compare(left.name, right.name)
@@ -36,11 +37,11 @@ export function sortGroups(groups, districts, sortMode) {
   })
 }
 
-export function districtNameFor(districtId, districts) {
+export function districtNameFor(districtId: number, districts: District[]) {
   return districts.find((district) => district.id === districtId)?.name ?? `지역연합 #${districtId}`
 }
 
-export function createEmptyCreateForm() {
+export function createEmptyCreateForm(): CreateForm {
   return {
     phone: '',
     email: '',
@@ -65,7 +66,7 @@ export function createEmptyCreateMeeting() {
   }
 }
 
-export function createClosedEditor() {
+export function createClosedEditor(): EditorState {
   return {
     open: false,
     source: 'local',
@@ -73,7 +74,7 @@ export function createClosedEditor() {
   }
 }
 
-export function toPostalContactPayload(form) {
+export function toPostalContactPayload(form: PostalContactForm) {
   if (
     !form.postalRecipient &&
     !form.postalCode &&
@@ -91,7 +92,7 @@ export function toPostalContactPayload(form) {
   }
 }
 
-export function hasCreateBasicsErrors(fieldErrors) {
+export function hasCreateBasicsErrors(fieldErrors: Record<string, string>) {
   return Object.keys(fieldErrors).some((field) => [
     'districtId',
     'name',
@@ -104,8 +105,8 @@ export function hasCreateBasicsErrors(fieldErrors) {
   ].includes(field))
 }
 
-export function validateCreateBasics(form) {
-  const errors = {}
+export function validateCreateBasics(form: CreateForm) {
+  const errors: Record<string, string> = {}
 
   if (!form.name?.trim()) {
     errors.name = '그룹 이름을 입력해 주세요.'

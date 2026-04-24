@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Postcode as KakaoPostcode } from '@clroot/react-kakao-postcode'
+import { Postcode as KakaoPostcode, type Address } from '@clroot/react-kakao-postcode'
 import { Field } from '@/shared/components/ui'
 import { useOfficeThemeContext } from '@/providers/ThemeContext'
 import { normalizeAddressSelection, type NormalizedAddress } from '@/shared/utils/address'
@@ -39,8 +39,8 @@ export function AddressSearchField({
   const { resolvedTheme } = useOfficeThemeContext()
   const supportsPostalCode = typeof postalCodeValue === 'string' && onPostalCodeChange
 
-  function handleComplete(data: any) {
-    onAddressSelected?.(normalizeAddressSelection(data))
+  function handleComplete(data: Address) {
+    onAddressSelected?.(normalizeAddressSelection(data as unknown as Record<string, unknown>))
     setSearchOpen(false)
   }
 

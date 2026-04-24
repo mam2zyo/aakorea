@@ -15,21 +15,22 @@ interface AuditLogDetailModalProps {
 export function AuditLogDetailModal({ log, onClose }: AuditLogDetailModalProps) {
   if (!log) return null;
 
-  let changedFields: Record<string, any> = {};
+  let changedFields: Record<string, unknown> = {};
   try {
-    changedFields = JSON.parse(log.diff) || {};
+    changedFields = JSON.parse(log.diff) as Record<string, unknown> || {};
   } catch (e) {
     console.error('Failed to parse diff', e);
   }
 
-  const formatValue = (value: any): string => {
+  const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) return '-';
     if (typeof value === 'boolean') return value ? '예' : '아니오';
     
     if (typeof value === 'object') {
+      const obj = value as Record<string, unknown>;
       // 위치(Location) 객체 등에 대한 휴머나이즈 처리
-      if (value.address || value.detail) {
-        return `${value.province || ''} ${value.address || ''} ${value.detail || ''}`.trim() || '-';
+      if (obj.address || obj.detail) {
+        return `${String(obj.province || '')} ${String(obj.address || '')} ${String(obj.detail || '')}`.trim() || '-';
       }
       return JSON.stringify(value);
     }

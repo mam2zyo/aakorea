@@ -1,6 +1,8 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeDistrictApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 
@@ -8,11 +10,11 @@ export class OfficeDistrictApi {
     return this.client.get('/api/office/districts');
   }
 
-  async createDistrict(payload: any) {
+  async createDistrict(payload: Record<string, unknown>) {
     return this.client.post('/api/office/districts', payload);
   }
 
-  async updateDistrict(id: number, payload: any) {
+  async updateDistrict(id: number, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/districts/${id}`, payload);
   }
 

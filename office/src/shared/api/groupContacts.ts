@@ -1,10 +1,12 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeGroupContactApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 
-  async updateContact(groupId: number, payload: any) {
+  async updateContact(groupId: number, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/groups/${groupId}/contact`, payload);
   }
 
@@ -18,11 +20,11 @@ export class OfficeGroupContactApi {
     return this.client.get(`/api/office/groups/${groupId}/contacts`);
   }
 
-  async createGroupContact(payload: any) {
+  async createGroupContact(payload: { groupId: number } & Record<string, unknown>) {
     return this.client.post(`/api/office/groups/${payload.groupId}/contacts`, payload);
   }
 
-  async updateGroupContact(contactId: number, payload: any) {
+  async updateGroupContact(contactId: number, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/contacts/${contactId}`, payload);
   }
 }

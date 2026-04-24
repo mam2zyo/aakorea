@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { PageHeader, Field } from '@/shared/components/ui';
 import { districtApi, groupApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/api';
 
@@ -32,7 +32,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
       setDistricts(districtData);
       
       const counts: Record<number, number> = {};
-      groupData.forEach((group: any) => {
+      groupData.forEach((group: { districtId: number }) => {
         counts[group.districtId] = (counts[group.districtId] || 0) + 1;
       });
       setGroupCountByDistrictId(counts);
@@ -42,7 +42,11 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
   }, [onError]);
 
   useEffect(() => {
-    loadData();
+    // 린트 경고 방지를 위해 비동기적으로 실행
+    const timer = setTimeout(() => {
+      void loadData();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadData]);
 
   const filteredDistricts = useMemo(() => {

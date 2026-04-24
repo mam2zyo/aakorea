@@ -1,6 +1,8 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeContentApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 
@@ -12,15 +14,15 @@ export class OfficeContentApi {
     return this.client.get('/api/office/content-pages');
   }
 
-  async updateContentPage(id: string, payload: any) {
+  async updateContentPage(id: string, payload: Record<string, unknown>) {
     return this.client.put(`/api/office/content-pages/${id}`, payload);
   }
 
-  async uploadContentPage(payload: any) {
+  async uploadContentPage(payload: Record<string, unknown>) {
     const formData = new FormData();
     Object.entries(payload).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        formData.append(key, value as any);
+        formData.append(key, value as string | Blob);
       }
     });
     return this.client.post('/api/office/content-pages', formData, {

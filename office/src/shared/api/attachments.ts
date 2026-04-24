@@ -1,6 +1,8 @@
+import type { AxiosInstance } from 'axios';
+
 export class OfficeAttachmentApi {
-  client: any;
-  constructor(client: any) {
+  client: AxiosInstance;
+  constructor(client: AxiosInstance) {
     this.client = client;
   }
 

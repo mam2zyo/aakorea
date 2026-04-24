@@ -25,7 +25,10 @@ export function NoticePage({ onError }: { onError: (error: unknown, message: str
   }, [onError]);
 
   useEffect(() => {
-    loadNotices();
+    const timer = setTimeout(() => {
+      void loadNotices();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadNotices]);
 
   return (

@@ -23,7 +23,7 @@ interface BackfillResult {
 }
 
 interface MeetingCoordinateBackfillPanelProps {
-  onError: (error: any, fallback?: string) => void;
+  onError: (error: unknown, fallback?: string) => void;
   onSuccess: (message: string) => void;
 }
 
@@ -38,7 +38,7 @@ export function MeetingCoordinateBackfillPanel({ onError, onSuccess }: MeetingCo
   async function previewBackfill() {
     setPreviewingBackfill(true);
     try {
-      const result = await meetingApi.backfillCoordinates(true);
+      const result = (await meetingApi.backfillCoordinates(true)) as unknown as BackfillResult;
       setBackfillPreview(result);
       onSuccess(
         `dry-run 완료: 대상 ${result.totalCandidateCount}개, 좌표 확인 가능 ${result.resolvedCount}개, 실패 ${result.failedCount}개`
@@ -59,7 +59,7 @@ export function MeetingCoordinateBackfillPanel({ onError, onSuccess }: MeetingCo
 
     setApplyingBackfill(true);
     try {
-      const result = await meetingApi.backfillCoordinates(false);
+      const result = (await meetingApi.backfillCoordinates(false)) as unknown as BackfillResult;
       setBackfillPreview(result);
       onSuccess(
         `좌표 보정을 완료했습니다. 대상 ${result.totalCandidateCount}개 중 ${result.updatedCount}개 반영, 실패 ${result.failedCount}개`
