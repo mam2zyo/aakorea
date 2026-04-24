@@ -1,4 +1,4 @@
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
@@ -18,12 +18,19 @@ import {
   AlignCenter,
   AlignRight,
 } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, ReactNode } from 'react'
 
 import { assetApi } from '@/shared/api';
 import './RichTextEditor.css';
 
-export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
+interface RichTextEditorProps {
+  valueHtml?: string;
+  valueJson?: string;
+  onChange: (value: { html: string; json: string }) => void;
+  disabled?: boolean;
+}
+
+export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -62,13 +69,13 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
-    input.onchange = async (event) => {
+    input.onchange = async (event: any) => {
       const file = event.target.files?.[0]
       if (!file) return
 
       try {
         const data = await assetApi.uploadAsset(file)
-        if (data && data.url) {
+        if (data && data.url && editor) {
           editor.chain().focus().setImage({ src: data.url }).run()
         }
       } catch {
@@ -79,6 +86,7 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
   }, [editor])
 
   const setLink = useCallback(() => {
+    if (!editor) return;
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('링크 URL을 입력하세요', previousUrl)
 
@@ -220,7 +228,15 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {
   )
 }
 
-function ToolbarButton({ onClick, active, icon, label, disabled }) {
+interface ToolbarButtonProps {
+  onClick: () => void;
+  active?: boolean;
+  icon: ReactNode;
+  label: string;
+  disabled?: boolean;
+}
+
+function ToolbarButton({ onClick, active, icon, label, disabled }: ToolbarButtonProps) {
   return (
     <button
       type="button"

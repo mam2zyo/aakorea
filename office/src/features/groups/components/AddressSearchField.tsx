@@ -1,8 +1,24 @@
 import { useState } from 'react'
 import { Postcode as KakaoPostcode } from '@clroot/react-kakao-postcode'
-import { Field } from '@/shared/components/ui/Field'
+import { Field } from '@/shared/components/ui'
 import { useOfficeThemeContext } from '@/providers/ThemeContext'
-import { normalizeAddressSelection } from '@/shared/utils/address'
+import { normalizeAddressSelection, type NormalizedAddress } from '@/shared/utils/address'
+
+interface AddressSearchFieldProps {
+  addressError?: string | null;
+  addressLabel?: string;
+  addressPlaceholder?: string;
+  addressValue?: string;
+  onAddressChange: (value: string) => void;
+  onAddressSelected?: (address: NormalizedAddress) => void;
+  postalCodeError?: string | null;
+  postalCodeLabel?: string;
+  postalCodePlaceholder?: string;
+  postalCodeValue?: string | null;
+  onPostalCodeChange?: ((value: string) => void) | null;
+  searchButtonLabel?: string;
+  allowManualEntry?: boolean;
+}
 
 export function AddressSearchField({
   addressError,
@@ -18,12 +34,12 @@ export function AddressSearchField({
   onPostalCodeChange = null,
   searchButtonLabel = '주소 검색',
   allowManualEntry = false,
-}) {
+}: AddressSearchFieldProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const { resolvedTheme } = useOfficeThemeContext()
   const supportsPostalCode = typeof postalCodeValue === 'string' && onPostalCodeChange
 
-  function handleComplete(data) {
+  function handleComplete(data: any) {
     onAddressSelected?.(normalizeAddressSelection(data))
     setSearchOpen(false)
   }
@@ -73,8 +89,8 @@ export function AddressSearchField({
               }`}
               placeholder={postalCodePlaceholder}
               disabled={!allowManualEntry}
-              value={postalCodeValue}
-              onChange={(event) => onPostalCodeChange(event.target.value)}
+              value={postalCodeValue || ''}
+              onChange={(event) => onPostalCodeChange && onPostalCodeChange(event.target.value)}
             />
           </Field>
         </div>
@@ -82,7 +98,6 @@ export function AddressSearchField({
 
       <div className="office-group-wizard__field office-group-wizard__field--wide office-group-wizard__address-row">
         <Field
-          className="office-group-wizard__field"
           label={addressLabel}
           error={addressError}
         >
@@ -92,7 +107,7 @@ export function AddressSearchField({
             }`}
             placeholder={effectiveAddressPlaceholder}
             disabled={!allowManualEntry}
-            value={addressValue}
+            value={addressValue || ''}
             onChange={(event) => onAddressChange(event.target.value)}
           />
         </Field>

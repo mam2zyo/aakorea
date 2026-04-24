@@ -1,4 +1,4 @@
-import { AddressSearchField } from '@/shared/components/AddressSearchField'
+import { AddressSearchField } from './AddressSearchField'
 import { Field } from '@/shared/components/ui'
 import { readFieldError } from '@/shared/api'
 
@@ -11,17 +11,17 @@ export function GroupContactModal({
 }) {
   return (
     <div 
-      className="admin-overlay admin-overlay--nested"
+      className="office-overlay office-overlay--nested"
       onClick={onCancel}
     >
       <section
         aria-modal="true"
-        className="admin-overlay__dialog admin-overlay__dialog--submodal"
+        className="office-overlay__dialog office-overlay__dialog--submodal"
         role="dialog"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="admin-group-modal__header admin-group-modal__header--submodal">
-          <div className="admin-overlay__heading">
+        <header className="office-group-modal__header office-group-modal__header--submodal">
+          <div className="office-overlay__heading">
             <h2>연락처 수정</h2>
           </div>
 
@@ -34,19 +34,19 @@ export function GroupContactModal({
           </button>
         </header>
 
-        <div className="admin-group-modal__body">
+        <div className="office-group-modal__body">
           <form
-            className="admin-group-edit-sheet__rows"
+            className="office-group-edit-sheet__rows"
             onSubmit={(event) => {
               event.preventDefault()
               void onSubmit()
             }}
           >
-            <div className="admin-group-edit-sheet__rowline">
-              <label className="admin-group-edit-sheet__rowlabel" htmlFor="contact-modal-phone">
+            <div className="office-group-edit-sheet__rowline">
+              <label className="office-group-edit-sheet__rowlabel" htmlFor="contact-modal-phone">
                 전화번호
               </label>
-              <div className="admin-group-edit-sheet__rowcontrol">
+              <div className="office-group-edit-sheet__rowcontrol">
                 <input
                   id="contact-modal-phone"
                   inputMode="numeric"
@@ -61,9 +61,9 @@ export function GroupContactModal({
               </div>
             </div>
 
-            <div className="admin-group-edit-sheet__rowline">
-              <span className="admin-group-edit-sheet__rowlabel">이메일</span>
-              <div className="admin-group-edit-sheet__rowcontrol">
+            <div className="office-group-edit-sheet__rowline">
+              <span className="office-group-edit-sheet__rowlabel">이메일</span>
+              <div className="office-group-edit-sheet__rowcontrol">
                 <input
                   placeholder="example@email.com"
                   value={form.email}
@@ -72,13 +72,13 @@ export function GroupContactModal({
               </div>
             </div>
 
-            <div className="admin-group-edit-sheet__rowline">
-              <span className="admin-group-edit-sheet__rowlabel">우편수신정보 (선택)</span>
-              <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
+            <div className="office-group-edit-sheet__rowline">
+              <span className="office-group-edit-sheet__rowlabel">우편수신정보 (선택)</span>
+              <div className="office-group-edit-sheet__rowcontrol office-group-edit-sheet__rowcontrol--wide">
                 <div className="postal-contact-card">
-                  <div className="admin-group-wizard__grid postal-contact-card__grid">
+                  <div className="office-group-wizard__grid postal-contact-card__grid">
                     <Field
-                      className="admin-group-wizard__field admin-group-wizard__field--wide"
+                      className="office-group-wizard__field office-group-wizard__field--wide"
                       label="수령인"
                       error={readFieldError(errors, 'postalRecipient')}
                     >
@@ -120,7 +120,7 @@ export function GroupContactModal({
               </div>
             </div>
 
-            <div className="admin-group-wizard__actions">
+            <div className="office-group-wizard__actions">
               <button className="primary-button" type="submit">
                 저장
               </button>

@@ -1,21 +1,34 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type ChangeEvent } from 'react'
 import { attachmentApi } from '@/shared/api';
 import './AttachmentField.css';
 
-export function AttachmentField({ attachments, onChange, disabled }) {
-  const fileInputRef = useRef(null)
-  const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState(null)
+interface Attachment {
+  id: string | number;
+  originalName: string;
+  fileSize: number;
+  url?: string;
+}
 
-  const handleFileChange = async (event) => {
-    const files = Array.from(event.target.files)
+interface AttachmentFieldProps {
+  attachments: Attachment[];
+  onChange: (attachments: Attachment[]) => void;
+  disabled?: boolean;
+}
+
+export function AttachmentField({ attachments, onChange, disabled }: AttachmentFieldProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files ? Array.from(event.target.files) : []
     if (files.length === 0) return
 
     setUploading(true)
     setError(null)
 
     try {
-      const newAttachments = []
+      const newAttachments: Attachment[] = []
       for (const file of files) {
         const data = await attachmentApi.uploadAttachment(file)
         newAttachments.push(data)
@@ -34,11 +47,11 @@ export function AttachmentField({ attachments, onChange, disabled }) {
     }
   }
 
-  const removeAttachment = (id) => {
+  const removeAttachment = (id: string | number) => {
     onChange(attachments.filter((a) => a.id !== id))
   }
 
-  const formatSize = (bytes) => {
+  const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 B'
     const k = 1024
     const sizes = ['B', 'KB', 'MB', 'GB']

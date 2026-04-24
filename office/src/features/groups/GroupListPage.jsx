@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useMemo, useReducer } from 'react'
 import { districtApi, groupApi, getApiFieldErrors } from '@/shared/api'
 import { syncSelectionWithList } from '@/shared/utils';
+import { normalizePhoneFieldValue } from '@/shared/utils/phone'
 import {
   districtNameFor,
   hasCreateBasicsErrors,
@@ -129,7 +130,7 @@ export function GroupListPage({
   }
 
   const handleUpdateCreateField = (field, value) => {
-    const nextValue = normalizePhoneFieldValue(field, value)
+    const nextValue = (field === 'phone') ? normalizePhoneFieldValue(value) : value
     dispatch({ type: GROUP_MGMT_ACTION.UPDATE_CREATE_FORM, payload: { [field]: nextValue } })
   }
 
@@ -224,7 +225,7 @@ export function GroupListPage({
   const createStepLabel = createStep === 1 ? '기본 정보' : '모임 정보'
 
   return (
-    <>
+    <div className="office-theme">
       <GroupListPresenter
         filteredGroups={filteredGroups}
         groupsCount={groups.length}
@@ -265,6 +266,6 @@ export function GroupListPage({
         onError={onError}
         onSuccess={onSuccess}
       />
-    </>
+    </div>
   )
 }

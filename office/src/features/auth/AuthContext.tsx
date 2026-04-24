@@ -29,8 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authStatus = await authApi.me();
       setSession(authStatus);
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      // 401 Unauthorized는 비로그인 상태를 의미하므로 에러 로그를 남기지 않고 세션만 초기화
+      if (error?.status === 401 || error?.response?.status === 401) {
         setSession(UNAUTHENTICATED_SESSION);
+      } else {
+        console.error("Session check failed:", error);
       }
     } finally {
       setSessionChecked(true);
@@ -94,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
+    console.error('AuthContext is undefined. Check if useAuth is called within AuthProvider.');
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

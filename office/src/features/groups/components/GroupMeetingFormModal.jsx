@@ -1,4 +1,4 @@
-import { AddressSearchField } from '@/shared/components/AddressSearchField'
+import { AddressSearchField } from './AddressSearchField'
 import { Field } from '@/shared/components/ui'
 import { readFieldError } from '@/shared/api'
 import {
@@ -19,17 +19,17 @@ export function GroupMeetingFormModal({
 }) {
   return (
     <div 
-      className="admin-overlay admin-overlay--nested"
+      className="office-overlay office-overlay--nested"
       onClick={onCancel}
     >
       <section
         aria-modal="true"
-        className="admin-overlay__dialog admin-overlay__dialog--submodal"
+        className="office-overlay__dialog office-overlay__dialog--submodal"
         role="dialog"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="admin-group-modal__header admin-group-modal__header--submodal">
-          <div className="admin-overlay__heading">
+        <header className="office-group-modal__header office-group-modal__header--submodal">
+          <div className="office-overlay__heading">
             <h2>{title}</h2>
           </div>
 
@@ -42,15 +42,15 @@ export function GroupMeetingFormModal({
           </button>
         </header>
 
-        <div className="admin-group-modal__body">
+        <div className="office-group-modal__body">
           <form
-            className="admin-group-wizard__form"
+            className="office-group-wizard__form"
             onSubmit={(event) => {
               event.preventDefault()
               void onSubmit()
             }}
           >
-            <div className="admin-group-wizard__grid admin-group-wizard__grid--meeting-meta">
+            <div className="office-group-wizard__grid office-group-wizard__grid--meeting-meta">
               <Field label="요일" error={readFieldError(errors, 'dayOfWeek')}>
                 <select
                   value={form.dayOfWeek}
@@ -95,7 +95,7 @@ export function GroupMeetingFormModal({
             />
 
             <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
+              className="office-group-wizard__field office-group-wizard__field--wide"
               label="상세 위치"
               error={readFieldError(errors, 'locationDetail')}
             >
@@ -107,7 +107,7 @@ export function GroupMeetingFormModal({
             </Field>
 
             <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
+              className="office-group-wizard__field office-group-wizard__field--wide"
               label="모임별 연락처 (선택)"
               error={readFieldError(errors, 'contactPhoneOverride')}
             >
@@ -121,23 +121,23 @@ export function GroupMeetingFormModal({
             </Field>
 
             {showActiveToggle ? (
-              <div className="admin-group-edit-sheet__status-toggle">
-                <span className="admin-group-edit-sheet__status-label">모임 상태</span>
+              <div className="office-group-edit-sheet__status-toggle">
+                <span className="office-group-edit-sheet__status-label">모임 상태</span>
 
                 <button
                   aria-checked={form.active}
-                  className={`admin-group-edit-sheet__switch${
-                    form.active ? ' admin-group-edit-sheet__switch--active' : ''
+                  className={`office-group-edit-sheet__switch${
+                    form.active ? ' office-group-edit-sheet__switch--active' : ''
                   }`}
                   role="switch"
                   type="button"
                   onClick={onToggleActive}
                 >
-                  <span className="admin-group-edit-sheet__switch-track">
-                    <span className="admin-group-edit-sheet__switch-thumb" />
+                  <span className="office-group-edit-sheet__switch-track">
+                    <span className="office-group-edit-sheet__switch-thumb" />
                   </span>
                   <span
-                    className={`admin-group-edit-sheet__switch-text admin-group-edit-sheet__switch-text--${
+                    className={`office-group-edit-sheet__switch-text office-group-edit-sheet__switch-text--${
                       form.active ? 'active' : 'inactive'
                     }`}
                   >
@@ -147,7 +147,7 @@ export function GroupMeetingFormModal({
               </div>
             ) : null}
 
-            <div className="admin-group-wizard__actions">
+            <div className="office-group-wizard__actions">
               <button className="primary-button" type="submit">
                 {submitLabel}
               </button>

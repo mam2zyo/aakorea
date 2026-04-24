@@ -32,8 +32,6 @@ export class ApiError extends Error {
 const client = axios.create({
   // Vite Proxy 설정을 활용하기 위해 baseURL은 비워두거나 /api로 설정 가능합니다.
   withCredentials: true,
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -63,10 +61,10 @@ export default client;
 /**
  * 기존 request 함수와의 호환성을 위한 래퍼
  */
-export async function request(path: string, options: any = {}) {
+export async function request<T = any>(path: string, options: any = {}): Promise<T> {
   const { method = 'GET', body, headers } = options;
   
-  const response = await client.request({
+  const response = await client.request<any, T>({
     url: path,
     method,
     data: body,

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { PageHeader, EmptyState } from '@/shared/components/ui';
-import { AuditLogDetailModal } from '@/shared/components/AuditLogDetailModal';
+import { AuditLogDetailModal } from './AuditLogDetailModal';
 import { request } from '@/shared/api';
 
 const ENTITY_TYPE_LABELS: Record<string, string> = {
@@ -18,16 +18,33 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 interface AuditLogPageProps {
-  onError: (error: any, message: string) => void;
+  onError: (error: unknown, message: string) => void;
+}
+
+interface AuditLog {
+  id: string | number;
+  entityType: string;
+  entityId: string | number;
+  entityLabel?: string;
+  creatorEmail?: string;
+  createdBy?: string | number;
+  action: string;
+  createdAt: string;
+  diff: string;
+}
+
+interface AuditLogResponse {
+  content: AuditLog[];
+  totalPages: number;
 }
 
 export function AuditLogPage({ onError }: AuditLogPageProps) {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [entityType, setEntityType] = useState('');
-  const [selectedLog, setSelectedLog] = useState<any | null>(null);
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchLogs = useCallback(async (pageNumber: number, type: string) => {
@@ -37,7 +54,7 @@ export function AuditLogPage({ onError }: AuditLogPageProps) {
       if (type) {
         url += `&entityType=${type}`;
       }
-      const data = await request(url);
+      const data = await request<AuditLogResponse>(url);
       
       setLogs(data.content);
       setTotalPages(data.totalPages);
@@ -49,21 +66,25 @@ export function AuditLogPage({ onError }: AuditLogPageProps) {
   }, [onError]);
 
   useEffect(() => {
-    fetchLogs(page, entityType);
+    Promise.resolve().then(() => {
+      fetchLogs(page, entityType);
+    });
   }, [page, entityType, fetchLogs]);
 
-  function handleTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
+  const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setEntityType(e.target.value);
     setPage(0);
-  }
+  }, []);
 
-  function openDetails(log: any) {
+  const openDetails = useCallback((log: AuditLog) => {
     setSelectedLog(log);
     setIsModalOpen(true);
-  }
+  }, []);
 
   function formatDate(dateString: string) {
+    if (!dateString) return '-';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString || '-';
     const d = date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: '2-digit',
@@ -84,8 +105,11 @@ export function AuditLogPage({ onError }: AuditLogPageProps) {
     );
   }
 
+  const handlePrevPage = useCallback(() => setPage(p => p - 1), []);
+  const handleNextPage = useCallback(() => setPage(p => p + 1), []);
+
   return (
-    <div className="office-flat-page">
+    <div className="office-theme office-flat-page">
       <PageHeader title="활동 로그" />
 
       <div className="office-list-toolbar">
@@ -93,11 +117,10 @@ export function AuditLogPage({ onError }: AuditLogPageProps) {
           <select 
             value={entityType} 
             onChange={handleTypeChange}
-            className="office-select"
+            className="office-input"
             style={{ 
               padding: '4px 8px', 
               borderRadius: '4px', 
-              border: '1px solid var(--office-border)',
               width: '160px'
             }}
           >
@@ -166,14 +189,14 @@ export function AuditLogPage({ onError }: AuditLogPageProps) {
             <button 
               className="ghost-button" 
               disabled={page === 0} 
-              onClick={() => setPage(p => p - 1)}
+              onClick={handlePrevPage}
             >
               이전
             </button>
             <button 
               className="ghost-button" 
               disabled={page === totalPages - 1} 
-              onClick={() => setPage(p => p + 1)}
+              onClick={handleNextPage}
             >
               다음
             </button>

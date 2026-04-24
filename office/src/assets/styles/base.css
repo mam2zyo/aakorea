@@ -79,3 +79,41 @@ dt,
 dd {
   margin: 0;
 }
+
+/* Office Global Utilities */
+.timestamp-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.timestamp-stack__date {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.timestamp-stack__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-pill--create { background: var(--palette-forest-100); color: var(--palette-forest-700); }
+.status-pill--update { background: var(--palette-blue-100); color: var(--palette-blue-700); }
+.status-pill--delete { background: var(--palette-clay-100); color: var(--palette-clay-500); }
+
+.section-note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}

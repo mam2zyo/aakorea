@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AddressSearchField } from '@/shared/components/AddressSearchField'
+import { AddressSearchField } from './AddressSearchField'
 import { Field } from '@/shared/components/ui'
 import { omitFieldErrors, readFieldError } from '@/shared/api'
 import {
@@ -112,18 +112,18 @@ export function CreateGroupWizard({
   }
 
   return (
-    <section className="admin-group-wizard">
+    <section className="office-group-wizard">
       {createStep === 1 ? (
         <form
-          className="admin-group-wizard__form"
+          className="office-group-wizard__form"
           onSubmit={(event) => {
             event.preventDefault()
             void onNext()
           }}
         >
-          <div className="admin-group-wizard__grid admin-group-wizard__grid--intro">
+          <div className="office-group-wizard__grid office-group-wizard__grid--intro">
             <Field
-              className="admin-group-wizard__field admin-group-wizard__field--wide"
+              className="office-group-wizard__field office-group-wizard__field--wide"
               label="그룹 이름"
               error={readFieldError(createErrors, 'name')}
             >
@@ -135,7 +135,7 @@ export function CreateGroupWizard({
             </Field>
 
             <Field
-              className="admin-group-wizard__field admin-group-wizard__field--compact"
+              className="office-group-wizard__field office-group-wizard__field--compact"
               label="지역연합"
               error={readFieldError(createErrors, 'districtId')}
             >
@@ -152,7 +152,7 @@ export function CreateGroupWizard({
             </Field>
           </div>
 
-          <div className="admin-group-wizard__section">
+          <div className="office-group-wizard__section">
             <Field label="대표 연락처" error={readFieldError(createErrors, 'phone')}>
               <input
                 inputMode="numeric"
@@ -172,10 +172,10 @@ export function CreateGroupWizard({
             </Field>
           </div>
 
-          <section className="admin-group-wizard__section admin-group-wizard__section--mailing">
-            <div className="admin-group-wizard__section-head">
+          <section className="office-group-wizard__section office-group-wizard__section--mailing">
+            <div className="office-group-wizard__section-head">
               <div>
-                <span className="field__label admin-group-wizard__section-title">
+                <span className="field__label office-group-wizard__section-title">
                   우편물 수령 정보 (선택)
                 </span>
                 <p>GSO 우편물을 실제로 받는 경우에만 입력해 주세요.</p>
@@ -191,10 +191,10 @@ export function CreateGroupWizard({
               </button>
             </div>
 
-            <div className="admin-group-wizard__field admin-group-wizard__field--wide postal-contact-card">
-              <div className="admin-group-wizard__grid postal-contact-card__grid">
+            <div className="office-group-wizard__field office-group-wizard__field--wide postal-contact-card">
+              <div className="office-group-wizard__grid postal-contact-card__grid">
                 <Field
-                  className="admin-group-wizard__field admin-group-wizard__field--wide"
+                  className="office-group-wizard__field office-group-wizard__field--wide"
                   label="수령인"
                 >
                   <input
@@ -233,23 +233,23 @@ export function CreateGroupWizard({
             </div>
           </section>
 
-          <div className="admin-group-wizard__actions">
+          <div className="office-group-wizard__actions">
             <button className="primary-button" type="submit" disabled={saving}>
               {saving ? '저장 중...' : '다음'}
             </button>
           </div>
         </form>
       ) : (
-        <div className="admin-group-wizard__form">
-          <section className="admin-group-wizard__section admin-group-wizard__section--meetings">
-            <div className="admin-group-wizard__section-head">
+        <div className="office-group-wizard__form">
+          <section className="office-group-wizard__section office-group-wizard__section--meetings">
+            <div className="office-group-wizard__section-head">
               <div>
                 <strong>모임 등록</strong>
                 <p>모임 추가 버튼을 눌러 등록해 주세요.</p>
               </div>
 
               <button
-                className="ghost-button ghost-button--small address-search-field__action admin-group-wizard__meeting-add"
+                className="ghost-button ghost-button--small address-search-field__action office-group-wizard__meeting-add"
                 type="button"
                 onClick={openNewMeetingModal}
               >
@@ -260,32 +260,32 @@ export function CreateGroupWizard({
             {meetingListError ? <span className="field__error">{meetingListError}</span> : null}
 
             {meetings.length > 0 ? (
-              <div className="admin-group-wizard__meeting-list">
+              <div className="office-group-wizard__meeting-list">
                 {meetings.map((meeting, index) => (
                   <article
                     key={`${meeting.dayOfWeek}-${meeting.startTime}-${meeting.locationAddress}-${index}`}
-                    className="admin-group-wizard__meeting-item"
+                    className="office-group-wizard__meeting-item"
                   >
-                    <div className="admin-group-wizard__meeting-summary">
+                    <div className="office-group-wizard__meeting-summary">
                       <strong>
                         {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
                         {' · '}
                         {lookupLabel(MEETING_TYPE_OPTIONS, meeting.type)}
                       </strong>
-                      <span className="admin-group-wizard__meeting-location">
+                      <span className="office-group-wizard__meeting-location">
                         {meeting.locationDetail || '상세 위치 미입력'}
                       </span>
-                      <span className="admin-group-wizard__meeting-address">
+                      <span className="office-group-wizard__meeting-address">
                         {meeting.locationAddress || '주소 미선택'}
                       </span>
                       {meeting.contactPhoneOverride ? (
-                        <span className="admin-group-wizard__meeting-contact">
+                        <span className="office-group-wizard__meeting-contact">
                           모임별 연락처: {meeting.contactPhoneOverride}
                         </span>
                       ) : null}
                     </div>
 
-                    <div className="admin-group-wizard__meeting-actions">
+                    <div className="office-group-wizard__meeting-actions">
                       <button
                         className="ghost-button ghost-button--small"
                         type="button"
@@ -308,12 +308,12 @@ export function CreateGroupWizard({
           </section>
 
           {meetings.length === 0 ? (
-            <div className="admin-group-wizard__meeting-empty">
+            <div className="office-group-wizard__meeting-empty">
               <strong>등록된 모임이 아직 없습니다.</strong>
             </div>
           ) : null}
 
-          <div className="admin-group-wizard__actions admin-group-wizard__actions--split">
+          <div className="office-group-wizard__actions office-group-wizard__actions--split">
             <button
               className="ghost-button"
               type="button"

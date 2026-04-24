@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { PageHeader, EmptyState, Field } from '@/shared/components/ui';
+import { PageHeader, Field } from '@/shared/components/ui';
 import { districtApi, groupApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/api';
 
 interface District {
@@ -8,25 +8,22 @@ interface District {
 }
 
 interface DistrictManagementPageProps {
-  onError: (error: any, message: string) => void;
+  onError: (error: unknown, message: string) => void;
   onSuccess: (message: string) => void;
 }
 
-const EMPTY_DISTRICT_FORM = { id: null as number | null, name: '' };
+const EMPTY_DISTRICT_FORM = { id: undefined as number | undefined, name: '' };
 
 export function DistrictManagementPage({ onError, onSuccess }: DistrictManagementPageProps) {
   const [districts, setDistricts] = useState<District[]>([]);
   const [groupCountByDistrictId, setGroupCountByDistrictId] = useState<Record<number, number>>({});
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [districtForm, setDistrictForm] = useState(EMPTY_DISTRICT_FORM);
   const [districtErrors, setDistrictErrors] = useState<Record<string, string>>({});
 
   const loadData = async () => {
-    setLoading(true);
     try {
       const [districtData, groupData] = await Promise.all([
         districtApi.getDistricts(),
@@ -42,7 +39,6 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
     } catch (error) {
       onError(error, '데이터를 불러오지 못했습니다.');
     } finally {
-      setLoading(false);
     }
   };
 
@@ -79,7 +75,6 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
 
   const deleteDistrict = async (id: number, name: string) => {
     if (!window.confirm(`"${name}" 지역연합을 삭제하시겠습니까?`)) return;
-    setDeleting(true);
     try {
       await districtApi.deleteDistrict(id);
       onSuccess('삭제했습니다.');
@@ -87,7 +82,6 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
     } catch (error) {
       onError(error, '삭제에 실패했습니다.');
     } finally {
-      setDeleting(false);
     }
   };
 

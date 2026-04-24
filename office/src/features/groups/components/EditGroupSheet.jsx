@@ -69,13 +69,13 @@ export function EditGroupSheet({
   }
 
   return (
-    <section className="admin-group-edit-sheet">
+    <section className="office-group-edit-sheet">
       {loading ? <div className="section-note">그룹 정보를 불러오는 중입니다...</div> : null}
 
-      <header className="admin-group-edit-sheet__header">
-        <h2 className="admin-group-edit-sheet__title">{group.name || '그룹 수정'}</h2>
+      <header className="office-group-edit-sheet__header">
+        <h2 className="office-group-edit-sheet__title">{group.name || '그룹 수정'}</h2>
 
-        <div className="admin-group-edit-sheet__header-actions">
+        <div className="office-group-edit-sheet__header-actions">
           <button
             className="primary-button primary-button--small"
             type="button"
@@ -93,8 +93,8 @@ export function EditGroupSheet({
         </div>
       </header>
 
-      <section className="admin-group-edit-sheet__section">
-        <div className="admin-group-edit-sheet__section-head">
+      <section className="office-group-edit-sheet__section">
+        <div className="office-group-edit-sheet__section-head">
           <h3>기본 정보</h3>
           <button
             className="ghost-button ghost-button--small"
@@ -105,32 +105,32 @@ export function EditGroupSheet({
           </button>
         </div>
 
-        <div className="admin-group-edit-sheet__rows">
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">그룹 이름</span>
-            <div className="admin-group-edit-sheet__rowcontrol">
-              <span className="admin-group-edit-sheet__rowvalue">{groupForm.name || '-'}</span>
+        <div className="office-group-edit-sheet__rows">
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">그룹 이름</span>
+            <div className="office-group-edit-sheet__rowcontrol">
+              <span className="office-group-edit-sheet__rowvalue">{groupForm.name || '-'}</span>
             </div>
           </div>
 
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">지역연합</span>
-            <div className="admin-group-edit-sheet__rowcontrol">
-              <span className="admin-group-edit-sheet__rowvalue">{districtName}</span>
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">지역연합</span>
+            <div className="office-group-edit-sheet__rowcontrol">
+              <span className="office-group-edit-sheet__rowvalue">{districtName}</span>
             </div>
           </div>
 
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">그룹 공지</span>
-            <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-              <span className="admin-group-edit-sheet__rowvalue">{groupForm.notice || '-'}</span>
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">그룹 공지</span>
+            <div className="office-group-edit-sheet__rowcontrol office-group-edit-sheet__rowcontrol--wide">
+              <span className="office-group-edit-sheet__rowvalue">{groupForm.notice || '-'}</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="admin-group-edit-sheet__section">
-        <div className="admin-group-edit-sheet__section-head">
+      <section className="office-group-edit-sheet__section">
+        <div className="office-group-edit-sheet__section-head">
           <h3>연락처</h3>
           <button
             className="ghost-button ghost-button--small"
@@ -141,35 +141,35 @@ export function EditGroupSheet({
           </button>
         </div>
 
-        <div className="admin-group-edit-sheet__rows">
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">전화번호</span>
-            <div className="admin-group-edit-sheet__rowcontrol">
-              <span className="admin-group-edit-sheet__rowvalue">{contactForm.phone || '-'}</span>
+        <div className="office-group-edit-sheet__rows">
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">전화번호</span>
+            <div className="office-group-edit-sheet__rowcontrol">
+              <span className="office-group-edit-sheet__rowvalue">{contactForm.phone || '-'}</span>
             </div>
           </div>
 
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">이메일</span>
-            <div className="admin-group-edit-sheet__rowcontrol">
-              <span className="admin-group-edit-sheet__rowvalue">{selectedContact?.email || '-'}</span>
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">이메일</span>
+            <div className="office-group-edit-sheet__rowcontrol">
+              <span className="office-group-edit-sheet__rowvalue">{selectedContact?.email || '-'}</span>
             </div>
           </div>
 
-          <div className="admin-group-edit-sheet__rowline">
-            <span className="admin-group-edit-sheet__rowlabel">우편수신주소</span>
-            <div className="admin-group-edit-sheet__rowcontrol admin-group-edit-sheet__rowcontrol--wide">
-              <span className="admin-group-edit-sheet__rowvalue">{formatPostalContact(selectedContact?.postalContact)}</span>
+          <div className="office-group-edit-sheet__rowline">
+            <span className="office-group-edit-sheet__rowlabel">우편수신주소</span>
+            <div className="office-group-edit-sheet__rowcontrol office-group-edit-sheet__rowcontrol--wide">
+              <span className="office-group-edit-sheet__rowvalue">{formatPostalContact(selectedContact?.postalContact)}</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="admin-group-edit-sheet__section admin-group-edit-sheet__section--meetings">
-        <div className="admin-group-edit-sheet__section-head">
+      <section className="office-group-edit-sheet__section office-group-edit-sheet__section--meetings">
+        <div className="office-group-edit-sheet__section-head">
           <h3>모임 정보</h3>
 
-          <div className="admin-group-edit-sheet__section-actions">
+          <div className="office-group-edit-sheet__section-actions">
             <button
               className="ghost-button ghost-button--small"
               type="button"
@@ -181,17 +181,17 @@ export function EditGroupSheet({
         </div>
 
         {meetings.length > 0 ? (
-          <div className="admin-group-edit-sheet__meeting-list">
+          <div className="office-group-edit-sheet__meeting-list">
             {meetings.map((meeting) => (
-              <article key={meeting.id} className="admin-group-edit-sheet__meeting-item">
-                <div className="admin-group-edit-sheet__meeting-summary">
+              <article key={meeting.id} className="office-group-edit-sheet__meeting-item">
+                <div className="office-group-edit-sheet__meeting-summary">
                   <strong>
                     {lookupLabel(DAY_OF_WEEK_OPTIONS, meeting.dayOfWeek)} {meeting.startTime}
                   </strong>
                   <span>{meeting.locationDetail || '상세 위치 미입력'}</span>
                 </div>
 
-                <div className="admin-group-edit-sheet__meeting-meta-actions">
+                <div className="office-group-edit-sheet__meeting-meta-actions">
                   <button
                     className="ghost-button ghost-button--small"
                     type="button"

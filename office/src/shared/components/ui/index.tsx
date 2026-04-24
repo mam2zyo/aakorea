@@ -1,4 +1,13 @@
-export function PageSection({ label, title, description, children }) {
+import { ReactNode } from 'react';
+
+interface PageSectionProps {
+  label?: string;
+  title: string;
+  description?: string;
+  children: ReactNode;
+}
+
+export function PageSection({ label, title, description, children }: PageSectionProps) {
   return (
     <section className="panel">
       <div className="panel__header">
@@ -11,13 +20,21 @@ export function PageSection({ label, title, description, children }) {
   )
 }
 
+interface OfficePageHeaderProps {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  meta?: ReactNode;
+}
+
 export function OfficePageHeader({
   eyebrow,
   title,
   description,
   actions,
   meta,
-}) {
+}: OfficePageHeaderProps) {
   return (
     <section className="office-page-header">
       <div className="office-page-header__copy">
@@ -37,9 +54,16 @@ export function OfficePageHeader({
   )
 }
 
-export { OfficePageHeader as PageHeader, OfficePageHeader as AdminPageHeader };
+export { OfficePageHeader as PageHeader };
 
-export function Field({ label, children, error, description }) {
+interface FieldProps {
+  label: string;
+  children: ReactNode;
+  error?: string;
+  description?: string;
+}
+
+export function Field({ label, children, error, description }: FieldProps) {
   return (
     <div className="office-field">
       <span className="field__label">{label}</span>
@@ -50,7 +74,12 @@ export function Field({ label, children, error, description }) {
   )
 }
 
-export function EmptyState({ title, description }) {
+interface EmptyStateProps {
+  title: string;
+  description: string;
+}
+
+export function EmptyState({ title, description }: EmptyStateProps) {
   return (
     <div className="empty-state">
       <strong>{title}</strong>
@@ -59,7 +88,12 @@ export function EmptyState({ title, description }) {
   )
 }
 
-export function DetailItem({ label, value }) {
+interface DetailItemProps {
+  label: string;
+  value: ReactNode;
+}
+
+export function DetailItem({ label, value }: DetailItemProps) {
   return (
     <div className="detail-item">
       <dt>{label}</dt>

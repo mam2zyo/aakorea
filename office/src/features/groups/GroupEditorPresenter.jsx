@@ -27,23 +27,23 @@ export function GroupEditorPresenter({
 
   return (
     <div 
-      className="admin-overlay"
+      className="office-overlay"
       onClick={onClose}
     >
       <section
         aria-labelledby="group-editor-title"
         aria-modal="true"
-        className={`admin-overlay__dialog admin-overlay__dialog--wide admin-overlay__dialog--editor${
-          isCreateMode ? ' admin-overlay__dialog--editor-create' : ''
+        className={`office-overlay__dialog office-overlay__dialog--wide office-overlay__dialog--editor${
+          isCreateMode ? ' office-overlay__dialog--editor-create' : ''
         }`}
         role="dialog"
         onClick={(e) => e.stopPropagation()}
       >
         {isCreateMode ? (
-          <header className="admin-group-modal__header">
-            <div className="admin-overlay__heading">
+          <header className="office-group-modal__header">
+            <div className="office-overlay__heading">
               <h2 id="group-editor-title">{editorTitle}</h2>
-              <p className="admin-group-wizard__progress">
+              <p className="office-group-wizard__progress">
                 {createStep} / 2 · {createStepLabel}
               </p>
             </div>
@@ -59,7 +59,7 @@ export function GroupEditorPresenter({
           </header>
         ) : null}
 
-        <div className="admin-group-modal__body">
+        <div className="office-group-modal__body">
           {isCreateMode ? (
             <CreateGroupWizard
               createErrors={createErrors}

@@ -9,7 +9,7 @@ interface Notice {
   authorName: string;
 }
 
-export function NoticePage({ onError }: { onError: any, onSuccess: any }) {
+export function NoticePage({ onError }: { onError: (error: unknown, message: string) => void, onSuccess: (message: string) => void }) {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,7 @@ export function NoticePage({ onError }: { onError: any, onSuccess: any }) {
             {notices.map(n => (
               <div key={n.id} className="office-table__row">
                 <span>{n.title}</span>
-                <span>{n.createdAt.slice(0, 10)}</span>
+                <span>{n.createdAt?.slice(0, 10) || '-'}</span>
                 <span>{n.authorName}</span>
               </div>
             ))}

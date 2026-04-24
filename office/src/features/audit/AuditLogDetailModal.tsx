@@ -1,5 +1,3 @@
-import React from 'react';
-
 // 감사 로그 데이터 구조 정의
 interface AuditLog {
   diff: string; // JSON 문자열 형태의 변경 내역

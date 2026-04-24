@@ -1,4 +1,13 @@
-export function normalizeAddressSelection(data: any) {
+export interface NormalizedAddress {
+  postalCode: string;
+  address: string;
+  roadAddress: string;
+  jibunAddress: string;
+  sido: string;
+  sigungu: string;
+}
+
+export function normalizeAddressSelection(data: any): NormalizedAddress {
   return {
     postalCode: data?.zonecode?.trim() ?? '',
     address: (data?.roadAddress || data?.address || '').trim(),

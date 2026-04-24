@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/providers/AuthContext';
+import { useAuth } from '@/features/auth/AuthContext';
 import { OfficePermission } from '@/shared/constants/auth';
 
 interface NavItem {
@@ -41,9 +41,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   ).filter(group => group.length > 0);
 
   return (
-    <div className="admin-theme admin-shell">
-      <aside className="admin-sidebar">
-        <div className="admin-sidebar__brand">
+    <div className="office-theme office-shell">
+      <aside className="office-sidebar">
+        <div className="office-sidebar__brand">
           <button
             className="brand-button"
             type="button"
@@ -53,27 +53,27 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        <nav className="admin-sidebar__nav" aria-label="메뉴">
+        <nav className="office-sidebar__nav" aria-label="메뉴">
           {session.authenticated ? (
             filteredGroups.map((group, groupIndex) => (
-              <div key={groupIndex} className="admin-nav-group">
-                {groupIndex > 0 && <div className="admin-nav-divider" />}
-                <div className="admin-nav-list">
+              <div key={groupIndex} className="office-nav-group">
+                {groupIndex > 0 && <div className="office-nav-divider" />}
+                <div className="office-nav-list">
                   {group.map((item, itemIndex) => (
                     item.href ? (
                       <NavLink
                         key={itemIndex}
                         to={item.href}
                         className={({ isActive }) =>
-                          `admin-nav-link${isActive ? ' admin-nav-link--active' : ''}`
+                          `office-nav-link${isActive ? ' office-nav-link--active' : ''}`
                         }
                       >
                         {item.label}
                       </NavLink>
                     ) : (
-                      <span key={itemIndex} className="admin-nav-link admin-nav-link--disabled">
-                        <span className="admin-nav-link__label">{item.label}</span>
-                        {item.status && <span className="admin-nav-link__status">{item.status}</span>}
+                      <span key={itemIndex} className="office-nav-link office-nav-link--disabled">
+                        <span className="office-nav-link__label">{item.label}</span>
+                        {item.status && <span className="office-nav-link__status">{item.status}</span>}
                       </span>
                     )
                   ))}
@@ -81,9 +81,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </div>
             ))
           ) : (
-            <div className="admin-nav-group">
-              <div className="admin-nav-list">
-                <span className="admin-nav-link admin-nav-link--disabled">
+            <div className="office-nav-group">
+              <div className="office-nav-list">
+                <span className="office-nav-link office-nav-link--disabled">
                   로그인이 필요합니다.
                 </span>
               </div>
@@ -91,13 +91,13 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           )}
         </nav>
 
-        <div className="admin-sidebar__utility">
-          <div className="admin-nav-divider" />
+        <div className="office-sidebar__utility">
+          <div className="office-nav-divider" />
           {session.authenticated && (
             <NavLink
               to="/office/account"
               className={({ isActive }) =>
-                `admin-nav-link${isActive ? ' admin-nav-link--active' : ''}`
+                `office-nav-link${isActive ? ' office-nav-link--active' : ''}`
               }
             >
               계정 설정
@@ -106,15 +106,15 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="admin-main">
-        <header className="admin-main__bar">
-          <div className="admin-main__heading">
+      <div className="office-main">
+        <header className="office-main__bar">
+          <div className="office-main__heading">
             <p className="eyebrow">AAKorea Office</p>
             <h1>관리 서비스</h1>
           </div>
 
           {session.authenticated && (
-            <div className="admin-main__actions">
+            <div className="office-main__actions">
               <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
                 {session.displayName}님
               </span>
@@ -129,7 +129,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           )}
         </header>
 
-        <div className="admin-main__content">
+        <div className="office-main__content">
           <main className="page-stack">{children}</main>
         </div>
       </div>

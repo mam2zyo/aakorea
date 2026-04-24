@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@/providers/AuthContext';
+import { AuthProvider, useAuth } from '@/features/auth/AuthContext';
 import { ThemeProvider } from '@/providers/ThemeContext';
 import { MainLayout } from '@/layouts/MainLayout';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
@@ -26,7 +26,7 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <div className="admin-theme" data-surface="office">
+        <div className="office-theme" data-surface="office">
           <Router>
             <AppRoutes />
           </Router>
@@ -53,9 +53,14 @@ function AppRoutes() {
 
   // OfficeLoginPage의 onLogin(credentials, redirectPath) 시그니처에 맞게 래핑.
   const handleLogin = async (credentials: any, redirectPath?: string) => {
-    const authStatus = await login(credentials);
-    navigate(redirectPath ?? getHomePath(), { replace: true });
-    return authStatus;
+    try {
+      const authStatus = await login(credentials);
+      navigate(redirectPath ?? getHomePath(), { replace: true });
+      return authStatus;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error; // OfficeLoginPage에서 캐치할 수 있도록 다시 던짐
+    }
   };
 
   return (

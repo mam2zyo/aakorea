@@ -1,5 +1,5 @@
 import {
-  AdminPageHeader,
+  PageHeader,
   EmptyState,
 } from '@/shared/components/ui'
 import { GROUP_SORT_MODES } from '@/features/groups/utils'
@@ -22,17 +22,17 @@ export function GroupListPresenter({
   districtNameFor,
 }) {
   return (
-    <div className="admin-flat-page">
-      <AdminPageHeader
+    <div className="office-flat-page">
+      <PageHeader
         title="그룹 관리"
         description="그룹 목록 위에서 큰 모달로 기본정보, 연락처, 모임 일정을 이어서 관리합니다."
       />
 
       {loading ? <div className="section-note">그룹 목록을 불러오는 중입니다...</div> : null}
 
-      <div className="admin-list-toolbar">
-        <div className="admin-list-toolbar__cluster admin-list-toolbar__cluster--start">
-          <div className="admin-list-toolbar__search">
+      <div className="office-list-toolbar">
+        <div className="office-list-toolbar__cluster office-list-toolbar__cluster--start">
+          <div className="office-list-toolbar__search">
             <input
               aria-label="그룹 검색"
               placeholder="그룹 이름 또는 지역연합으로 검색"
@@ -50,10 +50,10 @@ export function GroupListPresenter({
           </button>
         </div>
 
-        <div className="admin-list-toolbar__cluster admin-list-toolbar__cluster--end">
-          <span className="admin-directory-toolbar__count">총 {groupsCount}개</span>
+        <div className="office-list-toolbar__cluster office-list-toolbar__cluster--end">
+          <span className="office-directory-toolbar__count">총 {groupsCount}개</span>
 
-          <div className="admin-list-toolbar__divider" aria-hidden="true" />
+          <div className="office-list-toolbar__divider" aria-hidden="true" />
 
           <button
             className={`primary-button primary-button--small${
@@ -68,7 +68,7 @@ export function GroupListPresenter({
         </div>
       </div>
 
-      <div className="admin-flat-page__workspace">
+      <div className="office-flat-page__workspace">
         {groupsCount === 0 && !loading ? (
           <EmptyState
             title={hasDistrictOptions ? '등록된 그룹이 없습니다.' : '지역연합이 먼저 필요합니다.'}
@@ -84,32 +84,32 @@ export function GroupListPresenter({
             description="다른 이름이나 지역연합으로 다시 검색해 주세요."
           />
         ) : (
-          <div className="admin-table admin-table--group" role="table" aria-label="그룹 목록">
-            <div className="admin-table__header" role="row">
-              <span className="admin-table__heading" role="columnheader">번호</span>
-              <span className="admin-table__heading" role="columnheader">그룹</span>
-              <span className="admin-table__heading" role="columnheader">지역연합</span>
-              <span className="admin-table__heading" role="columnheader">관리</span>
+          <div className="office-table office-table--group" role="table" aria-label="그룹 목록">
+            <div className="office-table__header" role="row">
+              <span className="office-table__heading" role="columnheader">번호</span>
+              <span className="office-table__heading" role="columnheader">그룹</span>
+              <span className="office-table__heading" role="columnheader">지역연합</span>
+              <span className="office-table__heading" role="columnheader">관리</span>
             </div>
 
             {filteredGroups.map((group, index) => (
               <div
                 key={group.id}
-                className={`admin-table__row admin-table__row--static${
-                  editorState.open && editorState.groupId === group.id ? ' admin-table__row--selected' : ''
+                className={`office-table__row office-table__row--static${
+                  editorState.open && editorState.groupId === group.id ? ' office-table__row--selected' : ''
                 }`}
                 role="row"
               >
-                <span className="admin-table__cell admin-table__cell--index" data-label="번호">
+                <span className="office-table__cell office-table__cell--index" data-label="번호">
                   {index + 1}
                 </span>
-                <span className="admin-table__cell admin-table__cell--primary" data-label="그룹">
+                <span className="office-table__cell office-table__cell--primary" data-label="그룹">
                   <strong>{group.name}</strong>
                 </span>
-                <span className="admin-table__cell" data-label="지역연합">
+                <span className="office-table__cell" data-label="지역연합">
                   {districtNameFor(group.districtId, districts)}
                 </span>
-                <span className="admin-table__cell admin-table__cell--actions" data-label="관리">
+                <span className="office-table__cell office-table__cell--actions" data-label="관리">
                   <button
                     className="ghost-button ghost-button--small"
                     type="button"

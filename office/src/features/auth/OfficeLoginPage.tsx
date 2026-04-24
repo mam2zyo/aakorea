@@ -21,15 +21,21 @@ export function OfficeLoginPage({
   sessionChecked,
 }: OfficeLoginPageProps) {
   const [authForm, setAuthForm] = useState(INITIAL_AUTH_FORM);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    void onLogin(authForm, redirectPath);
+    setError(null);
+    try {
+      await onLogin(authForm, redirectPath);
+    } catch (err: any) {
+      setError(err.message || '로그인 중 오류가 발생했습니다.');
+    }
   };
 
   return (
-    <div className="office-surface" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+    <div className="office-theme office-surface" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
         <OfficePageHeader
           eyebrow="GSO 업무 시스템"
@@ -45,6 +51,11 @@ export function OfficeLoginPage({
             />
           ) : (
             <form className="field-grid" onSubmit={handleSubmit}>
+              {error && (
+                <div style={{ color: 'var(--color-danger)', backgroundColor: 'var(--color-danger-soft)', padding: '0.75rem', borderRadius: '4px', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                  {error}
+                </div>
+              )}
               <Field label="이메일">
                 <input
                   className="office-input"

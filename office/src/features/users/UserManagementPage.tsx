@@ -32,7 +32,7 @@ export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuc
   }, [users, searchQuery]);
 
   return (
-    <div className="office-flat-page">
+    <div className="office-theme office-flat-page">
       <PageHeader title="운영자 관리" />
       <div className="office-list-toolbar">
         <input 
