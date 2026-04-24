@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { authApi } from '@/api';
-import type { UserSession } from '@/types/auth';
-import { UNAUTHENTICATED_SESSION } from '@/types/auth';
-import { OfficeRole, UserStatus } from '@/constants/auth';
+import { authApi } from '@/shared/api';
+import type { UserSession } from '@/shared/types/auth';
+import { UNAUTHENTICATED_SESSION } from '@/shared/types/auth';
+import { OfficeRole, UserStatus } from '@/shared/constants/auth';
 
 interface AuthContextType {
   session: UserSession;

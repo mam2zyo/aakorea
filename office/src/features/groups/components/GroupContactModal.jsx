@@ -1,6 +1,6 @@
-import { AddressSearchField } from '@/components/AddressSearchField'
-import { Field } from '@/components/ui'
-import { readFieldError } from '@/api'
+import { AddressSearchField } from '@/shared/components/AddressSearchField'
+import { Field } from '@/shared/components/ui'
+import { readFieldError } from '@/shared/api'
 
 export function GroupContactModal({
   errors,

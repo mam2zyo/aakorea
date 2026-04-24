@@ -1,4 +1,4 @@
-import { UserStatus } from '@/constants/auth';
+import { UserStatus } from '@/shared/constants/auth';
 
 export function hasPermission(session: any, permission: string) {
   return Boolean(

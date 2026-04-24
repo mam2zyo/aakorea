@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { PageHeader, EmptyState, Field } from '@/components/ui';
-import { districtApi, groupApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/api';
+import { PageHeader, EmptyState, Field } from '@/shared/components/ui';
+import { districtApi, groupApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/api';
 
 interface District {
   id: number;

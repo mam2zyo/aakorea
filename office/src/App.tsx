@@ -7,17 +7,17 @@ import { ProtectedRoute } from '@/router/ProtectedRoute';
 import { createRouteCallbacks } from '@/router/callbacks';
 
 // 페이지 컴포넌트
-import { OfficeLoginPage } from '@/pages/OfficeLoginPage';
-import { OfficeRegisterPage } from '@/pages/OfficeRegisterPage';
-import { OfficeOverviewPage } from '@/pages/OfficeOverviewPage';
-import { OfficePendingApprovalPage } from '@/pages/OfficePendingApprovalPage';
-import { UserManagementPage } from '@/pages/UserManagementPage';
-import { ContentManagementPage } from '@/pages/ContentManagementPage';
-import { NoticePage } from '@/pages/NoticePage';
-import { DistrictManagementPage } from '@/pages/DistrictManagementPage';
-import { GroupListPage } from '@/pages/GroupListPage';
-import { AuditLogPage } from '@/pages/AuditLogPage';
-import { OfficeAccountPage } from '@/pages/OfficeAccountPage';
+import { OfficeLoginPage } from '@/features/auth/OfficeLoginPage';
+import { OfficeRegisterPage } from '@/features/auth/OfficeRegisterPage';
+import { OfficeOverviewPage } from '@/features/dashboard/OfficeOverviewPage';
+import { OfficePendingApprovalPage } from '@/features/auth/OfficePendingApprovalPage';
+import { UserManagementPage } from '@/features/users/UserManagementPage';
+import { ContentManagementPage } from '@/features/content/ContentManagementPage';
+import { NoticePage } from '@/features/notices/NoticePage';
+import { DistrictManagementPage } from '@/features/districts/DistrictManagementPage';
+import { GroupListPage } from '@/features/groups/GroupListPage';
+import { AuditLogPage } from '@/features/audit/AuditLogPage';
+import { OfficeAccountPage } from '@/features/users/OfficeAccountPage';
 
 // ── Provider 계층 ─────────────────────────────────────────
 // AuthProvider, ThemeProvider, Router를 감싸는 최상위 컴포넌트.

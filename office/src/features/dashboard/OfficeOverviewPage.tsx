@@ -1,4 +1,4 @@
-import { PageHeader } from '@/components/ui';
+import { PageHeader } from '@/shared/components/ui';
 import { MeetingCoordinateBackfillPanel } from '@/features/groups/components/MeetingCoordinateBackfillPanel';
 
 export function OfficeOverviewPage({ onError, onSuccess }: { onError: any, onSuccess: any }) {

@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import type { UserSession } from '@/types/auth';
+import type { UserSession } from '@/shared/types/auth';
 
 interface ProtectedRouteProps {
   session: UserSession;

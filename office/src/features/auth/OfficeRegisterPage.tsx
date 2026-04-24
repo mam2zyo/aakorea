@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OfficePageHeader, Field } from '@/components/ui';
-import { authApi } from '@/api';
+import { OfficePageHeader, Field } from '@/shared/components/ui';
+import { authApi } from '@/shared/api';
 
 const INITIAL_REGISTER_FORM = {
   email: '',

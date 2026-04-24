@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { AddressSearchField } from '@/components/AddressSearchField'
-import { Field } from '@/components/ui'
-import { omitFieldErrors, readFieldError } from '@/api'
+import { AddressSearchField } from '@/shared/components/AddressSearchField'
+import { Field } from '@/shared/components/ui'
+import { omitFieldErrors, readFieldError } from '@/shared/api'
 import {
   DAY_OF_WEEK_OPTIONS,
   MEETING_TYPE_OPTIONS,
-} from '@/constants/options'
-import { normalizePhoneFieldValue } from '@/utils/phone'
-import { lookupLabel } from '@/utils'
+} from '@/shared/constants/options'
+import { normalizePhoneFieldValue } from '@/shared/utils/phone'
+import { lookupLabel } from '@/shared/utils'
 import { createEmptyCreateMeeting } from '../utils'
 import { GroupMeetingFormModal } from './GroupMeetingFormModal'
 

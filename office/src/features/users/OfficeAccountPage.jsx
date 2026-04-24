@@ -1,4 +1,4 @@
-import { PageHeader, PageSection } from '@/components/ui'
+import { PageHeader, PageSection } from '@/shared/components/ui'
 
 const THEME_OPTIONS = [
   {

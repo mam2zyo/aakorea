@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EmptyState, OfficePageHeader, Field } from '@/components/ui';
-import type { UserSession } from '@/types/auth';
+import { EmptyState, OfficePageHeader, Field } from '@/shared/components/ui';
+import type { UserSession } from '@/shared/types/auth';
 
 const INITIAL_AUTH_FORM = { email: '', password: '' };
 

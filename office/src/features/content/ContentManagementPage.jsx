@@ -3,8 +3,8 @@ import {
   PageHeader,
   EmptyState,
   Field,
-} from '@/components/ui'
-import { contentApi } from '@/api'
+} from '@/shared/components/ui'
+import { contentApi } from '@/shared/api'
 
 const CONTENT_PAGE_SORT_MODES = {
   key: 'key순',

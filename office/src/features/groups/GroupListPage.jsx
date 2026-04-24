@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useReducer } from 'react'
-import { districtApi, groupApi, getApiFieldErrors } from '@/api'
-import { syncSelectionWithList } from '@/utils';
+import { districtApi, groupApi, getApiFieldErrors } from '@/shared/api'
+import { syncSelectionWithList } from '@/shared/utils';
 import {
   districtNameFor,
   hasCreateBasicsErrors,

@@ -2,7 +2,7 @@ import React from 'react'
 
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
-import { OfficePermission } from '@/constants/auth';
+import { OfficePermission } from '@/shared/constants/auth';
 
 interface NavItem {
   label: string;

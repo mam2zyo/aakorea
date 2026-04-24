@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useState } from 'react';
-import { getApiFieldErrors, omitFieldErrors } from '@/api';
-import { formatKoreanPhoneNumber, normalizePhoneFieldValue } from '@/utils/phone';
-import { DAY_OF_WEEK_OPTIONS, MEETING_TYPE_OPTIONS } from '@/constants/options';
-import { groupApi, groupContactApi, meetingApi } from '@/api';
+import { getApiFieldErrors, omitFieldErrors } from '@/shared/api';
+import { formatKoreanPhoneNumber, normalizePhoneFieldValue } from '@/shared/utils/phone';
+import { DAY_OF_WEEK_OPTIONS, MEETING_TYPE_OPTIONS } from '@/shared/constants/options';
+import { groupApi, groupContactApi, meetingApi } from '@/shared/api';
 import { toPostalContactPayload } from '../utils';
 
 // ── 폼 초기값 ──────────────────────────────────────────────

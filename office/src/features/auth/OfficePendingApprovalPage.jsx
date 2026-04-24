@@ -1,4 +1,4 @@
-import { EmptyState, PageSection } from '@/components/ui'
+import { EmptyState, PageSection } from '@/shared/components/ui'
 
 export function OfficePendingApprovalPage({ onLogout, session }) {
   return (

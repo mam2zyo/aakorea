@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 
-import { assetApi } from '@/api';
+import { assetApi } from '@/shared/api';
 import './RichTextEditor.css';
 
 export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }) {

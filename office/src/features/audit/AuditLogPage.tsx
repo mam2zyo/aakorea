@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { PageHeader, EmptyState } from '@/components/ui';
-import { AuditLogDetailModal } from '@/components/AuditLogDetailModal';
-import { request } from '@/api';
+import { PageHeader, EmptyState } from '@/shared/components/ui';
+import { AuditLogDetailModal } from '@/shared/components/AuditLogDetailModal';
+import { request } from '@/shared/api';
 
 const ENTITY_TYPE_LABELS: Record<string, string> = {
   USER: '운영자',

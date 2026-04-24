@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { PageHeader, EmptyState } from '@/components/ui';
-import { contentApi } from '@/api';
+import { PageHeader, EmptyState } from '@/shared/components/ui';
+import { contentApi } from '@/shared/api';
 
 interface Notice {
   id: number;

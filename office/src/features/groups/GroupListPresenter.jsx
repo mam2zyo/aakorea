@@ -1,7 +1,7 @@
 import {
   AdminPageHeader,
   EmptyState,
-} from '@/components/ui'
+} from '@/shared/components/ui'
 import { GROUP_SORT_MODES } from '@/features/groups/utils'
 
 export function GroupListPresenter({

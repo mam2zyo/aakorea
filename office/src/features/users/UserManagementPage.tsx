@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { PageHeader, EmptyState, Field, DetailItem } from '@/components/ui';
-import { userApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/api';
+import { PageHeader, EmptyState, Field, DetailItem } from '@/shared/components/ui';
+import { userApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/shared/api';
 
 export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuccess: any }) {
   const [users, setUsers] = useState<any[]>([]);
