@@ -1,0 +1,71 @@
+import { useEffect, useState, useMemo } from 'react';
+import { PageHeader, EmptyState, Field, DetailItem } from '@/components/ui';
+import { userApi, getApiFieldErrors, omitFieldErrors, readFieldError } from '@/api';
+
+export function UserManagementPage({ onError, onSuccess }: { onError: any, onSuccess: any }) {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await userApi.getWorkspace();
+      setUsers(data.users || []);
+    } catch (error) {
+      onError(error, '사용자 목록을 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const filteredUsers = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return users.filter(u => 
+      u.email.toLowerCase().includes(q) || 
+      u.displayName.toLowerCase().includes(q)
+    );
+  }, [users, searchQuery]);
+
+  return (
+    <div className="office-flat-page">
+      <PageHeader title="운영자 관리" />
+      <div className="office-list-toolbar">
+        <input 
+          placeholder="이메일 또는 이름으로 검색" 
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="office-input"
+        />
+      </div>
+      <div className="office-flat-page__workspace">
+        {loading ? (
+          <div className="section-note">불러오는 중...</div>
+        ) : filteredUsers.length === 0 ? (
+          <EmptyState title="사용자가 없습니다." />
+        ) : (
+          <div className="office-table">
+            <div className="office-table__header">
+              <span>이메일</span>
+              <span>이름</span>
+              <span>역할</span>
+              <span>상태</span>
+            </div>
+            {filteredUsers.map(u => (
+              <div key={u.id} className="office-table__row">
+                <span>{u.email}</span>
+                <span>{u.displayName}</span>
+                <span>{u.roleLabel}</span>
+                <span>{u.statusLabel}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
