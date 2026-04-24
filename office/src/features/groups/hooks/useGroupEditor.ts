@@ -71,8 +71,6 @@ export function useGroupEditor({ group, onError, onGroupSaved, onSuccess }: UseG
       return;
     }
 
-    setLoading(true);
-
     try {
       const [contactData, meetingData] = await Promise.all([
         groupContactApi.getGroupContacts(groupId!) as unknown as Promise<GroupContact[]>,

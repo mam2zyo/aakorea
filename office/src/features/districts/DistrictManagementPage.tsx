@@ -148,7 +148,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
                   }}
                 />
               </Field>
-              <div className="button-row">
+              <div className="button-row" style={{ marginTop: '2rem', gap: '0.75rem' }}>
                 <button type="submit" className="primary-button" disabled={saving}>저장</button>
                 <button type="button" className="ghost-button" onClick={() => setEditorOpen(false)}>취소</button>
               </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { PageHeader, EmptyState } from '@/shared/components/ui';
 import { userApi } from '@/shared/api';
 
@@ -15,23 +15,30 @@ export function UserManagementPage({ onError }: { onError: (error: unknown, fall
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadUsers = useCallback(async () => {
-    try {
-      const data = await userApi.getWorkspace() as unknown as { users: User[] };
-      setUsers(data.users || []);
-    } catch (error) {
-      onError(error, '사용자 목록을 불러오지 못했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [onError]);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      void loadUsers();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [loadUsers]);
+    let isMounted = true;
+
+    const load = async () => {
+      try {
+        const data = await userApi.getWorkspace() as unknown as { users: User[] };
+        if (isMounted) {
+          setUsers(data.users || []);
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          onError(error, '사용자 목록을 불러오지 못했습니다.');
+          setLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [onError]);
 
   const filteredUsers = useMemo(() => {
     const q = searchQuery.toLowerCase();

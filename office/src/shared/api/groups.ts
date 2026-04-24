@@ -14,7 +14,7 @@ export class OfficeGroupApi {
     return this.client.get(`/api/office/groups/${id}`);
   }
 
-  async createGroupBulk(payload: Record<string, unknown>[]) {
+  async createGroupBulk(payload: Record<string, unknown>) {
     return this.client.post('/api/office/groups/bulk', payload);
   }
 

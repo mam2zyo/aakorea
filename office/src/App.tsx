@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ThemeProvider } from '@/providers/ThemeProvider';
@@ -47,7 +47,37 @@ function ThemeWrapper() {
   );
 }
 
-// ── 라우터 계층 ───────────────────────────────────────────
+// ── GroupListPage 래퍼 ────────────────────────────────────
+// URL 파라미터(:groupId)를 읽어 editorGroupId로 변환.
+// GroupListPage의 onNavigate(/admin/groups/...)를 /office/groups/...로 매핑.
+function GroupRoute() {
+  const { groupId } = useParams<{ groupId?: string }>();
+  const navigate = useNavigate();
+  const { onSuccess, onError } = createRouteCallbacks();
+  const editorId = groupId ? parseInt(groupId, 10) : null;
+
+  const handleNavigate = (path: string) => {
+    // 레거시 JSX가 /admin/groups/* 경로를 사용 → /office/groups/*로 매핑
+    navigate(path.replace('/admin/groups', '/office/groups'));
+  };
+
+  return (
+    <GroupListPage
+      onError={onError}
+      onSuccess={onSuccess}
+      editorGroupId={Number.isFinite(editorId) ? editorId : null}
+      onNavigate={handleNavigate}
+    />
+  );
+}
+
+// ── 홈 리다이렉트 ──────────────────────────────────────────
+// /office 접근 시 권한에 맞는 첫 화면으로 보냄
+function HomeRedirect() {
+  const { getHomePath } = useAuth();
+  return <Navigate to={getHomePath()} replace />;
+}
+
 // AuthProvider 하위에 있으므로 useAuth() 호출이 안전하다.
 function AppRoutes() {
   const { session, sessionChecked, checkSession, login, logout, getHomePath } = useAuth();
@@ -67,7 +97,9 @@ function AppRoutes() {
   const handleLogin = async (credentials: LoginCredentials, redirectPath?: string) => {
     try {
       const authStatus = await login(credentials);
-      navigate(redirectPath ?? getHomePath(), { replace: true });
+      // redirectPath가 '/office'인 경우(기본값) 권한별 홈 경로(getHomePath)를 우선 사용합니다.
+      const target = (redirectPath && redirectPath !== '/office') ? redirectPath : getHomePath();
+      navigate(target, { replace: true });
       return authStatus;
     } catch (error) {
       console.error("Login failed:", error);
@@ -85,9 +117,11 @@ function AppRoutes() {
       <Route path="/office/pending" element={<OfficePendingApprovalPage session={session} onLogout={logout} />} />
 
       {/* 보호된 운영 페이지 (MainLayout 적용) */}
-      <Route path="/office" element={<ProtectedRoute session={session}><MainLayout><OfficeOverviewPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office" element={<ProtectedRoute session={session}><HomeRedirect /></ProtectedRoute>} />
+      <Route path="/office/tools" element={<ProtectedRoute session={session}><MainLayout><OfficeOverviewPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/users" element={<ProtectedRoute session={session}><MainLayout><UserManagementPage onError={onError} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/groups" element={<ProtectedRoute session={session}><MainLayout><GroupListPage onError={onError} onSuccess={onSuccess} editorGroupId={null} onNavigate={(path: string) => navigate(path)} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/groups" element={<ProtectedRoute session={session}><MainLayout><GroupRoute /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/groups/:groupId" element={<ProtectedRoute session={session}><MainLayout><GroupRoute /></MainLayout></ProtectedRoute>} />
       <Route path="/office/content-pages" element={<ProtectedRoute session={session}><MainLayout><ContentManagementPage onError={onError} onSuccess={onSuccess} onNavigate={(path: string) => navigate(path)} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/notices" element={<ProtectedRoute session={session}><MainLayout><NoticePage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/districts" element={<ProtectedRoute session={session}><MainLayout><DistrictManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />

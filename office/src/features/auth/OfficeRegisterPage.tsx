@@ -33,7 +33,7 @@ export function OfficeRegisterPage() {
 
   return (
     <div className="office-surface" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{ width: '100%', maxWidth: '450px' }}>
+      <div style={{ width: '100%', maxWidth: '400px' }}>
         <OfficePageHeader
           eyebrow="GSO 업무 시스템"
           title="운영자 등록"

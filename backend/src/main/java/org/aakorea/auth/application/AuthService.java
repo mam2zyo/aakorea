@@ -93,8 +93,16 @@ public class AuthService {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        // 세션에 저장된 SecurityContext까지 함께 비워서 완전히 로그아웃한다.
+        // 1. 세션 무효화 및 SecurityContext 전역 클리어
         new SecurityContextLogoutHandler().logout(request, response, authentication);
+
+        // 2. JSESSIONID 쿠키 명시적 삭제 (브라우저 전달)
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
         return new LogoutStatus(true);
     }
 

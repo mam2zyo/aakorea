@@ -10,5 +10,15 @@ export function formatKoreanPhoneNumber(value: string): string {
 
 export function normalizePhoneFieldValue(value: string): string {
   if (!value) return '';
-  return value.replace(/\D/g, '');
+  const digits = value.replace(/\D/g, '');
+  
+  if (digits.length <= 3) {
+    return digits;
+  } else if (digits.length <= 7) {
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  } else if (digits.length <= 11) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  }
+  
+  return digits.slice(0, 11).replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
 }

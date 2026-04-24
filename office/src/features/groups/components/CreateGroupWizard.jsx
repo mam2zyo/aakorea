@@ -65,7 +65,8 @@ export function CreateGroupWizard({
   }
 
   function updateMeetingDraftField(field, value) {
-    const nextValue = normalizePhoneFieldValue(field, value)
+    const nextValue =
+      field === 'contactPhoneOverride' ? normalizePhoneFieldValue(value) : value
 
     setMeetingDraft((previous) => ({
       ...previous,

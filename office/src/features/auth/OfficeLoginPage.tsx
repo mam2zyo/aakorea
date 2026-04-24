@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EmptyState, OfficePageHeader, Field } from '@/shared/components/ui';
 import type { UserSession, LoginCredentials } from '@/shared/types/auth';
@@ -34,6 +34,16 @@ export function OfficeLoginPage({
       setError(error.message || '로그인 중 오류가 발생했습니다.');
     }
   };
+
+  // 이미 로그인된 상태라면 메인으로 자동 리다이렉트
+  useEffect(() => {
+    if (sessionChecked && session.authenticated) {
+      const timer = setTimeout(() => {
+        navigate(redirectPath, { replace: true });
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionChecked, session.authenticated, navigate, redirectPath]);
 
   return (
     <div className="office-theme office-surface" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
