@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { useOfficeTheme } from '@/providers/ThemeContext';
 import { MainLayout } from '@/layouts/MainLayout';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
 import { createRouteCallbacks } from '@/router/callbacks';
@@ -28,13 +29,21 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <div className="office-theme" data-surface="office">
-          <Router>
-            <AppRoutes />
-          </Router>
-        </div>
+        <ThemeWrapper />
       </ThemeProvider>
     </AuthProvider>
+  );
+}
+
+// ThemeProvider 내부에서 resolvedTheme를 읽어 data-theme 속성으로 바인딩
+function ThemeWrapper() {
+  const { resolvedTheme } = useOfficeTheme();
+  return (
+    <div className="office-theme" data-theme={resolvedTheme}>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </div>
   );
 }
 
@@ -44,6 +53,7 @@ function AppRoutes() {
   const { session, sessionChecked, checkSession, login, getHomePath } = useAuth();
   const navigate = useNavigate();
   const { onSuccess, onError } = createRouteCallbacks();
+  const { resolvedTheme, themePreference, systemTheme, setThemePreference } = useOfficeTheme();
 
   useEffect(() => {
     checkSession();
@@ -82,7 +92,7 @@ function AppRoutes() {
       <Route path="/office/notices" element={<ProtectedRoute session={session}><MainLayout><NoticePage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/districts" element={<ProtectedRoute session={session}><MainLayout><DistrictManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/audit-logs" element={<ProtectedRoute session={session}><MainLayout><AuditLogPage onError={onError} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/account" element={<ProtectedRoute session={session}><MainLayout><OfficeAccountPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/account" element={<ProtectedRoute session={session}><MainLayout><OfficeAccountPage onError={onError} onSuccess={onSuccess} resolvedTheme={resolvedTheme} themePreference={themePreference} systemTheme={systemTheme} onThemePreferenceChange={setThemePreference} /></MainLayout></ProtectedRoute>} />
 
       {/* 기본 경로 리다이렉트 */}
       <Route path="/" element={<Navigate to="/office" replace />} />

@@ -40,7 +40,7 @@ export function NoticePage({ onError }: { onError: (error: unknown, message: str
         ) : notices.length === 0 ? (
           <EmptyState title="등록된 공지가 없습니다." description="게시된 공지사항이 아직 없습니다." />
         ) : (
-          <div className="office-table">
+          <div className="office-table office-table--notice">
             <div className="office-table__header">
               <span>제목</span>
               <span>작성일</span>

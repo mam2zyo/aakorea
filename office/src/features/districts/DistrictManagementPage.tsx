@@ -112,7 +112,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
       </div>
 
       <div className="office-flat-page__workspace">
-        <div className="office-table">
+        <div className="office-table office-table--district">
           <div className="office-table__header">
             <span>이름</span>
             <span>그룹 수</span>
@@ -123,11 +123,11 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
               <span>{d.name}</span>
               <span>{groupCountByDistrictId[d.id] || 0}</span>
               <div className="office-table__cell--action">
-                <button className="ghost-button" onClick={() => {
+                <button className="ghost-button ghost-button--small" onClick={() => {
                   setDistrictForm(d);
                   setEditorOpen(true);
                 }}>수정</button>
-                <button className="ghost-button ghost-button--danger" onClick={() => deleteDistrict(d.id, d.name)}>삭제</button>
+                <button className="ghost-button ghost-button--danger ghost-button--small" onClick={() => deleteDistrict(d.id, d.name)}>삭제</button>
               </div>
             </div>
           ))}

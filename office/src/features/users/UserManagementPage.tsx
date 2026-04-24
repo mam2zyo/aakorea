@@ -58,7 +58,7 @@ export function UserManagementPage({ onError }: { onError: (error: unknown, fall
         ) : filteredUsers.length === 0 ? (
           <EmptyState title="사용자가 없습니다." description="검색어에 일치하는 사용자가 없습니다." />
         ) : (
-          <div className="office-table">
+          <div className="office-table office-table--users">
             <div className="office-table__header">
               <span>이메일</span>
               <span>이름</span>

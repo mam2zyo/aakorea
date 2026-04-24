@@ -1,278 +1,310 @@
+/* =============================================================================
+   tokens.css — Office Admin Design System
+   구조: :root(primitives + scales + dark defaults) →
+         .office-theme[data-theme='light'](semantic overrides) →
+         .office-theme(component tokens — 같은 요소에서 var() 계산됨)
+   ============================================================================= */
+
+/* =============================================================================
+   Layer 1: Primitives + Scales + Dark Semantic Defaults
+   ============================================================================= */
+
 :root {
-  /* Layer 1: Primitives (Base Palette) */
+  /* Zinc */
+  --zinc-50:   #fafafa;
+  --zinc-100:  #f4f4f5;
+  --zinc-200:  #e4e4e7;
+  --zinc-300:  #d4d4d8;
+  --zinc-400:  #a1a1aa;
+  --zinc-500:  #71717a;
+  --zinc-600:  #52525b;
+  --zinc-700:  #3f3f46;
+  --zinc-750:  #323238;
+  --zinc-800:  #27272a;
+  --zinc-850:  #1e1e21;
+  --zinc-900:  #18181b;
+  --zinc-950:  #0d0d10;
 
-  /* --- Forest (Classic Primary) --- */
-  --palette-forest-100: #e0f0e7;
-  --palette-forest-500: #2c6a4b;
-  --palette-forest-600: #1d5f3c;
-  --palette-forest-700: #1d4d35;
-  --palette-forest-rgb: 44, 106, 75;
+  /* Blue */
+  --blue-200:  #bfdbfe;
+  --blue-300:  #93c5fd;
+  --blue-400:  #60a5fa;
+  --blue-500:  #5b8af5;
+  --blue-600:  #3b6ee9;
+  --blue-700:  #2563eb;
+  --blue-800:  #1d4ed8;
+  --blue-400-rgb: 96, 165, 250;
+  --blue-500-rgb: 91, 138, 245;
+  --blue-700-rgb: 37, 99, 235;
 
-  /* --- Cyan & Ocean (Harbor Primary/Neutral) --- */
-  --palette-cyan-100: #ddefe7;
-  --palette-cyan-500: #1f6b72;
-  --palette-cyan-600: #1f5b45;
-  --palette-cyan-700: #11484f;
-  --palette-cyan-rgb: 31, 107, 114;
+  /* Green */
+  --green-400: #4ade80;
+  --green-500: #3fb950;
+  --green-600: #16a34a;
+  --green-500-rgb: 63, 185, 80;
+  --green-600-rgb: 22, 163, 74;
 
-  --palette-ocean-50: #fbfeff;
-  --palette-ocean-100: #eef6f7;
-  --palette-ocean-200: #d8ebee;
-  --palette-ocean-300: #bdd3d8;
-  --palette-ocean-300-rgb: 189, 211, 216;
+  /* Red */
+  --red-400:   #f87171;
+  --red-500:   #f85149;
+  --red-600:   #dc2626;
+  --red-500-rgb: 248, 81, 73;
+  --red-600-rgb: 220, 38, 38;
 
-  /* --- Blue (Breeze Primary/Neutral) --- */
-  --palette-blue-50: #fbfdff;
-  --palette-blue-50-rgb: 251, 253, 255;
-  --palette-blue-100: #edf3fb;
-  --palette-blue-200: #dfe9f8;
-  --palette-blue-300: #c7d6ea;
-  --palette-blue-300-rgb: 199, 214, 234;
-  --palette-blue-400: #3977c3;
-  --palette-blue-500: #2f63d8;
-  --palette-blue-700: #1a45ad;
-  --palette-blue-800: #4a7cf0;
-  --palette-blue-900: #164580;
-  --palette-blue-900-rgb: 22, 69, 128;
-  --palette-blue-950: #11305e;
-  --palette-blue-950-rgb: 17, 48, 94;
-  --palette-blue-rgb: 47, 99, 216;
+  /* Amber */
+  --amber-400: #fbbf24;
+  --amber-500: #d29922;
+  --amber-600: #b45309;
+  --amber-500-rgb: 210, 153, 34;
 
-  /* --- Blue-Teal (Breeze Success) --- */
-  --palette-blue-soft-100: #ddeff5;
-  --palette-blue-soft-700: #1b5d70;
+  /* 타이포그래피 스케일 */
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg:   1.0625rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
 
-  /* --- Sand (Classic Neutral) --- */
-  --palette-sand-50: #fffdf8;
-  --palette-sand-50-rgb: 255, 253, 248;
-  --palette-sand-100: #f5f1e8;
-  --palette-sand-200: #f7f2e8;
-  --palette-sand-300: #f0e7d8;
-  --palette-sand-400: #d8cbb8;
-  --palette-sand-400-rgb: 216, 203, 184;
-  --palette-sand-500: #efe4d2;
-  --palette-sand-rgb: 247, 242, 232;
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
 
-  /* --- Ink & Slate & Charcoal (Global Neutral) --- */
-  --palette-ink-900: #241d16;
-  --palette-ink-900-rgb: 36, 29, 22;
-  --palette-ink-800: #1f2a38;
-  --palette-ink-rgb: 36, 29, 22;
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
 
-  --palette-charcoal-800: #1f2c33;
-  --palette-charcoal-rgb: 31, 44, 51;
+  --tracking-tight:   -0.025em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.025em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.1em;
 
-  --palette-slate-500: #6d6155;
-  --palette-slate-rgb: 109, 97, 85;
-  --palette-slate-400: #60747f;
-  --palette-slate-400-rgb: 96, 116, 127;
-  --palette-slate-450: #66778d;
-  --palette-slate-450-rgb: 102, 119, 141;
-
-  /* --- Solarized-inspired (Admin Specials) --- */
-  --palette-solar-base2: #eee8d5;
-
-  /* --- Clay & Gold (Global Semantic) --- */
-  --palette-clay-100: #f7d9d4;
-  --palette-clay-500: #9f3b2f;
-  --palette-clay-rgb: 159, 59, 47;
-  --palette-gold-500: #e9a151;
-  --palette-gold-600: #d98933;
-  --palette-gold-rgb: 233, 161, 81;
-  --palette-blue-vivid: #1a1aff;
-
-  /* Layer 1.5: Global Utilities (Shared across themes) */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-
-  /* Typography Scale (Refinement targets) */
-  --font-size-h1: 2.5rem;
-  --font-size-body: 1rem;
-
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
-
-  --line-height-tight: 1.2;
-  --line-height-base: 1.5;
-  --line-height-relaxed: 1.625;
-
-  --letter-spacing-tight: -0.02em;
-
-  /* Interaction States */
-  --state-hover-overlay: rgba(0, 0, 0, 0.03);
-  --state-active-overlay: rgba(0, 0, 0, 0.06);
-  --state-disabled-opacity: 0.5;
-
-  /* Surface Details */
-  --border-width-base: 1px;
-  --shadow-elevation-low: 0 2px 8px var(--color-shadow);
-  --shadow-elevation-high: 0 12px 32px var(--color-shadow);
-}
-
-.office-theme:not([data-theme]),
-.office-theme[data-theme='classic'] {
-  color-scheme: light;
-
-  /* Layer 2: Semantic Tokens (System-wide) */
-  --color-bg: var(--palette-sand-100);
-  --color-surface: var(--palette-sand-50);
-  --color-surface-strong: var(--palette-sand-300);
-  --color-text: var(--palette-ink-900);
-  --color-text-muted: var(--palette-slate-500);
-  --color-border: var(--palette-sand-400);
-  --color-primary: var(--palette-forest-500);
-  --color-primary-strong: var(--palette-forest-700);
-  --color-danger: var(--palette-clay-500);
-  --color-danger-soft: var(--palette-clay-100);
-  --color-success: var(--palette-forest-100);
-  --color-success-text: var(--palette-forest-600);
-  --color-shadow: rgba(var(--palette-ink-rgb), 0.08);
-
-  /* Form Elements */
-  --color-input-bg: #fff;
-  --color-input-border: var(--color-border);
-  --color-input-text: var(--color-text);
-  --color-input-placeholder: rgba(var(--palette-slate-rgb), 0.72);
-
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 28px;
-
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
+  /* 스페이싱 */
+  --space-0:  0;
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
+  --space-16: 4rem;
 
-  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
+  /* 반경 */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
 
-  color: var(--color-text);
-  font-family: var(--font-body);
-  background: var(--palette-sand-200);
+  /* 트랜지션 */
+  --duration-fast: 100ms;
+  --duration-base: 150ms;
+  --duration-slow: 250ms;
+  --ease-default:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── Dark Default (Semantic) ─────────────────────────────────────────────── */
+  color-scheme: dark;
+
+  --font-sans: 'Pretendard Variable', 'Pretendard', 'Inter', -apple-system,
+               BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, monospace;
+
+  --color-bg:            var(--zinc-950);
+  --color-surface:       var(--zinc-900);
+  --color-surface-2:     var(--zinc-850);
+  --color-surface-3:     var(--zinc-800);
+  --color-surface-hover: var(--zinc-750);
+
+  --color-text:         #e8e8e8;
+  --color-text-muted:   var(--zinc-400);
+  --color-text-subtle:  var(--zinc-600);
+  --color-text-inverse: var(--zinc-950);
+
+  --color-border:        var(--zinc-800);
+  --color-border-strong: var(--zinc-700);
+
+  --color-primary:       var(--blue-500);
+  --color-primary-hover: var(--blue-400);
+  --color-primary-soft:  rgba(var(--blue-500-rgb), 0.12);
+  --color-primary-text:  #ffffff;
+
+  --color-danger:        var(--red-500);
+  --color-danger-soft:   rgba(var(--red-500-rgb), 0.12);
+  --color-danger-text:   var(--red-400);
+  --color-success:       var(--green-500);
+  --color-success-soft:  rgba(var(--green-500-rgb), 0.12);
+  --color-success-text:  var(--green-400);
+  --color-warning:       var(--amber-500);
+  --color-warning-soft:  rgba(var(--amber-500-rgb), 0.12);
+
+  --color-input-bg:           var(--zinc-900);
+  --color-input-border:       var(--zinc-700);
+  --color-input-border-focus: var(--blue-500);
+  --color-input-text:         #e8e8e8;
+  --color-input-placeholder:  var(--zinc-600);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.50);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.60);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.70);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.75);
+
+  --overlay-bg:        rgba(0, 0, 0, 0.70);
+  --overlay-bg-nested: rgba(0, 0, 0, 0.55);
+  --state-focus-ring:  rgba(var(--blue-500-rgb), 0.35);
 }
 
-.office-theme[data-theme='harbor'] {
+/* =============================================================================
+   Layer 2: Light Theme — Semantic Overrides
+   ============================================================================= */
+
+.office-theme[data-theme='light'] {
   color-scheme: light;
 
-  /* Layer 2: Semantic Tokens */
-  --color-bg: var(--palette-ocean-100);
-  --color-surface: var(--palette-ocean-50);
-  --color-surface-strong: var(--palette-ocean-200);
-  --color-text: var(--palette-charcoal-800);
-  --color-text-muted: var(--palette-slate-400);
-  --color-border: var(--palette-ocean-300);
-  --color-primary: var(--palette-cyan-500);
-  --color-primary-strong: var(--palette-cyan-700);
-  --color-danger: var(--palette-clay-500);
-  --color-danger-soft: var(--palette-clay-100);
-  --color-success: var(--palette-cyan-100);
-  --color-success-text: var(--palette-cyan-600);
-  --color-shadow: rgba(var(--palette-charcoal-rgb, 31, 44, 51), 0.09);
+  --color-bg:            var(--zinc-100);
+  --color-surface:       #ffffff;
+  --color-surface-2:     var(--zinc-50);
+  --color-surface-3:     var(--zinc-100);
+  --color-surface-hover: var(--zinc-200);
 
-  /* Form Elements */
-  --color-input-bg: #fff;
-  --color-input-border: var(--color-border);
-  --color-input-text: var(--color-text);
-  --color-input-placeholder: rgba(var(--palette-slate-400-rgb, 96, 116, 127), 0.78);
+  --color-text:         var(--zinc-900);   /* #18181b  — 흰 배경 대비 18:1 */
+  --color-text-muted:   var(--zinc-600);   /* #52525b  — 흰 배경 대비 7:1 ✓ */
+  --color-text-subtle:  var(--zinc-500);   /* #71717a  — 흰 배경 대비 4.6:1 ✓ */
+  --color-text-inverse: #ffffff;
 
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 28px;
+  --color-border:        var(--zinc-300);   /* 기존 zinc-200 → 더 진하게 */
+  --color-border-strong: var(--zinc-400);   /* 기존 zinc-300 → 더 진하게 */
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  --color-primary:       var(--blue-700);
+  --color-primary-hover: var(--blue-800);
+  --color-primary-soft:  rgba(var(--blue-700-rgb), 0.08);
+  --color-primary-text:  #ffffff;
 
-  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
+  --color-danger:        var(--red-600);
+  --color-danger-soft:   rgba(var(--red-600-rgb), 0.08);
+  --color-danger-text:   var(--red-600);
+  --color-success:       var(--green-600);
+  --color-success-soft:  rgba(var(--green-600-rgb), 0.08);
+  --color-success-text:  var(--green-600);
+  --color-warning:       var(--amber-600);
+  --color-warning-soft:  rgba(var(--amber-500-rgb), 0.10);
 
-  color: var(--color-text);
-  font-family: var(--font-body);
-  background: var(--palette-ocean-100);
+  --color-input-bg:           #ffffff;
+  --color-input-border:       var(--zinc-400);
+  --color-input-border-focus: var(--blue-700);
+  --color-input-text:         var(--zinc-900);
+  --color-input-placeholder:  var(--zinc-500);  /* zinc-400 → zinc-500 */
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+  --overlay-bg:        rgba(0, 0, 0, 0.35);
+  --overlay-bg-nested: rgba(0, 0, 0, 0.25);
+  --state-focus-ring:  rgba(var(--blue-700-rgb), 0.20);
 }
 
-.office-theme[data-theme='breeze'] {
-  color-scheme: light;
+/* =============================================================================
+   Layer 3: Component Tokens
+   .office-theme {} 에 정의 → [data-theme='light'] 와 동일 요소에서 var() 계산
+   → 시맨틱 변수가 이미 해당 테마 값으로 확정된 뒤 참조됨
+   ============================================================================= */
 
-  /* Layer 2: Semantic Tokens */
-  --color-bg: var(--palette-blue-100);
-  --color-surface: var(--palette-blue-50);
-  --color-surface-strong: var(--palette-blue-200);
-  --color-text: var(--palette-ink-800);
-  --color-text-muted: var(--palette-slate-450);
-  --color-border: var(--palette-blue-300);
-  --color-primary: var(--palette-blue-500);
-  --color-primary-strong: var(--palette-blue-700);
-  --color-danger: var(--palette-clay-500);
-  --color-danger-soft: var(--palette-clay-100);
-  --color-success: var(--palette-blue-soft-100);
-  --color-success-text: var(--palette-blue-soft-700);
-  --color-shadow: rgba(var(--palette-blue-900-rgb), 0.11);
+.office-theme {
+  /* 어드민 기본 폰트 크기 — body(15px)에서 독립, 13px 통일 */
+  font-size:   var(--text-sm);
+  color:       var(--color-text);
+  font-family: var(--font-sans);
 
-  /* Form Elements */
-  --color-input-bg: #fff;
-  --color-input-border: var(--color-border);
-  --color-input-text: var(--color-text);
-  --color-input-placeholder: rgba(var(--palette-slate-450-rgb), 0.78);
 
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 28px;
+  --sidebar-width:       220px;
+  --sidebar-bg:          var(--color-surface);
+  --sidebar-border:      var(--color-border);
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  --nav-hover-bg:        var(--color-surface-hover);
+  --nav-active-bg:       var(--color-primary-soft);
+  --nav-active-text:     var(--color-primary);
+  --nav-indicator-color: var(--color-primary);
 
-  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
+  --topbar-bg:           var(--color-surface);
+  --topbar-border:       var(--color-border);
 
-  color: var(--color-text);
-  font-family: var(--font-body);
-  background: var(--palette-blue-100);
+  --table-bg:            var(--color-surface);
+  --table-border:        var(--color-border);
+  --table-header-bg:     var(--color-surface-2);
+  --table-header-text:   var(--color-text-muted);
+  --table-row-border:    var(--color-border);
+  --table-row-hover:     var(--color-surface-hover);
+
+  --dialog-bg:           var(--color-surface-2);
+  --dialog-border:       var(--color-border-strong);
+  --dialog-shadow:       var(--shadow-xl);
+
+  --panel-bg:            var(--color-surface);
+  --panel-border:        var(--color-border);
+  --panel-shadow:        var(--shadow-md);
+  --card-bg:             var(--color-surface-2);
+  --card-border:         var(--color-border);
+
+  --btn-primary-bg:      var(--color-primary);
+  --btn-primary-hover:   var(--color-primary-hover);
+  --btn-primary-text:    var(--color-primary-text);
+  --btn-ghost-border:    var(--color-border-strong);
+  --btn-ghost-hover-bg:  var(--color-surface-hover);
+  --btn-danger-border:   var(--color-danger-soft);
+  --btn-danger-text:     var(--color-danger);
+
+  --switch-track-bg:     var(--color-border-strong);
+  --switch-track-active: var(--color-primary-soft);
+  --switch-thumb-bg:     var(--color-text-muted);
+  --switch-thumb-active: var(--color-primary);
+  --switch-track-border: var(--color-border-strong);
+
+  --section-border:        var(--color-border);
+  --section-border-strong: var(--color-border-strong);
+  --entity-border:         var(--color-border);
+
+  --address-soft-bg:       var(--color-surface-2);
+  --address-soft-border:   var(--color-border-strong);
+  --address-action-bg:     var(--color-primary-soft);
+  --address-action-border: rgba(var(--blue-500-rgb), 0.30);
+  --address-action-text:   var(--color-primary);
+  --address-static-text:   var(--color-text-muted);
+
+  --empty-bg:    var(--color-surface-2);
+  --empty-border: var(--color-border-strong);
+
+  --pill-create-bg:   var(--color-success-soft);
+  --pill-create-text: var(--color-success-text);
+  --pill-update-bg:   var(--color-primary-soft);
+  --pill-update-text: var(--color-primary);
+  --pill-delete-bg:   var(--color-danger-soft);
+  --pill-delete-text: var(--color-danger-text);
 }
 
-/* --- Responsive Token Overrides --- */
+/* =============================================================================
+   Responsive
+   ============================================================================= */
 
 @media (max-width: 640px) {
   :root {
-    --space-1: 0.2rem;
-    --space-2: 0.4rem;
-    --space-3: 0.6rem;
-    --space-4: 0.8rem;
-    --space-5: 1rem;
-    --space-6: 1.2rem;
-    --space-8: 1.6rem;
-    --space-10: 2rem;
-    --space-12: 2.4rem;
-
-    --font-size-h1: 2rem;
-    --font-size-4xl: 1.8rem;
-    --font-size-3xl: 1.6rem;
-    --font-size-2xl: 1.35rem;
+    --space-4:  0.875rem;
+    --space-5:  1.125rem;
+    --space-6:  1.25rem;
+    --space-8:  1.75rem;
+    --space-10: 2.25rem;
+    --space-12: 2.75rem;
+    --text-3xl: 1.625rem;
+    --text-4xl: 1.875rem;
   }
 }
-
