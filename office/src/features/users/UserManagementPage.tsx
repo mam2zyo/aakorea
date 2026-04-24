@@ -17,7 +17,7 @@ export function UserManagementPage({ onError }: { onError: (error: unknown, fall
 
   const loadUsers = useCallback(async () => {
     try {
-      const data = await userApi.getWorkspace();
+      const data = await userApi.getWorkspace() as unknown as { users: User[] };
       setUsers(data.users || []);
     } catch (error) {
       onError(error, '사용자 목록을 불러오지 못했습니다.');

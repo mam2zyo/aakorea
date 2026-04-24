@@ -15,7 +15,7 @@ export function NoticePage({ onError }: { onError: (error: unknown, message: str
 
   const loadNotices = useCallback(async () => {
     try {
-      const data = await contentApi.getNotices();
+      const data = await contentApi.getNotices() as unknown as Notice[];
       setNotices(data);
     } catch (error) {
       onError(error, '공지사항을 불러오지 못했습니다.');

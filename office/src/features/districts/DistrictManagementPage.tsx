@@ -28,7 +28,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
       const [districtData, groupData] = await Promise.all([
         districtApi.getDistricts(),
         groupApi.getGroups(),
-      ]);
+      ]) as unknown as [District[], { districtId: number }[]];
       setDistricts(districtData);
       
       const counts: Record<number, number> = {};
@@ -139,7 +139,7 @@ export function DistrictManagementPage({ onError, onSuccess }: DistrictManagemen
           <div className="office-overlay__dialog">
             <h2>{districtForm.id ? '수정' : '추가'}</h2>
             <form onSubmit={saveDistrict}>
-              <Field label="지역연합 이름" error={readFieldError(districtErrors, 'name')}>
+              <Field label="지역연합 이름" error={readFieldError(districtErrors, 'name') ?? undefined}>
                 <input 
                   value={districtForm.name} 
                   onChange={e => {

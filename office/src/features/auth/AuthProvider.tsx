@@ -12,7 +12,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkSession = useCallback(async () => {
     try {
-      const authStatus = await authApi.me();
+      const authStatus = await authApi.me() as unknown as UserSession;
       setSession(authStatus);
     } catch (error) {
       const err = error as { status?: number; response?: { status?: number } };
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     setLoading(true);
     try {
-      const authStatus = await authApi.login(credentials);
+      const authStatus = await authApi.login(credentials) as unknown as UserSession;
       setSession(authStatus);
       return authStatus;
     } finally {

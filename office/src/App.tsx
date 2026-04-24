@@ -50,7 +50,7 @@ function ThemeWrapper() {
 // ── 라우터 계층 ───────────────────────────────────────────
 // AuthProvider 하위에 있으므로 useAuth() 호출이 안전하다.
 function AppRoutes() {
-  const { session, sessionChecked, checkSession, login, getHomePath } = useAuth();
+  const { session, sessionChecked, checkSession, login, logout, getHomePath } = useAuth();
   const navigate = useNavigate();
   const { onSuccess, onError } = createRouteCallbacks();
   const { resolvedTheme, themePreference, systemTheme, setThemePreference } = useOfficeTheme();
@@ -82,17 +82,17 @@ function AppRoutes() {
         <OfficeLoginPage session={session} sessionChecked={sessionChecked} onLogin={handleLogin} />
       } />
       <Route path="/office/register" element={<OfficeRegisterPage />} />
-      <Route path="/office/pending" element={<OfficePendingApprovalPage session={session} />} />
+      <Route path="/office/pending" element={<OfficePendingApprovalPage session={session} onLogout={logout} />} />
 
       {/* 보호된 운영 페이지 (MainLayout 적용) */}
       <Route path="/office" element={<ProtectedRoute session={session}><MainLayout><OfficeOverviewPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/users" element={<ProtectedRoute session={session}><MainLayout><UserManagementPage onError={onError} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/groups" element={<ProtectedRoute session={session}><MainLayout><GroupListPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/content-pages" element={<ProtectedRoute session={session}><MainLayout><ContentManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/groups" element={<ProtectedRoute session={session}><MainLayout><GroupListPage onError={onError} onSuccess={onSuccess} editorGroupId={null} onNavigate={(path: string) => navigate(path)} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/content-pages" element={<ProtectedRoute session={session}><MainLayout><ContentManagementPage onError={onError} onSuccess={onSuccess} onNavigate={(path: string) => navigate(path)} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/notices" element={<ProtectedRoute session={session}><MainLayout><NoticePage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/districts" element={<ProtectedRoute session={session}><MainLayout><DistrictManagementPage onError={onError} onSuccess={onSuccess} /></MainLayout></ProtectedRoute>} />
       <Route path="/office/audit-logs" element={<ProtectedRoute session={session}><MainLayout><AuditLogPage onError={onError} /></MainLayout></ProtectedRoute>} />
-      <Route path="/office/account" element={<ProtectedRoute session={session}><MainLayout><OfficeAccountPage onError={onError} onSuccess={onSuccess} resolvedTheme={resolvedTheme} themePreference={themePreference} systemTheme={systemTheme} onThemePreferenceChange={setThemePreference} /></MainLayout></ProtectedRoute>} />
+      <Route path="/office/account" element={<ProtectedRoute session={session}><MainLayout><OfficeAccountPage resolvedTheme={resolvedTheme} themePreference={themePreference} systemTheme={systemTheme} onThemePreferenceChange={setThemePreference} /></MainLayout></ProtectedRoute>} />
 
       {/* 기본 경로 리다이렉트 */}
       <Route path="/" element={<Navigate to="/office" replace />} />

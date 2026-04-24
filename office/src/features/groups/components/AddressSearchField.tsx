@@ -82,7 +82,7 @@ export function AddressSearchField({
     <>
       {supportsPostalCode ? (
         <div className="office-group-wizard__postcode">
-          <Field label={postalCodeLabel} error={postalCodeError}>
+          <Field label={postalCodeLabel} error={postalCodeError ?? undefined}>
             <input
               className={`address-search-field__value${
                 allowManualEntry ? '' : ' address-search-field__value--disabled'
@@ -99,7 +99,7 @@ export function AddressSearchField({
       <div className="office-group-wizard__field office-group-wizard__field--wide office-group-wizard__address-row">
         <Field
           label={addressLabel}
-          error={addressError}
+          error={addressError ?? undefined}
         >
           <input
             className={`address-search-field__value${

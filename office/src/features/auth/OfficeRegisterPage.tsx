@@ -4,6 +4,7 @@ import { OfficePageHeader, Field } from '@/shared/components/ui';
 import { authApi } from '@/shared/api';
 
 const INITIAL_REGISTER_FORM = {
+  username: '',
   email: '',
   password: '',
   displayName: '',
@@ -19,7 +20,7 @@ export function OfficeRegisterPage() {
     event.preventDefault();
     setPending(true);
     try {
-      const user = await authApi.register(form);
+      const user = await authApi.register(form) as unknown as { displayName: string };
       setMessage(`${user.displayName}님, 계정 등록이 완료되었습니다. 승인 후 이용 가능합니다.`);
       setTimeout(() => navigate('/office/login'), 3000);
     } catch (error) {
