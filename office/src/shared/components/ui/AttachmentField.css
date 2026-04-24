@@ -10,9 +10,9 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-8);
-  border: 2px dashed var(--office-empty-dashed-border);
+  border: 2px dashed var(--color-primary);
   border-radius: var(--radius-md);
-  background: var(--office-empty-background);
+  background: rgba(0, 102, 255, 0.05);
   transition: border-color 140ms ease, background 140ms ease;
   cursor: pointer;
   text-align: center;

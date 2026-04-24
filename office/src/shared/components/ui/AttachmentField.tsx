@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react'
 import { attachmentApi } from '@/shared/api';
 import './AttachmentField.css';
 
-interface Attachment {
+export interface Attachment {
   id: string | number;
   originalName: string;
   fileSize: number;

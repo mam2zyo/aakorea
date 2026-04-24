@@ -223,7 +223,12 @@ export function RichTextEditor({ valueHtml, valueJson, onChange, disabled }: Ric
         </div>
       </div>
 
-      <EditorContent className="rich-text-editor__content" editor={editor} />
+      <div 
+        className="rich-text-editor__content" 
+        onClick={() => editor.chain().focus().run()}
+      >
+        <EditorContent editor={editor} />
+      </div>
     </div>
   )
 }

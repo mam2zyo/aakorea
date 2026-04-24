@@ -25,12 +25,13 @@
 
 .rich-text-editor__toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   padding: var(--space-2);
   gap: var(--space-1);
-  background-color: var(--office-table-header-background);
-  border-bottom: 1px solid var(--color-input-border);
+  background-color: var(--color-surface-3);
+  border-bottom: 1px solid var(--color-border-strong);
+  overflow-x: auto;
 }
 
 .rich-text-editor__toolbar-group {
@@ -52,17 +53,22 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: none;
   background: transparent;
-  color: var(--color-text);
+  color: var(--color-text-muted);
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.15s var(--ease-out);
 }
 
 .rich-text-editor__toolbar-btn:hover:not(:disabled) {
-  background-color: var(--office-nav-hover-background);
+  background-color: var(--color-surface-hover);
   color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.rich-text-editor__toolbar-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
 }
 
 .rich-text-editor__toolbar-btn--active {

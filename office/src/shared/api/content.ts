@@ -10,6 +10,22 @@ export class OfficeContentApi {
     return this.client.get('/api/office/notices');
   }
 
+  async getNotice(id: number | string) {
+    return this.client.get(`/api/office/notices/${id}`);
+  }
+
+  async createNotice(payload: Record<string, unknown>) {
+    return this.client.post('/api/office/notices', payload);
+  }
+
+  async updateNotice(id: number | string, payload: Record<string, unknown>) {
+    return this.client.put(`/api/office/notices/${id}`, payload);
+  }
+
+  async deleteNotice(id: number | string) {
+    return this.client.delete(`/api/office/notices/${id}`);
+  }
+
   async getContentPages() {
     return this.client.get('/api/office/content-pages');
   }

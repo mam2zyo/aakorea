@@ -356,6 +356,42 @@
   line-height: var(--leading-relaxed);
 }
 
+.office-theme .office-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.office-theme .office-form-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.office-theme .office-form-row > * {
+  flex: 1;
+}
+
+.office-theme .office-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text);
+  min-height: 40px; /* 입력창 높이와 맞춤 */
+}
+
+.office-theme .office-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
 
 
 
@@ -532,7 +568,7 @@
 }
 
 .office-theme .office-overlay__dialog--wide {
-  width: min(100%, 560px);
+  width: min(100%, 720px);
 }
 
 .office-theme .office-overlay__dialog--submodal {
@@ -605,7 +641,7 @@
 
 .office-theme .office-table--notice .office-table__header,
 .office-theme .office-table--notice .office-table__row {
-  grid-template-columns: minmax(200px, 1fr) 120px 120px;
+  grid-template-columns: 56px minmax(200px, 1fr) 180px 80px 120px;
 }
 
 .office-theme .office-table--users .office-table__header,
