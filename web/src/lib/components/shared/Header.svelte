@@ -49,7 +49,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--public-shell-background);
+    background: #bae6fd !important; /* Temporary sky blue for visibility check */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--public-shell-border);

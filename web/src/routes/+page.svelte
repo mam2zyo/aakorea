@@ -1,9 +1,30 @@
 <script lang="ts">
   import Hero from './Hero.svelte';
   import Section from '$lib/components/ui/Section.svelte';
+  import type { PageData } from './$types';
+
+  let { data }: { data: PageData } = $props();
+  const latestNotices = $derived(data.latestNotices || []);
 </script>
 
 <Hero />
+
+{#if latestNotices.length > 0}
+  <Section eyebrow="News" title="최신 소식" description="AA Korea의 새로운 소식을 확인하세요.">
+    <div class="notices-grid">
+      {#each latestNotices as notice}
+        <a href="/notices/{notice.id}" class="notice-item">
+          <div class="notice-date">{new Date(notice.createdAt).toLocaleDateString('ko-KR')}</div>
+          <h3 class="notice-title">{notice.title}</h3>
+          <span class="more">자세히 보기 →</span>
+        </a>
+      {/each}
+    </div>
+    <div class="notices-footer">
+      <a href="/notices" class="text-link">모든 공지사항 보기</a>
+    </div>
+  </Section>
+{/if}
 
 <Section 
   eyebrow="First Visit Flow" 
@@ -32,6 +53,73 @@
 </Section>
 
 <style>
+  .notices-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .notice-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .notice-item:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 20px var(--color-shadow);
+  }
+
+  .notice-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-soft);
+    font-weight: 600;
+  }
+
+  .notice-title {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-strong);
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 600;
+    /* Limit to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .more {
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-top: auto;
+  }
+
+  .notices-footer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .text-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+  }
+
+  .text-link:hover {
+    text-decoration: underline;
+  }
+
   .journey-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -81,7 +169,8 @@
   }
 
   @media (max-width: 920px) {
-    .journey-grid {
+    .journey-grid,
+    .notices-grid {
       grid-template-columns: 1fr;
     }
   }
