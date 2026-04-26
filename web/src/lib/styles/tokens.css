@@ -72,7 +72,7 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
 
-  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, "Malgun Gothic", sans-serif;
   --font-display: "Noto Serif KR", "Nanum Myeongjo", serif;
 
   --shadow-elevation-low: 0 2px 8px var(--color-shadow);

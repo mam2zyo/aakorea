@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { Meeting, GroupDetail } from '$lib/api/publicContent';
+  import type { Meeting, GroupDetail, GroupMeeting } from '$lib/api/publicContent';
   import KakaoMeetingMap from './KakaoMeetingMap.svelte';
-  import { onMount } from 'svelte';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -13,18 +12,39 @@
   let { selectedMeeting, groupDetail, loading, onClose }: Props = $props();
 
   // 현재 상세 팝업에서 선택된(포커스된) 모임 일정
-  let activeMeeting = $state<Meeting | null>(null);
+  let activeMeeting = $state<GroupMeeting | Meeting | null>(null);
 
-  // 모달이 열릴 때(selectedMeeting이 변경될 때) 초기 activeMeeting 설정
+  // 모달이 열릴 때(selectedMeeting이 변경될 때) activeMeeting을 초기화
   $effect(() => {
-    if (selectedMeeting && !activeMeeting) {
-      activeMeeting = selectedMeeting;
+    activeMeeting = selectedMeeting;
+  });
+
+  // 상세 정보가 로드되면, 현재 선택된 일정을 상세 정보 버전(GroupMeeting)으로 교체하여 더 많은 정보(연락처 등)를 표시할 수 있게 함
+  $effect(() => {
+    if (groupDetail && activeMeeting && !isGroupMeeting(activeMeeting)) {
+      const matched = groupDetail.meetings.find(m => m.id === activeMeeting?.id);
+      if (matched) {
+        activeMeeting = matched;
+      }
     }
   });
 
-  function handleScheduleClick(meeting: Meeting) {
+  function handleScheduleClick(meeting: GroupMeeting | Meeting) {
     activeMeeting = meeting;
   }
+
+  function isMeeting(m: Meeting | GroupMeeting | null): m is Meeting {
+    return !!m && 'groupName' in m;
+  }
+
+  function isGroupMeeting(m: Meeting | GroupMeeting | null): m is GroupMeeting {
+    return !!m && 'contactPhone' in m;
+  }
+
+  const currentContactPhone = $derived(
+    isGroupMeeting(activeMeeting) ? (activeMeeting.contactPhone || groupDetail?.contactPhone) : groupDetail?.contactPhone
+  );
+
 
   function formatDay(day: string) {
     const days: Record<string, string> = {
@@ -48,20 +68,22 @@
     return types[type] || type;
   }
 
-  function getKakaoMapUrl(m: Meeting) {
+  function getKakaoMapUrl(m: Meeting | GroupMeeting) {
     if (!m.latitude || !m.longitude) return '#';
-    const label = encodeURIComponent(m.locationDetail || m.groupName || 'AA 모임 장소');
+    const groupName = (isMeeting(m) ? m.groupName : '') || selectedMeeting?.groupName || 'AA 모임 장소';
+    const label = encodeURIComponent(m.locationDetail || groupName);
     return `https://map.kakao.com/link/map/${label},${m.latitude},${m.longitude}`;
   }
 
-  function getTMapUrl(m: Meeting) {
+  function getTMapUrl(m: Meeting | GroupMeeting) {
     if (!m.latitude || !m.longitude) return '#';
     const appKey = import.meta.env.VITE_TMAP_APP_KEY;
+    const groupName = (isMeeting(m) ? m.groupName : '') || selectedMeeting?.groupName || 'AA 모임 장소';
     const params = new URLSearchParams({
       appKey: appKey || '',
       lat: String(m.latitude),
       lon: String(m.longitude),
-      name: m.locationDetail || m.groupName || 'AA 모임 장소'
+      name: m.locationDetail || groupName
     });
     return `https://apis.openapi.sk.com/tmap/app/routes?${params.toString()}`;
   }
@@ -69,7 +91,7 @@
 
 {#if selectedMeeting}
   <div class="modal-overlay" role="button" tabindex="-1" onclick={onClose} onkeydown={(e) => e.key === 'Escape' && onClose()}>
-    <div class="modal-content" role="dialog" aria-modal="true" onclick={(e) => e.stopPropagation()}>
+    <div class="modal-content" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
       <button class="close-btn" onclick={onClose} aria-label="닫기">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
@@ -100,7 +122,7 @@
           <div class="detail-section">
             <h3 class="section-title">모임 일정</h3>
             <div class="schedule-list">
-              {#each groupDetail?.meetings || [] as meeting}
+              {#each groupDetail?.meetings || [] as meeting (meeting.id)}
                 <button 
                   class="schedule-card" 
                   class:active={activeMeeting?.id === meeting.id}
@@ -129,10 +151,12 @@
                   </div>
                   
                   <div class="map-actions">
-                    <a href={getKakaoMapUrl(activeMeeting)} target="_blank" class="map-icon-btn" title="카카오맵에서 보기">
+                    <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+                    <a href={getKakaoMapUrl(activeMeeting)} target="_blank" rel="noopener noreferrer" class="map-icon-btn" title="카카오맵에서 보기">
                       <img src="/images/icons/kakaomap100.png" alt="카카오맵" />
                     </a>
-                    <a href={getTMapUrl(activeMeeting)} target="_blank" class="map-icon-btn" title="티맵에서 보기">
+                    <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+                    <a href={getTMapUrl(activeMeeting)} target="_blank" rel="noopener noreferrer" class="map-icon-btn" title="티맵에서 보기">
                       <img src="/images/icons/tmap100.png" alt="티맵" />
                     </a>
                   </div>
@@ -149,11 +173,11 @@
             </div>
 
             <!-- 연락처 -->
-            {#if activeMeeting.phone || groupDetail?.contactPhone}
+            {#if currentContactPhone}
               <div class="detail-section contact-section">
                 <h3 class="section-title">연락처</h3>
                 <div class="contact-display">
-                  <strong class="phone-number">{activeMeeting.phone || groupDetail?.contactPhone}</strong>
+                  <strong class="phone-number">{currentContactPhone}</strong>
                 </div>
               </div>
             {/if}
@@ -161,9 +185,10 @@
         {/if}
       </div>
 
-      {#if activeMeeting?.phone || groupDetail?.contactPhone}
+      {#if currentContactPhone}
         <footer class="modal-footer">
-          <a href="tel:{activeMeeting?.phone || groupDetail?.contactPhone}" class="fab-call-btn">
+          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+          <a href="tel:{currentContactPhone}" class="fab-call-btn" aria-label="전화하기">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6.62 10.79a15.06 15.06 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.32.56 3.57.56a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.06 21 3 13.94 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.19 2.45.56 3.57a1 1 0 0 1-.24 1.02z"/>
             </svg>
@@ -411,8 +436,8 @@
     font-weight: 700;
   }
 
-  .type-badge[data-type="OPEN"] { background: #EBF5FF; color: #0066FF; }
-  .type-badge[data-type="CLOSED"] { background: #FEF2F2; color: #EF4444; }
+  .type-badge[data-type="OPEN"] { background: #ECFDF5; color: #059669; }
+  .type-badge[data-type="CLOSED"] { background: #FEF2F2; color: #DC2626; }
   .type-badge[data-type="NOTFIXED"] { background: #FFFBEB; color: #D97706; }
 
   .loading-state {

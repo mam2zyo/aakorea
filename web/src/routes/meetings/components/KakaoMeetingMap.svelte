@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
+
 
   interface Props {
     latitude: number;
@@ -13,10 +14,13 @@
   const KAKAO_MAP_JAVASCRIPT_KEY = import.meta.env.VITE_KAKAO_MAP_JAVASCRIPT_KEY;
 
   let mapContainer: HTMLDivElement;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let map: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let marker: any;
   let loadError = $state(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function loadKakaoMapSdk(): Promise<any> {
     if (typeof window === 'undefined') return;
     if (window.kakao?.maps) {
@@ -59,7 +63,8 @@
 
       map = new kakao.maps.Map(mapContainer, options);
       marker = new kakao.maps.Marker({
-        position: position
+        position: position,
+        title: groupName
       });
       marker.setMap(map);
       
