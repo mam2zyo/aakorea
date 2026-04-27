@@ -53,13 +53,17 @@ log "3-3. Backend 전송 중..."
 scp ${SCP_OPTS} "${BACKEND_JAR_LOCAL}" "${TERMUX_TARGET}:${TERMUX_APP_ROOT}/backend/aakorea-core.jar"
 
 log "3-4. 관리 스크립트 및 설정 전송 중..."
-scp ${SCP_OPTS} "${REPO_ROOT}/deploy/scripts/restart-backend.sh" "${TERMUX_TARGET}:${TERMUX_APP_ROOT}/scripts/"
+scp ${SCP_OPTS} "${REPO_ROOT}/deploy/scripts/restart-backend.sh" "${REPO_ROOT}/deploy/scripts/restart-web.sh" "${TERMUX_TARGET}:${TERMUX_APP_ROOT}/scripts/"
 scp ${SCP_OPTS} "${REPO_ROOT}/deploy/nginx/aakorea-termux.conf" "${TERMUX_TARGET}:${TERMUX_APP_ROOT}/config/aakorea-termux.conf"
 ssh ${SSH_OPTS} "${TERMUX_TARGET}" "chmod +x ${TERMUX_APP_ROOT}/scripts/*.sh"
 
-# 4. 서버 재시작 안내
+# 4. 서버 재시작
+log "--- 서버 재시작 중 ---"
+ssh ${SSH_OPTS} "${TERMUX_TARGET}" "${TERMUX_APP_ROOT}/scripts/restart-web.sh"
+ssh ${SSH_OPTS} "${TERMUX_TARGET}" "${TERMUX_APP_ROOT}/scripts/restart-backend.sh restart"
+
 log "--- 배포 완료 ---"
-log "백엔드 재시작 명령:"
-log "  ssh ${TERMUX_TARGET} -p ${TERMUX_SSH_PORT} '${TERMUX_APP_ROOT}/scripts/restart-backend.sh restart'"
+log "웹 접속: https://maumtalk.win"
+log "관리자: https://maumtalk.win/office"
 log ""
-log "주의: SvelteKit(Web)의 경우 서버에서 'npm install --production'을 수행하거나 node_modules 관리가 필요할 수 있습니다."
+log "주의: SvelteKit(Web)의 의존성이 바뀐 경우 서버에서 'npm install --omit=dev --ignore-scripts'가 필요할 수 있습니다."
