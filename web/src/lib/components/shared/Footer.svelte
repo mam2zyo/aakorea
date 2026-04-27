@@ -11,22 +11,22 @@
       <div class="primary-info">
         <strong class="brand">에이에이한국연합</strong>
         <p class="biz-info">사업자등록번호: 107-82-69892</p>
-        
+
         <div class="divider"></div>
-        
+
         <p class="address">주소: 서울특별시 영등포구 영신로20길 6, 정우빌딩 5층</p>
-        
+
         <div class="divider"></div>
-        
+
         <div class="contact-grid">
           <p>
-            전화: 
-            <a href="tel:02-774-3797">02-774-3797</a>, 
+            전화:
+            <a href="tel:02-774-3797">02-774-3797</a>,
             <a href="tel:02-833-0311">02-833-0311</a>
           </p>
           <p>팩스: 02-833-0422</p>
           <p>
-            이메일: 
+            이메일:
             <a href="mailto:aakoreagso@gmail.com">aakoreagso@gmail.com</a>
           </p>
         </div>
@@ -77,7 +77,9 @@
     margin-bottom: var(--space-1);
   }
 
-  .biz-info, .address, .contact-grid p {
+  .biz-info,
+  .address,
+  .contact-grid p {
     font-size: var(--font-size-sm);
     opacity: 0.8;
     margin: 0;

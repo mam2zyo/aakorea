@@ -44,19 +44,23 @@ web/src/
 ## 3. 계층별 역할 상세 (Layer Responsibilities)
 
 ### 3.1 `src/routes` (The Domain Home)
+
 - **Co-location**: 특정 페이지나 도메인에서만 쓰이는 컴포넌트는 `$lib`로 보내지 않고 해당 폴더 내에 둡니다.
 - **+ 접두어**: SvelteKit 예약 파일(`+page`, `+layout`, `+server`) 외의 일반 `.svelte` 파일은 라우트로 인식되지 않으므로 안심하고 배치합니다.
 - **삭제 용이성**: 특정 기능을 제거할 때 `routes` 아래의 폴더만 삭제하면 관련 UI까지 한 번에 정리됩니다.
 
 ### 3.2 `src/lib/components/ui` (The Primitives)
+
 - **Zero Knowledge**: 비즈니스 로직이나 데이터 구조를 전혀 모르는 순수 UI 요소입니다.
 - **재사용성**: 프로젝트 전반에서 수십 번 이상 반복되는 기본 단위들입니다.
 
 ### 3.3 `src/lib/components/shared` (The Cross-Route Features)
+
 - **Multi-use**: 최소 2개 이상의 서로 다른 도메인(예: 홈과 상세페이지 양쪽 등)에서 쓰이는 비즈니스 컴포넌트입니다.
 - **Bridge**: `ui` 컴포넌트와 `api`를 결합하여 실제 기능을 수행합니다.
 
 ### 3.4 `src/lib/api` (The Bridge)
+
 - 백엔드 서버와의 유일한 접점입니다.
 - `ApiResponse` 타입을 정의하고 데이터 정제(Data Normalization)를 수행합니다.
 

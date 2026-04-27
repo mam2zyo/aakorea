@@ -3,7 +3,14 @@ export class ApiError extends Error {
   code: string | null;
   fields: Record<string, string> | null;
 
-  constructor(message: string, { code = null, fields = null, status = 500 }: { code?: string | null, fields?: Record<string, string> | null, status?: number } = {}) {
+  constructor(
+    message: string,
+    {
+      code = null,
+      fields = null,
+      status = 500
+    }: { code?: string | null; fields?: Record<string, string> | null; status?: number } = {}
+  ) {
     super(message);
     this.name = 'ApiError';
     this.code = code;
@@ -20,12 +27,7 @@ export type RequestOptions = {
 };
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const {
-    method = 'GET',
-    body,
-    headers = {},
-    fetcher = fetch
-  } = options;
+  const { method = 'GET', body, headers = {}, fetcher = fetch } = options;
 
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
 
@@ -33,9 +35,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     method,
     credentials: 'include',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       ...(!isFormData && body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...headers,
+      ...headers
     }
   };
 
@@ -44,7 +46,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   const response = await fetcher(path, fetchOptions);
-  
+
   // Read response as text first to handle empty responses
   const text = await response.text();
   let payload: unknown = null;
@@ -57,11 +59,13 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   if (!response.ok) {
-    const error = (payload as { error?: { message?: string, code?: string, fields?: Record<string, string> } })?.error;
+    const error = (
+      payload as { error?: { message?: string; code?: string; fields?: Record<string, string> } }
+    )?.error;
     throw new ApiError(error?.message ?? 'Request failed', {
       code: error?.code ?? null,
       fields: error?.fields ?? null,
-      status: response.status,
+      status: response.status
     });
   }
 

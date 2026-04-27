@@ -2,17 +2,17 @@
   import '../app.css';
   import Header from '$lib/components/shared/Header.svelte';
   import Footer from '$lib/components/shared/Footer.svelte';
-  
+
   let { children } = $props();
 </script>
 
 <div class="app-container">
   <Header />
-  
+
   <main class="main-content">
     {@render children()}
   </main>
-  
+
   <Footer />
 </div>
 

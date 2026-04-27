@@ -143,7 +143,7 @@
     .page-title {
       font-size: var(--font-size-2xl);
     }
-    
+
     .notice-card {
       padding: var(--space-4);
     }

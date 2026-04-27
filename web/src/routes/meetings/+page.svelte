@@ -1,7 +1,12 @@
 <script lang="ts">
   import Container from '$lib/components/ui/Container.svelte';
   import Section from '$lib/components/ui/Section.svelte';
-  import { publicContentApi, type Meeting, type MeetingFilters, type GroupDetail } from '$lib/api/publicContent';
+  import {
+    publicContentApi,
+    type Meeting,
+    type MeetingFilters,
+    type GroupDetail
+  } from '$lib/api/publicContent';
   import { SEARCH_PROVINCE_OPTIONS } from '$lib/data/options';
   import GroupDetailModal from './components/GroupDetailModal.svelte';
   import SearchHero from './components/SearchHero.svelte';
@@ -17,7 +22,7 @@
   let hasSearched = $state(false);
   let meetings = $state<Meeting[]>([]);
   let visibleCount = $state(20);
-  
+
   let filters = $state<MeetingFilters>({
     province: 'all',
     districtId: 'ALL',
@@ -143,39 +148,110 @@
             {/each}
           </select>
         </div>
-        
+
         <div class="search-actions">
           <button class="btn-primary" onclick={handleSearch} disabled={isLoading}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"
+              ></line></svg
+            >
             지역 검색
           </button>
           <button class="btn-outline" onclick={handleNearbySearch} disabled={isLoading}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle
+                cx="12"
+                cy="10"
+                r="3"
+              ></circle></svg
+            >
             가까운 모임
           </button>
         </div>
       </div>
 
       <div class="prompt-panel">
-        <p>지역을 선택하고 <strong>지역 검색</strong>을 누르거나,<br /><strong>가까운 모임</strong>으로 주변 모임을 찾아보세요.</p>
+        <p>
+          지역을 선택하고 <strong>지역 검색</strong>을 누르거나,<br /><strong>가까운 모임</strong
+          >으로 주변 모임을 찾아보세요.
+        </p>
       </div>
     {:else}
       <div class="results-top-actions">
         <button class="btn-reset" onclick={handleReset}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"
+            ></path></svg
+          >
           검색 초기화
         </button>
-        <button class="btn-primary" onclick={() => showFilterDialog = true}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="2" y1="14" x2="6" y2="14"></line><line x1="10" y1="12" x2="14" y2="12"></line><line x1="18" y1="16" x2="22" y2="16"></line></svg>
+        <button class="btn-primary" onclick={() => (showFilterDialog = true)}>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"
+            ></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"
+            ></line><line x1="20" y1="21" x2="20" y2="16"></line><line
+              x1="20"
+              y1="12"
+              x2="20"
+              y2="3"
+            ></line><line x1="2" y1="14" x2="6" y2="14"></line><line x1="10" y1="12" x2="14" y2="12"
+            ></line><line x1="18" y1="16" x2="22" y2="16"></line></svg
+          >
           상세 조건
         </button>
       </div>
 
       <div class="results-meta">
         <div class="results-summary">
-          <span class="total-count-label">검색된 모임 수 : <strong>{meetings.length} 개</strong></span>
-          <button class="help-link" onclick={() => showInfoModal = true}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span class="total-count-label"
+            >검색된 모임 수 : <strong>{meetings.length} 개</strong></span
+          >
+          <button class="help-link" onclick={() => (showInfoModal = true)}>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><circle cx="12" cy="12" r="10"></circle><path
+                d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+              ></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg
+            >
             공개/비공개 모임이란?
           </button>
         </div>
@@ -192,32 +268,38 @@
       {#if remainingCount > 0}
         <div class="pagination-area">
           <button class="load-more-btn" onclick={loadMore}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg
+            >
             결과 더 보기 ({remainingCount}개 남음)
           </button>
         </div>
       {/if}
     {/if}
 
-    <GroupDetailModal 
-      {selectedMeeting} 
-      {groupDetail} 
-      loading={loadingGroupDetail} 
-      onClose={closeDetailModal} 
+    <GroupDetailModal
+      {selectedMeeting}
+      {groupDetail}
+      loading={loadingGroupDetail}
+      onClose={closeDetailModal}
     />
 
-    <FilterModal 
-      bind:show={showFilterDialog} 
-      bind:filters 
-      districts={data.districts} 
-      onClose={() => showFilterDialog = false} 
-      onSearch={handleSearch} 
+    <FilterModal
+      bind:show={showFilterDialog}
+      bind:filters
+      districts={data.districts}
+      onClose={() => (showFilterDialog = false)}
+      onSearch={handleSearch}
     />
 
-    <MeetingInfoModal 
-      bind:show={showInfoModal} 
-      onClose={() => showInfoModal = false} 
-    />
+    <MeetingInfoModal bind:show={showInfoModal} onClose={() => (showInfoModal = false)} />
   </Container>
 </Section>
 
@@ -300,7 +382,8 @@
     transition: all 0.2s ease;
   }
 
-  .search-actions, .results-top-actions {
+  .search-actions,
+  .results-top-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-4);
@@ -324,9 +407,20 @@
     border: 1px solid transparent;
   }
 
-  .btn-primary { background: var(--color-primary); color: #fff; }
-  .btn-outline { background: #fff; border-color: var(--color-primary); color: var(--color-primary); }
-  .btn-reset { background: #fff; border-color: var(--color-border); color: var(--color-text-soft); }
+  .btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .btn-outline {
+    background: #fff;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .btn-reset {
+    background: #fff;
+    border-color: var(--color-border);
+    color: var(--color-text-soft);
+  }
 
   .meeting-list {
     display: flex;
@@ -334,7 +428,11 @@
     gap: var(--space-4);
   }
 
-  .pagination-area { display: flex; justify-content: center; margin-top: var(--space-8); }
+  .pagination-area {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
   .load-more-btn {
     display: flex;
     align-items: center;
@@ -349,14 +447,32 @@
     transition: all 0.2s;
   }
 
-  .load-more-btn:hover { background: var(--color-bg-subtle); border-color: var(--color-primary); color: var(--color-primary); }
+  .load-more-btn:hover {
+    background: var(--color-bg-subtle);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
 
-  .empty-list { padding: var(--space-12); text-align: center; color: var(--color-text-soft); }
+  .empty-list {
+    padding: var(--space-12);
+    text-align: center;
+    color: var(--color-text-soft);
+  }
 
   @media (max-width: 640px) {
-    .panel { padding: var(--space-6); }
-    .search-actions { grid-template-columns: 1fr; }
-    .results-top-actions { grid-template-columns: 1fr 1fr; gap: var(--space-2); }
-    .results-top-actions button { font-size: 0.85rem; padding: 0.75rem 0.5rem; }
+    .panel {
+      padding: var(--space-6);
+    }
+    .search-actions {
+      grid-template-columns: 1fr;
+    }
+    .results-top-actions {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+    .results-top-actions button {
+      font-size: 0.85rem;
+      padding: 0.75rem 0.5rem;
+    }
   }
 </style>

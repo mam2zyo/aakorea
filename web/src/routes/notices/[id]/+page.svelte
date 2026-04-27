@@ -17,7 +17,7 @@
   <Container>
     <div class="notice-header">
       <a href="/notices" class="back-link">← 목록으로 돌아가기</a>
-      
+
       <div class="title-wrapper">
         {#if notice.important}
           <span class="badge important">중요</span>
@@ -26,7 +26,13 @@
       </div>
 
       <div class="notice-meta">
-        <span class="date">{new Date(notice.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        <span class="date"
+          >{new Date(notice.createdAt).toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}</span
+        >
         <span class="divider">|</span>
         <span class="views">조회 {notice.viewCount}</span>
       </div>
@@ -139,7 +145,7 @@
     .notice-title {
       font-size: var(--font-size-2xl);
     }
-    
+
     .title-wrapper {
       flex-direction: column;
       gap: var(--space-2);

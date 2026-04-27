@@ -4,7 +4,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ fetch }) => {
   try {
     const notices = await publicContentApi.getNotices({ fetcher: fetch });
-    
+
     return {
       latestNotices: Array.isArray(notices) ? notices.slice(0, 3) : []
     };

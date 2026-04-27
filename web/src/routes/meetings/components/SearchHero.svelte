@@ -5,12 +5,49 @@
   <h1 class="page-title">AA 모임 찾기</h1>
   <div class="header-links">
     <div class="header-actions">
-      <a href="#online" class="cta-button" onclick={(e) => { e.preventDefault(); alert('준비 중입니다.'); }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+      <a
+        href="#online"
+        class="cta-button"
+        onclick={(e) => {
+          e.preventDefault();
+          alert('준비 중입니다.');
+        }}
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"
+          ></rect></svg
+        >
         온라인 모임
       </a>
-      <a href="#step12" class="cta-button" onclick={(e) => { e.preventDefault(); alert('준비 중입니다.'); }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V7"></path><path d="M13 20v-9"></path><path d="M8 20v-5"></path><path d="M3 20v-1"></path></svg>
+      <a
+        href="#step12"
+        class="cta-button"
+        onclick={(e) => {
+          e.preventDefault();
+          alert('준비 중입니다.');
+        }}
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M18 20V7"></path><path d="M13 20v-9"></path><path d="M8 20v-5"></path><path
+            d="M3 20v-1"
+          ></path></svg
+        >
         제12단계 운동
       </a>
     </div>
@@ -74,10 +111,29 @@
   }
 
   @media (max-width: 640px) {
-    .header-panel { margin-bottom: var(--space-3); gap: var(--space-3); padding-left: var(--space-6) !important; }
-    .page-title { font-size: 1.5rem; }
-    .header-links { flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-    .header-actions { flex-direction: row; flex-wrap: nowrap; gap: var(--space-2); }
-    .cta-button { width: auto; padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+    .header-panel {
+      margin-bottom: var(--space-3);
+      gap: var(--space-3);
+      padding-left: var(--space-6) !important;
+    }
+    .page-title {
+      font-size: 1.5rem;
+    }
+    .header-links {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .header-actions {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: var(--space-2);
+    }
+    .cta-button {
+      width: auto;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.8rem;
+    }
   }
 </style>

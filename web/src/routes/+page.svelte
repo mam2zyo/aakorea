@@ -26,8 +26,8 @@
   </Section>
 {/if}
 
-<Section 
-  eyebrow="First Visit Flow" 
+<Section
+  eyebrow="First Visit Flow"
   title="처음 방문했다면 이 순서로 보시면 됩니다."
   description="긴 설명보다 행동 순서를 먼저 보여 주어, 처음인 분도 다음 단계로 자연스럽게 이어지도록 구성했습니다."
 >

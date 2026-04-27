@@ -7,11 +7,7 @@
     children: Snippet;
   }
 
-  let { 
-    maxWidth = '1180px', 
-    class: className = '', 
-    children 
-  }: Props = $props();
+  let { maxWidth = '1180px', class: className = '', children }: Props = $props();
 </script>
 
 <div class="container {className}" style:max-width={maxWidth}>

@@ -1,7 +1,9 @@
 @import './lib/styles/tokens.css';
 
 /* Global Resets & Base Styles */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 

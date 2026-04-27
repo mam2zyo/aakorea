@@ -12,9 +12,13 @@
 
   // Simple scroll listener for minimal header effect
   if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', () => {
-      isScrolling = window.scrollY > 20;
-    }, { passive: true });
+    window.addEventListener(
+      'scroll',
+      () => {
+        isScrolling = window.scrollY > 20;
+      },
+      { passive: true }
+    );
   }
 </script>
 
@@ -31,11 +35,7 @@
 
       <nav class="nav">
         {#each navLinks as link}
-          <a 
-            href={link.path} 
-            class="nav-link" 
-            class:active={page.url.pathname === link.path}
-          >
+          <a href={link.path} class="nav-link" class:active={page.url.pathname === link.path}>
             {link.label}
           </a>
         {/each}
@@ -60,7 +60,7 @@
   /* Scrolled state for visual polish on better devices */
   .scrolled {
     padding: var(--space-2) 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 
   .inner {
@@ -130,7 +130,7 @@
     .brand-copy {
       display: none;
     }
-    
+
     .nav-link {
       padding: var(--space-2);
       font-size: var(--font-size-xs);

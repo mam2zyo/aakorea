@@ -10,12 +10,31 @@
     onSearch: () => void;
   }
 
-  let { show = $bindable(false), filters = $bindable(), districts, onClose, onSearch }: Props = $props();
+  let {
+    show = $bindable(false),
+    filters = $bindable(),
+    districts,
+    onClose,
+    onSearch
+  }: Props = $props();
 </script>
 
 {#if show}
-  <div class="modal-overlay" role="button" tabindex="-1" onclick={onClose} onkeydown={(e) => e.key === 'Escape' && onClose()}>
-    <div class="modal-content" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="-1"
+    onclick={onClose}
+    onkeydown={(e) => e.key === 'Escape' && onClose()}
+  >
+    <div
+      class="modal-content"
+      role="dialog"
+      aria-modal="true"
+      tabindex="-1"
+      onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+    >
       <div class="modal-header">
         <h2>상세 검색</h2>
         <button class="close-btn" onclick={onClose}>×</button>
@@ -23,7 +42,12 @@
       <div class="modal-body">
         <div class="field">
           <label for="keyword">키워드 (모임명/장소)</label>
-          <input type="text" id="keyword" bind:value={filters.keyword} placeholder="검색어를 입력하세요..." />
+          <input
+            type="text"
+            id="keyword"
+            bind:value={filters.keyword}
+            placeholder="검색어를 입력하세요..."
+          />
         </div>
         <div class="field">
           <label for="districtId">지역연합</label>
@@ -54,7 +78,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-primary full-width" onclick={() => { onSearch(); onClose(); }}>
+        <button
+          class="btn-primary full-width"
+          onclick={() => {
+            onSearch();
+            onClose();
+          }}
+        >
           검색 결과 보기
         </button>
       </div>
@@ -85,16 +115,36 @@
     animation: modal-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  @keyframes modal-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  @keyframes modal-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8); }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-8);
+  }
   .modal-header h2 {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0;
     color: var(--color-text-strong);
   }
-  .close-btn { background: none; border: none; font-size: 2rem; color: var(--color-text-soft); cursor: pointer; }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--color-text-soft);
+    cursor: pointer;
+  }
 
   .field {
     display: flex;
@@ -110,7 +160,8 @@
     margin-left: 0.5rem;
   }
 
-  select, input {
+  select,
+  input {
     width: 100%;
     padding: 0.85rem 1.25rem;
     border: 1px solid var(--color-border);
@@ -120,7 +171,8 @@
     transition: all 0.2s ease;
   }
 
-  select:focus, input:focus {
+  select:focus,
+  input:focus {
     border-color: var(--color-primary);
     outline: none;
     box-shadow: 0 0 0 3px rgba(var(--palette-blue-500-rgb), 0.1);
@@ -132,9 +184,9 @@
     margin-top: var(--space-8);
   }
 
-  .btn-primary { 
-    background: var(--color-primary); 
-    color: #fff; 
+  .btn-primary {
+    background: var(--color-primary);
+    color: #fff;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s ease;
@@ -148,5 +200,7 @@
     border: 1px solid transparent;
   }
 
-  .full-width { width: 100%; }
+  .full-width {
+    width: 100%;
+  }
 </style>

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-
   interface Props {
     latitude: number;
     longitude: number;
@@ -67,7 +66,7 @@
         title: groupName
       });
       marker.setMap(map);
-      
+
       loadError = false;
     } catch (e) {
       console.error('Kakao Map Load Error:', e);

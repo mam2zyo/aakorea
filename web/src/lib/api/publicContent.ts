@@ -78,7 +78,7 @@ export const publicContentApi = {
   getNotice(id: string | number, options?: RequestOptions) {
     return request<Notice>(`/api/public/notices/${id}`, options);
   },
-  
+
   getContentPage(key: string, options?: RequestOptions) {
     return request<ContentPage>(`/api/public/content-pages/${encodeURIComponent(key)}`, options);
   },
@@ -95,7 +95,7 @@ export const publicContentApi = {
         query.append(key, value.toString());
       }
     });
-    
+
     const path = `/api/public/meetings${query.toString() ? '?' + query.toString() : ''}`;
     return request<Meeting[]>(path, options);
   },
