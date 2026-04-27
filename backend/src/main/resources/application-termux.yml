@@ -12,6 +12,12 @@ app:
     allowed-origins:
       - https://maumtalk.win
       - https://www.maumtalk.win
+      - http://maumtalk.win
+      - http://www.maumtalk.win
+      - https://maumtalk.win:8080
+      - https://www.maumtalk.win:8080
+      - http://maumtalk.win:8080
+      - http://www.maumtalk.win:8080
       - http://localhost
       - http://127.0.0.1
       - http://localhost:8080

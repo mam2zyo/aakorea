@@ -1,46 +1,67 @@
 #!/usr/bin/env bash
-# 백엔드(aakorea-core) 재시작 및 관리 스크립트 (Termux용)
+# AAKorea 백엔드 재시작 및 관리 스크립트 (Termux 최적화 버전)
 set -euo pipefail
 
-# 실행할 명령 (기본값: restart)
 COMMAND="${1:-restart}"
 
 # 기본 경로 설정
-APP_DIR="${APP_DIR:-/data/data/com.termux/files/home/aakorea/backend}"
-JAR_PATH="${JAR_PATH:-${APP_DIR}/aakorea-core.jar}"
-LOG_PATH="${LOG_PATH:-/data/data/com.termux/files/home/aakorea/log/application.log}"
-PID_FILE="${PID_FILE:-${APP_DIR}/application.pid}"
-ENV_FILE="${ENV_FILE:-/data/data/com.termux/files/home/aakorea/config/aakorea-termux.env}"
-APP_NAME_PATTERN="${APP_NAME_PATTERN:-aakorea-core.jar}"
-SPRING_PROFILE="${SPRING_PROFILE:-termux}"
+APP_ROOT="/data/data/com.termux/files/home/aakorea"
+APP_DIR="${APP_ROOT}/backend"
+JAR_PATH="${APP_DIR}/aakorea-core.jar"
+LOG_PATH="${APP_ROOT}/log/application.log"
+PID_FILE="${APP_DIR}/application.pid"
+ENV_FILE="${APP_ROOT}/config/aakorea-termux.env"
+
+# WiFi Keep Alive 설정
+WIFI_KEEPALIVE_PID_FILE="${APP_DIR}/wifi-keepalive.pid"
+WIFI_KEEPALIVE_INTERVAL=30
 
 log() { printf '[restart-backend] %s\n' "$*"; }
 
 load_env_file() {
     if [[ -f "${ENV_FILE}" ]]; then
-        set -a
-        source "${ENV_FILE}"
-        set +a
+        set -a; source "${ENV_FILE}"; set +a
     fi
 }
 
-find_running_pids() {
-    ps -ef | awk -v pattern="${APP_NAME_PATTERN}" '$0 ~ pattern && $0 !~ /awk/ && $0 !~ /grep/ { print $2 }'
+stop_wifi_keepalive() {
+    if [[ -f "${WIFI_KEEPALIVE_PID_FILE}" ]]; then
+        local kpid; kpid=$(cat "${WIFI_KEEPALIVE_PID_FILE}")
+        kill "${kpid}" 2>/dev/null || true
+        rm -f "${WIFI_KEEPALIVE_PID_FILE}"
+    fi
+}
+
+start_wifi_keepalive() {
+    stop_wifi_keepalive
+    load_env_file
+    
+    # 환경 변수에서 타겟을 가져오고, 없으면 기본값(192.168.50.1) 사용
+    local target="${WIFI_KEEPALIVE_TARGET:-192.168.50.1}"
+    
+    if [[ "${WIFI_KEEPALIVE_ENABLED:-1}" == "1" ]]; then
+        log "WiFi Keep-alive 시작 (대상: ${target})"
+        nohup ping -i "${WIFI_KEEPALIVE_INTERVAL}" "${target}" > /dev/null 2>&1 &
+        echo "$!" > "${WIFI_KEEPALIVE_PID_FILE}"
+    fi
 }
 
 stop_backend() {
-    local pids=()
-    while IFS= read -r pid; do [[ -n "${pid}" ]] && pids+=("${pid}"); done < <(find_running_pids)
+    stop_wifi_keepalive
+    log "기존 백엔드 종료 시도..."
     
-    if [[ ${#pids[@]} -eq 0 ]]; then
-        log "실행 중인 백엔드 프로세스가 없습니다."
-        return
+    if [[ -f "${PID_FILE}" ]]; then
+        local pid; pid=$(cat "${PID_FILE}")
+        kill "${pid}" 2>/dev/null || true
+        sleep 2
     fi
 
-    log "백엔드 프로세스 종료 시도 (PID: ${pids[*]})"
-    kill "${pids[@]}" 2>/dev/null || true
-    sleep 3
-    kill -9 "${pids[@]}" 2>/dev/null || true
+    local pids; pids=$(pgrep -f "aakorea-core.jar" || true)
+    if [[ -n "${pids}" ]]; then
+        log "남아있는 프로세스 강제 종료 (PIDs: ${pids})"
+        pkill -9 -f "aakorea-core.jar" || true
+    fi
+    
     rm -f "${PID_FILE}"
 }
 
@@ -48,17 +69,22 @@ start_backend() {
     load_env_file
     mkdir -p "$(dirname "${LOG_PATH}")"
     
-    log "백엔드 시작 (프로필: ${SPRING_PROFILE})"
-    JAVA_OPTS="${JAVA_OPTS:-} -DAAKOREA_CONTENT_ROOT=${AAKOREA_CONTENT_ROOT:-/data/data/com.termux/files/home/aakorea/contents} -DAAKOREA_STORAGE_ROOT=${AAKOREA_STORAGE_ROOT:-/data/data/com.termux/files/home/aakorea/uploads}"
+    if command -v termux-wake-lock >/dev/null; then
+        termux-wake-lock
+    fi
+
+    log "백엔드 시작 (프로필: termux)"
+    JAVA_OPTS="${JAVA_OPTS:-} -DAAKOREA_CONTENT_ROOT=${APP_ROOT}/contents -DAAKOREA_STORAGE_ROOT=${APP_ROOT}/uploads"
     
-    SPRING_PROFILES_ACTIVE="${SPRING_PROFILE}" nohup java ${JAVA_OPTS} -jar "${JAR_PATH}" --server.port="${AAKOREA_SERVER_PORT:-8081}" > "${LOG_PATH}" 2>&1 &
+    SPRING_PROFILES_ACTIVE="termux" nohup java ${JAVA_OPTS} -jar "${JAR_PATH}" --server.port=8081 > "${LOG_PATH}" 2>&1 &
     echo "$!" > "${PID_FILE}"
     
-    sleep 2
+    sleep 3
     if kill -0 "$(cat "${PID_FILE}")" 2>/dev/null; then
         log "백엔드 시작 성공 (PID: $(cat "${PID_FILE}"))"
+        start_wifi_keepalive
     else
-        log "백엔드 시작 실패. 로그를 확인하세요: ${LOG_PATH}"
+        log "백엔드 시작 실패! 로그를 확인하세요: ${LOG_PATH}"
         exit 1
     fi
 }
@@ -68,8 +94,17 @@ case "${COMMAND}" in
     stop) stop_backend ;;
     restart) stop_backend; start_backend ;;
     status)
-        pids=($(find_running_pids))
-        if [[ ${#pids[@]} -gt 0 ]]; then log "실행 중 (PID: ${pids[*]})"; else log "정지됨"; fi
+        if pgrep -f "aakorea-core.jar" >/dev/null; then log "백엔드: 실행 중"; else log "백엔드: 정지됨"; fi
+        if [[ -f "${WIFI_KEEPALIVE_PID_FILE}" ]]; then
+            local kpid; kpid=$(cat "${WIFI_KEEPALIVE_PID_FILE}")
+            if kill -0 "${kpid}" 2>/dev/null; then
+                log "WiFi Keep-alive: 실행 중 (PID: ${kpid})"
+            else
+                log "WiFi Keep-alive: 정지됨 (PID 파일만 존재)"
+            fi
+        else
+            log "WiFi Keep-alive: 정지됨"
+        fi
         ;;
     *) echo "Usage: $0 {start|stop|restart|status}"; exit 1 ;;
 esac

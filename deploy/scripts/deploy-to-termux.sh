@@ -19,9 +19,13 @@ TERMUX_APP_ROOT="/data/data/com.termux/files/home/aakorea"
 
 log() { printf '\n[deploy] %s\n' "$*"; }
 
-# SSH/SCP 공통 옵션
-SSH_OPTS="-p ${TERMUX_SSH_PORT}"
-SCP_OPTS="-P ${TERMUX_SSH_PORT}"
+# SSH/SCP 공통 옵션 (ControlMaster를 사용하여 세션 공유 -> 비번 한 번만 입력)
+SOCKET="/tmp/ssh_mux_%h_%p_%r"
+SSH_OPTS="-p ${TERMUX_SSH_PORT} -o ControlMaster=auto -o ControlPath=${SOCKET} -o ControlPersist=600"
+SCP_OPTS="-P ${TERMUX_SSH_PORT} -o ControlPath=${SOCKET}"
+
+# 스크립트 종료 시 SSH 마스터 세션 종료 (선택 사항)
+trap 'ssh -O exit -p ${TERMUX_SSH_PORT} -o ControlPath=${SOCKET} "${TERMUX_TARGET}" 2>/dev/null || true' EXIT
 
 # 1. 빌드 단계
 log "--- 빌드 단계 시작 ---"
