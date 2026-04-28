@@ -38,21 +38,21 @@
     text-align: left;
     background: #fff;
     padding: var(--space-6) var(--space-8);
-    border-radius: 1.5rem;
-    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--palette-blue-100);
     display: flex;
-    gap: var(--space-1);
+    gap: var(--space-6);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     appearance: none;
     font-family: inherit;
-    box-shadow: 0 4px 12px var(--color-shadow);
+    box-shadow: 0 4px 12px rgba(var(--palette-blue-900-rgb), 0.04);
     margin: 0;
   }
 
   .meeting-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 30px var(--color-shadow);
+    box-shadow: 0 12px 32px rgba(var(--palette-blue-900-rgb), 0.08);
     border-color: var(--color-primary);
   }
 
@@ -60,7 +60,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 70px;
+    min-width: 80px;
+    border-right: 1px solid var(--palette-blue-100);
+    padding-right: var(--space-4);
   }
 
   .day-time {
@@ -70,9 +72,9 @@
   }
 
   .day-time .day {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #393c40;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--palette-blue-950);
   }
 
   .day-time .time {
@@ -85,7 +87,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
+    justify-content: center;
   }
 
   .group-info {
@@ -95,49 +98,47 @@
   }
 
   .group-info .group-name {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--palette-blue-950);
     margin: 0;
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
   }
 
   .distance-inline {
     font-size: 0.85rem;
     color: var(--color-primary);
-    font-weight: 500;
-    margin-top: 1px;
+    font-weight: 600;
   }
 
   .card-main .address {
-    font-size: 0.9rem;
-    color: #4b5563;
+    font-size: 0.95rem;
+    color: var(--palette-slate-450);
     margin: 0;
   }
 
   .type-badge {
-    padding: 0.2rem 0.6rem;
-    border-radius: 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
     white-space: nowrap;
-    margin-left: auto;
   }
 
   .type-badge[data-type='OPEN'] {
-    background: #ecfdf5;
-    color: #059669;
+    background: var(--color-success);
+    color: var(--color-success-text);
   }
   .type-badge[data-type='CLOSED'] {
-    background: #fef2f2;
-    color: #dc2626;
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
   }
   .type-badge[data-type='NOTFIXED'] {
-    background: #fffbeb;
-    color: #d97706;
+    background: var(--palette-blue-100);
+    color: var(--palette-slate-450);
   }
 
   @media (max-width: 640px) {

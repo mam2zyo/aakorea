@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { Meeting, GroupDetail, GroupMeeting } from '$lib/api/publicContent';
   import KakaoMeetingMap from './KakaoMeetingMap.svelte';
 
@@ -10,6 +11,19 @@
   }
 
   let { selectedMeeting, groupDetail, loading, onClose }: Props = $props();
+
+  let isRichUI = $state(false);
+  let mapLoaded = $state(false);
+
+  onMount(() => {
+    isRichUI = document.documentElement.classList.contains('is-rich-ui');
+    // 고사양이면 즉시 로드, 저사양이면 대기
+    mapLoaded = isRichUI;
+  });
+
+  function handleLoadMap() {
+    mapLoaded = true;
+  }
 
   // 현재 상세 팝업에서 선택된(포커스된) 모임 일정
   let activeMeeting = $state<GroupMeeting | Meeting | null>(null);
@@ -221,11 +235,25 @@
                 </div>
 
                 <div class="map-container">
-                  <KakaoMeetingMap
-                    latitude={activeMeeting.latitude}
-                    longitude={activeMeeting.longitude}
-                    groupName={selectedMeeting.groupName}
-                  />
+                  {#if mapLoaded}
+                    <KakaoMeetingMap
+                      latitude={activeMeeting.latitude}
+                      longitude={activeMeeting.longitude}
+                      groupName={selectedMeeting.groupName}
+                    />
+                  {:else}
+                    <div class="map-placeholder">
+                      <p>저사양 기기 최적화를 위해 지도를 로드하지 않았습니다.</p>
+                      <button class="btn-load-map" onclick={handleLoadMap}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                          <line x1="8" y1="2" x2="8" y2="18"></line>
+                          <line x1="16" y1="6" x2="16" y2="22"></line>
+                        </svg>
+                        지도 로드하기
+                      </button>
+                    </div>
+                  {/if}
                 </div>
               </div>
             </div>
@@ -267,15 +295,18 @@
     backdrop-filter: blur(8px);
     z-index: 2000;
     display: flex;
-    align-items: flex-end; /* 모바일: 하단 배치 */
+    align-items: flex-start; /* 상단 잘림 방지: flex-start + margin auto 조합 */
     justify-content: center;
+    overscroll-behavior: contain;
   }
 
   .modal-content {
     background: #fff;
     width: 100%;
     max-width: 600px;
-    height: 90vh;
+    margin-top: auto; /* 모바일: 하단 밀착 */
+    height: 90vh; /* fallback */
+    max-height: 92dvh; /* 삼성 브라우저 등 가변 UI 대응 */
     border-radius: 2rem 2rem 0 0;
     position: relative;
     display: flex;
@@ -283,6 +314,7 @@
     overflow: hidden;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
     animation: slide-up 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
   }
 
   @keyframes slide-up {
@@ -325,8 +357,8 @@
   }
 
   .modal-header {
-    padding: var(--space-3) var(--space-8);
-    border-bottom: 1.5px solid #e2e2e2; /* 조금 더 선명한 구분선 */
+    padding: var(--space-5) var(--space-8) var(--space-3); /* 상단 여백 확대 (잘림 방지) */
+    border-bottom: 1.5px solid #f1f1f1;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -485,10 +517,53 @@
   }
 
   .map-container {
-    height: 240px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
     border-radius: 1.5rem;
     overflow: hidden;
     border: 1px solid var(--color-border-subtle);
+    background: var(--palette-slate-50);
+    position: relative;
+  }
+
+  .map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    text-align: center;
+  }
+
+  .map-placeholder p {
+    font-size: 0.8rem;
+    color: var(--palette-slate-400);
+    margin: 0;
+  }
+
+  .btn-load-map {
+    background: #fff;
+    border: 1px solid var(--palette-blue-200);
+    color: var(--palette-blue-600);
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+  }
+
+  .btn-load-map:hover {
+    background: var(--palette-blue-50);
+    border-color: var(--palette-blue-400);
   }
 
   /* 연락처 */
@@ -578,13 +653,15 @@
 
   @media (min-width: 640px) {
     .modal-overlay {
-      align-items: center; /* 큰 화면: 중앙 배치 */
+      align-items: flex-start; /* 데스크탑도 상단 잘림 방지 */
       padding: var(--space-6);
     }
 
     .modal-content {
+      margin: auto; /* 중앙 배치 */
       height: auto;
       max-height: 85vh;
+      max-height: 85dvh;
       border-radius: 2rem; /* 사방 곡률 */
       animation: modal-appear 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -597,6 +674,10 @@
     .modal-body {
       padding: var(--space-4) var(--space-10);
       padding-bottom: var(--space-24);
+    }
+
+    .map-container {
+      aspect-ratio: 4 / 3; /* 큰 화면: 안정적인 느낌의 비율 */
     }
   }
 </style>

@@ -74,7 +74,7 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* 상단 잘림 방지 */
     justify-content: center;
     z-index: 1000;
     backdrop-filter: blur(8px);
@@ -85,6 +85,9 @@
     background: #fff;
     width: 100%;
     max-width: 480px;
+    margin: auto; /* 중앙 배치 + 상단 잘림 방지 */
+    max-height: 90dvh;
+    overflow-y: auto;
     border-radius: 2rem;
     padding: var(--space-8);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);

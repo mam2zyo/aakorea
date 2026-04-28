@@ -94,6 +94,8 @@
   --color-danger-soft: var(--palette-clay-100);
   --color-success: var(--palette-blue-soft-100);
   --color-success-text: var(--palette-blue-soft-700);
+  --color-accent: var(--palette-gold-500);
+  --color-accent-strong: var(--palette-gold-600);
   --color-shadow: rgba(var(--palette-blue-900-rgb), 0.11);
 
   /* --- Layer 3: Component Tokens (Default: Breeze) --- */

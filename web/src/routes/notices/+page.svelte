@@ -1,6 +1,6 @@
 <script lang="ts">
   import Container from '$lib/components/ui/Container.svelte';
-  import Section from '$lib/components/ui/Section.svelte';
+  import SubPageHero from '$lib/components/ui/SubPageHero.svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -12,20 +12,18 @@
   <meta name="description" content="한국 AA 연합의 새로운 소식과 공지사항을 확인하세요." />
 </svelte:head>
 
-<Section>
-  <Container>
-    <div class="page-header">
-      <h1 class="page-title">공지사항</h1>
-      <p class="page-description">한국 AA 연합의 새로운 소식과 안내를 전해드립니다.</p>
-    </div>
+<SubPageHero eyebrow="Announcements & News" title="공지사항" />
 
+<Container>
+  <div class="notice-list-container">
     <div class="notice-list">
       {#if notices.length === 0}
         <div class="empty-state">
           <p>등록된 공지사항이 없습니다.</p>
         </div>
       {:else}
-        {#each notices as notice}
+        {#each notices as notice (notice.id)}
+          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
           <a href="/notices/{notice.id}" class="notice-card" class:important={notice.important}>
             <div class="notice-meta">
               {#if notice.important}
@@ -41,25 +39,12 @@
         {/each}
       {/if}
     </div>
-  </Container>
-</Section>
+  </div>
+</Container>
 
 <style>
-  .page-header {
-    margin-bottom: var(--space-8);
-  }
-
-  .page-title {
-    font-size: var(--font-size-3xl);
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--color-text-strong);
-    margin: 0 0 var(--space-2);
-  }
-
-  .page-description {
-    color: var(--color-text-soft);
-    font-size: var(--font-size-lg);
+  .notice-list-container {
+    padding: var(--space-10) 0;
   }
 
   .notice-list {
@@ -70,23 +55,24 @@
 
   .notice-card {
     display: block;
-    padding: var(--space-5);
-    background: var(--public-card-background);
-    border: 1px solid var(--public-card-border);
+    padding: var(--space-6);
+    background: #fff;
+    border: 1px solid var(--palette-blue-100);
     border-radius: var(--radius-lg);
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(var(--palette-blue-500-rgb), 0.04);
   }
 
   .notice-card:hover {
     border-color: var(--color-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px var(--color-shadow);
+    box-shadow: 0 8px 24px rgba(var(--palette-blue-500-rgb), 0.1);
   }
 
   .notice-card.important {
-    background: var(--public-card-background-soft);
-    border-left: 4px solid var(--palette-gold);
+    background: var(--palette-blue-50);
+    border-left: 4px solid var(--color-accent);
   }
 
   .notice-meta {
@@ -97,15 +83,15 @@
   }
 
   .badge {
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 2px 10px;
+    border-radius: 999px;
     font-size: var(--font-size-xs);
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .badge.important {
-    background: var(--palette-gold);
-    color: var(--palette-blue-950);
+    background: var(--color-accent);
+    color: #fff;
   }
 
   .date {
@@ -116,7 +102,7 @@
   .notice-title {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-text-strong);
+    color: var(--palette-blue-950);
     margin: 0 0 var(--space-3);
     line-height: 1.4;
   }
@@ -134,18 +120,14 @@
   .empty-state {
     padding: var(--space-12);
     text-align: center;
-    background: var(--public-card-background-soft);
+    background: var(--palette-blue-50);
     border-radius: var(--radius-lg);
     color: var(--color-text-soft);
   }
 
   @media (max-width: 640px) {
-    .page-title {
-      font-size: var(--font-size-2xl);
-    }
-
     .notice-card {
-      padding: var(--space-4);
+      padding: var(--space-5);
     }
   }
 </style>

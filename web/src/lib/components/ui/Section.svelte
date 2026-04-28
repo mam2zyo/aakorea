@@ -23,17 +23,19 @@
 
 <section class="section {className}" class:center>
   <Container>
-    <div class="header">
-      {#if eyebrow}
-        <p class="eyebrow">{eyebrow}</p>
-      {/if}
-      {#if title}
-        <h2 class="title">{title}</h2>
-      {/if}
-      {#if description}
-        <p class="description">{description}</p>
-      {/if}
-    </div>
+    {#if eyebrow || title || description}
+      <div class="header">
+        {#if eyebrow}
+          <p class="eyebrow">{eyebrow}</p>
+        {/if}
+        {#if title}
+          <h2 class="title">{title}</h2>
+        {/if}
+        {#if description}
+          <p class="description">{description}</p>
+        {/if}
+      </div>
+    {/if}
 
     {#if children}
       <div class="content">

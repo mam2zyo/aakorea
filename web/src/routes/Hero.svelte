@@ -4,33 +4,36 @@
 </script>
 
 <div class="hero">
+  <div class="hero-bg">
+    <img src="/hero-bg.png" alt="Hope and Recovery" />
+  </div>
+
   <Container>
     <div class="hero-inner">
       <div class="copy">
         <p class="eyebrow">Alcoholics Anonymous Korea</p>
         <h1 class="title">
-          처음 오셨나요? <br />
-          안내를 읽고 가까운 <span class="accent">AA 모임</span>을 찾을 수 있습니다.
+          술문제로 <br />
+          어려움이 있으신가요?
         </h1>
         <p class="description">
-          처음 방문한 분은 안내를 먼저 읽고, 바로 도움을 찾고 싶은 분은 지역별 모임과 공개 연락처를
-          확인할 수 있도록 홈을 출발점으로 구성했습니다.
+          AA가 도움이 될 수 있습니다. <br />
+          익명의 알코올중독자들 모임에 참석해보세요.
         </p>
 
         <div class="actions">
-          <Button variant="primary" size="lg">처음 오신 분 안내</Button>
-          <Button variant="outline" size="lg">모임 찾기</Button>
-          <Button variant="ghost" size="lg">공지 보기</Button>
+          <Button variant="accent" size="lg">가까운 모임 찾기</Button>
+          <Button variant="outline" size="lg">처음 오신 분 안내</Button>
         </div>
       </div>
 
       <div class="aside">
         <div class="card glass">
-          <span class="chip">빠른 시작</span>
-          <strong>어디서부터 봐야 할지 바로 정할 수 있게</strong>
+          <span class="chip">Hope & Recovery</span>
+          <strong>혼자가 아닙니다</strong>
           <p>
-            안내, 공지, 모임 찾기를 첫 화면에서 같은 수준으로 두고 다음 행동을 짧게 고를 수 있게
-            했습니다.
+            전 세계 수백만 명의 멤버들이 AA를 통해 회복의 삶을 살고 있습니다. 오늘 그 첫걸음을
+            내디뎌보세요.
           </p>
         </div>
       </div>
@@ -40,134 +43,182 @@
 
 <style>
   .hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
     padding: var(--space-12) 0;
     position: relative;
     overflow: hidden;
+    background-color: var(--palette-blue-50);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   .hero-inner {
-    display: grid;
-    grid-template-columns: 1.3fr 0.7fr;
-    gap: var(--space-8);
-    align-items: center;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-10);
   }
 
   .copy {
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    max-width: 580px;
   }
 
   .eyebrow {
     color: var(--color-primary);
     font-size: var(--font-size-sm);
     font-weight: 700;
-    letter-spacing: 0.15em;
     text-transform: uppercase;
     margin: 0;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9);
   }
 
   .title {
     font-family: var(--font-display);
-    font-size: var(--font-size-4xl);
-    line-height: 1.15;
-    color: var(--color-text);
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--palette-blue-950);
     margin: 0;
-  }
-
-  .accent {
-    color: var(--color-primary);
-    position: relative;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 16px rgba(255, 255, 255, 0.9);
   }
 
   .description {
     font-size: var(--font-size-xl);
-    color: var(--color-text-muted);
+    color: var(--palette-white);
+    max-width: 600px;
     line-height: 1.6;
-    margin: 0;
-    max-width: 640px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
-    margin-top: var(--space-4);
+    margin-top: var(--space-2);
   }
 
   .aside {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .card {
-    padding: var(--space-8);
+    padding: var(--space-8) var(--space-10);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--public-panel-border);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
-    max-width: 320px;
-    box-shadow: var(--public-panel-shadow);
+    gap: var(--space-4);
+    max-width: 420px;
+    box-shadow: 0 12px 40px rgba(var(--palette-blue-900-rgb), 0.08);
   }
 
   .glass {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .chip {
     display: inline-flex;
+    align-items: center;
     align-self: flex-start;
     padding: var(--space-1) var(--space-3);
-    background: rgba(var(--palette-blue-500-rgb), 0.1);
-    color: var(--color-primary);
+    background: var(--color-primary);
+    color: #fff;
     border-radius: 999px;
     font-size: var(--font-size-xs);
     font-weight: 700;
+    letter-spacing: 0.05em;
   }
 
   .card strong {
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
+    font-size: var(--font-size-xl);
+    color: var(--palette-blue-950);
     line-height: 1.3;
+    margin: 0;
   }
 
   .card p {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    line-height: 1.5;
+    font-size: var(--font-size-base);
+    color: var(--palette-blue-900);
+    opacity: 0.8;
+    line-height: 1.6;
     margin: 0;
   }
 
   @media (max-width: 1024px) {
-    .hero-inner {
-      grid-template-columns: 1fr;
-      gap: var(--space-10);
+    .hero {
+      min-height: 60vh;
+      padding: var(--space-20) 0;
     }
-
-    .aside {
-      justify-content: flex-start;
-    }
-
-    .card {
-      max-width: none;
-      width: 100%;
+    .title {
+      font-size: 2.8rem;
     }
   }
 
   @media (max-width: 640px) {
-    .title {
-      font-size: var(--font-size-3xl);
+    .hero {
+      min-height: 38vh;
+      padding: var(--space-8) 0 var(--space-6);
     }
-
-    .description {
-      font-size: var(--font-size-lg);
-    }
-
-    .actions > :global(*) {
+    .hero-bg img {
+      height: 100%;
       width: 100%;
+      object-fit: cover;
+      object-position: 50%;
+    }
+    .hero-inner {
+      gap: var(--space-6);
+      position: relative;
+      z-index: 2;
+    }
+    .title {
+      font-size: 1.95rem;
+    }
+    .description {
+      font-size: var(--font-size-base);
+    }
+    .actions {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-4);
+    }
+    .actions > :global(*) {
+      width: auto;
+      min-width: 180px;
+      padding: 0.9rem 1.8rem;
+      font-size: 1rem;
+    }
+    /* Enhance visibility for the outline button on mobile image background */
+    .actions > :global(*:last-child) {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .aside {
+      display: none;
     }
   }
 </style>
