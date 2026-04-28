@@ -31,8 +31,9 @@
   .sub-hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #f8fbff 0%, #f0f6ff 100%);
-    padding: var(--space-8) 0 var(--space-8);
+    /* background: linear-gradient(135deg, #efc26e 0%, rgb(64, 130, 58) 100%); */
+    background-color: var(--palette-gold-500);
+    padding: var(--space-10) 0 var(--space-12);
     border-bottom: 1px solid var(--palette-blue-100);
   }
 
@@ -57,12 +58,13 @@
   .title-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-1);
   }
 
   .eyebrow {
     font-size: 0.85rem;
     font-weight: 700;
+    padding-left: var(--space-2);
     color: var(--color-primary);
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -90,15 +92,22 @@
       align-items: flex-start;
       gap: var(--space-6);
     }
+    .page-title {
+      font-size: 2.8rem;
+      line-height: 1.2;
+    }
     .hero-actions {
       width: 100%;
       flex-wrap: wrap;
+    }
+    .sub-hero {
+      padding: var(--space-8) 0 var(--space-10);
     }
   }
 
   @media (max-width: 640px) {
     .sub-hero {
-      padding: var(--space-8) 0 var(--space-8);
+      padding: var(--space-6) 0 var(--space-8);
     }
     .page-title {
       font-size: 2.1rem;

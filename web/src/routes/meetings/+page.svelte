@@ -135,7 +135,7 @@
   <title>모임 찾기 - AA Korea</title>
 </svelte:head>
 
-<SubPageHero eyebrow="AA Meeting Finder" title="AA 모임 찾기">
+<SubPageHero eyebrow="FIND AA MEETINGS" title="AA 모임 찾기">
   <button
     class="cta-button"
     onclick={() => {
@@ -364,8 +364,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: var(--space-2) var(--space-8);
     width: 100%;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--color-text-soft);
   }
 
@@ -377,8 +378,8 @@
     border: none;
     padding: 0;
     color: var(--color-text-soft);
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: color 0.2s;
   }
@@ -394,6 +395,7 @@
     border: 1px solid rgba(var(--palette-blue-500-rgb), 0.1);
     padding: var(--space-8) var(--space-6);
     margin-bottom: var(--space-6);
+    margin-top: var(--space-10);
     position: relative;
     z-index: 2;
   }
@@ -475,6 +477,7 @@
   }
 
   .results-top-actions {
+    margin-top: var(--space-10);
     margin-bottom: var(--space-8);
   }
 
@@ -525,7 +528,8 @@
   .pagination-area {
     display: flex;
     justify-content: center;
-    margin-top: var(--space-8);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-10);
   }
   .load-more-btn {
     display: flex;
@@ -582,16 +586,18 @@
       padding: 0.6rem 1rem;
       font-size: 0.85rem;
     }
+    .results-summary {
+      padding: var(--space-2) var(--space-4);
+    }
     .panel {
       padding: var(--space-6);
+      margin-top: var(--space-6);
       margin-bottom: var(--space-8);
-    }
-    .search-actions {
-      grid-template-columns: 1fr;
     }
     .results-top-actions {
       grid-template-columns: 1fr 1fr;
       gap: var(--space-2);
+      margin-top: var(--space-6);
     }
     .results-top-actions button {
       font-size: 0.85rem;

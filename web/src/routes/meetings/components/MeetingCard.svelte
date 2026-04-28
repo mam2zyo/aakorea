@@ -38,10 +38,11 @@
     text-align: left;
     background: #fff;
     padding: var(--space-6) var(--space-8);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border: 1px solid var(--palette-blue-100);
     display: flex;
     gap: var(--space-6);
+    align-items: flex-start;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     appearance: none;
@@ -60,9 +61,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 80px;
+    min-width: 60px;
     border-right: 1px solid var(--palette-blue-100);
-    padding-right: var(--space-4);
+    padding-right: var(--space-2);
   }
 
   .day-time {
@@ -143,7 +144,9 @@
 
   @media (max-width: 640px) {
     .meeting-card {
-      padding: var(--space-5) var(--space-6);
+      padding: var(--space-4) var(--space-4);
+      border-radius: var(--radius-sm);
+      gap: var(--space-4);
     }
   }
 </style>
