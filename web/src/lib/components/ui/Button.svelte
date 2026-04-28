@@ -8,6 +8,9 @@
     disabled?: boolean;
     class?: string;
     style?: string;
+    href?: string;
+    target?: string;
+    rel?: string;
     onclick?: (e: MouseEvent) => void;
     children: Snippet;
   }
@@ -19,14 +22,23 @@
     disabled = false,
     class: className = '',
     style = '',
+    href,
+    target,
+    rel,
     onclick,
     children
   }: Props = $props();
 </script>
 
-<button {type} {disabled} class="btn {variant} {size} {className}" {style} {onclick}>
-  {@render children()}
-</button>
+{#if href}
+  <a {href} {target} {rel} class="btn {variant} {size} {className}" {style} {onclick}>
+    {@render children()}
+  </a>
+{:else}
+  <button {type} {disabled} class="btn {variant} {size} {className}" {style} {onclick}>
+    {@render children()}
+  </button>
+{/if}
 
 <style>
   .btn {

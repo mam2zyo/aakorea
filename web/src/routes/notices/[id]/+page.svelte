@@ -19,28 +19,40 @@
       <a href="/notices" class="back-link">← 목록으로 돌아가기</a>
 
       <div class="title-wrapper">
-        {#if notice.important}
-          <span class="badge important">중요</span>
-        {/if}
         <h1 class="notice-title">{notice.title}</h1>
       </div>
 
       <div class="notice-meta">
         <span class="date"
-          >{new Date(notice.createdAt).toLocaleDateString('ko-KR', {
+          >{new Date(notice.publishedAt).toLocaleDateString('ko-KR', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
           })}</span
         >
-        <span class="divider">|</span>
-        <span class="views">조회 {notice.viewCount}</span>
       </div>
     </div>
 
     <div class="notice-content prose">
-      {@html notice.content}
+      {@html notice.bodyHtml}
     </div>
+
+    {#if notice.attachments && notice.attachments.length > 0}
+      <div class="attachments-section">
+        <h3 class="attachments-title">첨부파일</h3>
+        <ul class="attachments-list">
+          {#each notice.attachments as attachment (attachment.id)}
+            <li class="attachment-item">
+              <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="attachment-link">
+                <span class="file-icon">📎</span>
+                <span class="file-name">{attachment.originalName}</span>
+                <span class="file-size">({Math.round(attachment.fileSize / 1024)} KB)</span>
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
 
     <div class="notice-actions">
       <Button href="/notices" variant="outline">목록보기</Button>
@@ -69,9 +81,6 @@
   }
 
   .title-wrapper {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
     margin-bottom: var(--space-4);
   }
 
@@ -84,30 +93,9 @@
     margin: 0;
   }
 
-  .badge {
-    margin-top: 0.25rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  .badge.important {
-    background: var(--palette-gold);
-    color: var(--palette-blue-950);
-  }
-
   .notice-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
     color: var(--color-text-soft);
     font-size: var(--font-size-sm);
-  }
-
-  .divider {
-    opacity: 0.3;
   }
 
   .notice-content {
@@ -115,6 +103,54 @@
     margin-bottom: var(--space-12);
     color: var(--color-text);
     line-height: 1.8;
+  }
+
+  /* Attachments Section */
+  .attachments-section {
+    margin: var(--space-12) 0;
+    padding: var(--space-6);
+    background: var(--palette-blue-50);
+    border-radius: var(--radius-lg);
+  }
+
+  .attachments-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-strong);
+  }
+
+  .attachments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .attachment-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-3);
+    background: #fff;
+    border: 1px solid var(--palette-blue-100);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+  }
+
+  .attachment-link:hover {
+    background: var(--palette-blue-100);
+    border-color: var(--color-primary);
+  }
+
+  .file-size {
+    color: var(--color-text-soft);
+    font-size: var(--font-size-xs);
   }
 
   /* Prose styles for rendered HTML */
@@ -134,6 +170,26 @@
     margin: var(--space-8) 0 var(--space-4);
   }
 
+  :global(.prose ul) {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+    margin-bottom: var(--space-4);
+  }
+
+  :global(.prose ol) {
+    list-style-type: decimal;
+    padding-left: 1.25rem;
+    margin-bottom: var(--space-4);
+  }
+
+  :global(.prose li) {
+    margin-bottom: var(--space-1);
+  }
+
+  :global(.prose li p) {
+    margin-bottom: 0;
+  }
+
   .notice-actions {
     display: flex;
     justify-content: center;
@@ -144,11 +200,6 @@
   @media (max-width: 640px) {
     .notice-title {
       font-size: var(--font-size-2xl);
-    }
-
-    .title-wrapper {
-      flex-direction: column;
-      gap: var(--space-2);
     }
   }
 </style>

@@ -1,41 +1,12 @@
 import { request, type RequestOptions } from './client';
+import type { components } from './api';
 
-export interface Notice {
-  id: number;
-  title: string;
-  content: string;
-  important: boolean;
-  viewCount: number;
-  createdAt: string;
-}
-
-export interface ContentPage {
-  key: string;
-  title: string;
-  content: string;
-  updatedAt: string;
-}
-
-export interface District {
-  id: number;
-  name: string;
-}
-
-export interface Meeting {
-  id: number;
-  groupId: number;
-  groupName: string;
-  province: string;
-  dayOfWeek: string;
-  startTime: string;
-  type: 'OPEN' | 'CLOSED' | 'NOTFIXED';
-  locationDetail: string;
-  locationAddress: string;
-  latitude: number;
-  longitude: number;
-  districtId: number;
-  distanceKm?: number;
-}
+export type Notice = components['schemas']['PublicNoticeData'];
+export type ContentPage = components['schemas']['PublicContentPageData'];
+export type District = components['schemas']['PublicDistrictResponse'];
+export type Meeting = components['schemas']['MeetingSummary'];
+export type GroupDetail = components['schemas']['GroupDetail'];
+export type GroupMeeting = components['schemas']['GroupMeeting'];
 
 export interface MeetingFilters {
   province?: string;
@@ -48,31 +19,9 @@ export interface MeetingFilters {
   radiusKm?: number;
 }
 
-export interface GroupMeeting {
-  id: number;
-  contactPhone: string;
-  province: string;
-  dayOfWeek: string;
-  startTime: string;
-  type: 'OPEN' | 'CLOSED' | 'NOTFIXED';
-  locationDetail: string;
-  locationAddress: string;
-  latitude: number;
-  longitude: number;
-}
-
-export interface GroupDetail {
-  id: number;
-  name: string;
-  district: District;
-  contactPhone: string;
-  notice: string;
-  meetings: GroupMeeting[];
-}
-
 export const publicContentApi = {
   getNotices(options?: RequestOptions) {
-    return request<Notice[]>('/api/public/notices', options);
+    return request<components['schemas']['PublicNoticeSummary'][]>('/api/public/notices', options);
   },
 
   getNotice(id: string | number, options?: RequestOptions) {

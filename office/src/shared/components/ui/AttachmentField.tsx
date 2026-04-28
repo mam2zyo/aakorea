@@ -31,7 +31,9 @@ export function AttachmentField({ attachments, onChange, disabled }: AttachmentF
       const newAttachments: Attachment[] = []
       for (const file of files) {
         const data = await attachmentApi.uploadAttachment(file)
-        newAttachments.push(data)
+        if (data && data.id !== undefined) {
+          newAttachments.push(data as Attachment)
+        }
       }
       const successfulAttachments = newAttachments.filter(Boolean)
       onChange([...attachments, ...successfulAttachments])

@@ -1,11 +1,18 @@
 <script lang="ts">
   import Button from '$lib/components/ui/Button.svelte';
   import Container from '$lib/components/ui/Container.svelte';
+  import heroBg from '$lib/assets/hero-bg.png?enhanced&w=1920;1280;640';
 </script>
 
 <div class="hero">
   <div class="hero-bg">
-    <img src="/hero-bg.png" alt="Hope and Recovery" />
+    <enhanced:img
+      src={heroBg}
+      alt="Hope and Recovery"
+      fetchpriority="high"
+      loading="eager"
+      sizes="min(1920px, 100vw)"
+    />
   </div>
 
   <Container>
@@ -58,7 +65,7 @@
     z-index: 0;
   }
 
-  .hero-bg img {
+  .hero-bg :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -183,7 +190,7 @@
       min-height: 38vh;
       padding: var(--space-8) 0 var(--space-6);
     }
-    .hero-bg img {
+    .hero-bg :global(img) {
       height: 100%;
       width: 100%;
       object-fit: cover;

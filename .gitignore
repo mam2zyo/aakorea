@@ -14,6 +14,7 @@ Desktop.ini
 old/
 .codex
 .gemini/
+node_modules/
 
 
 # =========================

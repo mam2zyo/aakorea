@@ -12,9 +12,9 @@
 {#if latestNotices.length > 0}
   <Section eyebrow="News" title="최신 소식" description="AA Korea의 새로운 소식을 확인하세요.">
     <div class="notices-grid">
-      {#each latestNotices as notice}
+      {#each latestNotices as notice (notice.id)}
         <a href="/notices/{notice.id}" class="notice-item">
-          <div class="notice-date">{new Date(notice.createdAt).toLocaleDateString('ko-KR')}</div>
+          <div class="notice-date">{new Date(notice.publishedAt).toLocaleDateString('ko-KR')}</div>
           <h3 class="notice-title">{notice.title}</h3>
           <span class="more">자세히 보기 →</span>
         </a>
