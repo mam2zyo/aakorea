@@ -1,6 +1,7 @@
 <script lang="ts">
   import Button from '$lib/components/ui/Button.svelte';
   import Container from '$lib/components/ui/Container.svelte';
+  // @ts-expect-error: enhanced-img query params are not recognized by TS
   import heroBg from '$lib/assets/hero-bg.png?enhanced&w=1920;1280;640';
 </script>
 
