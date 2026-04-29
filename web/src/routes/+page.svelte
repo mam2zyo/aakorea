@@ -13,14 +13,18 @@
   <Section eyebrow="News" title="최신 소식" description="AA Korea의 새로운 소식을 확인하세요.">
     <div class="notices-grid">
       {#each latestNotices as notice (notice.id)}
+        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
         <a href="/notices/{notice.id}" class="notice-item">
-          <div class="notice-date">{new Date(notice.publishedAt).toLocaleDateString('ko-KR')}</div>
+          <div class="notice-date">
+            {notice.publishedAt ? new Date(notice.publishedAt).toLocaleDateString('ko-KR') : ''}
+          </div>
           <h3 class="notice-title">{notice.title}</h3>
           <span class="more">자세히 보기 →</span>
         </a>
       {/each}
     </div>
     <div class="notices-footer">
+      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
       <a href="/notices" class="text-link">모든 공지사항 보기</a>
     </div>
   </Section>
@@ -29,8 +33,8 @@
 <Section
   id="guide"
   eyebrow="First Visit Flow"
-  title="처음 방문했다면 이 순서로 보시면 됩니다."
-  description="긴 설명보다 행동 순서를 먼저 보여 주어, 처음인 분도 다음 단계로 자연스럽게 이어지도록 구성했습니다."
+  title="처음 방문이시라면?"
+  description="먼저 아래 카드들을 살펴보세요."
 >
   <div class="journey-grid">
     <div class="step">
@@ -42,13 +46,16 @@
     <div class="step">
       <span class="number">2</span>
       <h3>지역별 모임을 찾아보세요.</h3>
-      <p>가까운 지역, 요일, 시간대를 기준으로 실제 참석 가능한 모임을 확인합니다.</p>
+      <p>
+        가까운 지역, 요일, 시간대를 기준으로 실제 참석 가능한 모임을 확인합니다. 내 위치를 기준으로
+        검색할 수 있습니다.
+      </p>
     </div>
 
     <div class="step">
       <span class="number">3</span>
       <h3>전화하거나 방문 계획을 세워보세요.</h3>
-      <p>공개된 연락처와 모임 정보를 바탕으로 다음 행동으로 바로 이어집니다.</p>
+      <p>공개된 연락처로 전화하거나 문자 메시지를 남겨보세요.</p>
     </div>
   </div>
 </Section>
@@ -94,6 +101,7 @@
     /* Limit to 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

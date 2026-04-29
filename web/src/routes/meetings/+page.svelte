@@ -12,16 +12,27 @@
   import MeetingCard from './components/MeetingCard.svelte';
   import FilterModal from './components/FilterModal.svelte';
   import MeetingInfoModal from './components/MeetingInfoModal.svelte';
+  import { calculateDistanceKm, roundDistanceKm } from '$lib/utils/distance';
+  import { sortMeetings, SearchMode } from '$lib/utils/sorting';
   import type { PageData } from './$types';
+
+  const SEARCH_STATE = {
+    IDLE: 'idle',
+    LOADING: 'loading',
+    REGION: 'region',
+    NEARBY: 'nearby'
+  } as const;
+
+  type SearchState = (typeof SEARCH_STATE)[keyof typeof SEARCH_STATE];
 
   let { data }: { data: PageData } = $props();
 
   // ... state logic same as before ...
 
   // --- State ---
-  let isLoading = $state(false);
-  let hasSearched = $state(false);
-  let meetings = $state<Meeting[]>([]);
+  let searchState = $state<SearchState>(SEARCH_STATE.IDLE);
+  let rawMeetings = $state<Meeting[]>([]);
+  let nearbyLocation = $state<{ latitude: number; longitude: number } | null>(null);
   let visibleCount = $state(20);
 
   let filters = $state<MeetingFilters>({
@@ -41,22 +52,77 @@
   let loadingGroupDetail = $state(false);
 
   // --- Derived ---
-  let visibleMeetings = $derived(meetings.slice(0, visibleCount));
-  let remainingCount = $derived(Math.max(0, meetings.length - visibleCount));
+  const isLoading = $derived(searchState === SEARCH_STATE.LOADING);
+  const hasSearched = $derived(searchState === SEARCH_STATE.REGION || searchState === SEARCH_STATE.NEARBY);
+
+  // 1. Calculate distances if in NEARBY mode
+  const meetingsWithDistance = $derived(
+    rawMeetings.map((m) => {
+      if (searchState === SEARCH_STATE.NEARBY && nearbyLocation) {
+        const dist = calculateDistanceKm(
+          nearbyLocation.latitude,
+          nearbyLocation.longitude,
+          m.latitude,
+          m.longitude
+        );
+        return { ...m, distanceKm: roundDistanceKm(dist) ?? undefined };
+      }
+      return { ...m, distanceKm: undefined };
+    })
+  );
+
+  // 2. Client-side filtering
+  const filteredMeetings = $derived(
+    meetingsWithDistance.filter((m) => {
+      if (filters.dayOfWeek && filters.dayOfWeek !== 'ALL' && m.dayOfWeek !== filters.dayOfWeek)
+        return false;
+      if (filters.type && filters.type !== 'ALL' && m.type !== filters.type) return false;
+      if (filters.districtId && filters.districtId !== 'ALL') {
+        if (m.districtId == null) return false;
+        if (String(m.districtId) !== String(filters.districtId)) return false;
+      }
+      if (filters.keyword) {
+        const kw = filters.keyword.toLowerCase();
+        const groupName = m.groupName?.toLowerCase() ?? '';
+        const locationDetail = m.locationDetail?.toLowerCase() ?? '';
+        if (!groupName.includes(kw) && !locationDetail.includes(kw)) return false;
+      }
+      return true;
+    })
+  );
+
+  // 3. Sorting
+  const sortedMeetings = $derived(
+    sortMeetings(
+      filteredMeetings,
+      searchState === SEARCH_STATE.NEARBY ? SearchMode.NEARBY : SearchMode.REGION
+    )
+  );
+
+  // 4. Paging
+  let visibleMeetings = $derived(sortedMeetings.slice(0, visibleCount));
+  let remainingCount = $derived(Math.max(0, sortedMeetings.length - visibleCount));
 
   // --- Actions ---
   async function handleSearch() {
-    isLoading = true;
+    searchState = SEARCH_STATE.LOADING;
     visibleCount = 20;
     try {
-      meetings = await publicContentApi.getMeetings(filters);
-      hasSearched = true;
+      rawMeetings = await publicContentApi.getMeetings({ province: filters.province });
+      nearbyLocation = null;
+      searchState = SEARCH_STATE.REGION;
     } catch (e) {
       console.error('Search failed', e);
       alert('검색 중 오류가 발생했습니다.');
-    } finally {
-      isLoading = false;
+      searchState = SEARCH_STATE.IDLE;
     }
+  }
+
+  function handleFilterSearch() {
+    // Client-side filtering is automatic via $derived.
+    // We just need to reset paging and close the dialog.
+    visibleCount = 20;
+    showFilterDialog = false;
   }
 
   async function handleNearbySearch() {
@@ -65,29 +131,30 @@
       return;
     }
 
-    isLoading = true;
+    searchState = SEARCH_STATE.LOADING;
     visibleCount = 20;
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const nearbyFilters: MeetingFilters = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+          const { latitude, longitude } = position.coords;
+          const result = await publicContentApi.getMeetings({
+            latitude,
+            longitude,
             radiusKm: 80
-          };
-          meetings = await publicContentApi.getMeetings(nearbyFilters);
-          hasSearched = true;
+          });
+          nearbyLocation = { latitude, longitude };
+          rawMeetings = result;
+          searchState = SEARCH_STATE.NEARBY;
         } catch (e) {
           console.error('Nearby search failed', e);
           alert('주변 모임을 찾는 중 오류가 발생했습니다.');
-        } finally {
-          isLoading = false;
+          searchState = SEARCH_STATE.IDLE;
         }
       },
       (error) => {
         console.error('Geolocation error', error);
         alert('위치 정보를 가져올 수 없습니다. 권한 설정을 확인해 주세요.');
-        isLoading = false;
+        searchState = SEARCH_STATE.IDLE;
       }
     );
   }
@@ -115,8 +182,8 @@
   }
 
   function handleReset() {
-    hasSearched = false;
-    meetings = [];
+    rawMeetings = [];
+    nearbyLocation = null;
     visibleCount = 20;
     filters = {
       province: 'all',
@@ -125,6 +192,7 @@
       type: 'ALL',
       keyword: ''
     };
+    searchState = SEARCH_STATE.IDLE;
     showFilterDialog = false;
   }
 
@@ -290,7 +358,8 @@
 
     <div class="results-meta">
       <div class="results-summary">
-        <span class="total-count-label">검색된 모임 수 : <strong>{meetings.length} 개</strong></span
+        <span class="total-count-label"
+          >검색된 모임 수 : <strong>{sortedMeetings.length} 개</strong></span
         >
         <button class="help-link" onclick={() => (showInfoModal = true)}>
           <svg
@@ -349,7 +418,7 @@
     bind:filters
     districts={data.districts}
     onClose={() => (showFilterDialog = false)}
-    onSearch={handleSearch}
+    onSearch={handleFilterSearch}
   />
 
   <MeetingInfoModal bind:show={showInfoModal} onClose={() => (showInfoModal = false)} />
