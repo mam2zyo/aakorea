@@ -93,6 +93,8 @@
   }
 
   async function handleMeetingClick(meeting: Meeting) {
+    if (!meeting.groupId) return;
+
     selectedMeeting = meeting;
     loadingGroupDetail = true;
     groupDetail = null;

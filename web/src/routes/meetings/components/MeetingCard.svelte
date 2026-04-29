@@ -13,8 +13,8 @@
 <button class="meeting-card" {onclick}>
   <div class="card-left">
     <div class="day-time">
-      <span class="day">{formatDay(meeting.dayOfWeek)}</span>
-      <span class="time">{meeting.startTime.substring(0, 5)}</span>
+      <span class="day">{meeting.dayOfWeek ? formatDay(meeting.dayOfWeek) : '-'}</span>
+      <span class="time">{meeting.startTime ? meeting.startTime.substring(0, 5) : '--:--'}</span>
     </div>
   </div>
 
@@ -26,7 +26,9 @@
           <span class="distance-inline">({meeting.distanceKm.toFixed(1)}km)</span>
         {/if}
       </h3>
-      <span class="type-badge" data-type={meeting.type}>{formatType(meeting.type)}</span>
+      <span class="type-badge" data-type={meeting.type ?? 'NOTFIXED'}>
+        {meeting.type ? formatType(meeting.type) : '미정'}
+      </span>
     </div>
     <p class="address">{meeting.locationAddress || '주소 정보 없음'}</p>
   </div>
@@ -61,27 +63,28 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 60px;
+    align-items: center;
+    min-width: 50px;
     border-right: 1px solid var(--palette-blue-100);
-    padding-right: var(--space-2);
   }
 
   .day-time {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
+    align-items: center;
   }
 
   .day-time .day {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     color: var(--palette-blue-950);
   }
 
   .day-time .time {
     font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-primary);
+    font-weight: 400;
+    color: var(--palette-blue-950);
   }
 
   .card-main {
@@ -89,7 +92,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-    justify-content: center;
   }
 
   .group-info {
@@ -99,7 +101,7 @@
   }
 
   .group-info .group-name {
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--palette-blue-950);
     margin: 0;
@@ -107,6 +109,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    line-height: 1.2;
   }
 
   .distance-inline {
@@ -130,16 +133,16 @@
   }
 
   .type-badge[data-type='OPEN'] {
-    background: var(--color-success);
-    color: var(--color-success-text);
+    background: #ecfdf5;
+    color: #059669;
   }
   .type-badge[data-type='CLOSED'] {
-    background: var(--color-danger-soft);
-    color: var(--color-danger);
+    background: #fef2f2;
+    color: #dc2626;
   }
   .type-badge[data-type='NOTFIXED'] {
-    background: var(--palette-blue-100);
-    color: var(--palette-slate-450);
+    background: #fffbeb;
+    color: #d97706;
   }
 
   @media (max-width: 640px) {
