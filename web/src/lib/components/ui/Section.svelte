@@ -3,6 +3,7 @@
   import Container from './Container.svelte';
 
   interface Props {
+    id?: string;
     title?: string;
     description?: string;
     eyebrow?: string;
@@ -12,6 +13,7 @@
   }
 
   let {
+    id,
     title,
     description,
     eyebrow,
@@ -21,7 +23,7 @@
   }: Props = $props();
 </script>
 
-<section class="section {className}" class:center>
+<section {id} class="section {className}" class:center>
   <Container>
     {#if eyebrow || title || description}
       <div class="header">

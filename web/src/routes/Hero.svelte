@@ -30,8 +30,8 @@
         </p>
 
         <div class="actions">
-          <Button variant="accent" size="lg">가까운 모임 찾기</Button>
-          <Button variant="outline" size="lg">처음 오신 분 안내</Button>
+          <Button href="/meetings" variant="accent" size="lg">가까운 모임 찾기</Button>
+          <Button href="/#guide" variant="outline" size="lg">처음 오신 분 안내</Button>
         </div>
       </div>
 
