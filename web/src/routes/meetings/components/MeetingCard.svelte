@@ -62,9 +62,8 @@
   .card-left {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    min-width: 50px;
+    min-width: 60px;
     border-right: 1px solid var(--palette-blue-100);
   }
 
@@ -77,14 +76,16 @@
 
   .day-time .day {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--palette-blue-950);
+    line-height: 1.2;
   }
 
   .day-time .time {
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 700;
     color: var(--palette-blue-950);
+    line-height: 1.2;
   }
 
   .card-main {
@@ -96,18 +97,18 @@
 
   .group-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-3);
   }
 
   .group-info .group-name {
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--palette-blue-950);
     margin: 0;
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 0.5rem;
     line-height: 1.2;
   }
@@ -125,11 +126,12 @@
   }
 
   .type-badge {
-    padding: 4px 12px;
+    padding: 2px 10px;
     border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 700;
     white-space: nowrap;
+    margin-top: 2px;
   }
 
   .type-badge[data-type='OPEN'] {
