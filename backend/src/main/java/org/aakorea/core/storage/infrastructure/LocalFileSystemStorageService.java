@@ -65,6 +65,9 @@ public class LocalFileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
             
+            // Ensure the file is readable by others (e.g. Nginx)
+            destinationFile.toFile().setReadable(true, false);
+            
             return "/api/public/assets/" + uniqueFilename;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file.", e);

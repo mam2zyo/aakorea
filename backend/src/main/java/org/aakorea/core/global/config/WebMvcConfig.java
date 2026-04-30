@@ -7,9 +7,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Configuration
 @EnableConfigurationProperties(StorageProperties.class)
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -22,13 +19,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        Path uploadDir = Paths.get(storageProperties.getLocation()).toAbsolutePath().normalize();
-        
-        // Ensure the path ends with a trailing slash for Spring's ResourceHandler
-        String uploadPath = uploadDir.toUri().toString();
-        if (!uploadPath.endsWith("/")) {
-            uploadPath += "/";
+        String location = storageProperties.getLocation();
+        if (!location.endsWith("/")) {
+            location += "/";
         }
+        
+        // Use "file:" prefix directly, which is more reliable than toUri().toString() 
+        // across different environments including Termux.
+        String uploadPath = location.startsWith("/") ? "file:" + location : "file:./" + location;
 
         registry.addResourceHandler("/api/public/assets/**")
                 .addResourceLocations(uploadPath);
