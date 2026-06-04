@@ -1,7 +1,7 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 
 # AAKorea Web(SvelteKit) 재시작 스크립트
-APP_ROOT="/data/data/com.termux/files/home/aakorea"
+APP_ROOT="/home/ubuntu/aakorea"
 WEB_DIR="${APP_ROOT}/web"
 LOG_FILE="${APP_ROOT}/log/web.log"
 

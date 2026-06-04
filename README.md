@@ -186,4 +186,4 @@ npm run build
 ## 운영 참고
 
 - 로컬 실행 / env 설정: [docs/runbooks/LOCAL_DEVELOPMENT.md](./docs/runbooks/LOCAL_DEVELOPMENT.md)
-- `nginx` 정적 서빙 / Termux 배포: [docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md](./docs/runbooks/NGINX_TERMUX_DEPLOYMENT.md)
+- `nginx` 정적 서빙 / OCI 배포 가이드: [deploy/README.md](./deploy/README.md)
