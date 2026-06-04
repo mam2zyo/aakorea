@@ -11,6 +11,10 @@ Desktop.ini
 .idea/
 *.iml
 .vscode/
+old/
+.codex
+.gemini/
+
 
 # =========================
 # Logs
@@ -22,16 +26,24 @@ yarn-debug.log*
 yarn-error.log*
 
 # =========================
-# Frontend
+# Office
 # =========================
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
-frontend/.env
-frontend/.env.*
-!frontend/.env.example
-frontend/aakorea-main/.env
-frontend/aakorea-main/.env.*
+office/node_modules/
+office/dist/
+office/.vite/
+office/.env
+office/.env.*
+!office/.env.example
+
+# =========================
+# Web
+# =========================
+web/node_modules/
+web/dist/
+web/.vite/
+web/.env
+web/.env.*
+!web/.env.example
 
 # =========================
 # Backend
@@ -46,9 +58,7 @@ backend/bin/
 backend/.env
 backend/.env.*
 !backend/.env.example
-backend/aakorea-main/uploads/
-backend/aakorea-main/test_output.txt
-backend/aakorea-main/full_test_log.txt
+backend/uploads/
 uploads/
 
 # =========================
