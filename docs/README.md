@@ -34,6 +34,8 @@
 *   [office_analysis.md](./office_analysis.md): 관리자 오피스(React) 아키텍처 및 번들 최적화 분석
 *   [feature_proposals.md](./feature_proposals.md): 주요 기능 제안 및 상세 분석
 *   [low-end-mobile-css-performance.md](./low-end-mobile-css-performance.md): 저사양 모바일 기기를 위한 CSS 성능 분석 및 개선 방향
+*   [postgis-setup.md](./postgis-setup.md): PostGIS 설치 및 공간 데이터베이스 설정 가이드
+
 
 
 ---
