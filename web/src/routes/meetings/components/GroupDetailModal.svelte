@@ -101,6 +101,33 @@
     return `https://map.kakao.com/link/map/${label},${m.latitude},${m.longitude}`;
   }
 
+  function handleKakaoMapClick(e: MouseEvent, m: Meeting | GroupMeeting) {
+    if (!m.latitude || !m.longitude) return;
+
+    // 모바일 기기 감지
+    const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      e.preventDefault(); // 기본 웹 링크 이동 방지
+      
+      const appUrl = `kakaomap://look?p=${m.latitude},${m.longitude}`;
+      const groupName = (isMeeting(m) ? m.groupName : '') || selectedMeeting?.groupName || 'AA 모임 장소';
+      const label = encodeURIComponent(m.locationDetail || groupName);
+      const webUrl = `https://map.kakao.com/link/map/${label},${m.latitude},${m.longitude}`;
+      
+      // 앱 호출 시도
+      const start = Date.now();
+      window.location.href = appUrl;
+      
+      // 1.5초 이내에 브라우저 포커스가 유지되고 있다면 (앱이 없어 실행되지 않은 경우) 웹페이지로 이동
+      setTimeout(() => {
+        if (Date.now() - start < 2000) {
+          window.open(webUrl, '_blank');
+        }
+      }, 1500);
+    }
+  }
+
   function getTMapUrl(m: Meeting | GroupMeeting) {
     if (!m.latitude || !m.longitude) return '#';
     const appKey = import.meta.env.VITE_TMAP_APP_KEY;
@@ -214,6 +241,7 @@
                     <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
                     <a
                       href={getKakaoMapUrl(activeMeeting)}
+                      onclick={(e) => handleKakaoMapClick(e, activeMeeting)}
                       target="_blank"
                       rel="noopener noreferrer"
                       class="map-icon-btn"
