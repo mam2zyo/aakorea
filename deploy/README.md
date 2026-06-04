@@ -45,9 +45,13 @@
 
 전송된 Nginx 설정을 OCI 서버에 적용하려면 서버에 접속 후 다음 단계를 따르세요:
 
-1. 설정 파일 링크 생성:
+1. 기본 설정 비활성화 및 새 설정 파일 링크 생성:
    ```bash
-   sudo ln -sf /home/ubuntu/aakorea/config/aakorea-oci.conf /etc/nginx/sites-enabled/
+   # 기본 설정 백업
+   sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true
+
+   # 설정 파일 링크 생성
+   sudo ln -sf /home/ubuntu/aakorea/config/aakorea-oci.conf /etc/nginx/conf.d/
    ```
 2. Nginx 설정 테스트:
    ```bash

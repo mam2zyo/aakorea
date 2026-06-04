@@ -36,6 +36,10 @@ else
         SSH_OPTS="${SSH_OPTS} -i ${REPO_ROOT}/${OCI_KEY_FILE}"
         SCP_OPTS="${SCP_OPTS} -i ${REPO_ROOT}/${OCI_KEY_FILE}"
         log "사용할 SSH Key: ${REPO_ROOT}/${OCI_KEY_FILE}"
+    elif [[ -f "${HOME}/${OCI_KEY_FILE}" ]]; then
+        SSH_OPTS="${SSH_OPTS} -i ${HOME}/${OCI_KEY_FILE}"
+        SCP_OPTS="${SCP_OPTS} -i ${HOME}/${OCI_KEY_FILE}"
+        log "사용할 SSH Key: ${HOME}/${OCI_KEY_FILE}"
     else
         log "경고: 지정된 SSH Key 파일(${OCI_KEY_FILE})을 찾을 수 없습니다. 기본 시스템 SSH 키(또는 ssh-agent)를 사용합니다."
     fi
