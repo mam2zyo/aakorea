@@ -1,0 +1,107 @@
+/* =============================================================================
+   theme.css — 테마 전환 트랜지션 + body 테마 동기화
+   ============================================================================= */
+
+/* ── body 배경 테마 동기화 ──────────────────────────────────────────────────── */
+/* body는 :root 변수를 받으므로 직접 오버라이드 */
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.office-theme[data-theme='light'] ~ body,
+body:has(.office-theme[data-theme='light']) {
+  background: var(--zinc-100);
+}
+
+/* ── 테마 전환 부드러운 트랜지션 ────────────────────────────────────────────── */
+
+.office-theme,
+.office-theme *,
+.office-theme *::before,
+.office-theme *::after {
+  transition:
+    background-color var(--duration-base) var(--ease-default),
+    border-color     var(--duration-base) var(--ease-default),
+    color            var(--duration-base) var(--ease-default),
+    box-shadow       var(--duration-base) var(--ease-default);
+}
+
+/* 트랜지션 예외: 호버 효과가 즉각적으로 느껴져야 하는 요소 */
+.office-theme button,
+.office-theme a,
+.office-theme .office-nav-link {
+  transition:
+    background-color var(--duration-fast) var(--ease-default),
+    border-color     var(--duration-fast) var(--ease-default),
+    color            var(--duration-fast) var(--ease-default),
+    transform        var(--duration-fast) var(--ease-out),
+    box-shadow       var(--duration-fast) var(--ease-default);
+}
+
+/* ── 라이트 모드 심도(depth) 보정 ───────────────────────────────────────────── */
+/* 다크 모드는 배경이 어두워서 자연스럽게 레이어가 구분됨.
+   라이트 모드는 배경이 밝아 경계선만으로는 약하므로 shadow 로 보정. */
+
+.office-theme[data-theme='light'] .office-sidebar {
+  box-shadow: 1px 0 0 0 var(--zinc-200), 4px 0 12px rgba(0, 0, 0, 0.04);
+}
+
+.office-theme[data-theme='light'] .office-main__bar {
+  box-shadow: 0 1px 0 0 var(--zinc-200), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.office-theme[data-theme='light'] .office-table {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.office-theme[data-theme='light'] .panel {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.office-theme[data-theme='light'] .office-overlay__dialog {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ── 라이트 모드 텍스트 대비 보정 ──────────────────────────────────────────── */
+
+.office-theme[data-theme='light'] .office-nav-link {
+  color: var(--zinc-600);
+}
+
+.office-theme[data-theme='light'] .office-nav-link:hover {
+  color: var(--zinc-900);
+}
+
+.office-theme[data-theme='light'] .office-nav-link--active {
+  color: var(--blue-700);
+}
+
+.office-theme[data-theme='light'] .office-main__heading h1,
+.office-theme[data-theme='light'] .office-main__actions {
+  color: var(--zinc-700);
+}
+
+/* ── 스크롤바 라이트 모드 ────────────────────────────────────────────────────── */
+
+.office-theme[data-theme='light'] {
+  scrollbar-color: var(--zinc-300) transparent;
+}
+
+.office-theme[data-theme='light']::-webkit-scrollbar-thumb {
+  background: var(--zinc-300);
+}
+
+.office-theme[data-theme='light']::-webkit-scrollbar-thumb:hover {
+  background: var(--zinc-400);
+}
+
+/* ── 시스템 다크 모드 감지 fallback ─────────────────────────────────────────── */
+
+@media (prefers-color-scheme: light) {
+  .office-theme:not([data-theme]) {
+    /* JS 로드 전 시스템이 라이트이면 body 도 밝게 */
+    background: var(--zinc-100);
+  }
+}

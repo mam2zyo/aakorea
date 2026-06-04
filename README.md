@@ -44,7 +44,6 @@
 - 공개 모임 검색은 상태 머신 기반의 고성능 클라이언트 캐싱 필터링을 제공한다 (상세 키워드 및 지역연합 필터 포함)
 - 공개 모임 상세 모달은 모바일에서는 텍스트 중심, 대화면에서는 카카오 지도를 함께 표시한다
 - 관리자 `/admin/overview`는 `테스트 도구` 화면으로 사용하며, HTML normalize 기반 import와 좌표 일괄 보정 도구를 함께 제공한다
-- 관리자 `/admin/public-theme`는 공개 사이트 테마를 `classic` / `harbor` / `breeze` preset 기준으로 draft / publish / rollback 한다
 
 ---
 
