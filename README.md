@@ -49,12 +49,12 @@ docs/        # 분석 및 설계 문서
 
 ## 문서 안내
 
-현재 프로젝트 문서는 `docs/` 아래에서 관리합니다.
+현재 프로젝트 설계 및 사양 문서는 `docs/` 아래에서 체계적으로 관리합니다. 자세한 안내는 [docs/README.md](./docs/README.md) 파일을 참고하십시오.
 
-*   [docs/backend_analysis.md](./docs/backend_analysis.md): 백엔드 기술 스펙 및 분석 문서
-*   [docs/web_analysis.md](./docs/web_analysis.md): 사용자 웹(SvelteKit) 분석 문서
-*   [docs/office_analysis.md](./docs/office_analysis.md): 관리자 오피스(React) 분석 문서
-*   [docs/feature_proposals.md](./docs/feature_proposals.md): 주요 기능 제안 및 상세
+*   [Core 개념 정의](./docs/core/): [제품 범위(Product Scope)](./docs/core/PRODUCT_SCOPE.md), [사용자 유스케이스](./docs/core/ACTORS_AND_USE_CASES.md), [개발 로드맵](./docs/core/ROADMAP.md)
+*   [도메인 모델 스펙](./docs/domain/): [Meeting](./docs/domain/Meeting.md), [Group](./docs/domain/Group.md), [District](./docs/domain/District.md) 등 주요 엔티티 스펙
+*   [분석 및 감사 보고서](./docs/README.md#3-코드-분석-및-감사-보고서-root): [백엔드 분석](./docs/backend_analysis.md), [웹 성능 분석](./docs/low-end-mobile-css-performance.md) 등
+*   [PostGIS 설치 가이드](./docs/postgis-setup.md): 공간 검색 기능 활성화를 위한 데이터베이스 설정 가이드
 
 ---
 
@@ -100,6 +100,16 @@ npm run dev
 
 *   **개발 서버 주소:** `http://localhost:5173`
 *   **Vite Proxy:** `/api` 경로의 요청을 `http://localhost:8081` 백엔드로 자동 프록시합니다.
+*   **지도의 정상 동작을 위한 환경 변수 설정 (중요):**
+    대화면 지도 렌더링 및 모바일 길찾기 링크 활성화를 위해 실행 전 또는 `web/` 경로 아래 `.env` 파일에 아래 환경 변수 설정이 권장됩니다.
+    *   `VITE_KAKAO_MAP_JAVASCRIPT_KEY`: 카카오맵 로드용 자바스크립트 키 (미설정 시 지도 영역이 렌더링되지 않음)
+    *   `VITE_TMAP_APP_KEY`: 티맵 길안내 버튼 연동용 API Key (선택 사항)
+    
+    *`.env` 파일 작성 예시 (`web/.env`):*
+    ```env
+    VITE_KAKAO_MAP_JAVASCRIPT_KEY=your_kakao_key_here
+    VITE_TMAP_APP_KEY=your_tmap_key_here
+    ```
 
 ---
 
