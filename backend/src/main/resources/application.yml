@@ -28,8 +28,12 @@ app:
       password: ${AAKOREA_ADMIN_PASSWORD}
   cors:
     allowed-origins:
-      - https://aakorea.org
-      - https://www.aakorea.org
+      - https://maumtalk.win
+      - https://www.maumtalk.win
+      - http://maumtalk.win
+      - http://www.maumtalk.win
+      - http://maumtalk.win:8080
+      - http://www.maumtalk.win:8080
       - http://localhost
       - http://127.0.0.1
       - http://localhost:8080

@@ -270,7 +270,7 @@ export function NoticePage({ onError, onSuccess }: { onError: (error: unknown, m
             </div>
 
             <form className="office-form-grid" onSubmit={e => { e.preventDefault(); void saveNotice(); }}>
-              <Field label="제목" error={readFieldError(noticeErrors, 'title')}>
+              <Field label="제목" error={readFieldError(noticeErrors, 'title') || undefined}>
                 <input 
                   value={noticeForm.title} 
                   disabled={formReadOnly}
@@ -281,7 +281,7 @@ export function NoticePage({ onError, onSuccess }: { onError: (error: unknown, m
                 />
               </Field>
 
-              <Field label="본문" error={readFieldError(noticeErrors, 'bodyHtml')}>
+              <Field label="본문" error={readFieldError(noticeErrors, 'bodyHtml') || undefined}>
                 <RichTextEditor 
                   valueHtml={noticeForm.bodyHtml}
                   valueJson={noticeForm.bodyJson}
@@ -294,7 +294,7 @@ export function NoticePage({ onError, onSuccess }: { onError: (error: unknown, m
               </Field>
 
               <div className="office-form-row">
-                <Field label="게시 시각" error={readFieldError(noticeErrors, 'publishedAt')}>
+                <Field label="게시 시각" error={readFieldError(noticeErrors, 'publishedAt') || undefined}>
                   <input 
                     type="datetime-local" 
                     value={noticeForm.publishedAt}
