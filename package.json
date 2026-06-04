@@ -1,0 +1,26 @@
+{
+  "name": "aakorea",
+  "version": "1.0.0",
+  "description": "<!-- README.md -->",
+  "main": "index.js",
+  "scripts": {
+    "gen:api-web": "openapi-typescript http://localhost:8081/v3/api-docs -o ./web/src/lib/api/api.d.ts",
+    "gen:api-office": "openapi-typescript http://localhost:8081/v3/api-docs -o ./office/src/shared/api/api.d.ts",
+    "gen:api-all": "npm run gen:api-web && npm run gen:api-office",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mam2zyo/aakorea.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mam2zyo/aakorea/issues"
+  },
+  "homepage": "https://github.com/mam2zyo/aakorea#readme",
+  "devDependencies": {
+    "openapi-typescript": "^7.13.0"
+  }
+}

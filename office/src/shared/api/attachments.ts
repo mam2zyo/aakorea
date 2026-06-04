@@ -1,4 +1,7 @@
 import type { AxiosInstance } from 'axios';
+import type { components } from './api';
+
+type AttachmentData = components['schemas']['AttachmentData'];
 
 export class OfficeAttachmentApi {
   client: AxiosInstance;
@@ -9,9 +12,8 @@ export class OfficeAttachmentApi {
   async uploadAttachment(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    const { data } = await this.client.post('/api/office/attachments', formData, {
+    return this.client.post('/api/office/attachments', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return data;
+    }) as unknown as Promise<AttachmentData>;
   }
 }

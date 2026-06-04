@@ -1,0 +1,163 @@
+:root {
+  /* --- Layer 1: Primitives (Base Palette) --- */
+  /* We keep the full palette to support future themes and dark mode */
+
+  /* Blue (Breeze Primary/Neutral) */
+  --palette-blue-50: #fbfdff;
+  --palette-blue-50-rgb: 251, 253, 255;
+  --palette-blue-100: #edf3fb;
+  --palette-blue-100-rgb: 237, 243, 251;
+  --palette-blue-200: #dfe9f8;
+  --palette-blue-200-rgb: 223, 233, 248;
+  --palette-blue-300: #c7d6ea;
+  --palette-blue-300-rgb: 199, 214, 234;
+  --palette-blue-400: #3977c3;
+  --palette-blue-400-rgb: 57, 119, 195;
+  --palette-blue-500: #2f63d8;
+  --palette-blue-500-rgb: 47, 99, 216;
+  --palette-blue-700: #1a45ad;
+  --palette-blue-800: #4a7cf0;
+  --palette-blue-900: #164580;
+  --palette-blue-900-rgb: 22, 69, 128;
+  --palette-blue-950: #11305e;
+  --palette-blue-950-rgb: 17, 48, 94;
+
+  /* Blue-Teal (Breeze Success) */
+  --palette-blue-soft-100: #ddeff5;
+  --palette-blue-soft-700: #1b5d70;
+
+  /* Neutrals & Semantic Colors */
+  --palette-ink-800: #1f2a38;
+  --palette-slate-450: #66778d;
+  --palette-slate-450-rgb: 102, 119, 141;
+  --palette-clay-100: #f7d9d4;
+  --palette-clay-500: #9f3b2f;
+  --palette-clay-rgb: 159, 59, 47;
+  --palette-gold-500: #e9a151;
+  --palette-gold-600: #d98933;
+  --palette-gold-rgb: 233, 161, 81;
+
+  /* --- Layer 1.5: Global Utilities --- */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-h1: 2.5rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.625;
+
+  --letter-spacing-tight: -0.02em;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --font-body:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard Variable',
+    Pretendard, 'Malgun Gothic', sans-serif;
+  --font-display: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+
+  --shadow-elevation-low: 0 2px 8px var(--color-shadow);
+  --shadow-elevation-high: 0 12px 32px var(--color-shadow);
+
+  /* --- Layer 2: Semantic Tokens (Default: Breeze) --- */
+  color-scheme: light;
+  --color-bg: var(--palette-blue-100);
+  --color-surface: var(--palette-blue-50);
+  --color-surface-strong: var(--palette-blue-200);
+  --color-text: var(--palette-ink-800);
+  --color-text-muted: var(--palette-slate-450);
+  --color-border: var(--palette-blue-300);
+  --color-primary: var(--palette-blue-500);
+  --color-primary-strong: var(--palette-blue-700);
+  --color-danger: var(--palette-clay-500);
+  --color-danger-soft: var(--palette-clay-100);
+  --color-success: var(--palette-blue-soft-100);
+  --color-success-text: var(--palette-blue-soft-700);
+  --color-accent: var(--palette-gold-500);
+  --color-accent-strong: var(--palette-gold-600);
+  --color-shadow: rgba(var(--palette-blue-900-rgb), 0.11);
+
+  /* --- Layer 3: Component Tokens (Default: Breeze) --- */
+  --public-shell-background: rgba(255, 255, 255, 0.9);
+  --public-shell-border: rgba(var(--palette-blue-900-rgb), 0.08);
+  --public-shell-text: var(--palette-blue-950);
+  --public-shell-subtitle: var(--palette-blue-600);
+  --public-shell-nav-text: var(--palette-blue-800);
+  --public-shell-nav-hover-background: var(--palette-blue-50);
+  --public-shell-nav-active-background: var(--palette-blue-100);
+  --public-shell-nav-active-text: var(--palette-blue-800);
+
+  --public-card-background: #fff;
+  --public-card-border: rgba(var(--palette-blue-300-rgb), 0.82);
+  --public-card-background-soft: rgba(248, 251, 255, 0.84);
+
+  --public-notice-banner-background: linear-gradient(
+    90deg,
+    rgba(var(--palette-gold-rgb), 0.24),
+    rgba(255, 255, 255, 0.96)
+  );
+  --public-notice-banner-border: rgba(var(--palette-gold-rgb), 0.52);
+
+  --public-audience-tab-active-background: var(--palette-blue-400);
+  --public-audience-tab-active-text: #fff;
+
+  --public-cta-band-background: linear-gradient(
+    135deg,
+    var(--palette-blue-400) 0%,
+    var(--palette-blue-900) 100%
+  );
+  --public-cta-band-text: #fff;
+
+  --public-footer-background: var(--palette-blue-900);
+  --public-footer-text: rgba(236, 243, 251, 0.9);
+}
+
+/* --- Theme Overrides --- */
+
+/* Future Dark Mode Placeholder */
+[data-theme='dark'] {
+  color-scheme: dark;
+  /* Override semantic tokens here */
+  /* --color-bg: #0f172a; ... */
+}
+
+/* Responsive Overrides */
+@media (max-width: 640px) {
+  :root {
+    --space-1: 0.2rem;
+    --space-2: 0.4rem;
+    --space-3: 0.6rem;
+    --space-4: 0.8rem;
+    --space-5: 1rem;
+    --space-6: 1.2rem;
+    --space-8: 1.6rem;
+    --space-10: 2rem;
+    --space-12: 2.4rem;
+
+    --font-size-h1: 2rem;
+    --font-size-4xl: 1.8rem;
+    --font-size-3xl: 1.6rem;
+    --font-size-2xl: 1.35rem;
+  }
+}
