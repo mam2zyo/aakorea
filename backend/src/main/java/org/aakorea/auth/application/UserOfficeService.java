@@ -159,6 +159,21 @@ public class UserOfficeService {
                 loadActorLabelsByUserId(List.of(user), managementEventsByUserId));
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        OfficePrincipal actor = currentPrincipal();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "admin user not found"));
+
+        if (!canEditUser(actor, user)) {
+            throw forbidden();
+        }
+
+        userPermissionGrantRepository.deleteByUser_Id(userId);
+        userManagementEventRepository.deleteByUser_Id(userId);
+        userRepository.delete(user);
+    }
+
     private void validateEmail(String email) {
         if (email.isEmpty()) {
             throw FieldValidationException.badRequest("email", "email is required");

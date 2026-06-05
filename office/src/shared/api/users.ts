@@ -33,4 +33,8 @@ export class OfficeUserApi {
   async updateUser(id: number, data: UpdateUserPayload) {
     return this.client.put(`/api/office/admin-users/${id}`, data);
   }
+
+  async deleteUser(id: number) {
+    return this.client.delete(`/api/office/admin-users/${id}`);
+  }
 }

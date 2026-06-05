@@ -17,4 +17,6 @@ public interface UserPermissionGrantRepository extends JpaRepository<UserPermiss
             Long userId,
             Permission permission
     );
+
+    void deleteByUser_Id(Long userId);
 }

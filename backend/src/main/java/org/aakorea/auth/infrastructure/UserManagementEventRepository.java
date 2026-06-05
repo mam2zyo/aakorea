@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserManagementEventRepository extends JpaRepository<UserManagementEvent, Long> {
 
     List<UserManagementEvent> findAllByUser_IdInOrderByCreatedAtDesc(Collection<Long> userIds);
+
+    void deleteByUser_Id(Long userId);
 }
