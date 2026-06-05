@@ -21,7 +21,7 @@ app:
   content:
     physical-root: ${AAKOREA_CONTENT_ROOT:src/main/resources/contents}
   storage:
-    location: ${AAKOREA_STORAGE_ROOT:backend/aakorea-main/uploads}
+    location: ${AAKOREA_STORAGE_ROOT:uploads}
   auth:
     admin:
       email: ${AAKOREA_ADMIN_EMAIL:${AAKOREA_ADMIN_USERNAME}}
