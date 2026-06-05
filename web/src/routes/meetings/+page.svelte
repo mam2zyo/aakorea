@@ -139,8 +139,7 @@
           const { latitude, longitude } = position.coords;
           const result = await publicContentApi.getMeetings({
             latitude,
-            longitude,
-            radiusKm: 80
+            longitude
           });
           nearbyLocation = { latitude, longitude };
           rawMeetings = result;
@@ -383,7 +382,13 @@
       {#each visibleMeetings as meeting (meeting.id)}
         <MeetingCard {meeting} onclick={() => handleMeetingClick(meeting)} />
       {:else}
-        <div class="empty-list">검색 결과가 없습니다.</div>
+        <div class="empty-list">
+          {#if searchState === SEARCH_STATE.NEARBY}
+            50km 이내에 모임이 없습니다.
+          {:else}
+            검색 결과가 없습니다.
+          {/if}
+        </div>
       {/each}
     </div>
 

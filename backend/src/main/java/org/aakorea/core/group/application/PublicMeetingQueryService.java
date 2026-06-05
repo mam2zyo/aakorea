@@ -25,7 +25,7 @@ public class PublicMeetingQueryService {
 
     private static final int MAX_NEARBY_MEETING_COUNT = 40;
     private static final int DEFAULT_NEARBY_RADIUS_KM = 20;
-    private static final int MAX_NEARBY_RADIUS_KM = 60;
+    private static final int MAX_NEARBY_RADIUS_KM = 50;
 
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
@@ -39,16 +39,14 @@ public class PublicMeetingQueryService {
             Long districtId,
             String keyword,
             Double latitude,
-            Double longitude,
-            Integer radiusKm) {
+            Double longitude) {
         Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
         Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
         DayOfWeek normalizedDayOfWeek = MeetingFieldSupport.optionalDayOfWeek(dayOfWeek);
 
         if (normalizedLatitude != null || normalizedLongitude != null) {
             MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
-            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId,
-                    keyword, normalizeRadiusKm(radiusKm));
+            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId, keyword);
         }
 
         boolean isAllProvinces = province != null && province.contains("all");
@@ -109,39 +107,58 @@ public class PublicMeetingQueryService {
             DayOfWeek dayOfWeek,
             MeetingType type,
             Long districtId,
-            String keyword,
-            int radiusKm) {
+            String keyword) {
         org.locationtech.jts.geom.Point refPoint = new org.locationtech.jts.geom.GeometryFactory(
                 new org.locationtech.jts.geom.PrecisionModel(), 4326)
                 .createPoint(new org.locationtech.jts.geom.Coordinate(longitude, latitude));
 
-        Specification<Meeting> specification = MeetingSpecifications.active()
-                .and(MeetingSpecifications.hasCoordinates())
-                .and(MeetingSpecifications.isWithinDistance(refPoint, radiusKm));
+        List<NearbyMeeting> nearbyMeetings = List.of();
+        int currentRadius = DEFAULT_NEARBY_RADIUS_KM;
 
-        if (dayOfWeek != null) {
-            specification = specification.and(MeetingSpecifications.hasDayOfWeek(dayOfWeek));
+        while (true) {
+            final int queryRadius = currentRadius;
+            Specification<Meeting> specification = MeetingSpecifications.active()
+                    .and(MeetingSpecifications.hasCoordinates())
+                    .and(MeetingSpecifications.isWithinDistance(refPoint, queryRadius));
+
+            if (dayOfWeek != null) {
+                specification = specification.and(MeetingSpecifications.hasDayOfWeek(dayOfWeek));
+            }
+
+            if (type != null) {
+                specification = specification.and(MeetingSpecifications.hasType(type));
+            }
+
+            if (districtId != null) {
+                specification = specification.and(MeetingSpecifications.hasDistrictId(districtId));
+            }
+
+            if (keyword != null && !keyword.isBlank()) {
+                specification = specification.and(MeetingSpecifications.hasKeyword(keyword));
+            }
+
+            List<Meeting> meetings = meetingRepository.findAll(specification);
+            List<NearbyMeeting> candidates = meetings.stream()
+                    .map(meeting -> {
+                        double distanceKm = distanceCalculator.calculateDistanceKm(
+                                latitude, longitude,
+                                meeting.getLatitude(), meeting.getLongitude());
+                        return new NearbyMeeting(meeting, distanceKm);
+                    })
+                    .toList();
+
+            if (candidates.size() >= 6 || currentRadius >= MAX_NEARBY_RADIUS_KM) {
+                nearbyMeetings = candidates;
+                break;
+            }
+
+            currentRadius += 10;
+            if (currentRadius > MAX_NEARBY_RADIUS_KM) {
+                currentRadius = MAX_NEARBY_RADIUS_KM;
+            }
         }
 
-        if (type != null) {
-            specification = specification.and(MeetingSpecifications.hasType(type));
-        }
-
-        if (districtId != null) {
-            specification = specification.and(MeetingSpecifications.hasDistrictId(districtId));
-        }
-
-        if (keyword != null && !keyword.isBlank()) {
-            specification = specification.and(MeetingSpecifications.hasKeyword(keyword));
-        }
-
-        return meetingRepository.findAll(specification).stream()
-                .map(meeting -> {
-                    double distanceKm = distanceCalculator.calculateDistanceKm(
-                            latitude, longitude,
-                            meeting.getLatitude(), meeting.getLongitude());
-                    return new NearbyMeeting(meeting, distanceKm);
-                })
+        return nearbyMeetings.stream()
                 .sorted(Comparator
                         .comparingDouble(NearbyMeeting::distanceKm)
                         .thenComparing(item -> item.meeting().getDayOfWeek().getValue())
@@ -209,17 +226,7 @@ public class PublicMeetingQueryService {
                 : representativeContactPhone;
     }
 
-    private int normalizeRadiusKm(Integer radiusKm) {
-        if (radiusKm == null) {
-            return DEFAULT_NEARBY_RADIUS_KM;
-        }
 
-        if (radiusKm < 1 || radiusKm > MAX_NEARBY_RADIUS_KM) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "radiusKm is invalid");
-        }
-
-        return radiusKm;
-    }
 
     private double roundDistanceKm(double distanceKm) {
         return Double.parseDouble(String.format(Locale.ROOT, "%.1f", distanceKm));

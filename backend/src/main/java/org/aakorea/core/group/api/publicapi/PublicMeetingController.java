@@ -25,11 +25,10 @@ public class PublicMeetingController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Double latitude,
-            @RequestParam(required = false) Double longitude,
-            @RequestParam(required = false) Integer radiusKm
+            @RequestParam(required = false) Double longitude
     ) {
         return ApiResponse.success(PublicMeetingResponseMapper.toMeetingSummaries(
-                publicMeetingQueryService.getMeetings(province, dayOfWeek, type, districtId, keyword, latitude, longitude, radiusKm)));
+                publicMeetingQueryService.getMeetings(province, dayOfWeek, type, districtId, keyword, latitude, longitude)));
     }
 
 }
