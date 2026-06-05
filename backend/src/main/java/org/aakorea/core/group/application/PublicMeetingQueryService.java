@@ -23,8 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional(readOnly = true)
 public class PublicMeetingQueryService {
 
-    private static final int MAX_NEARBY_MEETING_COUNT = 50;
-    private static final int DEFAULT_NEARBY_RADIUS_KM = 40;
+    private static final int MAX_NEARBY_MEETING_COUNT = 40;
+    private static final int DEFAULT_NEARBY_RADIUS_KM = 20;
     private static final int MAX_NEARBY_RADIUS_KM = 60;
 
     private final MeetingRepository meetingRepository;
