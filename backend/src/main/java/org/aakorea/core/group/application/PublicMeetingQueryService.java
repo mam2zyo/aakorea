@@ -23,9 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional(readOnly = true)
 public class PublicMeetingQueryService {
 
-    private static final int MAX_NEARBY_MEETING_COUNT = 100;
-    private static final int DEFAULT_NEARBY_RADIUS_KM = 80;
-    private static final int MAX_NEARBY_RADIUS_KM = 80;
+    private static final int MAX_NEARBY_MEETING_COUNT = 50;
+    private static final int DEFAULT_NEARBY_RADIUS_KM = 40;
+    private static final int MAX_NEARBY_RADIUS_KM = 60;
 
     private final MeetingRepository meetingRepository;
     private final GroupRepository groupRepository;
@@ -40,15 +40,15 @@ public class PublicMeetingQueryService {
             String keyword,
             Double latitude,
             Double longitude,
-            Integer radiusKm
-    ) {
+            Integer radiusKm) {
         Double normalizedLatitude = MeetingFieldSupport.optionalLatitude(latitude);
         Double normalizedLongitude = MeetingFieldSupport.optionalLongitude(longitude);
         DayOfWeek normalizedDayOfWeek = MeetingFieldSupport.optionalDayOfWeek(dayOfWeek);
 
         if (normalizedLatitude != null || normalizedLongitude != null) {
             MeetingFieldSupport.validateCoordinates(normalizedLatitude, normalizedLongitude);
-            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId, keyword, normalizeRadiusKm(radiusKm));
+            return getNearbyMeetings(normalizedLatitude, normalizedLongitude, normalizedDayOfWeek, type, districtId,
+                    keyword, normalizeRadiusKm(radiusKm));
         }
 
         boolean isAllProvinces = province != null && province.contains("all");
@@ -84,7 +84,6 @@ public class PublicMeetingQueryService {
                 .toList();
     }
 
-
     public PublicGroupDetail getGroup(Long id) {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "group not found"));
@@ -111,8 +110,7 @@ public class PublicMeetingQueryService {
             MeetingType type,
             Long districtId,
             String keyword,
-            int radiusKm
-    ) {
+            int radiusKm) {
         org.locationtech.jts.geom.Point refPoint = new org.locationtech.jts.geom.GeometryFactory(
                 new org.locationtech.jts.geom.PrecisionModel(), 4326)
                 .createPoint(new org.locationtech.jts.geom.Coordinate(longitude, latitude));
@@ -240,10 +238,8 @@ public class PublicMeetingQueryService {
             Double latitude,
             Double longitude,
             Long districtId,
-            Double distanceKm
-    ) {
+            Double distanceKm) {
     }
-
 
     public record PublicGroupDetail(
             Long id,
@@ -251,14 +247,12 @@ public class PublicMeetingQueryService {
             DistrictData district,
             String contactPhone,
             String notice,
-            List<GroupMeetingData> meetings
-    ) {
+            List<GroupMeetingData> meetings) {
     }
 
     public record DistrictData(
             Long id,
-            String name
-    ) {
+            String name) {
     }
 
     public record GroupMeetingData(
@@ -271,13 +265,11 @@ public class PublicMeetingQueryService {
             String locationDetail,
             String locationAddress,
             Double latitude,
-            Double longitude
-    ) {
+            Double longitude) {
     }
 
     private record NearbyMeeting(
             Meeting meeting,
-            double distanceKm
-    ) {
+            double distanceKm) {
     }
 }

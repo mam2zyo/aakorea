@@ -8,7 +8,7 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        format_sql: true
+        format-sql: true
 
 app:
   auth:
