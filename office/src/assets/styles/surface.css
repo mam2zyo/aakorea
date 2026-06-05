@@ -646,7 +646,7 @@
 
 .office-theme .office-table--users .office-table__header,
 .office-theme .office-table--users .office-table__row {
-  grid-template-columns: minmax(200px, 1fr) 140px 100px 100px;
+  grid-template-columns: minmax(200px, 1fr) 140px 120px 100px 140px;
 }
 
 .office-theme .office-table__header {
