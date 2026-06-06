@@ -12,6 +12,7 @@
   import MeetingCard from './components/MeetingCard.svelte';
   import FilterModal from './components/FilterModal.svelte';
   import MeetingInfoModal from './components/MeetingInfoModal.svelte';
+  import MeetingCardSkeleton from './components/MeetingCardSkeleton.svelte';
   import { calculateDistanceKm, roundDistanceKm } from '$lib/utils/distance';
   import { sortMeetings, SearchMode } from '$lib/utils/sorting';
   import type { PageData } from './$types';
@@ -31,6 +32,7 @@
 
   // --- State ---
   let searchState = $state<SearchState>(SEARCH_STATE.IDLE);
+  let nearbySearchStep = $state<'idle' | 'geolocation' | 'fetching'>('idle');
   let rawMeetings = $state<Meeting[]>([]);
   let nearbyLocation = $state<{ latitude: number; longitude: number } | null>(null);
   let visibleCount = $state(20);
@@ -132,10 +134,13 @@
     }
 
     searchState = SEARCH_STATE.LOADING;
+    nearbySearchStep = 'geolocation';
     visibleCount = 20;
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
+          nearbySearchStep = 'fetching';
           const { latitude, longitude } = position.coords;
           const result = await publicContentApi.getMeetings({
             latitude,
@@ -148,12 +153,29 @@
           console.error('Nearby search failed', e);
           alert('주변 모임을 찾는 중 오류가 발생했습니다.');
           searchState = SEARCH_STATE.IDLE;
+        } finally {
+          nearbySearchStep = 'idle';
         }
       },
       (error) => {
         console.error('Geolocation error', error);
-        alert('위치 정보를 가져올 수 없습니다. 권한 설정을 확인해 주세요.');
+        nearbySearchStep = 'idle';
         searchState = SEARCH_STATE.IDLE;
+
+        if (error.code === error.PERMISSION_DENIED) {
+          alert('위치 정보 접근 권한이 거부되었습니다. 기기 또는 브라우저의 위치 권한 설정을 확인해 주세요.');
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          alert('현재 위치 정보를 사용할 수 없습니다. GPS 신호를 확인해 주세요.');
+        } else if (error.code === error.TIMEOUT) {
+          alert('위치 정보를 가져오는 데 시간이 초과되었습니다. 상단의 지역 검색을 이용하거나 위치 감도를 확인해 주세요.');
+        } else {
+          alert('위치 정보를 가져올 수 없습니다. 권한 설정을 확인해 주세요.');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
     );
   }
@@ -249,7 +271,7 @@
 </SubPageHero>
 
 <Container>
-  {#if !hasSearched}
+  {#if !hasSearched && !isLoading}
     <div class="search-section-wrapper">
       <div class="panel search-panel">
         <div class="field">
@@ -319,95 +341,117 @@
       </div>
     </div>
   {:else}
-    <div class="results-top-actions">
-      <button class="btn-reset" onclick={handleReset}>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"
-          ></path></svg
-        >
-        검색 초기화
-      </button>
-      <button class="btn-primary" onclick={() => (showFilterDialog = true)}>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"
-          ></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"
-          ></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"
-          ></line><line x1="2" y1="14" x2="6" y2="14"></line><line x1="10" y1="12" x2="14" y2="12"
-          ></line><line x1="18" y1="16" x2="22" y2="16"></line></svg
-        >
-        상세 조건
-      </button>
-    </div>
-
-    <div class="results-meta">
-      <div class="results-summary">
-        <span class="total-count-label"
-          >검색된 모임 수 : <strong>{sortedMeetings.length} 개</strong></span
-        >
-        <button class="help-link" onclick={() => (showInfoModal = true)}>
+    {#if hasSearched}
+      <div class="results-top-actions">
+        <button class="btn-reset" onclick={handleReset} disabled={isLoading}>
           <svg
-            width="14"
-            height="14"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
             stroke-linecap="round"
             stroke-linejoin="round"
-            ><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-            ></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg
+            ><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"
+            ></path></svg
           >
-          공개/비공개 모임이란?
+          검색 초기화
         </button>
-      </div>
-    </div>
-
-    <div class="meeting-list">
-      {#each visibleMeetings as meeting (meeting.id)}
-        <MeetingCard {meeting} onclick={() => handleMeetingClick(meeting)} />
-      {:else}
-        <div class="empty-list">
-          {#if searchState === SEARCH_STATE.NEARBY}
-            50km 이내에 모임이 없습니다.
-          {:else}
-            검색 결과가 없습니다.
-          {/if}
-        </div>
-      {/each}
-    </div>
-
-    {#if remainingCount > 0}
-      <div class="pagination-area">
-        <button class="load-more-btn" onclick={loadMore}>
+        <button class="btn-primary" onclick={() => (showFilterDialog = true)} disabled={isLoading}>
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
             stroke-linecap="round"
-            stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg
+            stroke-linejoin="round"
+            ><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"
+            ></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"
+            ></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"
+            ></line><line x1="2" y1="14" x2="6" y2="14"></line><line x1="10" y1="12" x2="14" y2="12"
+            ></line><line x1="18" y1="16" x2="22" y2="16"></line></svg
           >
-          결과 더 보기 ({remainingCount}개 남음)
+          상세 조건
         </button>
       </div>
+
+      <div class="results-meta">
+        <div class="results-summary">
+          <span class="total-count-label"
+            >검색된 모임 수 : <strong>{sortedMeetings.length} 개</strong></span
+          >
+          <button class="help-link" onclick={() => (showInfoModal = true)}>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+              ></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg
+            >
+            공개/비공개 모임이란?
+          </button>
+        </div>
+      </div>
+    {/if}
+
+    {#if isLoading}
+      <div class="loading-container">
+        <div class="loading-status">
+          <div class="loading-spinner"></div>
+          {#if nearbySearchStep === 'geolocation'}
+            <p>내 위치 정보를 확인하고 있습니다...</p>
+          {:else if nearbySearchStep === 'fetching'}
+            <p>주변 50km 이내의 모임을 검색하고 있습니다...</p>
+          {:else}
+            <p>모임을 불러오는 중입니다...</p>
+          {/if}
+        </div>
+        <div class="meeting-list">
+          <MeetingCardSkeleton />
+          <MeetingCardSkeleton />
+          <MeetingCardSkeleton />
+        </div>
+      </div>
+    {:else}
+      <div class="meeting-list">
+        {#each visibleMeetings as meeting (meeting.id)}
+          <MeetingCard {meeting} onclick={() => handleMeetingClick(meeting)} />
+        {:else}
+          <div class="empty-list">
+            {#if searchState === SEARCH_STATE.NEARBY}
+              50km 이내에 모임이 없습니다.
+            {:else}
+              검색 결과가 없습니다.
+            {/if}
+          </div>
+        {/each}
+      </div>
+
+      {#if remainingCount > 0}
+        <div class="pagination-area">
+          <button class="load-more-btn" onclick={loadMore}>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg
+            >
+            결과 더 보기 ({remainingCount}개 남음)
+          </button>
+        </div>
+      {/if}
     {/if}
   {/if}
 
@@ -631,6 +675,55 @@
     padding: var(--space-12);
     text-align: center;
     color: var(--color-text-soft);
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+  }
+
+  .loading-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-8) var(--space-4);
+    background: #fff;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(var(--palette-blue-500-rgb), 0.08);
+    box-shadow: 0 4px 16px rgba(var(--palette-blue-900-rgb), 0.02);
+    text-align: center;
+  }
+
+  .loading-status p {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--palette-blue-900);
+    animation: pulseText 1.5s infinite ease-in-out;
+  }
+
+  .loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3.5px solid var(--palette-blue-100);
+    border-top: 3.5px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulseText {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
   }
 
   .cta-button {
